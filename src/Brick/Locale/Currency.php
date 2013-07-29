@@ -1,0 +1,190 @@
+<?php
+
+namespace Brick\Locale;
+
+/**
+ * A currency as defined by ISO 4217.
+ */
+class Currency
+{
+    /**
+     * @var array|null
+     */
+    private static $currencies = null;
+
+    /**
+     * @var array
+     */
+    private static $instances = [];
+
+    /**
+     * The ISO 4217 alphabetic currency code.
+     *
+     * @var string
+     */
+    private $currencyCode;
+
+    /**
+     * The ISO 4217 numeric currency code.
+     *
+     * @var int
+     */
+    private $numericCode;
+
+    /**
+     * The english name of the currency.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
+     * The UTF-8 currency symbol.
+     *
+     * @var string
+     */
+    private $symbol;
+
+    /**
+     * The default number of fraction digits used with this currency.
+     *
+     * @var int
+     */
+    private $defaultFractionDigits;
+
+    /**
+     * Private constructor. Use getInstance() to obtain an instance.
+     *
+     * @param string  $currencyCode
+     * @param integer $numericCode
+     * @param string  $name
+     * @param string  $symbol
+     * @param integer $decimalPlaces
+     */
+    private function __construct($currencyCode, $numericCode, $name, $symbol, $decimalPlaces)
+    {
+        $this->currencyCode = $currencyCode;
+        $this->numericCode = $numericCode;
+        $this->name = $name;
+        $this->symbol = $symbol;
+        $this->defaultFractionDigits = $decimalPlaces;
+    }
+
+    /**
+     * @return void
+     */
+    private static function loadCurrencyData()
+    {
+        if (self::$currencies === null) {
+            self::$currencies = require __DIR__ . '/currencies.php';
+        }
+    }
+
+    /**
+     * Returns the Currency instance for the given currency code.
+     *
+     * @param string $code
+     * @return Currency
+     * @throws \RuntimeException
+     */
+    public static function getInstance($code)
+    {
+        if (! isset(self::$instances[$code])) {
+            self::loadCurrencyData();
+
+            if (! isset(self::$currencies[$code])) {
+                throw new \RuntimeException('Invalid currency code: ' . $code);
+            }
+
+            list ($currencyCode, $numericCode, $name, $symbol, $fractionDigits) = self::$currencies[$code];
+
+            self::$instances[$code] = new self($currencyCode, $numericCode, $name, $symbol, $fractionDigits);
+        }
+
+        return self::$instances[$code];
+    }
+
+    /**
+     * Returns all the available currencies.
+     *
+     * @return Currency[]
+     */
+    public static function getAvailableCurrencies()
+    {
+        self::loadCurrencyData();
+
+        $currencies = array();
+
+        foreach (array_keys(self::$currencies) as $currencyCode) {
+            $currencies[] = self::getInstance($currencyCode);
+        }
+
+        return $currencies;
+    }
+
+    /**
+     * Returns the ISO 4217 currency code of this currency.
+     *
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        return $this->currencyCode;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumericCode()
+    {
+        return $this->numericCode;
+    }
+
+    /**
+     * Returns the english name of this currency.
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSymbol()
+    {
+        return $this->symbol;
+    }
+
+    /**
+     * Gets the default number of fraction digits used with this currency.
+     *
+     * For example, the default number of fraction digits for the Euro is 2, while for the Japanese Yen it's 0.
+     * In the case of pseudo-currencies, such as IMF Special Drawing Rights, -1 is returned.
+     *
+     * @return int
+     */
+    public function getDefaultFractionDigits()
+    {
+        return $this->defaultFractionDigits;
+    }
+
+    /**
+     * @param Currency $currency
+     * @return bool
+     */
+    public function isEqualTo(Currency $currency)
+    {
+        return $this->currencyCode === $currency->currencyCode;
+    }
+
+    /**
+     * Returns the ISO 4217 currency code of this currency.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->currencyCode;
+    }
+}
