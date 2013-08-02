@@ -29,9 +29,14 @@ abstract class AbstractController
     /**
      * @param \Brick\View\View $view
      * @return string
+     * @throws \RuntimeException
      */
     protected function renderAsString(View $view)
     {
+        if ($this->renderer === null) {
+            throw new \RuntimeException('No view renderer has been injected');
+        }
+
         return $this->renderer->render($view);
     }
 
