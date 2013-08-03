@@ -13,12 +13,12 @@ class LocalStorage implements Storage
     /**
      * @var string
      */
-    protected $directory;
+    private $directory;
 
     /**
      * @var \Brick\FileSystem\FileSystem
      */
-    protected $filesystem;
+    private $filesystem;
 
     /**
      * Class constructor.
@@ -71,7 +71,7 @@ class LocalStorage implements Storage
         try {
             $this->filesystem->put($path, $data);
         } catch (IoException $e) {
-            throw StorageException::putError($path, $e);
+            throw Exception\StorageException::putError($path, $e);
         }
     }
 
@@ -82,9 +82,14 @@ class LocalStorage implements Storage
     {
         try {
             $path = $this->getAbsolutePath($path);
+
+            if (! $this->filesystem->exists($path)) {
+                throw Exception\NotFoundException::pathNotFound($path);
+            }
+
             return $this->filesystem->get($path);
         } catch (IoException $e) {
-            throw StorageException::getError($path, $e);
+            throw Exception\StorageException::getError($path, $e);
         }
     }
 
@@ -95,9 +100,14 @@ class LocalStorage implements Storage
     {
         try {
             $path = $this->getAbsolutePath($path);
+
+            if (! $this->filesystem->exists($path)) {
+                throw Exception\NotFoundException::pathNotFound($path);
+            }
+
             $this->filesystem->remove($path);
         } catch (IoException $e) {
-            throw StorageException::deleteError($path, $e);
+            throw Exception\StorageException::deleteError($path, $e);
         }
     }
 }

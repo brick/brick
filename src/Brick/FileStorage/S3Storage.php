@@ -2,33 +2,30 @@
 
 namespace Brick\FileStorage;
 
-use Guzzle\Http\Exception\HttpException;
-use Aws\S3\Exception\S3Exception;
+use Aws\Common\Exception\AwsExceptionInterface;
+use Aws\S3\Exception\NoSuchKeyException;
 use Aws\S3\S3Client;
 
 /**
  * Amazon S3 implementation of the Storage interface.
- *
- * @todo Remove Guzzle exception catching once this has been fixed:
- * @see https://github.com/aws/aws-sdk-php/issues/120
  */
 class S3Storage implements Storage
 {
     /**
      * @var \Aws\S3\S3Client
      */
-    protected $s3;
+    private $s3;
 
     /**
      * @var string
      */
-    protected $bucket;
+    private $bucket;
 
     /**
      * Class constructor.
      *
-     * @param \Aws\S3\S3Client $s3
-     * @param string $bucket
+     * @param \Aws\S3\S3Client $s3     The S3 client.
+     * @param string           $bucket The bucket name.
      */
     public function __construct(S3Client $s3, $bucket)
     {
@@ -42,15 +39,13 @@ class S3Storage implements Storage
     public function put($path, $data)
     {
         try {
-            $this->s3->putObject(array(
+            $this->s3->putObject([
                 'Bucket' => $this->bucket,
-                'Key' => $path,
-                'Body' => $data
-            ));
-        } catch (HttpException $e) {
-            throw StorageException::putError($path, $e);
-        } catch (S3Exception $e) {
-            throw StorageException::putError($path, $e);
+                'Key'    => $path,
+                'Body'   => $data
+            ]);
+        } catch (AwsExceptionInterface $e) {
+            throw Exception\StorageException::putError($path, $e);
         }
     }
 
@@ -60,15 +55,16 @@ class S3Storage implements Storage
     public function get($path)
     {
         try {
-            // @todo this actually returns a Model, we need to extra the contents from it.
-            return $this->s3->getObject(array(
+            $model = $this->s3->getObject([
                 'Bucket' => $this->bucket,
-                'Key' => $path
-            ));
-        } catch (HttpException $e) {
-            throw StorageException::getError($path, $e);
-        } catch (S3Exception $e) {
-            throw StorageException::getError($path, $e);
+                'Key'    => $path
+            ]);
+
+            return (string) $model->get('Body');
+        } catch (NoSuchKeyException $e) {
+            throw Exception\NotFoundException::pathNotFound($path, $e);
+        } catch (AwsExceptionInterface $e) {
+            throw Exception\StorageException::getError($path, $e);
         }
     }
 
@@ -78,14 +74,12 @@ class S3Storage implements Storage
     public function delete($path)
     {
         try {
-            $this->s3->deleteObject(array(
+            $this->s3->deleteObject([
                 'Bucket' => $this->bucket,
-                'Key' => $path
-            ));
-        } catch (HttpException $e) {
-            throw StorageException::deleteError($path, $e);
-        } catch (S3Exception $e) {
-            throw StorageException::deleteError($path, $e);
+                'Key'    => $path
+            ]);
+        } catch (AwsExceptionInterface $e) {
+            throw Exception\StorageException::deleteError($path, $e);
         }
     }
 }

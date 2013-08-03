@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\FileStorage;
+namespace Brick\FileStorage\Exception;
 
 /**
  * Exception thrown by classes implementing the Storage interface.
@@ -8,9 +8,10 @@ namespace Brick\FileStorage;
 class StorageException extends \RuntimeException
 {
     /**
-     * @param string $path
-     * @param \Exception $previous
-     * @return \Brick\FileStorage\StorageException
+     * @param string          $path
+     * @param \Exception|null $previous
+     *
+     * @return \Brick\FileStorage\Exception\StorageException
      */
     public static function putError($path, \Exception $previous = null)
     {
@@ -18,9 +19,10 @@ class StorageException extends \RuntimeException
     }
 
     /**
-     * @param string $path
-     * @param \Exception $previous
-     * @return \Brick\FileStorage\StorageException
+     * @param string          $path
+     * @param \Exception|null $previous
+     *
+     * @return \Brick\FileStorage\Exception\StorageException
      */
     public static function getError($path, \Exception $previous = null)
     {
@@ -28,9 +30,10 @@ class StorageException extends \RuntimeException
     }
 
     /**
-     * @param string $path
-     * @param \Exception $previous
-     * @return \Brick\FileStorage\StorageException
+     * @param string          $path
+     * @param \Exception|null $previous
+     *
+     * @return \Brick\FileStorage\Exception\StorageException
      */
     public static function deleteError($path, \Exception $previous = null)
     {
