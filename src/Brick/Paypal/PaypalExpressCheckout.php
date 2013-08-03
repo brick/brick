@@ -39,37 +39,4 @@ class PaypalExpressCheckout extends AbstractPaypal
     {
         return $this->call('DoExpressCheckoutPayment', $params);
     }
-
-    /**
-     * Calls the doCapture method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doCapture(array $params)
-    {
-        return $this->call('DoCapture', $params);
-    }
-
-    /**
-     * Calls the DoReauthorization method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doReauthorization(array $params)
-    {
-        return $this->call('DoReauthorization', $params);
-    }
-
-    /**
-     * Calls the DoVoid method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doVoid(array $params)
-    {
-        return $this->call('DoVoid', $params);
-    }
 }
