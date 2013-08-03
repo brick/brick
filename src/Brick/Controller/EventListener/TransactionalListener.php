@@ -31,7 +31,7 @@ class TransactionalListener extends AbstractEventListener
      */
     public function __construct(Connection $connection, Reader $annotationReader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
 
         $this->connection       = $connection;
         $this->annotationReader = $annotationReader;

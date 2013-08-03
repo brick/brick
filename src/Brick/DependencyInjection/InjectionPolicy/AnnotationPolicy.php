@@ -16,11 +16,6 @@ use Doctrine\Common\Annotations\Reader;
 class AnnotationPolicy implements InjectionPolicy
 {
     /**
-     * The annotation namespace.
-     */
-    const ANNOTATION_NAMESPACE = 'Brick\DependencyInjection\Annotation';
-
-    /**
      * The annotation reader.
      *
      * @var \Doctrine\Common\Annotations\Reader
@@ -39,7 +34,7 @@ class AnnotationPolicy implements InjectionPolicy
      */
     public function __construct(Reader $reader)
     {
-        AnnotationRegistry::registerAutoloadNamespace(self::ANNOTATION_NAMESPACE);
+        AnnotationRegistry::registerAutoloadNamespace('Brick\DependencyInjection\Annotation', __DIR__ . '/../../..');
 
         $this->reader = $reader;
         $this->reflectionTools = new ReflectionTools();

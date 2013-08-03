@@ -26,7 +26,7 @@ class AllowListener extends AbstractEventListener
      */
     public function __construct(Reader $annotationReader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
 
         $this->annotationReader = $annotationReader;
     }

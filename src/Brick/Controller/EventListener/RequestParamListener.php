@@ -40,15 +40,15 @@ class RequestParamListener extends AbstractEventListener
 
     /**
      * @param Reader                  $annotationReader
-     * @param ParameterConverter|null $resolver
+     * @param ParameterConverter|null $converter
      */
-    public function __construct(Reader $annotationReader, ParameterConverter $resolver = null)
+    public function __construct(Reader $annotationReader, ParameterConverter $converter = null)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
 
-        $this->annotationReader = $annotationReader;
-        $this->parameterConverter         = $resolver ?: new NullConverter();
-        $this->reflectionTools  = new ReflectionTools();
+        $this->annotationReader   = $annotationReader;
+        $this->parameterConverter = $converter ?: new NullConverter();
+        $this->reflectionTools    = new ReflectionTools();
     }
 
     /**
