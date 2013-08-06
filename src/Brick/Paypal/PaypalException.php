@@ -3,8 +3,8 @@
 namespace Brick\Paypal;
 
 /**
- * The Exception class thrown by the Paypal library.
+ * Exception thrown by the Paypal class.
  */
-class PaypalException extends \Exception
+class PaypalException extends \RuntimeException
 {
 }

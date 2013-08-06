@@ -1,41 +1,46 @@
 <?php
+
 namespace Brick\Paypal;
 
-abstract class AbstractPaypal {
+/**
+ * Communicates with the Paypal NVP API.
+ */
+class Paypal
+{
     /**
      * The API username provided by Paypal.
      *
      * @var string
      */
-    protected $user;
+    private $user;
 
     /**
      * The API password provided by Paypal.
      *
      * @var string
      */
-    protected $password;
+    private $password;
 
     /**
      * The API signature provided by Paypal.
      *
      * @var string
      */
-    protected $signature;
+    private $signature;
 
     /**
      * The Paypal NVP API endpoint (differs for live or sandbox).
      *
      * @var string
      */
-    protected $endpoint;
+    private $endpoint;
 
     /**
      * The Paypal NVP API version to use (XX.X).
      *
      * @var string
      */
-    protected $version;
+    private $version;
 
     /**
      * Class constructor.
@@ -58,12 +63,14 @@ abstract class AbstractPaypal {
     /**
      * Calls the Paypal API, and returns the response as an associative array (name-value pairs).
      *
-     * @param  string          $method
-     * @param  array           $params
+     * @param string $method
+     * @param array  $params
+     *
      * @return array
+     *
      * @throws PaypalException
      */
-    protected function call($method, array $params)
+    public function call($method, array $params)
     {
         $params['METHOD']    = $method;
         $params['VERSION']   = $this->version;
@@ -93,38 +100,5 @@ abstract class AbstractPaypal {
         parse_str($response, $array);
 
         return $array;
-    }
-
-    /**
-     * Calls the doCapture method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doCapture(array $params)
-    {
-        return $this->call('DoCapture', $params);
-    }
-
-    /**
-     * Calls the DoReauthorization method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doReauthorization(array $params)
-    {
-        return $this->call('DoReauthorization', $params);
-    }
-
-    /**
-     * Calls the DoVoid method, and returns the reponse as an associative array.
-     *
-     * @param  array $params
-     * @return array
-     */
-    public function doVoid(array $params)
-    {
-        return $this->call('DoVoid', $params);
     }
 }
