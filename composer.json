@@ -13,7 +13,8 @@
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
         "doctrine/common": "*",
-        "doctrine/dbal": "*"
+        "doctrine/dbal": "*",
+        "doctrine/orm": "*"
     },
     "autoload": {
         "psr-0": {

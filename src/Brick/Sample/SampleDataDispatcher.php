@@ -59,7 +59,7 @@ class SampleDataDispatcher
      */
     public function run(callable $callback = null)
     {
-        $this->em->getConnection()->beginTransaction();
+        $this->em->beginTransaction();
 
         foreach ($this->providers as $provider) {
             /** @var $provider \Brick\Sample\SampleDataProvider */
@@ -73,6 +73,6 @@ class SampleDataDispatcher
             $this->em->flush();
         }
 
-        $this->em->getConnection()->commit();
+        $this->em->commit();
     }
 }
