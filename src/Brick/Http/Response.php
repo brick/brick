@@ -343,21 +343,28 @@ class Response extends Message
     /**
      * @return string
      */
-    public function __toString()
+    public function getHeaderString()
     {
-        $str = sprintf('HTTP/%s %d %s' . Message::CRLF, $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
+        $result = sprintf('HTTP/%s %d %s' . Message::CRLF, $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
 
         foreach ($this->getAllHeaders() as $header) {
-            $str .= $header->toString() . Message::CRLF;
+            $result .= $header->toString() . Message::CRLF;
         }
 
         foreach ($this->cookies as $cookie) {
-            $str .= 'Set-Cookie: ' . $cookie->toString() . Message::CRLF;
+            $result .= 'Set-Cookie: ' . $cookie->toString() . Message::CRLF;
         }
 
-        $str .= Message::CRLF;
-        $str .= $this->content;
+        $result .= Message::CRLF;
 
-        return $str;
+        return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getHeaderString() . $this->content;
     }
 }
