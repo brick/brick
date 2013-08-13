@@ -156,6 +156,8 @@ class Session implements SessionInterface
         if ($this->isTimeToCollectGarbage()) {
             $this->collectGarbage();
         }
+
+        $this->data = [];
     }
 
     /**
