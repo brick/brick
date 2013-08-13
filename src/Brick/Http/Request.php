@@ -415,7 +415,9 @@ class Request extends Message
             $result .= $header->toString() . Message::CRLF;
         }
 
-        $result .= sprintf('Cookie: %s' . Message::CRLF, $this->getCookieString());
+        if ($this->cookies->count()) {
+            $result .= sprintf('Cookie: %s' . Message::CRLF, $this->getCookieString());
+        }
 
         $result .= Message::CRLF;
 
