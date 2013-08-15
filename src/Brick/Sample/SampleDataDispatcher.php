@@ -62,6 +62,8 @@ class SampleDataDispatcher
         $this->em->beginTransaction();
 
         foreach ($this->providers as $provider) {
+            $this->em->clear();
+
             /** @var $provider \Brick\Sample\SampleDataProvider */
             $provider = $this->injector->instantiate($provider);
 
