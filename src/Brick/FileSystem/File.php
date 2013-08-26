@@ -5,7 +5,7 @@ namespace Brick\FileSystem;
 /**
  * Object-oriented wrapper around native file functions.
  *
- * All PHP errors are muted, instead an exception is throw when an error occurs.
+ * All PHP errors are muted, instead an exception is thrown when an error occurs.
  */
 class File
 {
