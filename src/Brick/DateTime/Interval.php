@@ -13,23 +13,24 @@ class Interval
     /**
      * The start instant, inclusive.
      *
-     * @var ZonedDateTime
+     * @var \Brick\DateTime\PointInTime
      */
     private $start;
 
     /**
      * The end instant, exclusive.
      *
-     * @var ZonedDateTime
+     * @var \Brick\DateTime\PointInTime
      */
     private $end;
 
     /**
      * Class constructor.
      *
-     * @param PointInTime $startInclusive The start instant, inclusive.
-     * @param PointInTime $endExclusive   The end instant, exclusive.
-     * @throws DateTimeException
+     * @param \Brick\DateTime\PointInTime $startInclusive The start instant, inclusive.
+     * @param \Brick\DateTime\PointInTime $endExclusive   The end instant, exclusive.
+     *
+     * @throws \Brick\DateTime\DateTimeException
      */
     public function __construct(PointInTime $startInclusive, PointInTime $endExclusive)
     {
@@ -44,7 +45,7 @@ class Interval
     /**
      * Returns the start instant, inclusive, of this Interval.
      *
-     * @return ZonedDateTime
+     * @return \Brick\DateTime\PointInTime
      */
     public function getStart()
     {
@@ -54,7 +55,7 @@ class Interval
     /**
      * Returns the end instant, exclusive, of this Interval.
      *
-     * @return ZonedDateTime
+     * @return \Brick\DateTime\PointInTime
      */
     public function getEnd()
     {
@@ -64,8 +65,9 @@ class Interval
     /**
      * Returns a copy of this Interval with the start instant altered.
      *
-     * @param PointInTime $start
-     * @return Interval
+     * @param \Brick\DateTime\PointInTime $start
+     *
+     * @return \Brick\DateTime\Interval
      */
     public function withStart(PointInTime $start)
     {
@@ -75,8 +77,9 @@ class Interval
     /**
      * Returns a copy of this Interval with the end instant altered.
      *
-     * @param PointInTime $end
-     * @return Interval
+     * @param \Brick\DateTime\PointInTime $end
+     *
+     * @return \Brick\DateTime\Interval
      */
     public function withEnd(PointInTime $end)
     {
@@ -86,7 +89,7 @@ class Interval
     /**
      * Returns a Duration representing the time elapsed in this Interval.
      *
-     * @return Duration
+     * @return \Brick\DateTime\Duration
      */
     public function getDuration()
     {

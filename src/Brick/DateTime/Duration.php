@@ -16,14 +16,14 @@ class Duration
     /**
      * The duration in seconds.
      *
-     * @var int
+     * @var integer
      */
     private $seconds;
 
     /**
      * Private constructor. Use one of the factory methods to obtain a Duration.
      *
-     * @param int $seconds The duration in seconds, validated as an integer.
+     * @param integer $seconds The duration in seconds, validated as an integer.
      */
     private function __construct($seconds)
     {
@@ -33,7 +33,7 @@ class Duration
     /**
      * Returns a zero length Duration.
      *
-     * @return Duration
+     * @return \Brick\DateTime\Duration
      */
     public static function zero()
     {
@@ -47,8 +47,10 @@ class Duration
      * the ISO-8601 format `PTnS` where `n` is the number of seconds.
      *
      * @param string $text
-     * @return Duration
-     * @throws Parser\DateTimeParseException
+     *
+     * @return \Brick\DateTime\Duration
+     *
+     * @throws \Brick\DateTime\Parser\DateTimeParseException
      */
     public static function parse($text)
     {
@@ -66,8 +68,9 @@ class Duration
     /**
      * Returns a Duration from a number of seconds.
      *
-     * @param int $seconds
-     * @return Duration
+     * @param integer $seconds
+     *
+     * @return \Brick\DateTime\Duration
      */
     public static function ofSeconds($seconds)
     {
@@ -77,8 +80,9 @@ class Duration
     /**
      * Returns a Duration from a number of minutes.
      *
-     * @param int $minutes
-     * @return Duration
+     * @param integer $minutes
+     *
+     * @return \Brick\DateTime\Duration
      */
     public static function ofMinutes($minutes)
     {
@@ -88,8 +92,9 @@ class Duration
     /**
      * Returns a Duration from a number of hours.
      *
-     * @param int $hours
-     * @return Duration
+     * @param integer $hours
+     *
+     * @return \Brick\DateTime\Duration
      */
     public static function ofHours($hours)
     {
@@ -99,8 +104,9 @@ class Duration
     /**
      * Returns a Duration from a number of days.
      *
-     * @param int $days
-     * @return Duration
+     * @param integer $days
+     *
+     * @return \Brick\DateTime\Duration
      */
     public static function ofDays($days)
     {
@@ -113,9 +119,10 @@ class Duration
      * A Duration represents a directed distance between two points on the time-line.
      * As such, this method will return a negative duration if the end is before the start.
      *
-     * @param PointInTime $startInclusive The start instant, inclusive.
-     * @param PointInTime $endExclusive   The end instant, exclusive.
-     * @return Duration
+     * @param \Brick\DateTime\PointInTime $startInclusive The start instant, inclusive.
+     * @param \Brick\DateTime\PointInTime $endExclusive   The end instant, exclusive.
+     *
+     * @return \Brick\DateTime\Duration
      */
     public static function between(PointInTime $startInclusive, PointInTime $endExclusive)
     {
@@ -123,11 +130,25 @@ class Duration
     }
 
     /**
-     * Returns a Duration object with the given number of seconds, checking
-     * to see if a new object is in fact required.
+     * Returns a Duration representing the time elapsed since the given instant.
      *
-     * @param int $seconds The duration in seconds, validated as an integer.
-     * @return Duration
+     * @param \Brick\DateTime\PointInTime $startInclusive
+     *
+     * @return \Brick\DateTime\Duration
+     */
+    public static function since(PointInTime $startInclusive)
+    {
+        return Duration::between($startInclusive, Instant::now());
+    }
+
+    /**
+     * Returns a Duration object with the given number of seconds.
+     *
+     * If the given duration is equal to the current one, this instance is returned.
+     *
+     * @param integer $seconds The duration in seconds, validated as an integer.
+     *
+     * @return \Brick\DateTime\Duration
      */
     private function create($seconds)
     {
@@ -141,7 +162,7 @@ class Duration
     /**
      * Returns whether this Duration is zero length.
      *
-     * @return bool
+     * @return boolean
      */
     public function isZero()
     {
@@ -151,7 +172,7 @@ class Duration
     /**
      * Returns whether this Duration is positive, excluding zero.
      *
-     * @return bool
+     * @return boolean
      */
     public function isPositive()
     {
@@ -161,7 +182,7 @@ class Duration
     /**
      * Returns whether this Duration is positive, including zero.
      *
-     * @return bool
+     * @return boolean
      */
     public function isPositiveOrZero()
     {
@@ -171,7 +192,7 @@ class Duration
     /**
      * Returns whether this Duration is negative, excluding zero.
      *
-     * @return bool
+     * @return boolean
      */
     public function isNegative()
     {
@@ -181,7 +202,7 @@ class Duration
     /**
      * Returns whether this Duration is negative, including zero.
      *
-     * @return bool
+     * @return boolean
      */
     public function isNegativeOrZero()
     {
@@ -191,8 +212,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration added.
      *
-     * @param Duration $duration
-     * @return Duration
+     * @param \Brick\DateTime\Duration $duration
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function plus(Duration $duration)
     {
@@ -202,8 +224,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in seconds added.
      *
-     * @param int $secondsToAdd
-     * @return Duration
+     * @param integer $secondsToAdd
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function plusSeconds($secondsToAdd)
     {
@@ -213,8 +236,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in minutes added.
      *
-     * @param int $minutesToAdd
-     * @return Duration
+     * @param integer $minutesToAdd
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function plusMinutes($minutesToAdd)
     {
@@ -224,8 +248,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in hours added.
      *
-     * @param int $hoursToAdd
-     * @return Duration
+     * @param integer $hoursToAdd
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function plusHours($hoursToAdd)
     {
@@ -235,8 +260,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in days added.
      *
-     * @param int $daysToAdd
-     * @return Duration
+     * @param integer $daysToAdd
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function plusDays($daysToAdd)
     {
@@ -246,8 +272,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in seconds subtracted.
      *
-     * @param int $secondsToSubtract
-     * @return Duration
+     * @param integer $secondsToSubtract
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function minusSeconds($secondsToSubtract)
     {
@@ -257,8 +284,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in minutes subtracted.
      *
-     * @param int $minutesToSubtract
-     * @return Duration
+     * @param integer $minutesToSubtract
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function minusMinutes($minutesToSubtract)
     {
@@ -268,8 +296,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in hours subtracted.
      *
-     * @param int $hoursToSubtract
-     * @return Duration
+     * @param integer $hoursToSubtract
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function minusHours($hoursToSubtract)
     {
@@ -279,8 +308,9 @@ class Duration
     /**
      * Returns a copy of this Duration with the specified duration in days subtracted.
      *
-     * @param int $daysToSubtract
-     * @return Duration
+     * @param integer $daysToSubtract
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function minusDays($daysToSubtract)
     {
@@ -288,10 +318,11 @@ class Duration
     }
 
     /**
-     * Returns a copy of this Duration multiplied by the specified value.
+     * Returns a copy of this Duration multiplied by the given value.
      *
-     * @param int $multiplicand
-     * @return Duration
+     * @param integer $multiplicand
+     *
+     * @return \Brick\DateTime\Duration
      */
     public function multipliedBy($multiplicand)
     {
@@ -299,9 +330,23 @@ class Duration
     }
 
     /**
+     * Returns a copy of this Duration divided by the given value.
+     *
+     * The result of this function might be approximate.
+     *
+     * @param integer $divisor
+     *
+     * @return \Brick\DateTime\Duration
+     */
+    public function dividedBy($divisor)
+    {
+        return $this->create(intval($this->seconds / $divisor));
+    }
+
+    /**
      * Returns a copy of this Duration with the length negated.
      *
-     * @return Duration
+     * @return \Brick\DateTime\Duration
      */
     public function negated()
     {
@@ -311,7 +356,7 @@ class Duration
     /**
      * Returns a copy of this Duration with a positive length.
      *
-     * @return Duration
+     * @return \Brick\DateTime\Duration
      */
     public function abs()
     {
@@ -321,8 +366,9 @@ class Duration
     /**
      * Compares this Duration to the specified duration.
      *
-     * @param Duration $other The other duration to compare to.
-     * @return int The comparator value, negative if less, positive if greater.
+     * @param \Brick\DateTime\Duration $other The other duration to compare to.
+     *
+     * @return integer The comparator value, negative if less, positive if greater.
      */
     public function compareTo(Duration $other)
     {
@@ -332,8 +378,9 @@ class Duration
     /**
      * Checks if this Duration is equal to the specified duration.
      *
-     * @param Duration $other
-     * @return bool
+     * @param \Brick\DateTime\Duration $other
+     *
+     * @return boolean
      */
     public function isEqualTo(Duration $other)
     {
@@ -343,8 +390,9 @@ class Duration
     /**
      * Checks if this Duration is greater than the specified duration.
      *
-     * @param Duration $other
-     * @return bool
+     * @param \Brick\DateTime\Duration $other
+     *
+     * @return boolean
      */
     public function isGreaterThan(Duration $other)
     {
@@ -354,8 +402,9 @@ class Duration
     /**
      * Checks if this Duration is greater, or equal to than the specified duration.
      *
-     * @param Duration $other
-     * @return bool
+     * @param \Brick\DateTime\Duration $other
+     *
+     * @return boolean
      */
     public function isGreaterThanOrEqualTo(Duration $other)
     {
@@ -365,8 +414,9 @@ class Duration
     /**
      * Checks if this Duration is less than the specified duration.
      *
-     * @param Duration $other
-     * @return bool
+     * @param \Brick\DateTime\Duration $other
+     *
+     * @return boolean
      */
     public function isLessThan(Duration $other)
     {
@@ -376,8 +426,9 @@ class Duration
     /**
      * Checks if this Duration is less than, or equal to the specified duration.
      *
-     * @param Duration $other
-     * @return bool
+     * @param \Brick\DateTime\Duration $other
+     *
+     * @return boolean
      */
     public function isLessThanOrEqualTo(Duration $other)
     {
@@ -387,7 +438,7 @@ class Duration
     /**
      * Returns the total length in seconds of this Duration.
      *
-     * @return int
+     * @return integer
      */
     public function getSeconds()
     {

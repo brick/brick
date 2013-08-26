@@ -119,6 +119,16 @@ abstract class PointInTime
     }
 
     /**
+     * Returns whether this instant is in the past or present.
+     *
+     * @return bool
+     */
+    public function isPastOrPresent()
+    {
+        return $this->isBeforeOrEqualTo(Instant::now());
+    }
+
+    /**
      * Returns whether this instant is in the future.
      *
      * @return bool
@@ -126,5 +136,15 @@ abstract class PointInTime
     public function isFuture()
     {
         return $this->isAfter(Instant::now());
+    }
+
+    /**
+     * Returns whether this instant is in the future or present.
+     *
+     * @return bool
+     */
+    public function isFutureOrPresent()
+    {
+        return $this->isAfterOrEqualTo(Instant::now());
     }
 }
