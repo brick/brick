@@ -204,7 +204,7 @@ class Decimal
      * @param  boolean $isExact
      * @return Decimal
      */
-    public function setScale($scale, $isExact = true)
+    public function withScale($scale, $isExact = true)
     {
         return $this->divide(self::one(), $scale, $isExact);
     }

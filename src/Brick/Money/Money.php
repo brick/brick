@@ -8,7 +8,7 @@ use Brick\Locale\Locale;
 use NumberFormatter;
 
 /**
- * Class for handling exact calculations with monies.
+ * Represents a monetary value in a given currency. This class is immutable.
  */
 class Money
 {
@@ -30,7 +30,7 @@ class Money
     {
         $this->currency = $currency;
         $scale = $currency->getDefaultFractionDigits();
-        $this->amount = $amount->setScale($scale);
+        $this->amount = $amount->withScale($scale);
     }
 
     /**
