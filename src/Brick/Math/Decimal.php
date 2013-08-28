@@ -106,7 +106,7 @@ class Decimal
      * @param Decimal $number
      * @return Decimal
      */
-    public function add(Decimal $number)
+    public function plus(Decimal $number)
     {
         $scale = max($this->scale, $number->scale);
         $value = bcadd($this->value, $number->value, $scale);
@@ -120,7 +120,7 @@ class Decimal
      * @param Decimal $number
      * @return Decimal
      */
-    public function subtract(Decimal $number)
+    public function minus(Decimal $number)
     {
         $scale = max($this->scale, $number->scale);
         $value = bcsub($this->value, $number->value, $scale);
@@ -134,7 +134,7 @@ class Decimal
      * @param Decimal $number
      * @return Decimal
      */
-    public function multiply(Decimal $number)
+    public function multipliedBy(Decimal $number)
     {
         $scale = $this->scale + $number->scale;
         $value = bcmul($this->value, $number->value, $scale);
@@ -159,7 +159,7 @@ class Decimal
      * @return Decimal
      * @throws \RuntimeException
      */
-    public function divide(Decimal $number, $scale = null, $isExact = true)
+    public function dividedBy(Decimal $number, $scale = null, $isExact = true)
     {
         if ($scale === null) {
             $scale = $this->scale;
@@ -206,7 +206,7 @@ class Decimal
      */
     public function withScale($scale, $isExact = true)
     {
-        return $this->divide(self::one(), $scale, $isExact);
+        return $this->dividedBy(self::one(), $scale, $isExact);
     }
 
     /**
@@ -226,7 +226,7 @@ class Decimal
      */
     public function negated()
     {
-        return self::zero()->subtract($this);
+        return self::zero()->minus($this);
     }
 
     /**

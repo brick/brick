@@ -99,7 +99,7 @@ class Money
     {
         $this->checkCurrenciesMatch($money);
 
-        return new Money($this->currency, $this->amount->add($money->getAmount()));
+        return new Money($this->currency, $this->amount->plus($money->getAmount()));
     }
 
     /**
@@ -110,7 +110,7 @@ class Money
     {
         $this->checkCurrenciesMatch($money);
 
-        return new Money($this->currency, $this->amount->subtract($money->getAmount()));
+        return new Money($this->currency, $this->amount->minus($money->getAmount()));
     }
 
     /**
@@ -121,7 +121,7 @@ class Money
     {
         $value = Decimal::fromInteger($value);
 
-        return new Money($this->currency, $this->amount->multiply($value));
+        return new Money($this->currency, $this->amount->multipliedBy($value));
     }
 
     /**
