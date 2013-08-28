@@ -81,7 +81,7 @@ class Money
      * @return void
      * @throws \RuntimeException
      */
-    protected function checkCurrenciesMatch(Money $money)
+    private function checkCurrenciesMatch(Money $money)
     {
         if (! $money->getCurrency()->isEqualTo($this->currency)) {
             throw new \RuntimeException(sprintf('Currencies mismatch: %s != %s',
@@ -122,6 +122,16 @@ class Money
         $value = Decimal::fromInteger($value);
 
         return new Money($this->currency, $this->amount->multiply($value));
+    }
+
+    /**
+     * Returns a copy of this Money with the value negated.
+     *
+     * @return Money
+     */
+    public function negated()
+    {
+        return new Money($this->currency, $this->amount->negated());
     }
 
     /**
