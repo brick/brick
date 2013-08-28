@@ -117,7 +117,7 @@ class Money
      * @param  integer $value
      * @return Money
      */
-    public function times($value)
+    public function multipliedBy($value)
     {
         $value = Decimal::fromInteger($value);
 

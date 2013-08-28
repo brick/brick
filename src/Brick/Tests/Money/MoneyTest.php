@@ -45,9 +45,9 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->money->getAmount()->toString(), '4.50');
     }
 
-    public function testTimes()
+    public function testMultipliedBy()
     {
-        $this->money = $this->money->times(5);
+        $this->money = $this->money->multipliedBy(5);
         $this->assertEquals($this->money->getAmount()->toString(), '50.00');
     }
 
