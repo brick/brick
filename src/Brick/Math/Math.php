@@ -3,7 +3,7 @@
 namespace Brick\Math;
 
 /**
- * Utility class for mathematic functions.
+ * Utility class for mathematical functions.
  */
 final class Math
 {
