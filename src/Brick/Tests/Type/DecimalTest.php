@@ -11,20 +11,20 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
 {
     public function testEquality()
     {
-        $a = Decimal::fromString('1.0');
-        $b = Decimal::fromString('1.00');
+        $a = Decimal::of('1.0');
+        $b = Decimal::of('1.00');
 
         $this->assertTrue($a->isEqualTo($b));
     }
 
     public function testDecimal()
     {
-        $number1 = Decimal::fromString('1.0123456789');
-        $number2 = Decimal::fromString('2.0987654321');
+        $number1 = Decimal::of('1.0123456789');
+        $number2 = Decimal::of('2.0987654321');
 
-        $expectedSum = Decimal::fromString('3.111111111');
-        $expectedDifference = Decimal::fromString('-1.0864197532');
-        $expectedProduct = Decimal::fromString('2.12467611621112635269');
+        $expectedSum = Decimal::of('3.111111111');
+        $expectedDifference = Decimal::of('-1.0864197532');
+        $expectedProduct = Decimal::of('2.12467611621112635269');
 
         // Check addition / subtraction
         $this->assertTrue($number1->plus($number2)->isEqualTo($expectedSum));
@@ -34,7 +34,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         // Check multiplication
         $this->assertTrue($number1->multipliedBy($number2)->isEqualTo($expectedProduct));
 
-        $times3 = $number1->multipliedBy(Decimal::fromInteger(3));
+        $times3 = $number1->multipliedBy(Decimal::of(3));
         $this->assertTrue($number1->plus($number1)->plus($number1)->isEqualTo($times3));
 
         // Check negation
@@ -81,26 +81,26 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionWithRoundingNecessary()
     {
-        $p = Decimal::fromString('1.234');
-        $q = Decimal::fromString('123.456');
+        $p = Decimal::of('1.234');
+        $q = Decimal::of('123.456');
 
         $p->dividedBy($q);
     }
 
     public function testDivisionWithRounding()
     {
-        $p = Decimal::fromString('1.234');
-        $q = Decimal::fromString('123.456');
-        $r = Decimal::fromString('0.00999546397096941420425090720580611715914981855883');
+        $p = Decimal::of('1.234');
+        $q = Decimal::of('123.456');
+        $r = Decimal::of('0.00999546397096941420425090720580611715914981855883');
 
         $this->assertTrue($p->dividedBy($q, 50, false)->isEqualTo($r));
     }
 
     public function testDivisionWithNoRoundingNecessary()
     {
-        $p = Decimal::fromString('0.123456789');
-        $q = Decimal::fromString('0.00244140625');
-        $r = Decimal::fromString('50.5679007744');
+        $p = Decimal::of('0.123456789');
+        $q = Decimal::of('0.00244140625');
+        $r = Decimal::of('50.5679007744');
 
         $this->assertTrue($p->dividedBy($q, 10)->isEqualTo($r));
     }

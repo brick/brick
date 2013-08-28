@@ -59,45 +59,38 @@ class Decimal
     }
 
     /**
-     * Creates a Decimal number from a string representation.
+     * Creates a decimal of the given value.
      *
-     * @param string $string
+     * This method strictly accepts integers and string representations only.
+     * Floating point values are imprecise by design, thus if you want to convert a float
+     * to a decimal, you have to cast it to a string first, and by doing so you explicitly
+     * take responsibility of the potential loss of precision.
+     *
+     * @param integer|string $value
+     *
      * @return Decimal
+     *
      * @throws \InvalidArgumentException
      */
-    public static function fromString($string)
+    public static function of($value)
     {
-        if (! is_string($string)) {
-            $message = 'Expected string, got ' . gettype($string);
-            throw new \InvalidArgumentException($message);
+        if (is_int($value)) {
+            return new self((string) $value);
         }
 
-        if (preg_match(self::DECIMAL_REGEXP, $string, $matches) == 0) {
-            $message = 'String is not a valid decimal number: ' . $string;
-            throw new \InvalidArgumentException($message);
+        if (is_string($value)) {
+            if (preg_match(self::DECIMAL_REGEXP, $value, $matches) == 0) {
+                $message = 'String is not a valid decimal number: ' . $value;
+                throw new \InvalidArgumentException($message);
+            }
+
+            $value = $matches[0];
+            $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
+
+            return new self($value, $scale);
         }
 
-        $value = $matches[0];
-        $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
-
-        return new self($value, $scale);
-    }
-
-    /**
-     * Creates a Decimal number from an integer.
-     *
-     * @param integer $integer
-     * @return Decimal
-     * @throws \InvalidArgumentException
-     */
-    public static function fromInteger($integer)
-    {
-        if (! is_integer($integer)) {
-            $message = 'Expected integer, got ' . gettype($integer);
-            throw new \InvalidArgumentException($message);
-        }
-
-        return new self((string) $integer);
+        throw new \InvalidArgumentException('Expected integer or string, got ' . gettype($value) . '.');
     }
 
     /**

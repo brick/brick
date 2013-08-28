@@ -40,7 +40,7 @@ class BrickDecimalType extends Type
             return null;
         }
 
-        return Decimal::fromString($value);
+        return Decimal::of($value);
     }
 
     /**

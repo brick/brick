@@ -40,7 +40,7 @@ class Money
      */
     public static function parse(Currency $currency, $amount)
     {
-        $amount = Decimal::fromString($amount);
+        $amount = Decimal::of($amount);
 
         return new self($currency, $amount);
     }
@@ -119,7 +119,7 @@ class Money
      */
     public function multipliedBy($value)
     {
-        $value = Decimal::fromInteger($value);
+        $value = Decimal::of($value);
 
         return new Money($this->currency, $this->amount->multipliedBy($value));
     }
