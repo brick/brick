@@ -38,19 +38,19 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($number1->add($number1)->add($number1)->isEqualTo($times3));
 
         // Check negation
-        $this->assertTrue($number1->negate()->negate()->isEqualTo($number1));
-        $this->assertTrue($number1->negate()->isNegative());
+        $this->assertTrue($number1->negated()->negated()->isEqualTo($number1));
+        $this->assertTrue($number1->negated()->isNegative());
 
         // Check absolute value
-        $this->assertTrue($number1->negate()->abs()->isEqualTo($number1));
-        $this->assertTrue($number2->negate()->abs()->isEqualTo($number2->abs()));
+        $this->assertTrue($number1->negated()->abs()->isEqualTo($number1));
+        $this->assertTrue($number2->negated()->abs()->isEqualTo($number2->abs()));
 
         // Check positive test
         $this->assertTrue($number1->isPositive());
         $this->assertFalse($number1->subtract($number1)->isPositive());
         $this->assertTrue($number1->subtract($number1)->isPositiveOrZero());
-        $this->assertFalse($number1->negate()->isPositive());
-        $this->assertTrue($number1->negate()->isNegative());
+        $this->assertFalse($number1->negated()->isPositive());
+        $this->assertTrue($number1->negated()->isNegative());
 
         $this->assertTrue($number1->isLessThan($number2));
         $this->assertTrue($number1->isLessThanOrEqualTo($number2));

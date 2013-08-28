@@ -216,7 +216,7 @@ class Decimal
      */
     public function abs()
     {
-        return $this->isNegative() ? $this->negate() : $this;
+        return $this->isNegative() ? $this->negated() : $this;
     }
 
     /**
@@ -224,7 +224,7 @@ class Decimal
      *
      * @return Decimal
      */
-    public function negate()
+    public function negated()
     {
         return self::zero()->subtract($this);
     }
