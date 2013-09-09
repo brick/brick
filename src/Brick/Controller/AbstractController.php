@@ -75,7 +75,7 @@ abstract class AbstractController
      */
     protected function renderJson($data)
     {
-        return $this->createResponse(json_encode($data), 'application/json');
+        return $this->createResponse(json_encode($data, JSON_PRETTY_PRINT), 'application/json');
     }
 
     /**
