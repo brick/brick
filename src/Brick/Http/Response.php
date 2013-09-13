@@ -61,6 +61,8 @@ class Response extends Message
     private $protocolVersion = Message::HTTP_1_0;
 
     /**
+     * @todo should be a body object, just like RequestBody (can be shared)
+     *
      * @var string
      */
     private $content;

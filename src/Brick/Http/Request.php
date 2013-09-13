@@ -707,7 +707,7 @@ class Request extends Message
      *
      * This magic method does not throw an exception if the request body is not available from PHP,
      * and silently omits it instead. Note that calling this method consumes the request body stream,
-     * which will consequently only be available via getContent() afterwards.
+     * which will consequently only be available via toString() afterwards.
      *
      * @return string
      */
@@ -716,7 +716,7 @@ class Request extends Message
         $string = $this->getHeaderString();
 
         if (! $this->body->isEmpty()) {
-            $string .= $this->body->getContent();
+            $string .= $this->body->toString();
             $string .= Message::CRLF;
         }
 

@@ -142,7 +142,7 @@ class RequestBody
      *
      * @throws \Brick\Http\RequestBodyException
      */
-    public function getContent()
+    public function toString()
     {
         if ($this->content !== null) {
             return $this->content;
@@ -167,7 +167,7 @@ class RequestBody
      */
     public function getFormData()
     {
-        parse_str($this->getContent(), $data);
+        parse_str($this->toString(), $data);
 
         return $data;
     }
