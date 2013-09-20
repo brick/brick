@@ -8,10 +8,8 @@ use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
 use Brick\Http\Exception\HttpException;
-use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Exception\HttpInternalServerErrorException;
 use Brick\Routing\Route;
-use Brick\Routing\RouteMatch;
 use Brick\Routing\Router;
 use Brick\Event\EventListener;
 use Brick\Event\EventDispatcher;
@@ -133,10 +131,15 @@ class Application implements RequestHandler
      */
     private function handleHttpException(HttpException $e)
     {
-        $response = new Response($e, $e->getStatusCode());
+        $response = new Response();
 
+        $response->setContent($e);
+        $response->setStatusCode($e->getStatusCode());
         $response->setHeaders($e->getHeaders());
         $response->setHeader('Content-Type', 'text/plain');
+
+        $event = new Event\ExceptionCaughtEvent($e, $response);
+        $this->eventDispatcher->dispatch($event);
 
         return $response;
     }
