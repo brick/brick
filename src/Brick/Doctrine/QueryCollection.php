@@ -22,9 +22,9 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * The elements in this collection, if it has been entirely loaded.
      *
-     * @var object[]
+     * @var array
      */
-    protected $elements;
+    protected $elements = [];
 
     /**
      * Whether this collection has been entirely loaded or not.
@@ -117,5 +117,20 @@ class QueryCollection implements \Countable, \IteratorAggregate
         }
 
         return new \ArrayIterator($this->elements);
+    }
+
+    /**
+     * Loads the whole collection and returns it as an array.
+     *
+     * @return array An array of objects.
+     */
+    public function toArray()
+    {
+        if (! $this->isLoaded) {
+            $this->elements = $this->query->getResult();
+            $this->isLoaded = true;
+        }
+
+        return $this->elements;
     }
 }
