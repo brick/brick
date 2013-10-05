@@ -139,6 +139,20 @@ class Session implements SessionInterface
     {
         $this->gcDividend = $dividend;
         $this->gcDivisor = $divisor;
+
+        return $this;
+    }
+
+    /**
+     * @param integer $lifetime
+     *
+     * @return Session
+     */
+    public function setLifetime($lifetime)
+    {
+        $this->lifetime = $lifetime;
+
+        return $this;
     }
 
     /**
