@@ -8,9 +8,12 @@ namespace Brick;
 class Exception extends \Exception
 {
     /**
-     * Sets up an error handler that triggers ErrorException
+     * Sets up an error handler that triggers ErrorException.
+     *
+     * @param callable|null $fatalErrorCallback
+     * @return void
      */
-    public static function setupErrorHandler()
+    public static function setupErrorHandler(callable $fatalErrorCallback = null)
     {
         // Handle non-fatal errors
         set_error_handler(function($level, $message, $file, $line) {
@@ -34,7 +37,7 @@ class Exception extends \Exception
         // There is not much we can do at this point, but we'll at least set the response code to 500.
         // @todo We must have an ob_start() call at the beginning of the application, or else the fatal error message will send the headers.
         // @todo This might not be mandatory if display_errors is off. Check this assumption.
-        register_shutdown_function(function() {
+        register_shutdown_function(function() use ($fatalErrorCallback) {
             $e = error_get_last();
 
             if ($e && $e['type'] === E_ERROR) {
@@ -60,6 +63,10 @@ class Exception extends \Exception
                         echo PHP_EOL;
                         echo 'Please use the back button of your browser and try again.' . PHP_EOL;
                     }
+                }
+
+                if ($fatalErrorCallback) {
+                    $fatalErrorCallback($e);
                 }
 
                 exit;
