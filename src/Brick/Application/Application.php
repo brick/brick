@@ -117,28 +117,30 @@ class Application implements RequestHandler
         try {
             return $this->handleRequest($request);
         } catch (HttpException $e) {
-            return $this->handleHttpException($e);
+            return $this->handleHttpException($e, $request);
         } catch (\Exception $e) {
-            return $this->handleUncaughtException($e);
+            return $this->handleUncaughtException($e, $request);
         }
     }
 
     /**
      * Converts an HttpException to a Response.
      *
-     * @param \Brick\Http\Exception\HttpException $e
+     * @param \Brick\Http\Exception\HttpException $exception
+     * @param \Brick\Http\Request                 $request
+     *
      * @return \Brick\Http\Response
      */
-    private function handleHttpException(HttpException $e)
+    private function handleHttpException(HttpException $exception, Request $request)
     {
         $response = new Response();
 
-        $response->setContent($e);
-        $response->setStatusCode($e->getStatusCode());
-        $response->setHeaders($e->getHeaders());
+        $response->setContent($exception);
+        $response->setStatusCode($exception->getStatusCode());
+        $response->setHeaders($exception->getHeaders());
         $response->setHeader('Content-Type', 'text/plain');
 
-        $event = new Event\ExceptionCaughtEvent($e, $response);
+        $event = new Event\ExceptionCaughtEvent($exception, $request, $response);
         $this->eventDispatcher->dispatch($event);
 
         return $response;
@@ -147,14 +149,16 @@ class Application implements RequestHandler
     /**
      * Wraps an uncaught exception in an HttpInternalServerErrorException, and converts it to a Response.
      *
-     * @param \Exception $e
+     * @param \Exception          $exception
+     * @param \Brick\Http\Request $request
+     *
      * @return \Brick\Http\Response
      */
-    private function handleUncaughtException(\Exception $e)
+    private function handleUncaughtException(\Exception $exception, Request $request)
     {
-        $httpException = new HttpInternalServerErrorException('Uncaught exception', 0, $e);
+        $httpException = new HttpInternalServerErrorException('Uncaught exception', 0, $exception);
 
-        return $this->handleHttpException($httpException);
+        return $this->handleHttpException($httpException, $request);
     }
 
     /**
@@ -202,7 +206,7 @@ class Application implements RequestHandler
             $response = $this->injector->invoke($callable);
             $this->checkResponse($response);
         } catch (HttpException $e) {
-            $response = $this->handleHttpException($e);
+            $response = $this->handleHttpException($e, $request);
         } catch (\Exception $e) { // @todo finally {} when moving to PHP5.5
             $event = new Event\ControllerInvocatedEvent($request, $match, $instance);
             $this->eventDispatcher->dispatch($event);
