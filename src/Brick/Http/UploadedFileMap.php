@@ -45,7 +45,8 @@ class UploadedFileMap implements \IteratorAggregate
             if (is_array($item)) {
                 $this->checkItems($item);
             } elseif (! $item instanceof UploadedFile) {
-                throw new UploadedFileException('Expected UploadedFile or array, got ' . Debug::getType($item));
+                $type = is_object($item) ? get_class($item) : gettype($item);
+                throw new UploadedFileException('Expected UploadedFile or array, got ' . $type);
             }
         }
     }

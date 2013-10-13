@@ -46,7 +46,8 @@ class ParameterMap implements \IteratorAggregate
             if (is_array($item)) {
                 $this->checkItems($item);
             } elseif (! is_string($item)) {
-                throw new UploadedFileException('Expected string or array, got ' . Debug::getType($item));
+                $type = is_object($item) ? get_class($item) : gettype($item);
+                throw new UploadedFileException('Expected string or array, got ' . $type);
             }
         }
     }
