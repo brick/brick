@@ -5,16 +5,16 @@ namespace Brick\Controller\EventListener;
 use Brick\Event\Event;
 use Brick\Event\AbstractEventListener;
 use Brick\Application\Event\RouteMatchedEvent;
-use Brick\Controller\Annotation\Allow;
-use Brick\Http\Exception\HttpMethodNotAllowedException;
+use Brick\Controller\Annotation\Secure;
+use Brick\Http\Exception\HttpRedirectException;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 
 /**
- * Configures the methods allowed on a controller with annotations.
+ * Configures the HTTP(S) protocol allowed on a controller with annotations.
  */
-class AllowListener extends AbstractEventListener
+class SecureListener extends AbstractEventListener
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader
@@ -47,12 +47,13 @@ class AllowListener extends AbstractEventListener
             }
 
             foreach ($annotations as $annotation) {
-                if ($annotation instanceof Allow) {
-                    $method = $event->getRequest()->getMethod();
-                    $allowedMethods = $annotation->getMethods();
+                if ($annotation instanceof Secure) {
+                    $request = $event->getRequest();
+                    if (! $request->isSecure()) {
+                        $url  = $request->getUrl();
+                        $url = str_replace('http:', 'https:', $url); // @todo not clean; Request could offer a way to do this?
 
-                    if (! in_array($method, $allowedMethods)) {
-                        throw new HttpMethodNotAllowedException($allowedMethods);
+                        throw new HttpRedirectException($url, 301);
                     }
                 }
             }
