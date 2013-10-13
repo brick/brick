@@ -25,7 +25,7 @@ abstract class AbstractEventListener implements EventListener
      *
      * @return static
      */
-    public function setPrority($priority)
+    public function setPriority($priority)
     {
         $this->priority = $priority;
 
