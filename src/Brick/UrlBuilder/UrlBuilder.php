@@ -10,7 +10,7 @@ use Brick\IdentityResolver\IdentityResolver;
 class UrlBuilder
 {
     /**
-     * @var IdentityResolver
+     * @var \Brick\IdentityResolver\IdentityResolver
      */
     private $resolver;
 
@@ -25,7 +25,7 @@ class UrlBuilder
     /**
      * Builds a URL with the given parameters.
      *
-     * If the URL already contains query parmeters, they will be merged, the parameters passed to the method
+     * If the URL already contains query parameters, they will be merged, the parameters passed to the method
      * having precedence over the original query parameters.
      *
      * If any of the method parameters is an object, it will be replaced by its identity, as provided
@@ -33,9 +33,10 @@ class UrlBuilder
      *
      * @param string $url
      * @param array  $parameters
+     *
      * @return string
      */
-    public function buildUrl($url, array $parameters = array())
+    public function buildUrl($url, array $parameters = [])
     {
         if (count($parameters)) {
             foreach ($parameters as & $parameter) {
