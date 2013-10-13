@@ -6,16 +6,14 @@ use Brick\Event\Event;
 use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Http\Exception\HttpRedirectException;
 
-use Doctrine\Common\Annotations\Reader;
-
 /**
- * Configures the HTTP(S) protocol allowed on a controller with annotations.
+ * Enforces the protocol allowed on a controller with annotations.
  *
  * If the Secure annotation is present on a controller class or method, HTTPS is enforced.
- * If the annotation is not present, both protocols are allowed, unless $forceUnsecured has been set,
- * in which case HTTP is enforced.
+ * If the annotation is not present, both protocols are allowed by default.
+ * If forceUnsecured() has been called, HTTP is enforced instead when the annotation is absent.
  *
- * Protocol is enforced with a 301 redirect.
+ * The protocol is enforced with a 301 redirect.
  */
 class SecureListener extends AbstractAnnotationListener
 {
@@ -25,16 +23,13 @@ class SecureListener extends AbstractAnnotationListener
     private $forceUnsecured = false;
 
     /**
-     * Class constructor.
-     *
-     * @param Reader  $annotationReader
-     * @param boolean $forceUnsecured
+     * @return SecureListener
      */
-    public function __construct(Reader $annotationReader, $forceUnsecured = false)
+    public function forceUnsecured()
     {
-        parent::__construct($annotationReader);
+        $this->forceUnsecured = true;
 
-        $this->forceUnsecured = $forceUnsecured;
+        return $this;
     }
 
     /**

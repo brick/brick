@@ -8,7 +8,7 @@ use Brick\Controller\Annotation\Allow;
 use Brick\Http\Exception\HttpMethodNotAllowedException;
 
 /**
- * Configures the methods allowed on a controller with annotations.
+ * Enforces the methods allowed on a controller with annotations.
  */
 class AllowListener extends AbstractAnnotationListener
 {
