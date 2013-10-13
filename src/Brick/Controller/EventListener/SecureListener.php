@@ -3,32 +3,38 @@
 namespace Brick\Controller\EventListener;
 
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
 use Brick\Application\Event\RouteMatchedEvent;
-use Brick\Controller\Annotation\Secure;
 use Brick\Http\Exception\HttpRedirectException;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 
 /**
  * Configures the HTTP(S) protocol allowed on a controller with annotations.
+ *
+ * If the Secure annotation is present on a controller class or method, HTTPS is enforced.
+ * If the annotation is not present, both protocols are allowed, unless $forceUnsecured has been set,
+ * in which case HTTP is enforced.
+ *
+ * Protocol is enforced with a 301 redirect.
  */
-class SecureListener extends AbstractEventListener
+class SecureListener extends AbstractAnnotationListener
 {
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var boolean
      */
-    private $annotationReader;
+    private $forceUnsecured = false;
 
     /**
-     * @param Reader $annotationReader
+     * Class constructor.
+     *
+     * @param Reader  $annotationReader
+     * @param boolean $forceUnsecured
      */
-    public function __construct(Reader $annotationReader)
+    public function __construct(Reader $annotationReader, $forceUnsecured = false)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
+        parent::__construct($annotationReader);
 
-        $this->annotationReader = $annotationReader;
+        $this->forceUnsecured = $forceUnsecured;
     }
 
     /**
@@ -38,23 +44,17 @@ class SecureListener extends AbstractEventListener
     {
         if ($event instanceof RouteMatchedEvent) {
             $controller = $event->getRouteMatch()->getControllerReflection();
+            $request = $event->getRequest();
 
-            if ($controller instanceof \ReflectionMethod) {
-                $annotations = $this->annotationReader->getMethodAnnotations($controller);
-            } else {
-                // @todo annotation reading on generic functions is not available yet
-                $annotations = [];
-            }
+            $secure = $this->hasControllerAnnotation($controller, 'Brick\Controller\Annotation\Secure');
 
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof Secure) {
-                    $request = $event->getRequest();
-                    if (! $request->isSecure()) {
-                        $url  = $request->getUrl();
-                        $url = str_replace('http:', 'https:', $url); // @todo not clean; Request could offer a way to do this?
+            if ($secure != $request->isSecure()) {
+                if ($secure || $this->forceUnsecured) {
+                    $url = preg_replace_callback('/^https?/', function (array $matches) {
+                        return $matches[0] == 'http' ? 'https' : 'http';
+                    }, $request->getUrl());
 
-                        throw new HttpRedirectException($url, 301);
-                    }
+                    throw new HttpRedirectException($url, 301);
                 }
             }
         }

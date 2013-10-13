@@ -5,7 +5,7 @@ namespace Brick\Controller\Annotation;
 use Doctrine\DBAL\Connection;
 
 /**
- * This annotation will wrap the controller into a transaction.
+ * Wraps the controller into a database transaction.
  *
  * This further allows to group external database reads (user authentication, ...) within the same transaction
  * as the one used by the controller.
@@ -14,6 +14,8 @@ use Doctrine\DBAL\Connection;
  *
  * If the controller does not explicitly commit the transaction,
  * it will be rolled back automatically when the controller returns.
+ *
+ * This annotation requires the TransactionalListener to be registered with the application.
  *
  * @Annotation
  * @Target("METHOD")

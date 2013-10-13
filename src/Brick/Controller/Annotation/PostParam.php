@@ -5,7 +5,10 @@ namespace Brick\Controller\Annotation;
 use Brick\Http\Request;
 
 /**
+ * This annotation requires the RequestParamListener to be registered with the application.
+ *
  * @Annotation
+ * @Target("METHOD")
  */
 class PostParam extends RequestParam
 {

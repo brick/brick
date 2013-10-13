@@ -3,10 +3,15 @@
 namespace Brick\Controller\Annotation;
 
 /**
- * This annotation restricts the HTTP methods allowed on a given controller action.
+ * Restricts the HTTP methods allowed on a given controller action.
+ *
+ * Can be used on a controller class (will apply to all controller methods), or on a single method.
+ * When used on both, the method annotation will take precedence over the class annotation.
+ *
+ * This annotation requires the AllowListener to be registered with the application.
  *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
 class Allow extends AbstractAnnotation
 {

@@ -3,34 +3,15 @@
 namespace Brick\Controller\EventListener;
 
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
 use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Controller\Annotation\Allow;
 use Brick\Http\Exception\HttpMethodNotAllowedException;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
-
 /**
  * Configures the methods allowed on a controller with annotations.
  */
-class AllowListener extends AbstractEventListener
+class AllowListener extends AbstractAnnotationListener
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    private $annotationReader;
-
-    /**
-     * @param Reader $annotationReader
-     */
-    public function __construct(Reader $annotationReader)
-    {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
-
-        $this->annotationReader = $annotationReader;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -38,22 +19,14 @@ class AllowListener extends AbstractEventListener
     {
         if ($event instanceof RouteMatchedEvent) {
             $controller = $event->getRouteMatch()->getControllerReflection();
+            $annotation = $this->getControllerAnnotation($controller, 'Brick\Controller\Annotation\Allow');
 
-            if ($controller instanceof \ReflectionMethod) {
-                $annotations = $this->annotationReader->getMethodAnnotations($controller);
-            } else {
-                // @todo annotation reading on generic functions is not available yet
-                $annotations = [];
-            }
+            if ($annotation instanceof Allow) {
+                $method = $event->getRequest()->getMethod();
+                $allowedMethods = $annotation->getMethods();
 
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof Allow) {
-                    $method = $event->getRequest()->getMethod();
-                    $allowedMethods = $annotation->getMethods();
-
-                    if (! in_array($method, $allowedMethods)) {
-                        throw new HttpMethodNotAllowedException($allowedMethods);
-                    }
+                if (! in_array($method, $allowedMethods)) {
+                    throw new HttpMethodNotAllowedException($allowedMethods);
                 }
             }
         }

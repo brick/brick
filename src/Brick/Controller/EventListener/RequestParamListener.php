@@ -9,10 +9,8 @@ use Brick\Application\Event\ControllerReadyEvent;
 use Brick\Event\Event;
 use Brick\Event\AbstractEventListener;
 use Brick\Http\Request;
-use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Exception\HttpBadRequestException;
 use Brick\Http\Exception\HttpInternalServerErrorException;
-use Brick\Routing\RouteMatch;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;

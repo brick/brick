@@ -5,10 +5,11 @@ namespace Brick\Controller\ControllerInterface;
 use Brick\Http\Response;
 
 /**
- * Controller classes implementing this interface will have the onResponse() method called after the action,
- * allowing them to modify the Response if needed (add cookies, etc.).
+ * Controller classes implementing this interface will have the onResponse() method called after the controller method.
  *
- * This will only be called if the controller successfully returned a Response,
+ * This allows to modify the Response if needed.
+ *
+ * This will only be called if the controller successfully returns a Response,
  * or if an HttpException has been thrown. If any other exception is thrown, onResponse() will *not* be called.
  *
  * The OnRequestResponseEventListener has to be registered in the application's EventDispatcher for this to work.
