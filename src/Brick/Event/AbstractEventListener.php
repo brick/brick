@@ -21,7 +21,7 @@ abstract class AbstractEventListener implements EventListener
     }
 
     /**
-     * @param int $priority
+     * @param integer $priority
      *
      * @return static
      */

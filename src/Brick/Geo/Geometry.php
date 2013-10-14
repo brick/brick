@@ -366,6 +366,8 @@ abstract class Geometry
      * Returns a geometric object that represents the Point set intersection
      * of this geometric object with $geometry.
      *
+     * @param Geometry $geometry
+     *
      * @return Geometry
      */
     public function intersection(Geometry $geometry)

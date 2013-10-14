@@ -2,7 +2,6 @@
 
 namespace Brick\Http;
 
-use Brick\Debug;
 use Brick\Type\Map;
 use OutOfBoundsException;
 
