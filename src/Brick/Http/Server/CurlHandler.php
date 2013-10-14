@@ -44,13 +44,6 @@ class CurlHandler implements RequestHandler
 
         $response = $curl->execute();
 
-        if ($response === false) {
-            // @todo This is probably not the right way. Should we define a specific exception for this?
-            // In the case of Application, it would catch any exception and return a 500 error Response;
-            // should we do the same here?
-            throw new \RuntimeException('HTTP request failed: ' . curl_error($curl));
-        }
-
         return Response::parse($response);
     }
 
