@@ -30,16 +30,15 @@ class YearMonth
     }
 
     /**
-     * @param \DateTimeZone $timezone
+     * @param TimeZone $timezone
      * @return YearMonth
      */
-    public static function now(\DateTimeZone $timezone)
+    public static function now(TimeZone $timezone)
     {
         $localDate = LocalDate::now($timezone);
 
-        return new YearMonth($localDate->getYear(), $localDate->getMonth());
+        return new YearMonth(Year::of($localDate->getYear()), Month::of($localDate->getMonth()));
     }
-
     /**
      * Returns the number of days in this YearMonth.
      *
