@@ -61,7 +61,7 @@ abstract class WktWriter
      */
     protected static function writeLineString(LineString $lineString)
     {
-        $result = array();
+        $result = [];
         foreach ($lineString as $point) {
             $result[] = self::writePoint($point);
         }
@@ -75,7 +75,7 @@ abstract class WktWriter
      */
     protected static function writePolygon(Polygon $polygon)
     {
-        $result = array();
+        $result = [];
         foreach ($polygon as $ring) {
             $result[] = '(' . self::writeLineString($ring) . ')';
         }
@@ -89,7 +89,7 @@ abstract class WktWriter
      */
     protected static function writeMultiPoint(MultiPoint $multiPoint)
     {
-        $result = array();
+        $result = [];
         foreach ($multiPoint as $point) {
             $result[] = self::writePoint($point);
         }
@@ -103,7 +103,7 @@ abstract class WktWriter
      */
     protected static function writeMultiLineString(MultiLineString $multiLineString)
     {
-        $result = array();
+        $result = [];
         foreach ($multiLineString as $lineString) {
             $result[] = '(' . self::writeLineString($lineString) . ')';
         }
@@ -117,7 +117,7 @@ abstract class WktWriter
      */
     protected static function writeMultiPolygon(MultiPolygon $multiPolygon)
     {
-        $result = array();
+        $result = [];
         foreach ($multiPolygon as $polygon) {
             $result[] = '(' . self::writePolygon($polygon) . ')';
         }
@@ -131,7 +131,7 @@ abstract class WktWriter
      */
     protected static function writeGeometryCollection(GeometryCollection $collection)
     {
-        $result = array();
+        $result = [];
         foreach ($collection as $geometry) {
             $result[] = self::write($geometry);
         }

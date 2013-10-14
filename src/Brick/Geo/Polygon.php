@@ -16,7 +16,7 @@ class Polygon extends Surface implements \Countable, \IteratorAggregate
      *
      * @var array
      */
-    protected $rings = array();
+    protected $rings = [];
 
     /**
      * Class constructor
@@ -79,9 +79,9 @@ class Polygon extends Surface implements \Countable, \IteratorAggregate
         $p3 = Point::factory($x2, $y2);
         $p4 = Point::factory($x1, $y2);
 
-        $ring = LinearRing::factory(array($p1, $p2, $p3, $p4, $p1));
+        $ring = LinearRing::factory([$p1, $p2, $p3, $p4, $p1]);
 
-        return Polygon::factory(array($ring));
+        return Polygon::factory([$ring]);
     }
 
     /**

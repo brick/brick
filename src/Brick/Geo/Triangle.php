@@ -35,9 +35,9 @@ class Triangle extends Polygon
      */
     public static function create(Point $p1, Point $p2, Point $p3)
     {
-        $linearRing = LinearRing::factory(array($p1, $p2, $p3, $p1));
+        $linearRing = LinearRing::factory([$p1, $p2, $p3, $p1]);
 
-        return self::factory(array($linearRing));
+        return self::factory([$linearRing]);
     }
 
     /**

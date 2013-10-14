@@ -15,7 +15,7 @@ class SampleDataDispatcher
      *
      * @var string[]
      */
-    private $providers = array();
+    private $providers = [];
 
     /**
      * @var \Doctrine\ORM\EntityManager

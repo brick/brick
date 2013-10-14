@@ -22,18 +22,18 @@ class PdoLoader implements Loader
      *
      * @var array
      */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
      * @var array
      */
-    protected static $defaultOptions = array(
+    protected static $defaultOptions = [
         'keyColumn'    => 't_key',
         'valueColumn'  => 't_value',
         'localeColumn' => 't_locale',
         'tableName'    => 'translation',
-        'conditions'   => array()
-    );
+        'conditions'   => []
+    ];
 
     /**
      * Class constructor.
@@ -67,12 +67,12 @@ class PdoLoader implements Loader
     public function load(Locale $locale)
     {
         $locale = (string) $locale;
-        $parameters = array_merge(array($locale), $this->parameters);
+        $parameters = array_merge([$locale], $this->parameters);
 
         $this->statement->execute($parameters);
         $rows = $this->statement->fetchAll(\PDO::FETCH_NUM);
 
-        $result = array();
+        $result = [];
         foreach ($rows as $row) {
             $result[$row[0]] = $row[1];
         }

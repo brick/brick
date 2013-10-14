@@ -15,7 +15,7 @@ abstract class Tag
     /**
      * @var array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * Class constructor.

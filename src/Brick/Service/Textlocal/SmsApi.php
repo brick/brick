@@ -47,14 +47,14 @@ class SmsApi
 
         $numbers = implode(',', $numbers);
 
-        $postData = array(
+        $postData = [
             'uname'   => $this->username,
             'pword'   => $this->password,
             'numbers' => $numbers,
             'message' => $message,
             'from'    => $from,
             'json'    => '1'
-        );
+        ];
 
         $curl = new Curl(self::API_URL);
 

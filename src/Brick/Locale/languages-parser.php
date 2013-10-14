@@ -9,9 +9,9 @@ if (substr($data, 0, 3) === "\xef\xbb\xbf") { // BOM
 
 $lines = preg_split('/[\r\n]+/', $data);
 
-$languages = array();
-$alpha2to3 = array();
-$alphaTtoB = array();
+$languages = [];
+$alpha2to3 = [];
+$alphaTtoB = [];
 
 foreach ($lines as $line) {
     if ($line == '') {
@@ -68,7 +68,7 @@ foreach ($lines as $line) {
 
 
 
-    $languages[$alpha3B] = array($alpha3B, $alpha3T, $alpha2, $englishName, $frenchName);
+    $languages[$alpha3B] = [$alpha3B, $alpha3T, $alpha2, $englishName, $frenchName];
 }
 
 exportToFile('languages.php', $languages);

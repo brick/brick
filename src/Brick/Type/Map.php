@@ -25,7 +25,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      * @param array   $items An associative array.
      * @param boolean $resolvePath Whether to resolve paths such as 'a[b][c]'.
      */
-    public function __construct(array $items = array(), $resolvePath = false)
+    public function __construct(array $items = [], $resolvePath = false)
     {
         $this->items = $items;
         $this->resolvePath = $resolvePath;
@@ -141,7 +141,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getString($path)
     {
-        return $this->getScalar($path, array($this, 'filterString'), 'string');
+        return $this->getScalar($path, [$this, 'filterString'], 'string');
     }
 
     /**
@@ -155,7 +155,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getStrings($path)
     {
-        return $this->getArray($path, array($this, 'filterString'));
+        return $this->getArray($path, [$this, 'filterString']);
     }
 
     /**
@@ -165,7 +165,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getInteger($path)
     {
-        return $this->getScalar($path, array($this, 'filterInteger'), 'integer');
+        return $this->getScalar($path, [$this, 'filterInteger'], 'integer');
     }
 
     /**
@@ -174,7 +174,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getIntegers($path)
     {
-        return $this->getArray($path, array($this, 'filterInteger'));
+        return $this->getArray($path, [$this, 'filterInteger']);
     }
 
     /**
@@ -184,7 +184,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getFloat($path)
     {
-        return $this->getScalar($path, array($this, 'filterFloat'), 'float');
+        return $this->getScalar($path, [$this, 'filterFloat'], 'float');
     }
 
     /**
@@ -193,7 +193,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getFloats($path)
     {
-        return $this->getArray($path, array($this, 'filterFloat'));
+        return $this->getArray($path, [$this, 'filterFloat']);
     }
 
     /**
@@ -203,7 +203,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getBoolean($path)
     {
-        return $this->getScalar($path, array($this, 'filterBoolean'), 'boolean');
+        return $this->getScalar($path, [$this, 'filterBoolean'], 'boolean');
     }
 
     /**
@@ -213,7 +213,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function getBooleans($path)
     {
-        return $this->getArray($path, array($this, 'filterBoolean'));
+        return $this->getArray($path, [$this, 'filterBoolean']);
     }
 
     /**
@@ -302,7 +302,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
             throw new \InvalidArgumentException('Expected array, got ' . gettype($value));
         } catch (\OutOfBoundsException $e) {
             // The path does not exist, hence an empty array.
-            return array();
+            return [];
         }
     }
 
@@ -357,7 +357,7 @@ class Map implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function clear()
     {
-        $this->items = array();
+        $this->items = [];
     }
 
     /**

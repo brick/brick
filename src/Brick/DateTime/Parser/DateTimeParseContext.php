@@ -10,7 +10,7 @@ class DateTimeParseContext
     /**
      * The list of parsed data.
      */
-    private $parsed = array();
+    private $parsed = [];
 
     /**
      * The currently active context, used by the outermost context.

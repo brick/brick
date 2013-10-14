@@ -32,27 +32,27 @@ class GeoIp
     /**
      * @var array
      */
-    protected static $uris = array(
+    protected static $uris = [
         self::COUNTRY  => 'http://geoip.maxmind.com/a',
         self::CITY     => 'http://geoip.maxmind.com/b',
         self::CITY_ISP => 'http://geoip.maxmind.com/f'
-    );
+    ];
 
     /**
      * @var array
      */
-    protected static $fields = array(
-        self::COUNTRY => array(
+    protected static $fields = [
+        self::COUNTRY => [
             'country'
-        ),
-        self::CITY  => array(
+        ],
+        self::CITY  => [
             'country',
             'region',
             'city',
             'latitude',
             'longitude'
-        ),
-        self::CITY_ISP => array(
+        ],
+        self::CITY_ISP => [
             'country',
             'region',
             'city',
@@ -63,8 +63,8 @@ class GeoIp
             'areaCode',
             'isp',
             'organization'
-        )
-    );
+        ]
+    ];
 
     /**
      * Class constructor.
@@ -154,7 +154,10 @@ class GeoIp
      */
     public function queryIp($ip)
     {
-        $parameters = array('l' => $this->licenseKey, 'i' => $ip);
+        $parameters = [
+            'l' => $this->licenseKey,
+            'i' => $ip
+        ];
 
         $curl = new Curl($this->getUri(), $parameters);
         $result = $curl->execute();
@@ -177,7 +180,7 @@ class GeoIp
             throw new Exception('Error parsing response. Message received: ' . $data);
         }
 
-        $return = array();
+        $return = [];
         foreach ($fields as $key => $field) {
             $return[$field] = $parts[$key];
         }

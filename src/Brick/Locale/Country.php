@@ -85,7 +85,7 @@ class Country
     {
         self::loadCountryData();
 
-        $countries = array();
+        $countries = [];
 
         foreach (self::$countries as $countryCode => $data) {
             $countries[] = self::getInstance($countryCode);

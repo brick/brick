@@ -31,7 +31,7 @@ class Process
     /**
      * @var array
      */
-    private static $requiredExtensions = array('pcntl', 'posix');
+    private static $requiredExtensions = ['pcntl', 'posix'];
 
     /**
      * @var boolean
@@ -44,7 +44,7 @@ class Process
      *
      * @throws \Brick\Process\ProcessException
      */
-    public function __construct(callable $callable, array $arguments = array())
+    public function __construct(callable $callable, array $arguments = [])
     {
         self::checkExtensions();
 

@@ -12,7 +12,7 @@ class GeometryCollection extends Geometry implements \Countable, \IteratorAggreg
      *
      * @var Geometry[]
      */
-    protected $geometries = array();
+    protected $geometries = [];
 
     /**
      * Class constructor

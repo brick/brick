@@ -34,7 +34,7 @@ class Line extends LineString
      */
     public static function create(Point $p1, Point $p2)
     {
-        return self::factory(array($p1, $p2));
+        return self::factory([$p1, $p2]);
     }
 
     /**

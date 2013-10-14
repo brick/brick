@@ -50,12 +50,12 @@ class Weekday
      */
     public static function of($day)
     {
-        $day = filter_var($day, FILTER_VALIDATE_INT, array(
-            'options' => array(
+        $day = filter_var($day, FILTER_VALIDATE_INT, [
+            'options' => [
                 'min_range' => self::MONDAY,
                 'max_range' => self::SUNDAY
-            )
-        ));
+            ]
+        ]);
 
         if (is_int($day)) {
             if (! isset(self::$values[$day])) {

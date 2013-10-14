@@ -27,7 +27,7 @@ class Allow extends AbstractAnnotation
      */
     public function setValue($methods)
     {
-        $this->methods = is_array($methods) ? $methods : array($methods);
+        $this->methods = is_array($methods) ? $methods : [$methods];
     }
 
     /**

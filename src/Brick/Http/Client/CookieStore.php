@@ -16,7 +16,7 @@ class CookieStore
     /**
      * @var ClientCookie[]
      */
-    private $cookies = array();
+    private $cookies = [];
 
     /**
      * Adds a cookie to the store.

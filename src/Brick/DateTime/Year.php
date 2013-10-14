@@ -27,12 +27,12 @@ class Year
      */
     public function __construct($year)
     {
-        $this->year = filter_var($year, FILTER_VALIDATE_INT, array(
-            'options' => array(
+        $this->year = filter_var($year, FILTER_VALIDATE_INT, [
+            'options' => [
                 'min_range' => self::MIN_YEAR,
                 'max_range' => self::MAX_YEAR
-            )
-        ));
+            ]
+        ]);
 
         if ($this->year === false) {
             throw new \UnexpectedValueException('Year must be an integer in the interval [0-9999]');

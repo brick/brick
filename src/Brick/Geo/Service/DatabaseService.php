@@ -149,7 +149,7 @@ class DatabaseService implements GeometryService
      */
     public function contains(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Contains', array($a, $b));
+        return $this->queryBoolean('ST_Contains', [$a, $b]);
     }
 
     /**
@@ -157,7 +157,7 @@ class DatabaseService implements GeometryService
      */
     public function intersects(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Intersects', array($a, $b));
+        return $this->queryBoolean('ST_Intersects', [$a, $b]);
     }
 
     /**
@@ -165,7 +165,7 @@ class DatabaseService implements GeometryService
      */
     public function union(Geometry $a, Geometry $b)
     {
-        return $this->queryGeometry('ST_Union', array($a, $b));
+        return $this->queryGeometry('ST_Union', [$a, $b]);
     }
 
     /**
@@ -173,7 +173,7 @@ class DatabaseService implements GeometryService
      */
     public function intersection(Geometry $a, Geometry $b)
     {
-        return $this->queryGeometry('ST_Intersection', array($a, $b));
+        return $this->queryGeometry('ST_Intersection', [$a, $b]);
     }
 
     /**
@@ -181,7 +181,7 @@ class DatabaseService implements GeometryService
      */
     public function difference(Geometry $a, Geometry $b)
     {
-        return $this->queryGeometry('ST_Difference', array($a, $b));
+        return $this->queryGeometry('ST_Difference', [$a, $b]);
     }
 
     /**
@@ -189,7 +189,7 @@ class DatabaseService implements GeometryService
      */
     public function envelope(Geometry $g)
     {
-        return $this->queryGeometry('ST_Envelope', array($g));
+        return $this->queryGeometry('ST_Envelope', [$g]);
     }
 
     /**
@@ -197,7 +197,7 @@ class DatabaseService implements GeometryService
      */
     public function centroid(Geometry $g)
     {
-        return $this->queryGeometry('ST_Centroid', array($g));
+        return $this->queryGeometry('ST_Centroid', [$g]);
     }
 
     /**
@@ -209,7 +209,7 @@ class DatabaseService implements GeometryService
             throw new GeometryException('length() can only be called on a Curve or a MultiCurve');
         }
 
-        return $this->queryFloat('ST_Length', array($g));
+        return $this->queryFloat('ST_Length', [$g]);
     }
 
     /**
@@ -221,7 +221,7 @@ class DatabaseService implements GeometryService
             throw new GeometryException('area() can only be called on a Surface or a MultiSurface');
         }
 
-        return $this->queryFloat('ST_Area', array($g));
+        return $this->queryFloat('ST_Area', [$g]);
     }
 
     /**
@@ -229,7 +229,7 @@ class DatabaseService implements GeometryService
      */
     public function boundary(Geometry $g)
     {
-        return $this->queryGeometry('ST_Boundary', array($g));
+        return $this->queryGeometry('ST_Boundary', [$g]);
     }
 
     /**
@@ -237,7 +237,7 @@ class DatabaseService implements GeometryService
      */
     public function isSimple(Geometry $g)
     {
-        return $this->queryBoolean('ST_IsSimple', array($g));
+        return $this->queryBoolean('ST_IsSimple', [$g]);
     }
 
     /**
@@ -245,7 +245,7 @@ class DatabaseService implements GeometryService
      */
     public function equals(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Equals', array($a, $b));
+        return $this->queryBoolean('ST_Equals', [$a, $b]);
     }
 
     /**
@@ -253,7 +253,7 @@ class DatabaseService implements GeometryService
      */
     public function disjoint(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Disjoint', array($a, $b));
+        return $this->queryBoolean('ST_Disjoint', [$a, $b]);
     }
 
     /**
@@ -261,7 +261,7 @@ class DatabaseService implements GeometryService
      */
     public function touches(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Touches', array($a, $b));
+        return $this->queryBoolean('ST_Touches', [$a, $b]);
     }
 
     /**
@@ -269,7 +269,7 @@ class DatabaseService implements GeometryService
      */
     public function crosses(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Crosses', array($a, $b));
+        return $this->queryBoolean('ST_Crosses', [$a, $b]);
     }
 
     /**
@@ -277,7 +277,7 @@ class DatabaseService implements GeometryService
      */
     public function within(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Within', array($a, $b));
+        return $this->queryBoolean('ST_Within', [$a, $b]);
     }
 
     /**
@@ -285,7 +285,7 @@ class DatabaseService implements GeometryService
      */
     public function overlaps(Geometry $a, Geometry $b)
     {
-        return $this->queryBoolean('ST_Overlaps', array($a, $b));
+        return $this->queryBoolean('ST_Overlaps', [$a, $b]);
     }
 
     /**
@@ -293,7 +293,7 @@ class DatabaseService implements GeometryService
      */
     public function relate(Geometry $a, Geometry $b, $intersectionPatternMatrix)
     {
-        return $this->queryBoolean('ST_Relate', array($a, $b, $intersectionPatternMatrix));
+        return $this->queryBoolean('ST_Relate', [$a, $b, $intersectionPatternMatrix]);
     }
 
     /**
@@ -301,7 +301,7 @@ class DatabaseService implements GeometryService
      */
     public function locateAlong(Geometry $g, $mValue)
     {
-        return $this->queryGeometry('ST_LocateAlong', array($g, $mValue));
+        return $this->queryGeometry('ST_LocateAlong', [$g, $mValue]);
     }
 
     /**
@@ -309,7 +309,7 @@ class DatabaseService implements GeometryService
      */
     public function locateBetween(Geometry $g, $mStart, $mEnd)
     {
-        return $this->queryGeometry('ST_LocateBetween', array($g, $mStart, $mEnd));
+        return $this->queryGeometry('ST_LocateBetween', [$g, $mStart, $mEnd]);
     }
 
     /**
@@ -317,7 +317,7 @@ class DatabaseService implements GeometryService
      */
     public function distance(Geometry $a, Geometry $b)
     {
-        return $this->queryFloat('ST_Distance', array($a, $b));
+        return $this->queryFloat('ST_Distance', [$a, $b]);
     }
 
     /**
@@ -325,7 +325,7 @@ class DatabaseService implements GeometryService
      */
     public function buffer(Geometry $g, $distance)
     {
-        return $this->queryGeometry('ST_Buffer', array($g, $distance));
+        return $this->queryGeometry('ST_Buffer', [$g, $distance]);
     }
 
     /**
@@ -333,7 +333,7 @@ class DatabaseService implements GeometryService
      */
     public function convexHull(Geometry $g)
     {
-        return $this->queryGeometry('ST_ConvexHull', array($g));
+        return $this->queryGeometry('ST_ConvexHull', [$g]);
     }
 
     /**
@@ -341,6 +341,6 @@ class DatabaseService implements GeometryService
      */
     public function symDifference(Geometry $a, Geometry $b)
     {
-        return $this->queryGeometry('ST_SymDifference', array($a, $b));
+        return $this->queryGeometry('ST_SymDifference', [$a, $b]);
     }
 }

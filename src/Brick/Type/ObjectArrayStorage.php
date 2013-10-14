@@ -27,7 +27,7 @@ class ObjectArrayStorage implements \IteratorAggregate
      */
     public function get($object)
     {
-        return $this->objects->offsetExists($object) ? $this->objects->offsetGet($object) : array();
+        return $this->objects->offsetExists($object) ? $this->objects->offsetGet($object) : [];
     }
 
     /**

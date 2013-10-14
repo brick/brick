@@ -74,12 +74,12 @@ class Month
      */
     public static function of($month)
     {
-        $month = filter_var($month, FILTER_VALIDATE_INT, array(
-            'options' => array(
+        $month = filter_var($month, FILTER_VALIDATE_INT, [
+            'options' => [
                 'min_range' => self::JANUARY,
                 'max_range' => self::DECEMBER
-            )
-        ));
+            ]
+        ]);
 
         if (is_int($month)) {
             if (! isset(self::$values[$month])) {

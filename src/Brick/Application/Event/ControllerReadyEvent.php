@@ -13,7 +13,7 @@ class ControllerReadyEvent extends AbstractControllerEvent
      *
      * @var array
      */
-    private $parameters = array();
+    private $parameters = [];
 
     /**
      * Sets values to resolve controller parameters.

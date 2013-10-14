@@ -31,7 +31,7 @@ trait UrlBuilderHelper
      * @return string
      * @throws \RuntimeException
      */
-    final public function buildUrl($url, array $parameters = array())
+    final public function buildUrl($url, array $parameters = [])
     {
         if (! $this->builder) {
             throw new \RuntimeException('No URL builder has been registered');

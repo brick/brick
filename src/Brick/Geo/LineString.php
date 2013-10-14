@@ -12,7 +12,7 @@ class LineString extends Curve implements \Countable, \IteratorAggregate
      *
      * @var array
      */
-    protected $points = array();
+    protected $points = [];
 
     /**
      * Class constructor

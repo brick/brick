@@ -59,7 +59,7 @@ class JobScheduler
         $this->logger = $logger;
         $this->bootstrapper = $bootstrapper;
 
-        foreach (array(SIGINT, SIGTERM) as $signal) {
+        foreach ([SIGINT, SIGTERM] as $signal) {
             pcntl_signal($signal, function () {
                 $this->log('Interrupted, stopping processes.');
                 $this->interrupted = true;

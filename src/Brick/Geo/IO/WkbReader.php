@@ -91,7 +91,7 @@ abstract class WkbReader
     protected static function readLineString(WkbBuffer $buffer)
     {
         $numPoints = $buffer->readUnsignedInteger();
-        $points = array();
+        $points = [];
 
         for ($i=0; $i<$numPoints; $i++) {
             $points[] = self::readPoint($buffer);
@@ -107,7 +107,7 @@ abstract class WkbReader
     protected static function readPolygon(WkbBuffer $buffer)
     {
         $numRings = $buffer->readUnsignedInteger();
-        $rings = array();
+        $rings = [];
 
         for ($i=0; $i<$numRings; $i++) {
             $rings[] = self::readLineString($buffer);
@@ -123,7 +123,7 @@ abstract class WkbReader
     protected static function readMultiPoint(WkbBuffer $buffer)
     {
         $numPoints = $buffer->readUnsignedInteger();
-        $points = array();
+        $points = [];
 
         for ($i=0; $i<$numPoints; $i++) {
             $points[] = self::readGeometry($buffer);
@@ -139,7 +139,7 @@ abstract class WkbReader
     protected static function readMultiLineString(WkbBuffer $buffer)
     {
         $numLineStrings = $buffer->readUnsignedInteger();
-        $lineStrings = array();
+        $lineStrings = [];
 
         for ($i=0; $i<$numLineStrings; $i++) {
             $lineStrings[] = self::readGeometry($buffer);
@@ -155,7 +155,7 @@ abstract class WkbReader
     protected static function readMultiPolygon(WkbBuffer $buffer)
     {
         $numPolygons = $buffer->readUnsignedInteger();
-        $polygons = array();
+        $polygons = [];
 
         for ($i=0; $i<$numPolygons; $i++) {
             $polygons[] = self::readGeometry($buffer);
@@ -171,7 +171,7 @@ abstract class WkbReader
     protected static function readGeometryCollection(WkbBuffer $buffer)
     {
         $numGeometries = $buffer->readUnsignedInteger();
-        $geometries = array();
+        $geometries = [];
 
         for ($i=0; $i<$numGeometries; $i++) {
             $geometries[] = self::readGeometry($buffer);
@@ -187,7 +187,7 @@ abstract class WkbReader
     protected static function readPolyhedralSurface(WkbBuffer $buffer)
     {
         $numPolygons = $buffer->readUnsignedInteger();
-        $polygons = array();
+        $polygons = [];
 
         for ($i=0; $i<$numPolygons; $i++) {
             $polygons[] = self::readGeometry($buffer);
@@ -203,7 +203,7 @@ abstract class WkbReader
     protected static function readTIN(WkbBuffer $buffer)
     {
         $numPolygons = $buffer->readUnsignedInteger();
-        $polygons = array();
+        $polygons = [];
 
         for ($i=0; $i<$numPolygons; $i++) {
             $polygons[] = self::readGeometry($buffer);

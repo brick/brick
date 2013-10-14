@@ -6,7 +6,7 @@
  * @see http://www.xe.com/symbols.php
  * @see http://en.wikipedia.org/wiki/ISO_4217
  */
-$symbols = array(
+$symbols = [
     'AED' => 'د.إ',
     'AFN' => 'Af',
     'ALL' => 'Lek',
@@ -189,7 +189,7 @@ $symbols = array(
     'ZAR' => 'R',
     'ZMW' => 'ZK',
     'ZWL' => '$',
-);
+];
 
 $data = file_get_contents('http://www.currency-iso.org/dam/downloads/dl_iso_table_a1.xml');
 
@@ -197,8 +197,8 @@ $document = new DOMDocument();
 $document->loadXML($data);
 
 $currencies = $document->getElementsByTagName('ISO_CURRENCY');
-$result = array();
-$countryToCurrency = array();
+$result = [];
+$countryToCurrency = [];
 
 foreach ($currencies as $currency) {
     /** @var $currency DOMElement */
@@ -210,7 +210,7 @@ foreach ($currencies as $currency) {
 
     if ($currencyCode == '' && $numericCode == '' && $minorUnit == '') {
         if (! isset($countryToCurrency[$entity])) {
-            $countryToCurrency[$entity] = array();
+            $countryToCurrency[$entity] = [];
         }
 
         continue;
@@ -227,7 +227,7 @@ foreach ($currencies as $currency) {
         die("Missing symbol for $currencyCode");
     }
 
-    $result[$currencyCode] = array($currencyCode, $numericCode, $name, $symbol, $minorUnit);
+    $result[$currencyCode] = [$currencyCode, $numericCode, $name, $symbol, $minorUnit];
     $countryToCurrency[$entity][] = $currencyCode;
 }
 

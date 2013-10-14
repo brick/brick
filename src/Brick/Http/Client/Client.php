@@ -23,7 +23,7 @@ class Client
      *
      * @var array
      */
-    private $headers = array();
+    private $headers = [];
 
     /**
      * Whether to automatically follow redirects.
@@ -74,7 +74,7 @@ class Client
      *
      * @return RequestResponse
      */
-    public function request($method, $url, array $headers = array())
+    public function request($method, $url, array $headers = [])
     {
         return $this->doRequest($method, $url, $headers, true);
     }

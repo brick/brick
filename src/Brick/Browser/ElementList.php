@@ -15,7 +15,7 @@ class ElementList extends SearchContext implements Target, \Countable, \Iterator
     /**
      * @var Element[]
      */
-    private $elements = array();
+    private $elements = [];
 
     /**
      * @param \DOMElement[] $domElements

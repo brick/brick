@@ -27,19 +27,19 @@ class WktParser
      *
      * @var array
      */
-    protected static $regex = array(
+    protected static $regex = [
         self::REGEX_WORD,
         self::REGEX_NUMBER,
         self::REGEX_WHITESPACE,
         self::REGEX_OTHER
-    );
+    ];
 
     /**
      * An array of all tokens.
      *
      * @var array
      */
-    protected $tokens = array();
+    protected $tokens = [];
 
     /**
      * The current token.
@@ -77,10 +77,10 @@ class WktParser
             foreach ($values as $index => $value) {
                 if ($value != '') {
                     assert(! isset($this->tokens[$index]));
-                    $this->tokens[$index] = array(
+                    $this->tokens[$index] = [
                         self::INDEX_TYPE => $type,
                         self::INDEX_VALUE => $value
-                    );
+                    ];
                 }
             }
         }

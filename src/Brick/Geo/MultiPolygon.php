@@ -14,7 +14,7 @@ class MultiPolygon extends MultiSurface
      * @return MultiPolygon
      * @throws GeometryException
      */
-    public static function factory(array $polygons = array())
+    public static function factory(array $polygons = [])
     {
         foreach ($polygons as $polygon) {
             if (! $polygon instanceof Polygon) {

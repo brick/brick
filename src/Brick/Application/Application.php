@@ -190,7 +190,7 @@ class Application implements RequestHandler
             $className = $controllerReflection->getDeclaringClass()->getName();
             $instance = $this->injector->instantiate($className);
 
-            $callable = array($instance, $controllerReflection->getName());
+            $callable = [$instance, $controllerReflection->getName()];
         } elseif ($controllerReflection instanceof \ReflectionFunction) {
             $callable = $controllerReflection->getClosure();
         } else {

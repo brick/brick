@@ -12,7 +12,7 @@ class DateTimeParserBuilder
      *
      * @var DateTimeParser[]
      */
-    private $parsers = array();
+    private $parsers = [];
 
     /**
      * The currently active builder, used by the outermost builder.

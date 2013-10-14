@@ -17,7 +17,7 @@ class ArrayValueResolver implements ValueResolver
     /**
      * @var array
      */
-    private $values = array();
+    private $values = [];
 
     /**
      * Class constructor.

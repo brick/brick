@@ -38,7 +38,7 @@ class NumberFormat extends AbstractMetadata
      *
      * @var string[]
      */
-    public $leadingDigits = array();
+    public $leadingDigits = [];
 
     /**
      * @Required
@@ -52,5 +52,5 @@ class NumberFormat extends AbstractMetadata
      *
      * @var string[]
      */
-    public $intlFormat = array();
+    public $intlFormat = [];
 }

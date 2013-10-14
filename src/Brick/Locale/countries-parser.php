@@ -13,8 +13,8 @@ $url = 'http://www.iso.org/iso/home/standards/country_codes/country_names_and_co
 $data = file_get_contents($url);
 $lines = preg_split('/[\r\n]+/', $data);
 
-$countries = array();
-$countryNameToCode = array();
+$countries = [];
+$countryNameToCode = [];
 
 foreach ($lines as $index => $line) {
     if ($line == '') {
@@ -41,7 +41,7 @@ foreach ($lines as $index => $line) {
         die("Duplicate country code $code\n");
     }
 
-    $countries[$code] = array($code, $name);
+    $countries[$code] = [$code, $name];
 
     if (isset($countryNameToCode[$name])) {
         die("Duplicate country name $name\n");
@@ -53,30 +53,30 @@ foreach ($lines as $index => $line) {
 /**
  * Countries from country-to-currency.php to ignore.
  */
-$ignoreCountries = array(
+$ignoreCountries = [
     'EUROPEAN UNION',
     'INTERNATIONAL MONETARY FUND (IMF)',
     'MEMBER COUNTRIES OF THE AFRICAN DEVELOPMENT BANK GROUP',
     'SISTEMA UNITARIO DE COMPENSACION REGIONAL DE PAGOS "SUCRE"',
     'Vatican City State (HOLY SEE)' // repeated twice, once as the official ISO 3166 name, once as here
-);
+];
 
 /**
  * Maps country names from country-to-currency.php to ISO 3166 names.
  */
-$countryMap = array(
+$countryMap = [
     'CONGO, THE DEMOCRATIC REPUBLIC OF' => 'CONGO, THE DEMOCRATIC REPUBLIC OF THE',
     'HEARD ISLAND AND McDONALD ISLANDS' => 'HEARD ISLAND AND MCDONALD ISLANDS',
     'KOREA, DEMOCRATIC PEOPLE’S REPUBLIC OF' => 'KOREA, DEMOCRATIC PEOPLE\'S REPUBLIC OF',
     'LAO PEOPLE’S DEMOCRATIC REPUBLIC' => 'LAO PEOPLE\'S DEMOCRATIC REPUBLIC',
     'VIRGIN ISLANDS (BRITISH)' => 'VIRGIN ISLANDS, BRITISH',
     'VIRGIN ISLANDS (US)' => 'VIRGIN ISLANDS, U.S.'
-);
+];
 
 /**
  * Explicitly maps the countries that have multiple currencies to their main currency.
  */
-$countryToUniqueCurrency = array(
+$countryToUniqueCurrency = [
     'BT' => 'BTN',
     'BO' => 'BOB',
     'CL' => 'CLP',
@@ -91,7 +91,7 @@ $countryToUniqueCurrency = array(
     'CH' => 'CHF',
     'UY' => 'UYU',
     'US' => 'USD'
-);
+];
 
 foreach ($countryToCurrency as $country => $currencies) {
     $country = str_replace("\xC2\xA0", ' ', $country); // UTF-8 non-breaking space is present at the end of some country names

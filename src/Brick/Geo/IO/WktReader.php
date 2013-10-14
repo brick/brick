@@ -100,7 +100,7 @@ abstract class WktReader
     protected static function readMultiPoint(WktParser $parser)
     {
         $parser->matchOpener();
-        $points = array();
+        $points = [];
 
         do {
             $points[] = self::readPoint($parser);
@@ -145,7 +145,7 @@ abstract class WktReader
     protected static function readMultiLineString(WktParser $parser)
     {
         $parser->matchOpener();
-        $lineStrings = array();
+        $lineStrings = [];
 
         do {
             $lineStrings[] = self::readLineStringText($parser);
@@ -190,7 +190,7 @@ abstract class WktReader
     protected static function readMultiPolygonText(WktParser $parser)
     {
         $parser->matchOpener();
-        $polygons = array();
+        $polygons = [];
 
         do {
             $polygons[] = self::readPolygonText($parser);
@@ -207,7 +207,7 @@ abstract class WktReader
     protected static function readGeometryCollectionText(WktParser $parser)
     {
         $parser->matchOpener();
-        $geometries = array();
+        $geometries = [];
 
         do {
             $geometries[] = self::readGeometry($parser);

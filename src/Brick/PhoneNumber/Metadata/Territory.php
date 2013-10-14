@@ -98,7 +98,7 @@ class Territory extends AbstractMetadata
     /**
      * @var NumberFormat[]
      */
-    public $availableFormats = array();
+    public $availableFormats = [];
 
     /**
      * @var NumberPattern|null

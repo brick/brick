@@ -29,14 +29,14 @@ class PhoneNumberUtil
      *
      * @var array
      */
-    private $data = array();
+    private $data = [];
 
     /**
      * The list of separator characters allowed during parsing.
      *
      * @var array
      */
-    private $allowedSeparators = array(' ', '-', '.', '/', '(', ')');
+    private $allowedSeparators = [' ', '-', '.', '/', '(', ')'];
 
     /**
      * Class constructor.
@@ -145,7 +145,7 @@ class PhoneNumberUtil
 
             $this->checkLength($countryCode, $nationalNumber);
 
-            return array($countryCode, $nationalNumber);
+            return [$countryCode, $nationalNumber];
         }
 
         if ($regionCode === null) {
@@ -176,7 +176,7 @@ class PhoneNumberUtil
 
         $this->checkLength($countryCode, $nationalNumber);
 
-        return array($countryCode, $nationalNumber);
+        return [$countryCode, $nationalNumber];
     }
 
     /**

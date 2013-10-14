@@ -12,7 +12,7 @@ class History
     /**
      * @var \Brick\Http\Request[]
      */
-    private $requests = array();
+    private $requests = [];
 
     /**
      * @var integer
@@ -26,7 +26,7 @@ class History
      */
     public function clear()
     {
-        $this->requests = array();
+        $this->requests = [];
         $this->position = -1;
     }
 

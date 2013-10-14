@@ -16,14 +16,14 @@ foreach (glob('data/*.php') as $file) {
 $file = 'google-data/PhoneNumberMetaData.xml';
 $xml = simplexml_load_file($file);
 
-$numberPatterns = array(
+$numberPatterns = [
     'generalDesc', 'noInternationalDialling', 'areaCodeOptional', 'fixedLine',
     'mobile', 'pager', 'tollFree', 'premiumRate', 'sharedCost', 'personalNumber',
     'voip', 'uan', 'voicemail', 'shortCode', 'emergency'
-);
+];
 
-$countryCodeToRegionCodes = array();
-$regionCodeToCountryCode = array();
+$countryCodeToRegionCodes = [];
+$regionCodeToCountryCode = [];
 
 foreach ($xml->territories->territory as $xmlTerritory) {
     $territory = new Territory();
@@ -47,12 +47,12 @@ foreach ($xml->territories->territory as $xmlTerritory) {
     $availableFormats = $xmlTerritory->availableFormats;
     if ($availableFormats->count() == 1) {
         $availableFormats = $availableFormats[0];
-        $numberFormats = array();
+        $numberFormats = [];
         foreach ($availableFormats->numberFormat as $xmlNumberFormat) {
             $numberFormat = new NumberFormat();
             mapAttributes($xmlNumberFormat, $numberFormat);
 
-            mapChildren($xmlNumberFormat, $numberFormat, array('leadingDigits', 'intlFormat'));
+            mapChildren($xmlNumberFormat, $numberFormat, ['leadingDigits', 'intlFormat']);
             $numberFormats[] = $numberFormat;
         }
 
@@ -60,7 +60,7 @@ foreach ($xml->territories->territory as $xmlTerritory) {
     }
 
     if ($territory->id == '001') {
-        $countryCodeToRegionCodes[$territory->countryCode] = array();
+        $countryCodeToRegionCodes[$territory->countryCode] = [];
     } else {
         $countryCodeToRegionCodes[$territory->countryCode][] = $territory->id;
         $regionCodeToCountryCode[$territory->id] = $territory->countryCode;
@@ -103,9 +103,9 @@ function mapAttributes(\SimpleXMLElement $element, $object)
  * @return void
  * @throws \RuntimeException
  */
-function mapChildren(\SimpleXMLElement $element, $object, array $multiple = array())
+function mapChildren(\SimpleXMLElement $element, $object, array $multiple = [])
 {
-    $values = array();
+    $values = [];
 
     foreach ($element->children() as $child) {
         $name = $child->getName();

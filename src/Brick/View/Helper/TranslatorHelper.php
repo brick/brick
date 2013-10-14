@@ -33,7 +33,7 @@ trait TranslatorHelper
      * @return string
      * @throws \RuntimeException
      */
-    final public function translate($key, array $parameters = array(), Locale $locale = null)
+    final public function translate($key, array $parameters = [], Locale $locale = null)
     {
         if (! $this->translator) {
             throw new \RuntimeException('No translator has been registered');

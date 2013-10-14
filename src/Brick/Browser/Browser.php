@@ -214,10 +214,10 @@ class Browser extends SearchContext
             parse_str($form->getRawData(), $post);
         } else {
             $url = $this->removeQueryString($url) . '?' . $form->getRawData();
-            $post = array();
+            $post = [];
         }
 
-        $headers = array('Referer' => $this->getUrl());
+        $headers = ['Referer' => $this->getUrl()];
         $request = $this->httpClient->createRequest($form->getMethod(), $url, $post, [], $headers);
 
         $this->request($request, true, true);

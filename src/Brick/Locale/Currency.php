@@ -113,7 +113,7 @@ class Currency
     {
         self::loadCurrencyData();
 
-        $currencies = array();
+        $currencies = [];
 
         foreach (array_keys(self::$currencies) as $currencyCode) {
             $currencies[] = self::getInstance($currencyCode);

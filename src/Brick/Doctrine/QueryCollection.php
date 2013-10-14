@@ -76,7 +76,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
 
         $query = $this->cloneQuery($this->query);
 
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['DoctrineExtensions\Paginate\CountWalker']);
         $query->setFirstResult(null)->setMaxResults(null);
 
         return $query->getSingleScalarResult();

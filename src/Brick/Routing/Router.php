@@ -15,7 +15,7 @@ class Router
     /**
      * @var \Brick\Routing\Route[]
      */
-    private $routes = array();
+    private $routes = [];
 
     /**
      * @param \Brick\Routing\Route $route

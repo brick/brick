@@ -13,7 +13,7 @@ class PolyhedralSurface extends Surface implements \Countable, \IteratorAggregat
      *
      * @var array
      */
-    protected $patches = array();
+    protected $patches = [];
 
     /**
      * Class constructor

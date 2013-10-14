@@ -18,7 +18,7 @@ class String
     /**
      * @var string[]
      */
-    protected static $encodings = array();
+    protected static $encodings = [];
 
     /**
      * The string data.

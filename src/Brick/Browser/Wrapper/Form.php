@@ -64,7 +64,7 @@ class Form extends AbstractWrapper
      */
     public function getRawData()
     {
-        $values = array();
+        $values = [];
 
         foreach ($this->findTextControls() as $textControl) {
             $name = $textControl->getName();
