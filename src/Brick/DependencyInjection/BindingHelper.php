@@ -2,6 +2,9 @@
 
 namespace Brick\DependencyInjection;
 
+/**
+ * Transient helper class returned by Container::bind().
+ */
 class BindingHelper
 {
     /**

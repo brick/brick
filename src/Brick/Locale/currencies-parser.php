@@ -265,6 +265,11 @@ function getDomElementString(DOMElement $element, $name)
     throw new \RuntimeException('Could not find an element named ' . $name);
 }
 
+/**
+ * @param string $name
+ * @return string
+ * @throws RuntimeException
+ */
 function checkName($name)
 {
     if ($name == '' || ! mb_check_encoding($name, 'UTF-8')) {
@@ -274,6 +279,11 @@ function checkName($name)
     return $name;
 }
 
+/**
+ * @param string $currencyCode
+ * @return string
+ * @throws RuntimeException
+ */
 function checkCurrencyCode($currencyCode)
 {
     if (preg_match('/^[A-Z]{3}$/', $currencyCode) == 0) {
@@ -283,6 +293,11 @@ function checkCurrencyCode($currencyCode)
     return $currencyCode;
 }
 
+/**
+ * @param string $numericCode
+ * @return int
+ * @throws RuntimeException
+ */
 function checkNumericCode($numericCode)
 {
     if ($numericCode == 'Nil') {
@@ -296,6 +311,11 @@ function checkNumericCode($numericCode)
     return (int) $numericCode;
 }
 
+/**
+ * @param string $minorUnit
+ * @return int
+ * @throws RuntimeException
+ */
 function checkMinorUnit($minorUnit)
 {
     if ($minorUnit == 'N.A.') {

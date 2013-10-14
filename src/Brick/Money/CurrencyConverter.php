@@ -4,6 +4,9 @@ namespace Brick\Money;
 
 use Brick\Locale\Currency;
 
+/**
+ * Interface for currency converters.
+ */
 interface CurrencyConverter
 {
     /**

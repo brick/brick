@@ -2,6 +2,9 @@
 
 namespace Brick\Routing;
 
+/**
+ * Exception thrown when an invalid controller has been returned by a router.
+ */
 class RoutingException extends \RuntimeException
 {
     /**

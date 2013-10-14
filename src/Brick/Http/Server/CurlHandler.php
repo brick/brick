@@ -6,6 +6,9 @@ use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Curl\Curl;
 
+/**
+ * cURL implementation of a request handler, that talks to an HTTP server.
+ */
 class CurlHandler implements RequestHandler
 {
     /**

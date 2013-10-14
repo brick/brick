@@ -51,11 +51,19 @@ class Packer
         return $this->copy($variable, false);
     }
 
+    /**
+     * @param mixed $variable
+     * @return string
+     */
     public function serialize($variable)
     {
         return serialize($this->pack($variable));
     }
 
+    /**
+     * @param string $variable
+     * @return mixed
+     */
     public function unserialize($variable)
     {
         return $this->unpack(unserialize($variable));

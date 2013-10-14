@@ -2,6 +2,9 @@
 
 namespace Brick\Curl;
 
+/**
+ * Exception thrown when a Curl request fails.
+ */
 class CurlException extends \RuntimeException
 {
     /**

@@ -7,6 +7,9 @@ use Brick\Http\Exception\HttpException;
 use Brick\Http\Request;
 use Brick\Http\Response;
 
+/**
+ * Event thrown when an HttpException has been caught.
+ */
 class ExceptionCaughtEvent extends Event
 {
     /**
