@@ -1,7 +1,9 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\DependencyInjection\Binding;
 
+use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Scope;
 use Brick\DependencyInjection\Container;
 
 /**

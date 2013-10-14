@@ -2,8 +2,6 @@
 
 namespace Brick\Application;
 
-use Brick\DependencyInjection\Container;
-use Brick\DependencyInjection\ValueResolver\DefaultValueResolver;
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
@@ -15,7 +13,9 @@ use Brick\Event\EventListener;
 use Brick\Event\EventDispatcher;
 use Brick\DependencyInjection\Injector;
 use Brick\DependencyInjection\InjectionPolicy;
-use Brick\DependencyInjection\ValueResolver\ValueResolver;
+use Brick\DependencyInjection\ValueResolver;
+use Brick\DependencyInjection\Container;
+use Brick\DependencyInjection\ValueResolver\DefaultValueResolver;
 
 /**
  * The web application kernel.

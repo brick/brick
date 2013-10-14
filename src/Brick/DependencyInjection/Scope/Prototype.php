@@ -1,6 +1,10 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\DependencyInjection\Scope;
+
+use Brick\DependencyInjection\Scope;
+use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Container;
 
 /**
  * The binding will be resolved every time it is requested.

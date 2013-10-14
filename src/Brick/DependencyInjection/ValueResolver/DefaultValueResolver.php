@@ -2,6 +2,9 @@
 
 namespace Brick\DependencyInjection\ValueResolver;
 
+use Brick\DependencyInjection\ValueResolver;
+use Brick\DependencyInjection\UnresolvedValueException;
+
 /**
  * Returns the default value of the parameter/property, if available.
  * This is more useful as a fallback, chained from inside another resolver, rather than standalone.

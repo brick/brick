@@ -1,9 +1,13 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\DependencyInjection\Scope;
+
+use Brick\DependencyInjection\Scope;
+use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Container;
 
 /**
- * The binding will be resolved once, then the same result will be served every time it is requested.
+ * The binding will be resolved once, then the same result will be returned every time it is requested.
  */
 class Singleton extends Scope
 {

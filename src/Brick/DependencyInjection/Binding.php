@@ -2,12 +2,15 @@
 
 namespace Brick\DependencyInjection;
 
+/**
+ * Base class for all bindings.
+ */
 abstract class Binding
 {
     /**
      * @var Scope|null
      */
-    private $scope;
+    private $scope = null;
 
     /**
      * Sets the scope of this binding.

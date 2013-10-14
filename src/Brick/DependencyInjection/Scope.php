@@ -3,24 +3,24 @@
 namespace Brick\DependencyInjection;
 
 /**
- * Defines the reusability of a result.
+ * Defines the re-usability of a result.
  */
 abstract class Scope
 {
     /**
-     * @return Scope
+     * @return Scope\Singleton
      */
     public static function singleton()
     {
-        return new Singleton();
+        return new Scope\Singleton();
     }
 
     /**
-     * @return Scope
+     * @return Scope\Prototype
      */
     public static function prototype()
     {
-        return new Prototype();
+        return new Scope\Prototype();
     }
 
     /**

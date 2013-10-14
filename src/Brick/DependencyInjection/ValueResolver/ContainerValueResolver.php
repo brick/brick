@@ -2,6 +2,7 @@
 
 namespace Brick\DependencyInjection\ValueResolver;
 
+use Brick\DependencyInjection\ValueResolver;
 use Brick\DependencyInjection\Container;
 use Brick\Reflection\ReflectionTools;
 

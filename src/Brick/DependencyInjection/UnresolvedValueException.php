@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection\ValueResolver;
+namespace Brick\DependencyInjection;
 
 /**
  * Exception thrown when a parameter/property could not be resolved.

@@ -2,6 +2,8 @@
 
 namespace Brick\DependencyInjection\ValueResolver;
 
+use Brick\DependencyInjection\ValueResolver;
+
 /**
  * Resolves parameters/properties whose names match the ones in an associative array.
  */

@@ -2,9 +2,9 @@
 
 namespace Brick\DependencyInjection;
 
-use Brick\DependencyInjection\ValueResolver\ValueResolver;
+use Brick\DependencyInjection\ValueResolver;
 use Brick\DependencyInjection\ValueResolver\ArrayValueResolver;
-use Brick\DependencyInjection\ValueResolver\UnresolvedValueException;
+use Brick\DependencyInjection\UnresolvedValueException;
 use Brick\Reflection\ReflectionTools;
 
 /**

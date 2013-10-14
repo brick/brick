@@ -25,31 +25,31 @@ class BindingHelper
     }
 
     /**
-     * @return ClassBinding
+     * @return Binding\ClassBinding
      */
     public function toSelf()
     {
-        return $this->set(new ClassBinding($this->key));
+        return $this->set(new Binding\ClassBinding($this->key));
     }
 
     /**
      * @param string $class
      *
-     * @return ClassBinding
+     * @return Binding\ClassBinding
      */
     public function toClass($class)
     {
-        return $this->set(new ClassBinding($class));
+        return $this->set(new Binding\ClassBinding($class));
     }
 
     /**
      * @param \Closure $closure
      *
-     * @return ClosureBinding
+     * @return Binding\ClosureBinding
      */
     public function toClosure(\Closure $closure)
     {
-        return $this->set(new ClosureBinding($closure));
+        return $this->set(new Binding\ClosureBinding($closure));
     }
 
     /**
@@ -73,11 +73,11 @@ class BindingHelper
      *
      * @param string $key
      *
-     * @return AliasBinding
+     * @return Binding\AliasBinding
      */
     public function aliasOf($key)
     {
-        return $this->set(new AliasBinding($key));
+        return $this->set(new Binding\AliasBinding($key));
     }
 
     /**

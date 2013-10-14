@@ -1,11 +1,9 @@
 <?php
 
-namespace Brick\DependencyInjection\ValueResolver;
+namespace Brick\DependencyInjection;
 
 /**
  * Resolves the values of function parameters & class properties.
- * @todo If we're going to keep this in DependencyInjection, move at the same level as InjectionPolicy.
- * @todo But what about UnresolvedValueException?
  */
 interface ValueResolver
 {
