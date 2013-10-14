@@ -4,8 +4,6 @@ namespace Brick\Http\Client;
 
 use Brick\Http\Server\RequestHandler;
 use Brick\Http\Request;
-use Brick\Http\Response;
-use Brick\Type\Url;
 
 /**
  * A simple HTTP client.

@@ -4,7 +4,6 @@ namespace Brick\DependencyInjection\InjectionPolicy;
 
 use Brick\DependencyInjection\Annotation\Inject;
 use Brick\DependencyInjection\InjectionPolicy;
-use Brick\DependencyInjection\DependencyInjectionException;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;

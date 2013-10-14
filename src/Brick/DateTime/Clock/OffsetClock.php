@@ -3,7 +3,6 @@
 namespace Brick\DateTime\Clock;
 
 use Brick\DateTime\Duration;
-use Brick\Math\Math;
 
 /**
  * Clock that adds an offset to an underlying clock.

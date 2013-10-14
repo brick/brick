@@ -2,8 +2,6 @@
 
 namespace Brick\DateTime;
 
-use Brick\Math\Math;
-
 /**
  * A day-of-week, such as Tuesday.
  *

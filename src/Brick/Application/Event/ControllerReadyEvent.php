@@ -2,8 +2,6 @@
 
 namespace Brick\Application\Event;
 
-use Brick\Http\Request;
-
 /**
  * Event dispatched when the controller is ready to be invoked.
  * If the controller is a class method, the controller is now instantiated, and available here.

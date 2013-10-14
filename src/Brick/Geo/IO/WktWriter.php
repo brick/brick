@@ -8,7 +8,6 @@ use Brick\Geo\Geometry;
 use Brick\Geo\Point;
 use Brick\Geo\LineString;
 use Brick\Geo\Polygon;
-use Brick\Geo\Triangle;
 use Brick\Geo\MultiPoint;
 use Brick\Geo\MultiLineString;
 use Brick\Geo\MultiPolygon;

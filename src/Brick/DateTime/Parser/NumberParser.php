@@ -2,8 +2,6 @@
 
 namespace Brick\DateTime\Parser;
 
-use Brick\Math\Math;
-
 /**
  * Parses a numeric date-time field with optional padding.
  */

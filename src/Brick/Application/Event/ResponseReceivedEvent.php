@@ -6,8 +6,6 @@ use Brick\Routing\RouteMatch;
 use Brick\Http\Request;
 use Brick\Http\Response;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
 /**
  * Event dispatched after the controller response has been received.
  *

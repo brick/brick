@@ -4,7 +4,6 @@ namespace Brick\PhoneNumber;
 
 use Brick\PhoneNumber\Metadata\Territory;
 use Brick\PhoneNumber\Metadata\NumberPattern;
-use Brick\PhoneNumber\Metadata\NumberFormat;
 
 /**
  * Utility class for phone numbers.

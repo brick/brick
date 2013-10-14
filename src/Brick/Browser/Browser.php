@@ -2,15 +2,11 @@
 
 namespace Brick\Browser;
 
-use Brick\Browser\Exception\BrowserException;
 use Brick\Browser\Exception\UnexpectedElementException;
 use Brick\Http\Client\Client;
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
-use Brick\Json\Json;
-
-use Symfony\Component\CssSelector\CssSelector;
 
 /**
  * A simple browser.

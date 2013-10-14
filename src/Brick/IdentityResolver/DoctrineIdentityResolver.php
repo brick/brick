@@ -3,7 +3,6 @@
 namespace Brick\IdentityResolver;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The Doctrine implementation of the IdentityResolver.
