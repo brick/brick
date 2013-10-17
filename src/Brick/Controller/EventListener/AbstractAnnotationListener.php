@@ -3,6 +3,7 @@
 namespace Brick\Controller\EventListener;
 
 use Brick\Event\AbstractEventListener;
+use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
@@ -18,6 +19,11 @@ abstract class AbstractAnnotationListener extends AbstractEventListener
     private $annotationReader;
 
     /**
+     * @var \Brick\Reflection\ReflectionTools
+     */
+    private $reflectionTools;
+
+    /**
      * @param Reader $annotationReader
      */
     public function __construct(Reader $annotationReader)
@@ -25,6 +31,7 @@ abstract class AbstractAnnotationListener extends AbstractEventListener
         AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
 
         $this->annotationReader = $annotationReader;
+        $this->reflectionTools  = new ReflectionTools();
     }
 
     /**
@@ -48,10 +55,14 @@ abstract class AbstractAnnotationListener extends AbstractEventListener
             }
 
             $class = $controller->getDeclaringClass();
-            $annotations = $this->annotationReader->getClassAnnotations($class);
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof $annotationClass) {
-                    return $annotation;
+            $classes = $this->reflectionTools->getClassHierarchy($class);
+
+            foreach ($classes as $class) {
+                $annotations = $this->annotationReader->getClassAnnotations($class);
+                foreach ($annotations as $annotation) {
+                    if ($annotation instanceof $annotationClass) {
+                        return $annotation;
+                    }
                 }
             }
         }
