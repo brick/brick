@@ -225,10 +225,14 @@ class Request extends Message
      * The query string data is purposefully parsed from the REQUEST_URI, and not from the $_GET superglobal,
      * to provide a consistent behaviour even when mod_rewrite is in use.
      *
+     * @todo use $_SERVER['REQUEST_SCHEME'] when available?
+     *
+     * @param boolean $trustProxy Whether to trust X-Forwarded-* headers.
+     *
      * @return Request
      * @throws HttpBadRequestException
      */
-    public static function getCurrent()
+    public static function getCurrent($trustProxy = false)
     {
         $server = new Map($_SERVER, false);
 
@@ -262,6 +266,23 @@ class Request extends Message
         $port = isset($matches[2]) ? $matches[2] : self::getStandardPort($isSecure);
 
         $body = fopen('php://input', 'rb');
+
+        if ($trustProxy) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $ips = preg_split('/,\s*/', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $ip = array_pop($ips);
+
+                $clientIp = $ip;
+            }
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+                $port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+            }
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+                $isSecure = $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https';
+            }
+        }
 
         return new Request(
             $method,
