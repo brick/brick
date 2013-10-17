@@ -4,6 +4,7 @@ namespace Brick\DependencyInjection;
 
 use Brick\DependencyInjection\InjectionPolicy\NullPolicy;
 use Brick\DependencyInjection\ValueResolver\ContainerValueResolver;
+use Brick\Reflection\ReflectionTools;
 
 /**
  * Resolves object dependencies.
@@ -31,6 +32,11 @@ class Container
     private $valueResolver;
 
     /**
+     * @var \Brick\Reflection\ReflectionTools
+     */
+    private $reflectionTools;
+
+    /**
      * Class constructor.
      *
      * @param InjectionPolicy $policy
@@ -40,6 +46,7 @@ class Container
         $this->injectionPolicy = $policy;
         $this->valueResolver = new ContainerValueResolver($this);
         $this->injector = new Injector($this->valueResolver, $policy);
+        $this->reflectionTools = new ReflectionTools();
 
         $this->set(__CLASS__, $this);
         $this->set(__NAMESPACE__ . '\Injector', $this->injector);
@@ -128,8 +135,13 @@ class Container
         if (! isset($this->items[$key])) {
             if (class_exists($key)) {
                 $class = new \ReflectionClass($key);
-                if ($this->injectionPolicy->isClassInjected($class)) {
-                    $this->bind($key)->toSelf(); // @todo allow to configure scope (singleton) with annotations
+                $classes = $this->reflectionTools->getClassHierarchy($class);
+
+                foreach ($classes as $class) {
+                    if ($this->injectionPolicy->isClassInjected($class)) {
+                        $this->bind($key)->toSelf(); // @todo allow to configure scope (singleton) with annotations
+                        break;
+                    }
                 }
             }
         }
