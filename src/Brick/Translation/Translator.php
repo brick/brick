@@ -87,10 +87,16 @@ class Translator
     {
         $locale = $locale ?: $this->locale;
 
+        $placeholders = [];
+
+        foreach ($parameters as $placeholder => $value) {
+            $placeholders['[' . $placeholder . ']'] = $value;
+        }
+
         foreach ($this->computeLookupLocales($locale) as $locale) {
             $result = $this->translateIn($key, $locale);
             if ($result !== null) {
-                return strtr($result, $parameters);
+                return strtr($result, $placeholders);
             }
         }
 
