@@ -451,4 +451,20 @@ class Form extends Base
 
         return $this->isValid($data);
     }
+
+    /**
+     * Returns all form-level errors and component-level errors.
+     *
+     * @return string[]
+     */
+    public function getAllErrors()
+    {
+        $errors = $this->getErrors();
+
+        foreach ($this->components as $component) {
+            $errors = array_merge($errors, $component->getErrors());
+        }
+
+        return $errors;
+    }
 }
