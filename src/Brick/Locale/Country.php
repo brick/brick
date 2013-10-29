@@ -18,30 +18,36 @@ class Country
     private static $instances = [];
 
     /**
+     * The ISO 3166-1 alpha-2 two-letter country code.
+     *
      * @var string
      */
     private $code;
 
     /**
+     * The country name as defined by ISO 3166-1.
+     *
      * @var string
      */
     private $name;
 
     /**
+     * The main currency code of the country, or null if the country has no official currency.
+     *
      * @var string|null
      */
-    private $currency;
+    private $currencyCode;
 
     /**
-     * @param string      $code
-     * @param string      $name
-     * @param string|null $currency
+     * @param string      $code         The ISO 3166-1 alpha-2 country code.
+     * @param string      $name         The ISO 3166-1 country name.
+     * @param string|null $currencyCode The currency code, or null if the country has no currency.
      */
-    private function __construct($code, $name, $currency)
+    private function __construct($code, $name, $currencyCode)
     {
-        $this->code = $code;
-        $this->name = $name;
-        $this->currency = $currency;
+        $this->code     = $code;
+        $this->name     = $name;
+        $this->currencyCode = $currencyCode;
     }
 
     /**
@@ -117,9 +123,9 @@ class Country
     /**
      * @return boolean
      */
-    public function hasCurrrency()
+    public function hasCurrency()
     {
-        return $this->currency !== null;
+        return $this->currencyCode !== null;
     }
 
     /**
@@ -133,11 +139,11 @@ class Country
      */
     public function getCurrency()
     {
-        if ($this->currency === null) {
+        if ($this->currencyCode === null) {
             throw new \LogicException('This country has no currency.');
         }
 
-        return Currency::getInstance($this->currency);
+        return Currency::getInstance($this->currencyCode);
     }
 
     /**
