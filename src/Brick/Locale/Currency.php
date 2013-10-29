@@ -55,18 +55,18 @@ class Currency
     /**
      * Private constructor. Use getInstance() to obtain an instance.
      *
-     * @param string  $currencyCode
-     * @param integer $numericCode
-     * @param string  $name
-     * @param string  $symbol
-     * @param integer $decimalPlaces
+     * @param string  $currencyCode  The ISO 4217 alphabetic currency code.
+     * @param integer $numericCode   The ISO 4217 numeric currency code.
+     * @param string  $name          The English currency name.
+     * @param string  $symbol        The UTF-8 currency symbol.
+     * @param integer $decimalPlaces The default number of fraction digits.
      */
     private function __construct($currencyCode, $numericCode, $name, $symbol, $decimalPlaces)
     {
-        $this->currencyCode = $currencyCode;
-        $this->numericCode = $numericCode;
-        $this->name = $name;
-        $this->symbol = $symbol;
+        $this->currencyCode          = $currencyCode;
+        $this->numericCode           = $numericCode;
+        $this->name                  = $name;
+        $this->symbol                = $symbol;
         $this->defaultFractionDigits = $decimalPlaces;
     }
 
