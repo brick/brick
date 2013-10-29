@@ -126,6 +126,50 @@ class YearMonth
     }
 
     /**
+     * Returns a copy of this YearMonth with the year altered.
+     *
+     * @param integer $year
+     *
+     * @return YearMonth
+     */
+    public function withYear($year)
+    {
+        if ($year == $this->year) {
+            return $this;
+        }
+
+        return YearMonth::of($year, $this->month);
+    }
+
+    /**
+     * Returns a copy of this YearMonth with the month-of-year altered.
+     *
+     * @param integer $month
+     *
+     * @return YearMonth
+     */
+    public function withMonth($month)
+    {
+        if ($month == $this->month) {
+            return $this;
+        }
+
+        return YearMonth::of($this->year, $month);
+    }
+
+    /**
+     * Combines this year-month with a day-of-month to create a LocalDate.
+     *
+     * @param integer $day
+     *
+     * @return LocalDate
+     */
+    public function atDay($day)
+    {
+        return LocalDate::of($this->year, $this->month, $day);
+    }
+
+    /**
      * Returns an integer representation of this YearMonth.
      *
      * This allows the comparison of two YearMonth instances.

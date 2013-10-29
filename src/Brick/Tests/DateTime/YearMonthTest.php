@@ -35,6 +35,21 @@ class YearMonthTest extends \PHPUnit_Framework_TestCase
         YearMonth::parse('2010-01-01');
     }
 
+    public function testWithYear()
+    {
+        $this->assertSame(2001, YearMonth::of(2000, 1)->withYear(2001)->getYear());
+    }
+
+    public function testWithMonth()
+    {
+        $this->assertSame(12, YearMonth::of(2000, 11)->withMonth(12)->getMonth());
+    }
+
+    public function testAtDay()
+    {
+        $this->assertSame('2001-02-03', YearMonth::of(2001, 02)->atDay(3)->toString());
+    }
+
     public function testToInteger()
     {
         $this->assertSame(2012 * 12 + 11, YearMonth::of(2012, 11)->toInteger());
