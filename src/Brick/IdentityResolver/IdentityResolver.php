@@ -8,6 +8,8 @@ namespace Brick\IdentityResolver;
 interface IdentityResolver
 {
     /**
+     * Returns the identity of the object, or NULL if not resolvable.
+     *
      * @param object $object
      *
      * @return mixed

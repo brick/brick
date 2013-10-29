@@ -5,21 +5,25 @@ namespace Brick\UrlBuilder;
 use Brick\IdentityResolver\IdentityResolver;
 
 /**
- * @todo should maybe be called UriBuilder (i, or l)
+ * @todo should maybe be called UriBuilder (i, not l)
  */
 class UrlBuilder
 {
     /**
-     * @var \Brick\IdentityResolver\IdentityResolver
+     * @var \Brick\IdentityResolver\IdentityResolver[]
      */
-    private $resolver;
+    private $resolvers = [];
 
     /**
      * @param IdentityResolver $resolver
+     *
+     * @return static
      */
-    public function __construct(IdentityResolver $resolver)
+    public function addObjectResolver(IdentityResolver $resolver)
     {
-        $this->resolver = $resolver;
+        $this->resolvers[] = $resolver;
+
+        return $this;
     }
 
     /**
@@ -44,7 +48,7 @@ class UrlBuilder
                     unset($parameters[$key]);
                 }
                 if (is_object($value)) {
-                    $parameters[$key] = $this->resolver->getIdentity($value);
+                    $parameters[$key] = $this->resolveObject($value);
                 }
             }
         }
@@ -62,5 +66,25 @@ class UrlBuilder
         }
 
         return $url;
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return mixed
+     *
+     * @throws \RuntimeException
+     */
+    private function resolveObject($object)
+    {
+        foreach ($this->resolvers as $resolver) {
+            $identity = $resolver->getIdentity($object);
+
+            if ($identity !== null) {
+                return $identity;
+            }
+        }
+
+        throw new \RuntimeException('Cannot resolve identity of object ' . get_class($object));
     }
 }

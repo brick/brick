@@ -32,7 +32,7 @@ class DoctrineIdentityResolver implements IdentityResolver
         $uow = $this->em->getUnitOfWork();
 
         if (! $uow->isInIdentityMap($object)) {
-            throw IdentityResolutionException::cannotResolveIdentity($object, 'not in identity map');
+            return null;
         }
 
         $identity = $uow->getEntityIdentifier($object);
