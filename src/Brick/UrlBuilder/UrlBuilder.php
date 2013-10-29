@@ -39,9 +39,12 @@ class UrlBuilder
     public function buildUrl($url, array $parameters = [])
     {
         if (count($parameters)) {
-            foreach ($parameters as & $parameter) {
-                if (is_object($parameter)) {
-                    $parameter = $this->resolver->getIdentity($parameter);
+            foreach ($parameters as $key => $value) {
+                if (is_null($value)) {
+                    unset($parameters[$key]);
+                }
+                if (is_object($value)) {
+                    $parameters[$key] = $this->resolver->getIdentity($value);
                 }
             }
         }
