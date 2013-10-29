@@ -118,13 +118,13 @@ class Request extends Message
             throw new HttpBadRequestException('The Request URI must not be empty, and must start with a slash.');
         }
 
-        $this->method     = strtoupper($method);
-        $this->requestUri = $requestUri;
-        $this->protocolVersion   = (string) $protocolVersion;
-        $this->host       = (string) $host;
-        $this->port       = (int)    $port;
-        $this->clientIp   = (string) $clientIp;
-        $this->isSecure   = (bool)   $isSecure;
+        $this->method          = strtoupper($method);
+        $this->requestUri      = $requestUri;
+        $this->protocolVersion = (string) $protocolVersion;
+        $this->host            = (string) $host;
+        $this->port            = (int)    $port;
+        $this->clientIp        = (string) $clientIp;
+        $this->isSecure        = (bool)   $isSecure;
 
         $this->path = parse_url($this->requestUri, PHP_URL_PATH);
 
@@ -241,6 +241,8 @@ class Request extends Message
         $requestUri = $server->get('REQUEST_URI');
         $protocol   = $server->get('SERVER_PROTOCOL');
         $clientIp   = $server->get('REMOTE_ADDR');
+
+        $protocol = preg_replace('!^HTTP/!', '', $protocol);
 
         $post    = new ParameterMap($_POST);
         $cookies = new CookieMap($_COOKIE);
