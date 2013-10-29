@@ -81,6 +81,20 @@ final class DateTimeParsers
     }
 
     /**
+     * Returns a parser for an ISO year-month such as `2011-12`.
+     *
+     * @return DateTimeParser
+     */
+    public static function isoYearMonth()
+    {
+        return DateTimeParserBuilder::create()
+            ->append(self::isoYear())
+            ->appendLiteral('-')
+            ->append(self::isoMonthOfYear())
+            ->toParser();
+    }
+
+    /**
      * Returns a parser for an ISO local date such as `2011-12-03`.
      *
      * @return DateTimeParser

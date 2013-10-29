@@ -102,11 +102,13 @@ class LocalDate
     }
 
     /**
+     * @todo was private (expects a validated integer, but was needed for YearMonth as well) - fix that
+     *
      * @param int $year The year to check, validated as an integer.
      * @return void
      * @throws DateTimeException
      */
-    private static function checkYear($year)
+    public static function checkYear($year)
     {
         if ($year < Year::MIN_YEAR || $year > Year::MAX_YEAR) {
             throw new DateTimeException(sprintf(
