@@ -65,7 +65,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * Returns the number of objects in the collection.
      *
-     * @return integer
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -105,9 +105,19 @@ class QueryCollection implements \Countable, \IteratorAggregate
     }
 
     /**
+     * @return object|null
+     */
+    public function getFirstOrNull()
+    {
+        $objects = $this->slice(0, 1);
+
+        return count($objects) ? reset($objects) : null;
+    }
+
+    /**
      * Required by interface IteratorAggregate.
      *
-     * @return \Traversable
+     * {@inheritdoc}
      */
     public function getIterator()
     {
