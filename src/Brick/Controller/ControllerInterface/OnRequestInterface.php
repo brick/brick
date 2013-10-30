@@ -5,16 +5,18 @@ namespace Brick\Controller\ControllerInterface;
 use Brick\Http\Request;
 
 /**
- * Controller classes implementing this interface will have the onRequest() method called before the controller method.
- *
- * This method is allowed to throw HTTP exceptions, and therefore can perform checks common to all
- * controller methods in the class, and redirect / return an HTTP error code if necessary.
+ * Allows controller classes to have a method called before any controller method in the class.
  *
  * This interface requires the OnRequestResponseListener to be registered with the application.
  */
 interface OnRequestInterface
 {
     /**
+     * This method will be called before any controller method in the class is invocated.
+     *
+     * It is allowed to throw HTTP exceptions, and therefore can perform checks common to all
+     * controller methods in the class, and redirect / return an HTTP error code if necessary.
+     *
      * @param \Brick\Http\Request $request
      *
      * @return void
