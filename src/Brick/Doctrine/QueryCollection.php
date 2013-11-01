@@ -83,6 +83,14 @@ class QueryCollection implements \Countable, \IteratorAggregate
     }
 
     /**
+     * @return boolean
+     */
+    public function isEmpty()
+    {
+        return $this->count() == 0;
+    }
+
+    /**
      * Returns a subset of the collection as an array.
      *
      * @param  integer      $offset
