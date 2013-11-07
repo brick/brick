@@ -134,7 +134,7 @@ class RequestParamListener extends AbstractEventListener
         $value = $requestParameters[$parameterName];
 
         if ($parameter->isArray() && ! is_array($value)) {
-            throw $this->invalidArrayParameter($controller, $annotation);
+            throw $this->invalidArrayParameterException($controller, $annotation);
         }
 
         return $this->parameterConverter->convertParameter($parameter, $value);
@@ -177,7 +177,7 @@ class RequestParamListener extends AbstractEventListener
      *
      * @return \Brick\Http\Exception\HttpBadRequestException
      */
-    private function invalidArrayParameter(\ReflectionFunctionAbstract $controller, RequestParam $annotation)
+    private function invalidArrayParameterException(\ReflectionFunctionAbstract $controller, RequestParam $annotation)
     {
         return new HttpBadRequestException(sprintf(
             '%s() expects an array for %s parameter "%s" (bound to $%s), string given.',
