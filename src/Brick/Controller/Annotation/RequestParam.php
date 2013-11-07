@@ -20,9 +20,15 @@ abstract class RequestParam
     private $bindTo;
 
     /**
+     * @var array
+     */
+    private $options;
+
+    /**
      * Class constructor.
      *
      * @param array $values
+     *
      * @throws \RuntimeException
      */
     public function __construct(array $values)
@@ -32,13 +38,15 @@ abstract class RequestParam
         } elseif (isset($values['value'])) {
             $name = $values['value'];
         } else {
-            $r = new \ReflectionObject($this);
-            $message = '@' . $r->getShortName() . ' requires a parameter name';
-            throw new \RuntimeException($message);
+            throw new \RuntimeException($this->getAnnotationName() . ' requires a parameter name.');
         }
 
         $this->name = $name;
         $this->bindTo = isset($values['bindTo']) ? $values['bindTo'] : $name;
+
+        unset($values['name'], $values['value'], $values['bindTo']);
+
+        $this->options = $values;
     }
 
     /**
@@ -58,14 +66,30 @@ abstract class RequestParam
     }
 
     /**
-     * Returns the request parameter type: query, post, ...
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @return string
+     */
+    private function getAnnotationName()
+    {
+        return '@' . (new \ReflectionObject($this))->getShortName();
+    }
+
+    /**
+     * Returns the request parameter type: query or post.
      *
      * @return string
      */
     abstract public function getParameterType();
 
     /**
-     * Returns the relevant ParameterMap from the request.
+     * Returns the relevant query/post parameters from the request.
      *
      * @param \Brick\Http\Request $request
      *

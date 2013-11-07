@@ -10,7 +10,7 @@ class NullConverter implements ParameterConverter
     /**
      * {@inheritdoc}
      */
-    public function convertParameter(\ReflectionParameter $parameter, $value)
+    public function convertParameter(\ReflectionParameter $parameter, $value, array $options = [])
     {
         return $value;
     }

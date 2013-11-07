@@ -137,7 +137,7 @@ class RequestParamListener extends AbstractEventListener
             throw $this->invalidArrayParameterException($controller, $annotation);
         }
 
-        return $this->parameterConverter->convertParameter($parameter, $value);
+        return $this->parameterConverter->convertParameter($parameter, $value, $annotation->getOptions());
     }
 
     /**

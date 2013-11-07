@@ -5,7 +5,8 @@ namespace Brick\Controller\ParameterConverter;
 use Brick\Reflection\ReflectionTools;
 use Brick\Http\Exception\HttpNotFoundException;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\LockMode;
 
 /**
  * Converts requests parameters to objects retrieved by identity.
@@ -18,9 +19,9 @@ use Doctrine\Common\Persistence\ObjectManager;
 class DoctrineConverter implements ParameterConverter
 {
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var \Doctrine\ORM\EntityManager
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var \Brick\Reflection\ReflectionTools
@@ -28,23 +29,24 @@ class DoctrineConverter implements ParameterConverter
     private $reflectionTools;
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $objectManager
+     * @param \Doctrine\ORM\EntityManager $entityManager
      */
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
         $this->reflectionTools = new ReflectionTools();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertParameter(\ReflectionParameter $parameter, $value)
+    public function convertParameter(\ReflectionParameter $parameter, $value, array $options = [])
     {
         $class = $parameter->getClass();
+        $lockMode = $this->getLockMode($options);
 
         if ($class) {
-            return $this->findObject($class->getName(), $value);
+            return $this->findObject($class->getName(), $value, $lockMode);
         }
 
         if ($parameter->isArray()) {
@@ -66,7 +68,7 @@ class DoctrineConverter implements ParameterConverter
             $type = substr($type, 1, -2);
 
             foreach ($value as & $item) {
-                $item = $this->findObject($type, $item);
+                $item = $this->findObject($type, $item, $lockMode);
             }
         }
 
@@ -78,14 +80,15 @@ class DoctrineConverter implements ParameterConverter
      *
      * @param string       $class
      * @param string|array $identity
+     * @param integer      $lockMode
      *
      * @return object
      *
      * @throws \Brick\Http\Exception\HttpNotFoundException
      */
-    private function findObject($class, $identity)
+    private function findObject($class, $identity, $lockMode)
     {
-        $entity = $this->objectManager->find($class, $identity);
+        $entity = $this->entityManager->find($class, $identity, $lockMode);
 
         if ($entity === null) {
             $message = '%s with identity %s was not found';
@@ -95,5 +98,29 @@ class DoctrineConverter implements ParameterConverter
         }
 
         return $entity;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return integer
+     *
+     * @throws \RuntimeException
+     */
+    private function getLockMode(array $options)
+    {
+        if (! isset($options['lock'])) {
+            return LockMode::NONE;
+        }
+
+        switch ($options['lock']) {
+            case 'READ':
+                return LockMode::PESSIMISTIC_READ;
+
+            case 'WRITE':
+                return LockMode::PESSIMISTIC_WRITE;
+        }
+
+        throw new \RuntimeException('Invalid lock mode: ' . $options['lock']);
     }
 }
