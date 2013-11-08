@@ -15,14 +15,13 @@ class ValidationResult
     private $failures = [];
 
     /**
-     * @param string $messageKey        The message key.
-     * @param array  $messageParameters The message parameters, if any.
+     * @param string $messageKey The message key.
      *
      * @return static This instance for chaining.
      */
-    public function addFailure($messageKey, array $messageParameters = [])
+    public function addFailure($messageKey)
     {
-        $this->failures[] = new ValidationFailure($messageKey, $messageParameters);
+        $this->failures[] = new ValidationFailure($messageKey);
 
         return $this;
     }

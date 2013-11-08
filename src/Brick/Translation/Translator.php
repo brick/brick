@@ -78,25 +78,18 @@ class Translator
 
     /**
      * @param string      $key
-     * @param array       $parameters
      * @param Locale|null $locale
      *
      * @return string
      */
-    public function translate($key, array $parameters = [], Locale $locale = null)
+    public function translate($key, Locale $locale = null)
     {
         $locale = $locale ?: $this->locale;
-
-        $placeholders = [];
-
-        foreach ($parameters as $placeholder => $value) {
-            $placeholders['[' . $placeholder . ']'] = $value;
-        }
 
         foreach ($this->computeLookupLocales($locale) as $locale) {
             $result = $this->translateIn($key, $locale);
             if ($result !== null) {
-                return strtr($result, $placeholders);
+                return $result;
             }
         }
 

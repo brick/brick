@@ -13,20 +13,13 @@ class ValidationFailure
     private $messageKey;
 
     /**
-     * @var array
-     */
-    private $messageParameters;
-
-    /**
      * Class constructor.
      *
      * @param string $messageKey
-     * @param array  $messageParameters
      */
-    public function __construct($messageKey, array $messageParameters)
+    public function __construct($messageKey)
     {
         $this->messageKey = $messageKey;
-        $this->messageParameters = $messageParameters;
     }
 
     /**
@@ -37,15 +30,5 @@ class ValidationFailure
     public function getMessageKey()
     {
         return $this->messageKey;
-    }
-
-    /**
-     * Returns an optional array of parameters to replace in the message.
-     *
-     * @return array
-     */
-    public function getMessageParameters()
-    {
-        return $this->messageParameters;
     }
 }

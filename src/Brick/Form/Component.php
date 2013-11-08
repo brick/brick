@@ -165,10 +165,7 @@ abstract class Component extends Base
      */
     private function addValidationFailure(ValidationFailure $failure)
     {
-        $this->addError($this->translator->translate(
-            $failure->getMessageKey(),
-            $failure->getMessageParameters()
-        ));
+        $this->addError($this->translator->translate($failure->getMessageKey()));
     }
 
     /**

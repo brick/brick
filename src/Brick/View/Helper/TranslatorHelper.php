@@ -28,17 +28,16 @@ trait TranslatorHelper
 
     /**
      * @param string $key
-     * @param array $parameters
      * @param \Brick\Locale\Locale|null $locale
      * @return string
      * @throws \RuntimeException
      */
-    final public function translate($key, array $parameters = [], Locale $locale = null)
+    final public function translate($key, Locale $locale = null)
     {
         if (! $this->translator) {
             throw new \RuntimeException('No translator has been registered');
         }
 
-        return $this->translator->translate($key, $parameters, $locale);
+        return $this->translator->translate($key, $locale);
     }
 }
