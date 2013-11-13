@@ -19,6 +19,7 @@ trait TranslatorHelper
      * @Brick\DependencyInjection\Annotation\Inject
      *
      * @param \Brick\Translation\Translator $translator
+     *
      * @return void
      */
     final public function setTranslator(Translator $translator)
@@ -27,17 +28,27 @@ trait TranslatorHelper
     }
 
     /**
-     * @param string $key
-     * @param \Brick\Locale\Locale|null $locale
-     * @return string
+     * @return \Brick\Translation\Translator
+     *
      * @throws \RuntimeException
      */
-    final public function translate($key, Locale $locale = null)
+    final public function getTranslator()
     {
         if (! $this->translator) {
             throw new \RuntimeException('No translator has been registered');
         }
 
-        return $this->translator->translate($key, $locale);
+        return $this->translator;
+    }
+
+    /**
+     * @param string $key
+     * @param \Brick\Locale\Locale|null $locale
+     *
+     * @return string
+     */
+    final public function translate($key, Locale $locale = null)
+    {
+        return $this->getTranslator()->translate($key, $locale);
     }
 }
