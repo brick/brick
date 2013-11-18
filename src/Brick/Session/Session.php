@@ -68,7 +68,7 @@ class Session implements SessionInterface
      */
     private static $defaultCookieParams = [
         'name'      => 'SID', // The cookie name.
-        'lifetime'  => 0,     // The cookie lifetime in second, or 0 to use a browser session cookie.
+        'lifetime'  => 0,     // The cookie lifetime in seconds, or 0 to use a browser session cookie.
         'path'      => '/',
         'domain'    => null,
         'secure'    => false,
@@ -83,8 +83,8 @@ class Session implements SessionInterface
      */
     public function __construct(Storage\SessionStorage $storage, ObjectPacker $packer = null)
     {
-        $this->storage = $storage;
-        $this->packer  = new Packer($packer ?: new NullObjectPacker());
+        $this->storage      = $storage;
+        $this->packer       = new Packer($packer ?: new NullObjectPacker());
         $this->cookieParams = self::$defaultCookieParams;
     }
 
@@ -120,7 +120,7 @@ class Session implements SessionInterface
      */
     public function setCookieParams(array $params)
     {
-        $this->cookieParams = array_merge($this->cookieParams, $params);
+        $this->cookieParams = $params + $this->cookieParams;
 
         return $this;
     }
