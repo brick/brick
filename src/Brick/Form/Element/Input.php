@@ -13,7 +13,7 @@ abstract class Input extends Element
     /**
      * {@inheritdoc}
      */
-    public function init()
+    protected function init()
     {
         $this->tag = new SelfClosingTag('input');
         $this->tag->setAttribute('type', $this->getType());

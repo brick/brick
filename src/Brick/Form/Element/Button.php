@@ -20,7 +20,7 @@ abstract class Button extends Element
     /**
      * {@inheritdoc}
      */
-    public function init()
+    protected function init()
     {
         $this->tag = new ContainerTag('button');
         $this->tag->setAttribute('type', $this->getType());

@@ -13,7 +13,7 @@ class Email extends Text
     /**
      * {@inheritdoc}
      */
-    public function init()
+    protected function init()
     {
         parent::init();
 

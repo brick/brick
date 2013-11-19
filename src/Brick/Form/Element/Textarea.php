@@ -25,7 +25,7 @@ class Textarea extends Element
     /**
      * Class constructor.
      */
-    public function init()
+    protected function init()
     {
         $this->tag = new ContainerTag('textarea');
     }

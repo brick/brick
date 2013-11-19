@@ -29,7 +29,7 @@ abstract class Select extends Element
     /**
      * {@inheritdoc}
      */
-    public function init()
+    protected function init()
     {
         $this->tag = new ContainerTag('select');
     }
