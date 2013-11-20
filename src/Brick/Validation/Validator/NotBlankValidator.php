@@ -43,7 +43,7 @@ class NotBlankValidator implements Validator
         }
 
         if ($value == '') {
-            $result->addFailure('validator.not-blank.missing');
+            $result->addFailure('validator.not-blank');
         }
 
         return $result;
