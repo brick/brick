@@ -80,12 +80,14 @@ class ResponseParser
     /**
      * Parses the response as JSON.
      *
+     * @param bool $assoc
+     *
      * @return mixed
      *
      * @throws \Brick\Json\JsonException
      */
-    public function parseJson()
+    public function parseJson($assoc = false)
     {
-        return Json::decode($this->getText());
+        return Json::decode($this->getText(), $assoc);
     }
 }
