@@ -155,6 +155,36 @@ class Money
     }
 
     /**
+     * Returns whether this Money has a negative or zero value.
+     *
+     * @return boolean
+     */
+    public function isNegativeOrZero()
+    {
+        return $this->amount->isNegativeOrZero();
+    }
+
+    /**
+     * Returns whether this Money has a positive value.
+     *
+     * @return boolean
+     */
+    public function isPositive()
+    {
+        return $this->amount->isPositive();
+    }
+
+    /**
+     * Returns whether this Money has a positive or zero value.
+     *
+     * @return boolean
+     */
+    public function isPositiveOrZero()
+    {
+        return $this->amount->isPositiveOrZero();
+    }
+
+    /**
      * Returns whether this Money equals another Money.
      *
      * @param  Money   $money
