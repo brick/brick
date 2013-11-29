@@ -29,7 +29,19 @@ class MoneyBag
     {
         $currencyCode = $currency->getCurrencyCode();
 
-        return isset($this->monies[$currencyCode]) ? $this->monies[$currencyCode] : Money::zero($currency);
+        return isset($this->monies[$currencyCode])
+            ? $this->monies[$currencyCode]
+            : Money::zero($currency);
+    }
+
+    /**
+     * Returns all the monies inside this bag.
+     *
+     * @return Money[]
+     */
+    public function getMonies()
+    {
+        return $this->monies;
     }
 
     /**
@@ -37,7 +49,7 @@ class MoneyBag
      *
      * @param Money $money
      *
-     * @return MoneyBag
+     * @return MoneyBag This instance.
      */
     public function add(Money $money)
     {
@@ -53,10 +65,24 @@ class MoneyBag
      *
      * @param Money $money
      *
-     * @return MoneyBag
+     * @return MoneyBag This instance.
      */
     public function subtract(Money $money)
     {
         return $this->add($money->negated());
+    }
+
+    /**
+     * @param MoneyBag $moneyBag
+     *
+     * @return MoneyBag This instance.
+     */
+    public function addMoneyBag(MoneyBag $moneyBag)
+    {
+        foreach ($moneyBag->getMonies() as $money) {
+            $this->add($money);
+        }
+
+        return $this;
     }
 }
