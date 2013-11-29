@@ -8,7 +8,7 @@ use Brick\Validation\ValidationResult;
 /**
  * Validates that a string is not empty, and not null.
  */
-class NotBlankValidator implements Validator
+class RequiredValidator implements Validator
 {
     /**
      * Whether to trim the white spaces around the string before validation.

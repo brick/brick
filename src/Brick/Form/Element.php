@@ -2,7 +2,7 @@
 
 namespace Brick\Form;
 
-use Brick\Validation\Validator\NotBlankValidator;
+use Brick\Validation\Validator\RequiredValidator;
 
 /**
  * Base class for form elements.
@@ -42,12 +42,12 @@ abstract class Element extends Component
         /**
          * This validator instance is shared across all elements.
          *
-         * @var \Brick\Validation\Validator\NotBlankValidator
+         * @var \Brick\Validation\Validator\RequiredValidator
          */
         static $notBlankValidator = null;
 
         if ($notBlankValidator === null) {
-            $notBlankValidator = new NotBlankValidator();
+            $notBlankValidator = new RequiredValidator();
         }
 
         if ($required) {
