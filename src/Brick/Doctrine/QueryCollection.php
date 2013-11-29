@@ -59,6 +59,10 @@ class QueryCollection implements \Countable, \IteratorAggregate
         $queryClone = clone $query;
         $queryClone->setParameters($query->getParameters());
 
+        foreach ($query->getHints() as $key => $value) {
+            $queryClone->setHint($key, $value);
+        }
+
         return $queryClone;
     }
 
