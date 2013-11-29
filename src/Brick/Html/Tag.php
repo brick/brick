@@ -45,7 +45,8 @@ abstract class Tag
 
     /**
      * @param string $name
-     * @return bool
+     *
+     * @return boolean
      */
     public function hasAttribute($name)
     {
@@ -54,6 +55,7 @@ abstract class Tag
 
     /**
      * @param string $name
+     *
      * @return string|null
      */
     public function getAttribute($name)
@@ -64,6 +66,8 @@ abstract class Tag
     /**
      * @param string $name
      * @param string $value
+     *
+     * @return void
      */
     public function setAttribute($name, $value)
     {
@@ -71,7 +75,19 @@ abstract class Tag
     }
 
     /**
+     * @param array $attributes
+     *
+     * @return void
+     */
+    public function setAttributes(array $attributes)
+    {
+        $this->attributes = $attributes + $this->attributes;
+    }
+
+    /**
      * @param string $name
+     *
+     * @return void
      */
     public function removeAttribute($name)
     {
