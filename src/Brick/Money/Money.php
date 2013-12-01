@@ -24,13 +24,13 @@ class Money
 
     /**
      * @param \Brick\Locale\Currency $currency
-     * @param \Brick\Math\Decimal               $amount
+     * @param \Brick\Math\Decimal    $amount
+     * @param boolean                $isExact
      */
-    public function __construct(Currency $currency, Decimal $amount)
+    public function __construct(Currency $currency, Decimal $amount, $isExact = true)
     {
         $this->currency = $currency;
-        $scale = $currency->getDefaultFractionDigits();
-        $this->amount = $amount->withScale($scale);
+        $this->amount = $amount->withScale($currency->getDefaultFractionDigits(), $isExact);
     }
 
     /**
@@ -114,14 +114,27 @@ class Money
     }
 
     /**
-     * @param  integer $value
+     * @param Decimal $value
+     * @param boolean $isExact
+     *
      * @return Money
      */
-    public function multipliedBy($value)
+    public function multipliedBy(Decimal $value, $isExact = true)
     {
-        $value = Decimal::of($value);
+        return new Money($this->currency, $this->amount->multipliedBy($value), $isExact);
+    }
 
-        return new Money($this->currency, $this->amount->multipliedBy($value));
+    /**
+     * @param Decimal $value
+     * @param boolean $isExact
+     *
+     * @return Money
+     */
+    public function dividedBy(Decimal $value, $isExact = true)
+    {
+        $amount = $this->amount->dividedBy($value, $this->currency->getDefaultFractionDigits(), $isExact);
+
+        return new Money($this->currency, $amount);
     }
 
     /**

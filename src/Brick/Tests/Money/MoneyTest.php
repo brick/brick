@@ -47,8 +47,30 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipliedBy()
     {
-        $this->money = $this->money->multipliedBy(5);
+        $this->money = $this->money->multipliedBy(Decimal::of(5));
         $this->assertEquals($this->money->getAmount()->toString(), '50.00');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMultipliedByOutOfScaleThrowsException()
+    {
+        $this->money->multipliedBy(Decimal::of('0.0001'));
+    }
+
+    public function testDividedBy()
+    {
+        $this->assertEquals('5.00', $this->money->dividedBy(Decimal::of(2))->getAmount()->toString());
+        $this->assertEquals('3.33', $this->money->dividedBy(Decimal::of(3), false)->getAmount()->toString());
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testDividedByOutOfScaleThrowsException()
+    {
+        $this->money->dividedBy(Decimal::of(3));
     }
 
     public function testAdjustments()
