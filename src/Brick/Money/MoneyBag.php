@@ -14,7 +14,7 @@ class MoneyBag
      *
      * @var Money[]
      */
-    private $monies;
+    private $monies = [];
 
     /**
      * Returns the money in the given currency contained in the bag.
