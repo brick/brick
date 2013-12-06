@@ -34,15 +34,36 @@ class Money
     }
 
     /**
-     * @param  \Brick\Locale\Currency $currency
-     * @param  string                             $amount
+     * @param \Brick\Locale\Currency $currency
+     * @param string                 $amount
+     *
      * @return Money
      */
-    public static function parse(Currency $currency, $amount)
+    public static function of(Currency $currency, $amount)
     {
         $amount = Decimal::of($amount);
 
         return new self($currency, $amount);
+    }
+
+    /**
+     * Parses a string representation of a money, such as USD 23.00.
+     *
+     * @param string $string
+     *
+     * @return Money
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function parse($string)
+    {
+        $parts = explode(' ', $string);
+
+        if (count($parts) != 2) {
+            throw new \InvalidArgumentException('Could not parse money: ' . $string);
+        }
+
+        return Money::of(Currency::getInstance($parts[0]), $parts[1]);
     }
 
     /**
