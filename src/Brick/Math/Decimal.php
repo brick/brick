@@ -27,6 +27,7 @@ class Decimal
 
     /**
      * Class constructor, for internal use only.
+     *
      * Use the factory methods instead.
      *
      * @param string  $value The value, validated as a string.
@@ -96,13 +97,14 @@ class Decimal
     /**
      * Adds a Decimal number to this number.
      *
-     * @param Decimal $number
+     * @param Decimal $that
+     *
      * @return Decimal
      */
-    public function plus(Decimal $number)
+    public function plus(Decimal $that)
     {
-        $scale = max($this->scale, $number->scale);
-        $value = bcadd($this->value, $number->value, $scale);
+        $scale = max($this->scale, $that->scale);
+        $value = bcadd($this->value, $that->value, $scale);
 
         return new self($value, $scale);
     }
@@ -110,13 +112,14 @@ class Decimal
     /**
      * Subtracts a Decimal number from this number.
      *
-     * @param Decimal $number
+     * @param Decimal $that
+     *
      * @return Decimal
      */
-    public function minus(Decimal $number)
+    public function minus(Decimal $that)
     {
-        $scale = max($this->scale, $number->scale);
-        $value = bcsub($this->value, $number->value, $scale);
+        $scale = max($this->scale, $that->scale);
+        $value = bcsub($this->value, $that->value, $scale);
 
         return new self($value, $scale);
     }
@@ -124,13 +127,14 @@ class Decimal
     /**
      * Multiplies a Decimal number with this number.
      *
-     * @param Decimal $number
+     * @param Decimal $that
+     *
      * @return Decimal
      */
-    public function multipliedBy(Decimal $number)
+    public function multipliedBy(Decimal $that)
     {
-        $scale = $this->scale + $number->scale;
-        $value = bcmul($this->value, $number->value, $scale);
+        $scale = $this->scale + $that->scale;
+        $value = bcmul($this->value, $that->value, $scale);
 
         return new self($value, $scale);
     }
@@ -146,13 +150,15 @@ class Decimal
     /**
      * Divides a Decimal number from this number.
      *
-     * @param  Decimal           $number
-     * @param  integer|null      $scale
-     * @param  boolean           $isExact
+     * @param Decimal      $that
+     * @param integer|null $scale
+     * @param boolean      $isExact
+     *
      * @return Decimal
+     *
      * @throws \RuntimeException
      */
-    public function dividedBy(Decimal $number, $scale = null, $isExact = true)
+    public function dividedBy(Decimal $that, $scale = null, $isExact = true)
     {
         if ($scale === null) {
             $scale = $this->scale;
@@ -160,14 +166,14 @@ class Decimal
             $this->checkScale($scale);
         }
 
-        if ($number->isZero()) {
+        if ($that->isZero()) {
             throw new \RuntimeException('Division by zero');
         }
 
-        $power = $scale - ($this->scale - $number->scale);
+        $power = $scale - ($this->scale - $that->scale);
 
         $p = $this->unscaledValue();
-        $q = $number->unscaledValue();
+        $q = $that->unscaledValue();
 
         if ($power > 0) {
             // add $power zeros to p
@@ -185,7 +191,7 @@ class Decimal
             }
         }
 
-        $result = bcdiv($this->value, $number->value, $scale);
+        $result = bcdiv($this->value, $that->value, $scale);
 
         return new self($result, $scale);
     }
@@ -193,8 +199,9 @@ class Decimal
     /**
      * Returns a Decimal with the current value and the specified scale.
      *
-     * @param  integer $scale
-     * @param  boolean $isExact
+     * @param integer $scale
+     * @param boolean $isExact
+     *
      * @return Decimal
      */
     public function withScale($scale, $isExact = true)
@@ -225,69 +232,71 @@ class Decimal
     /**
      * Compares two Decimal numbers.
      *
-     * @param  Decimal $number
+     * @param Decimal $that
+     *
      * @return integer [-1,0,1]
      */
-    private function compareTo(Decimal $number)
+    private function compareTo(Decimal $that)
     {
-        $scale = max($this->scale, $number->scale);
+        $scale = max($this->scale, $that->scale);
 
-        return bccomp($this->value, $number->value, $scale);
+        return bccomp($this->value, $that->value, $scale);
     }
 
     /**
-     * Checks if this number is equal to $number.
+     * Checks if this number is equal to that number.
      *
-     * @param  Decimal $number
+     * @param Decimal $that
+     *
      * @return boolean
      */
-    public function isEqualTo(Decimal $number)
+    public function isEqualTo(Decimal $that)
     {
-        return $this->compareTo($number) == 0;
+        return $this->compareTo($that) == 0;
     }
 
     /**
-     * Checks if this number is strictly lower than $number.
+     * Checks if this number is strictly lower than that number.
      *
-     * @param  Decimal $number
+     * @param Decimal $that
      * @return boolean
      */
-    public function isLessThan(Decimal $number)
+    public function isLessThan(Decimal $that)
     {
-        return $this->compareTo($number) < 0;
+        return $this->compareTo($that) < 0;
     }
 
     /**
-     * Checks if this number is lower than, or equals, $number.
+     * Checks if this number is lower than or equal to that number.
      *
-     * @param  Decimal $number
+     * @param  Decimal $that
      * @return boolean
      */
-    public function isLessThanOrEqualTo(Decimal $number)
+    public function isLessThanOrEqualTo(Decimal $that)
     {
-        return $this->compareTo($number) <= 0;
+        return $this->compareTo($that) <= 0;
     }
 
     /**
-     * Checks if this number is strictly greater than $number.
+     * Checks if this number is strictly greater than that number.
      *
-     * @param  Decimal $number
+     * @param  Decimal $that
      * @return boolean
      */
-    public function isGreaterThan(Decimal $number)
+    public function isGreaterThan(Decimal $that)
     {
-        return $this->compareTo($number) > 0;
+        return $this->compareTo($that) > 0;
     }
 
     /**
-     * Checks if this number is greater than, or equals, $number.
+     * Checks if this number is greater than or equal to that number.
      *
-     * @param  Decimal $number
+     * @param  Decimal $that
      * @return boolean
      */
-    public function isGreaterThanOrEqualTo(Decimal $number)
+    public function isGreaterThanOrEqualTo(Decimal $that)
     {
-        return $this->compareTo($number) >= 0;
+        return $this->compareTo($that) >= 0;
     }
 
     /**
@@ -341,8 +350,7 @@ class Decimal
     }
 
     /**
-     * Returns a string representation of this number,
-     * including the trailing zeros matching the scale.
+     * Returns a string representation of this number.
      *
      * @return string
      */
@@ -353,8 +361,7 @@ class Decimal
     }
 
     /**
-     * Returns a string representation of this number,
-     * including the trailing zeros matching the scale.
+     * Returns a string representation of this number.
      *
      * @return string
      */
@@ -364,7 +371,10 @@ class Decimal
     }
 
     /**
-     * @param  mixed                     $value
+     * @param mixed $value
+     *
+     * @return void
+     *
      * @throws \InvalidArgumentException
      */
     private function checkInteger($value)
@@ -376,7 +386,10 @@ class Decimal
     }
 
     /**
-     * @param  mixed                     $scale
+     * @param mixed $scale
+     *
+     * @return void
+     *
      * @throws \InvalidArgumentException
      */
     private function checkScale($scale)

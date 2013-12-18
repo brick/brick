@@ -5,7 +5,6 @@ namespace Brick\Money;
 use Brick\Locale\Currency;
 use Brick\Math\Decimal;
 use Brick\Locale\Locale;
-use NumberFormatter;
 
 /**
  * Represents a monetary value in a given currency. This class is immutable.
@@ -23,19 +22,21 @@ class Money
     private $amount;
 
     /**
-     * @param \Brick\Locale\Currency $currency
-     * @param \Brick\Math\Decimal    $amount
-     * @param boolean                $isExact
+     * Class constructor.
+     *
+     * @param Currency $currency
+     * @param Decimal  $amount
+     * @param boolean  $isExact
      */
     public function __construct(Currency $currency, Decimal $amount, $isExact = true)
     {
         $this->currency = $currency;
-        $this->amount = $amount->withScale($currency->getDefaultFractionDigits(), $isExact);
+        $this->amount   = $amount->withScale($currency->getDefaultFractionDigits(), $isExact);
     }
 
     /**
-     * @param \Brick\Locale\Currency $currency
-     * @param string                 $amount
+     * @param Currency $currency
+     * @param string   $amount
      *
      * @return Money
      */
@@ -69,7 +70,8 @@ class Money
     /**
      * Returns a Money with zero value, in the given Currency.
      *
-     * @param  \Brick\Locale\Currency $currency
+     * @param Currency $currency
+     *
      * @return Money
      */
     public static function zero(Currency $currency)
@@ -98,62 +100,66 @@ class Money
     }
 
     /**
-     * @param Money $money
+     * @param Money $that
+     *
      * @return void
+     *
      * @throws \RuntimeException
      */
-    private function checkCurrenciesMatch(Money $money)
+    private function checkCurrencyMatches(Money $that)
     {
-        if (! $money->getCurrency()->isEqualTo($this->currency)) {
+        if (! $that->currency->isEqualTo($this->currency)) {
             throw new \RuntimeException(sprintf('Currencies mismatch: %s != %s',
-                    $money->getCurrency()->getCurrencyCode(),
+                    $that->currency->getCurrencyCode(),
                     $this->currency->getCurrencyCode())
             );
         }
     }
 
     /**
-     * @param  Money $money
+     * @param Money $that
+     *
      * @return Money
      */
-    public function plus(Money $money)
+    public function plus(Money $that)
     {
-        $this->checkCurrenciesMatch($money);
+        $this->checkCurrencyMatches($that);
 
-        return new Money($this->currency, $this->amount->plus($money->getAmount()));
+        return new Money($this->currency, $this->amount->plus($that->getAmount()));
     }
 
     /**
-     * @param  Money $money
+     * @param Money $that
+     *
      * @return Money
      */
-    public function minus(Money $money)
+    public function minus(Money $that)
     {
-        $this->checkCurrenciesMatch($money);
+        $this->checkCurrencyMatches($that);
 
-        return new Money($this->currency, $this->amount->minus($money->getAmount()));
+        return new Money($this->currency, $this->amount->minus($that->getAmount()));
     }
 
     /**
-     * @param Decimal $value
+     * @param Decimal $that
      * @param boolean $isExact
      *
      * @return Money
      */
-    public function multipliedBy(Decimal $value, $isExact = true)
+    public function multipliedBy(Decimal $that, $isExact = true)
     {
-        return new Money($this->currency, $this->amount->multipliedBy($value), $isExact);
+        return new Money($this->currency, $this->amount->multipliedBy($that), $isExact);
     }
 
     /**
-     * @param Decimal $value
+     * @param Decimal $that
      * @param boolean $isExact
      *
      * @return Money
      */
-    public function dividedBy(Decimal $value, $isExact = true)
+    public function dividedBy(Decimal $that, $isExact = true)
     {
-        $amount = $this->amount->dividedBy($value, $this->currency->getDefaultFractionDigits(), $isExact);
+        $amount = $this->amount->dividedBy($that, $this->currency->getDefaultFractionDigits(), $isExact);
 
         return new Money($this->currency, $amount);
     }
@@ -219,80 +225,90 @@ class Money
     }
 
     /**
-     * Returns whether this Money equals another Money.
+     * Returns whether this Money is equal to the given Money.
      *
      * @param  Money   $that
      * @return boolean
      */
     public function isEqualTo(Money $that)
     {
-        $this->checkCurrenciesMatch($that);
+        $this->checkCurrencyMatches($that);
 
         return $this->amount->isEqualTo($that->amount);
     }
 
     /**
+     * Returns whether this Money is less than the given Money.
+     *
      * @param Money $that
      *
      * @return boolean
      */
     public function isLessThan(Money $that)
     {
-        $this->checkCurrenciesMatch($that);
+        $this->checkCurrencyMatches($that);
 
         return $this->amount->isLessThan($that->amount);
     }
 
     /**
+     * Returns whether this Money is less than or equal to the given Money.
+     *
      * @param Money $that
      *
      * @return boolean
      */
     public function isLessThanOrEqualTo(Money $that)
     {
-        $this->checkCurrenciesMatch($that);
+        $this->checkCurrencyMatches($that);
 
         return $this->amount->isLessThanOrEqualTo($that->amount);
     }
 
     /**
+     * Returns whether this Money is greater than the given Money.
+     *
      * @param Money $that
      *
      * @return boolean
      */
     public function isGreaterThan(Money $that)
     {
-        $this->checkCurrenciesMatch($that);
+        $this->checkCurrencyMatches($that);
 
         return $this->amount->isGreaterThan($that->amount);
     }
 
     /**
+     * Returns whether this Money is greater than or equal to the given Money.
+     *
      * @param Money $that
      *
      * @return boolean
      */
     public function isGreaterThanOrEqualTo(Money $that)
     {
-        $this->checkCurrenciesMatch($that);
+        $this->checkCurrencyMatches($that);
 
         return $this->amount->isGreaterThanOrEqualTo($that->amount);
     }
 
     /**
      * Returns a formatted string, according to the given Locale.
-     * Note: even if all calculations are done with exact arithmetic,
+     *
+     * Note: even though all calculations are done with exact arithmetic,
      * the NumberFormatter here accepts a floating-point value only.
      * This should not be an issue for formatting though, as the output has been
      * verified to be the correct one on the range [-1000000.00,1000000.00]
      *
-     * @param  Locale $locale
+     * @param Locale $locale
+     *
      * @return string
      */
     public function format(Locale $locale)
     {
-        $formatter = new NumberFormatter($locale->toString(), NumberFormatter::CURRENCY);
-        $formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, $this->currency->getSymbol());
+        $formatter = new \NumberFormatter($locale->toString(), \NumberFormatter::CURRENCY);
+        $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $this->currency->getSymbol());
 
         return $formatter->format((float) $this->amount->toString());
     }
