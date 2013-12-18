@@ -221,25 +221,62 @@ class Money
     /**
      * Returns whether this Money equals another Money.
      *
-     * @param  Money   $money
+     * @param  Money   $that
      * @return boolean
      */
-    public function isEqualTo(Money $money)
+    public function isEqualTo(Money $that)
     {
-        $this->checkCurrenciesMatch($money);
+        $this->checkCurrenciesMatch($that);
 
-        return $this->amount->isEqualTo($money->getAmount());
+        return $this->amount->isEqualTo($that->amount);
     }
 
     /**
-     * @param  Money   $money
+     * @param Money $that
+     *
      * @return boolean
      */
-    public function isGreaterThanOrEqualTo(Money $money)
+    public function isLessThan(Money $that)
     {
-        $this->checkCurrenciesMatch($money);
+        $this->checkCurrenciesMatch($that);
 
-        return $this->amount->isGreaterThanOrEqualTo($money->getAmount());
+        return $this->amount->isLessThan($that->amount);
+    }
+
+    /**
+     * @param Money $that
+     *
+     * @return boolean
+     */
+    public function isLessThanOrEqualTo(Money $that)
+    {
+        $this->checkCurrenciesMatch($that);
+
+        return $this->amount->isLessThanOrEqualTo($that->amount);
+    }
+
+    /**
+     * @param Money $that
+     *
+     * @return boolean
+     */
+    public function isGreaterThan(Money $that)
+    {
+        $this->checkCurrenciesMatch($that);
+
+        return $this->amount->isGreaterThan($that->amount);
+    }
+
+    /**
+     * @param Money $that
+     *
+     * @return boolean
+     */
+    public function isGreaterThanOrEqualTo(Money $that)
+    {
+        $this->checkCurrenciesMatch($that);
+
+        return $this->amount->isGreaterThanOrEqualTo($that->amount);
     }
 
     /**
