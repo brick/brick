@@ -152,13 +152,13 @@ class Decimal
      *
      * @param Decimal      $that
      * @param integer|null $scale
-     * @param boolean      $isExact
+     * @param integer      $roundingMode
      *
      * @return Decimal
      *
-     * @throws \RuntimeException
+     * @throws ArithmeticException
      */
-    public function dividedBy(Decimal $that, $scale = null, $isExact = true)
+    public function dividedBy(Decimal $that, $scale = null, $roundingMode = RoundingMode::ROUND_UNNECESSARY)
     {
         if ($scale === null) {
             $scale = $this->scale;
@@ -167,7 +167,7 @@ class Decimal
         }
 
         if ($that->isZero()) {
-            throw new \RuntimeException('Division by zero');
+            throw ArithmeticException::divisionByZero();
         }
 
         $power = $scale - ($this->scale - $that->scale);
@@ -185,13 +185,87 @@ class Decimal
 
         $mod = bcmod($p, $q);
 
-        if ($mod != '0') {
-            if ($isExact) {
-                throw new \RuntimeException('Cannot represent the exact result of the division at this scale');
-            }
+        if ($roundingMode == RoundingMode::ROUND_UNNECESSARY && $mod != 0) {
+            throw ArithmeticException::inexactResult();
         }
 
-        $result = bcdiv($this->value, $that->value, $scale);
+        $result = bcdiv($this->value, $that->value, $scale + 1);
+        $isPositive = bccomp($result, '0', $scale) > 0;
+
+        $discarded = substr($result, -1);
+        $result = substr($result, 0, -1);
+
+        $last = substr(str_replace('.', '', $result), -1);
+
+        $unit = bcpow('10', -$scale, $scale);
+        if (! $isPositive) {
+            $unit = '-' . $unit;
+        }
+
+        switch ($roundingMode) {
+            case RoundingMode::ROUND_UP:
+                if ($mod != '0') {
+                    $result = bcadd($result, $unit, $scale);
+                }
+                break;
+
+            case RoundingMode::ROUND_DOWN:
+                break;
+
+            case RoundingMode::ROUND_CEILING:
+                if ($isPositive) {
+                    if ($mod != '0') {
+                        $result = bcadd($result, $unit, $scale);
+                    }
+                }
+                break;
+
+            case RoundingMode::ROUND_FLOOR:
+                if (! $isPositive) {
+                    if ($mod != '0') {
+                        $result = bcadd($result, $unit, $scale);
+                    }
+                }
+                break;
+
+            case RoundingMode::ROUND_HALF_UP:
+                if ($discarded >= 5) {
+                    if ($mod != '0') {
+                        $result = bcadd($result, $unit, $scale);
+                    }
+                }
+                break;
+
+            case RoundingMode::ROUND_HALF_DOWN:
+                if ($discarded > 5) {
+                    if ($mod != '0') {
+                        $result = bcadd($result, $unit, $scale);
+                    }
+                }
+                break;
+
+            case RoundingMode::ROUND_HALF_EVEN:
+                if ($last % 2 == 1) {
+                    if ($discarded >= 5) {
+                        if ($mod != '0') {
+                            $result = bcadd($result, $unit, $scale);
+                        }
+                    }
+                } else {
+                    if ($discarded > 5) {
+                        if ($mod != '0') {
+                            $result = bcadd($result, $unit, $scale);
+                        }
+                    }
+                }
+                break;
+
+            case RoundingMode::ROUND_UNNECESSARY:
+                if ($mod != '0') {
+                    throw ArithmeticException::inexactResult();
+                }
+                break;
+        }
 
         return new self($result, $scale);
     }
@@ -200,13 +274,13 @@ class Decimal
      * Returns a Decimal with the current value and the specified scale.
      *
      * @param integer $scale
-     * @param boolean $isExact
+     * @param integer $roundingMode
      *
      * @return Decimal
      */
-    public function withScale($scale, $isExact = true)
+    public function withScale($scale, $roundingMode = RoundingMode::ROUND_UNNECESSARY)
     {
-        return $this->dividedBy(self::one(), $scale, $isExact);
+        return $this->dividedBy(self::one(), $scale, $roundingMode);
     }
 
     /**
@@ -347,6 +421,14 @@ class Decimal
     public function isPositiveOrZero()
     {
         return $this->isGreaterThanOrEqualTo(self::zero());
+    }
+
+    /**
+     * @return integer
+     */
+    public function getScale()
+    {
+        return $this->scale;
     }
 
     /**

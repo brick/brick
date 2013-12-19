@@ -5,14 +5,14 @@ namespace Brick\Math;
 /**
  * Exception for arithmetic operations.
  */
-class ArithmeticException extends \LogicException
+class ArithmeticException extends \RuntimeException
 {
     /**
      * @return ArithmeticException
      */
     public static function integerOverflow()
     {
-        return new self('Out of range for an integer');
+        return new self('Out of range for an integer.');
     }
 
     /**
@@ -20,6 +20,14 @@ class ArithmeticException extends \LogicException
      */
     public static function divisionByZero()
     {
-        return new self('Division by zero');
+        return new self('Division by zero.');
+    }
+
+    /**
+     * @return ArithmeticException
+     */
+    public static function inexactResult()
+    {
+        return new self('Cannot represent the exact result of the operation at this scale, rounding required.');
     }
 }
