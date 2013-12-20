@@ -26,8 +26,8 @@ class ArithmeticException extends \RuntimeException
     /**
      * @return ArithmeticException
      */
-    public static function inexactResult()
+    public static function roundingNecessary()
     {
-        return new self('Cannot represent the exact result of the operation at this scale, rounding required.');
+        return new self('Rounding is necessary to represent the result of the operation at this scale.');
     }
 }

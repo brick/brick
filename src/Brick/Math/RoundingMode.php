@@ -19,7 +19,7 @@ final class RoundingMode
      * Always increments the digit prior to a nonzero discarded fraction.
      * Note that this rounding mode never decreases the magnitude of the calculated value.
      */
-    const ROUND_UP = 0;
+    const UP = 0;
 
     /**
      * Rounds towards zero.
@@ -27,7 +27,7 @@ final class RoundingMode
      * Never increments the digit prior to a discarded fraction (i.e., truncates).
      * Note that this rounding mode never increases the magnitude of the calculated value.
      */
-    const ROUND_DOWN = 1;
+    const DOWN = 1;
 
     /**
      * Rounds towards positive infinity.
@@ -35,7 +35,7 @@ final class RoundingMode
      * If the result is positive, behaves as for ROUND_UP; if negative, behaves as for ROUND_DOWN.
      * Note that this rounding mode never decreases the calculated value.
      */
-    const ROUND_CEILING = 2;
+    const CEILING = 2;
 
     /**
      * Rounds towards negative infinity.
@@ -43,7 +43,7 @@ final class RoundingMode
      * If the result is positive, behave as for ROUND_DOWN; if negative, behave as for ROUND_UP.
      * Note that this rounding mode never increases the calculated value.
      */
-    const ROUND_FLOOR = 3;
+    const FLOOR = 3;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
@@ -51,14 +51,14 @@ final class RoundingMode
      * Behaves as for ROUND_UP if the discarded fraction is >= 0.5; otherwise, behaves as for ROUND_DOWN.
      * Note that this is the rounding mode commonly taught at school.
      */
-    const ROUND_HALF_UP = 4;
+    const HALF_UP = 4;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
      *
      * Behaves as for ROUND_UP if the discarded fraction is > 0.5; otherwise, behaves as for ROUND_DOWN.
      */
-    const ROUND_HALF_DOWN = 5;
+    const HALF_DOWN = 5;
 
     /**
      * Rounds towards the "nearest neighbor" unless both neighbors are equidistant, in which case rounds towards the even neighbor.
@@ -71,7 +71,7 @@ final class RoundingMode
      * It is sometimes known as "Banker's rounding", and is chiefly used in the USA.
      * This rounding mode is analogous to the rounding policy used for float and double arithmetic.
      */
-    const ROUND_HALF_EVEN = 6;
+    const HALF_EVEN = 6;
 
     /**
      * Asserts that the requested operation has an exact result, hence no rounding is necessary.
@@ -79,5 +79,5 @@ final class RoundingMode
      * If this rounding mode is specified on an operation that yields an inexact result,
      * an ArithmeticException is thrown.
      */
-    const ROUND_UNNECESSARY = 7;
+    const UNNECESSARY = 7;
 }

@@ -157,17 +157,22 @@ class Decimal
      * @return Decimal
      *
      * @throws ArithmeticException
+     * @throws \InvalidArgumentException
      */
-    public function dividedBy(Decimal $that, $scale = null, $roundingMode = RoundingMode::ROUND_UNNECESSARY)
+    public function dividedBy(Decimal $that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        if ($that->isZero()) {
+            throw ArithmeticException::divisionByZero();
+        }
+
         if ($scale === null) {
             $scale = $this->scale;
         } else {
-            $this->checkScale($scale);
-        }
+            $scale = (int) $scale;
 
-        if ($that->isZero()) {
-            throw ArithmeticException::divisionByZero();
+            if ($scale < 0) {
+                throw new \InvalidArgumentException('Scale cannot be negative.');
+            }
         }
 
         $power = $scale - ($this->scale - $that->scale);
@@ -183,88 +188,74 @@ class Decimal
             $q .= str_repeat('0', -$power);
         }
 
+        if ($q[0] == '-') {
+            $q = substr($q, 1);
+        }
+
         $mod = bcmod($p, $q);
+        $modSign = bccomp($mod, '0', 0);
+        $hasDiscardedFraction = ($modSign != 0);
 
-        if ($roundingMode == RoundingMode::ROUND_UNNECESSARY && $mod != 0) {
-            throw ArithmeticException::inexactResult();
+        $isPositiveOrZero = $modSign >= 0;
+
+        if ($modSign < 0) {
+            $mod = substr($mod, 1);
         }
 
-        $result = bcdiv($this->value, $that->value, $scale + 1);
-        $isPositive = bccomp($result, '0', $scale) > 0;
+        $cmp = bccomp(bcmul($mod, '2', 0), $q, 0);
+        $isDiscardedFractionHalfOrMore   = $cmp >= 0;
+        $isDiscardedFractionMoreThanHalf = $cmp > 0;
 
-        $discarded = substr($result, -1);
-        $result = substr($result, 0, -1);
+        $result = bcdiv($this->value, $that->value, $scale);
 
-        $last = substr(str_replace('.', '', $result), -1);
-
-        $unit = bcpow('10', -$scale, $scale);
-        if (! $isPositive) {
-            $unit = '-' . $unit;
-        }
+        $increment = false;
 
         switch ($roundingMode) {
-            case RoundingMode::ROUND_UP:
-                if ($mod != '0') {
-                    $result = bcadd($result, $unit, $scale);
+            case RoundingMode::UP:
+                $increment = $hasDiscardedFraction;
+                break;
+
+            case RoundingMode::DOWN:
+                break;
+
+            case RoundingMode::CEILING:
+                $increment = $hasDiscardedFraction && $isPositiveOrZero;
+                break;
+
+            case RoundingMode::FLOOR:
+                $increment = $hasDiscardedFraction && ! $isPositiveOrZero;
+                break;
+
+            case RoundingMode::HALF_UP:
+                $increment = $isDiscardedFractionHalfOrMore;
+                break;
+
+            case RoundingMode::HALF_DOWN:
+                $increment = $isDiscardedFractionMoreThanHalf;
+                break;
+
+            case RoundingMode::HALF_EVEN:
+                $lastDigit = substr($result, -1);
+                $lastDigitIsEven = ($lastDigit % 2 == 0);
+                $increment = ($lastDigitIsEven ? $isDiscardedFractionMoreThanHalf : $isDiscardedFractionHalfOrMore);
+                break;
+
+            case RoundingMode::UNNECESSARY:
+                if ($hasDiscardedFraction) {
+                    throw ArithmeticException::roundingNecessary();
                 }
                 break;
 
-            case RoundingMode::ROUND_DOWN:
-                break;
+            default:
+                throw new \InvalidArgumentException('Invalid rounding mode.');
+        }
 
-            case RoundingMode::ROUND_CEILING:
-                if ($isPositive) {
-                    if ($mod != '0') {
-                        $result = bcadd($result, $unit, $scale);
-                    }
-                }
-                break;
-
-            case RoundingMode::ROUND_FLOOR:
-                if (! $isPositive) {
-                    if ($mod != '0') {
-                        $result = bcadd($result, $unit, $scale);
-                    }
-                }
-                break;
-
-            case RoundingMode::ROUND_HALF_UP:
-                if ($discarded >= 5) {
-                    if ($mod != '0') {
-                        $result = bcadd($result, $unit, $scale);
-                    }
-                }
-                break;
-
-            case RoundingMode::ROUND_HALF_DOWN:
-                if ($discarded > 5) {
-                    if ($mod != '0') {
-                        $result = bcadd($result, $unit, $scale);
-                    }
-                }
-                break;
-
-            case RoundingMode::ROUND_HALF_EVEN:
-                if ($last % 2 == 1) {
-                    if ($discarded >= 5) {
-                        if ($mod != '0') {
-                            $result = bcadd($result, $unit, $scale);
-                        }
-                    }
-                } else {
-                    if ($discarded > 5) {
-                        if ($mod != '0') {
-                            $result = bcadd($result, $unit, $scale);
-                        }
-                    }
-                }
-                break;
-
-            case RoundingMode::ROUND_UNNECESSARY:
-                if ($mod != '0') {
-                    throw ArithmeticException::inexactResult();
-                }
-                break;
+        if ($increment) {
+            $unit = bcpow('10', -$scale, $scale);
+            if (! $isPositiveOrZero) {
+                $unit = '-' . $unit;
+            }
+            $result = bcadd($result, $unit, $scale);
         }
 
         return new self($result, $scale);
@@ -278,7 +269,7 @@ class Decimal
      *
      * @return Decimal
      */
-    public function withScale($scale, $roundingMode = RoundingMode::ROUND_UNNECESSARY)
+    public function withScale($scale, $roundingMode = RoundingMode::UNNECESSARY)
     {
         return $this->dividedBy(self::one(), $scale, $roundingMode);
     }
@@ -312,9 +303,7 @@ class Decimal
      */
     private function compareTo(Decimal $that)
     {
-        $scale = max($this->scale, $that->scale);
-
-        return bccomp($this->value, $that->value, $scale);
+        return bccomp($this->value, $that->value, max($this->scale, $that->scale));
     }
 
     /**
@@ -450,36 +439,5 @@ class Decimal
     public function __toString()
     {
         return $this->toString();
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkInteger($value)
-    {
-        if (! is_integer($value)) {
-            $message = 'Expected integer, got ' . gettype($value);
-            throw new \InvalidArgumentException($message);
-        }
-    }
-
-    /**
-     * @param mixed $scale
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkScale($scale)
-    {
-        $this->checkInteger($scale);
-
-        if ($scale < 0) {
-            throw new \InvalidArgumentException('Scale cannot be negative');
-        }
     }
 }
