@@ -40,23 +40,27 @@ class Decimal
     }
 
     /**
-     * Creates a Decimal number representing zero.
+     * Returns a decimal number representing zero.
      *
      * @return Decimal
      */
     public static function zero()
     {
-        return new self('0');
+        static $zero;
+
+        return $zero ?: $zero = new self('0');
     }
 
     /**
-     * Creates a Decimal number representing one.
+     * Returns a decimal number representing one.
      *
      * @return Decimal
      */
     public static function one()
     {
-        return new self('1');
+        static $one;
+
+        return $one ?: $one = new self('1');
     }
 
     /**
@@ -279,6 +283,10 @@ class Decimal
      */
     public function withScale($scale, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        if ($scale == $this->scale) {
+            return $this;
+        }
+
         return $this->dividedBy(self::one(), $scale, $roundingMode);
     }
 
