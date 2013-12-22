@@ -3,8 +3,9 @@
 namespace Brick\Money;
 
 use Brick\Locale\Currency;
-use Brick\Math\Decimal;
 use Brick\Locale\Locale;
+use Brick\Math\Decimal;
+use Brick\Math\RoundingMode;
 
 /**
  * Represents a monetary value in a given currency. This class is immutable.
@@ -26,12 +27,12 @@ class Money
      *
      * @param Currency $currency
      * @param Decimal  $amount
-     * @param boolean  $isExact
+     * @param integer  $roundingMode
      */
-    public function __construct(Currency $currency, Decimal $amount, $isExact = true)
+    public function __construct(Currency $currency, Decimal $amount, $roundingMode = RoundingMode::UNNECESSARY)
     {
         $this->currency = $currency;
-        $this->amount   = $amount->withScale($currency->getDefaultFractionDigits(), $isExact);
+        $this->amount   = $amount->withScale($currency->getDefaultFractionDigits(), $roundingMode);
     }
 
     /**
@@ -125,7 +126,7 @@ class Money
     {
         $this->checkCurrencyMatches($that);
 
-        return new Money($this->currency, $this->amount->plus($that->getAmount()));
+        return new Money($this->currency, $this->amount->plus($that->amount));
     }
 
     /**
@@ -137,29 +138,29 @@ class Money
     {
         $this->checkCurrencyMatches($that);
 
-        return new Money($this->currency, $this->amount->minus($that->getAmount()));
+        return new Money($this->currency, $this->amount->minus($that->amount));
     }
 
     /**
      * @param Decimal $that
-     * @param boolean $isExact
+     * @param integer $roundingMode
      *
      * @return Money
      */
-    public function multipliedBy(Decimal $that, $isExact = true)
+    public function multipliedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        return new Money($this->currency, $this->amount->multipliedBy($that), $isExact);
+        return new Money($this->currency, $this->amount->multipliedBy($that), $roundingMode);
     }
 
     /**
      * @param Decimal $that
-     * @param boolean $isExact
+     * @param integer $roundingMode
      *
      * @return Money
      */
-    public function dividedBy(Decimal $that, $isExact = true)
+    public function dividedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $amount = $this->amount->dividedBy($that, $this->currency->getDefaultFractionDigits(), $isExact);
+        $amount = $this->amount->dividedBy($that, $this->currency->getDefaultFractionDigits(), $roundingMode);
 
         return new Money($this->currency, $amount);
     }
