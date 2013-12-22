@@ -234,6 +234,14 @@ class Decimal
                 $increment = $isDiscardedFractionMoreThanHalf;
                 break;
 
+            case RoundingMode::HALF_CEILING:
+                $increment = $isPositiveOrZero ? $isDiscardedFractionHalfOrMore : $isDiscardedFractionMoreThanHalf;
+                break;
+
+            case RoundingMode::HALF_FLOOR:
+                $increment = $isPositiveOrZero ? $isDiscardedFractionMoreThanHalf : $isDiscardedFractionHalfOrMore;
+                break;
+
             case RoundingMode::HALF_EVEN:
                 $lastDigit = substr($result, -1);
                 $lastDigitIsEven = ($lastDigit % 2 == 0);
