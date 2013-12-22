@@ -3,6 +3,7 @@
 namespace Brick\Tests\Type;
 
 use Brick\Math\Decimal;
+use Brick\Math\RoundingMode;
 
 /**
  * Unit tests for class Decimal.
@@ -93,7 +94,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $q = Decimal::of('123.456');
         $r = Decimal::of('0.00999546397096941420425090720580611715914981855883');
 
-        $this->assertTrue($p->dividedBy($q, 50, false)->isEqualTo($r));
+        $this->assertTrue($p->dividedBy($q, 50, RoundingMode::DOWN)->isEqualTo($r));
     }
 
     public function testDivisionWithNoRoundingNecessary()
