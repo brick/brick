@@ -6,6 +6,7 @@ use Brick\Locale\Currency;
 use Brick\Locale\Locale;
 use Brick\Math\Decimal;
 use Brick\Math\RoundingMode;
+use Brick\Math\ArithmeticException;
 
 /**
  * Represents a monetary value in a given currency. This class is immutable.
@@ -25,27 +26,31 @@ class Money
     /**
      * Class constructor.
      *
-     * @param Currency $currency
-     * @param Decimal  $amount
-     * @param integer  $roundingMode
+     * @param Currency $currency The currency.
+     * @param Decimal  $amount   The amount, with scale matching the currency's fraction digits.
      */
-    public function __construct(Currency $currency, Decimal $amount, $roundingMode = RoundingMode::UNNECESSARY)
+    private function __construct(Currency $currency, Decimal $amount)
     {
         $this->currency = $currency;
-        $this->amount   = $amount->withScale($currency->getDefaultFractionDigits(), $roundingMode);
+        $this->amount   = $amount;
     }
 
     /**
      * @param Currency $currency
-     * @param string   $amount
+     * @param Decimal  $amount
+     * @param integer  $roundingMode
      *
      * @return Money
+     *
+     * @throws ArithmeticException       If the scale exceeds the currency scale and no rounding is requested.
+     * @throws \InvalidArgumentException If an invalid rounding mode is given.
      */
-    public static function of(Currency $currency, $amount)
+    public static function of(Currency $currency, Decimal $amount, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $amount = Decimal::of($amount);
+        $scale  = $currency->getDefaultFractionDigits();
+        $amount = $amount->withScale($scale, $roundingMode);
 
-        return new self($currency, $amount);
+        return new Money($currency, $amount);
     }
 
     /**
@@ -55,17 +60,30 @@ class Money
      *
      * @return Money
      *
-     * @throws \InvalidArgumentException
+     * @throws MoneyParseException If the parsing fails.
      */
     public static function parse($string)
     {
         $parts = explode(' ', $string);
 
         if (count($parts) != 2) {
-            throw new \InvalidArgumentException('Could not parse money: ' . $string);
+            throw MoneyParseException::invalidFormat($string);
         }
 
-        return Money::of(Currency::getInstance($parts[0]), $parts[1]);
+        try {
+            $currency = Currency::of($parts[0]);
+            $amount   = Decimal::of($parts[1]);
+        }
+        catch (\InvalidArgumentException $e) {
+            throw MoneyParseException::wrap($e);
+        }
+
+        try {
+            return Money::of($currency, $amount);
+        }
+        catch (ArithmeticException $e) {
+            throw MoneyParseException::wrap($e);
+        }
     }
 
     /**
@@ -77,7 +95,7 @@ class Money
      */
     public static function zero(Currency $currency)
     {
-        return new self($currency, Decimal::zero());
+        return Money::of($currency, Decimal::zero());
     }
 
     /**
@@ -149,7 +167,10 @@ class Money
      */
     public function multipliedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        return new Money($this->currency, $this->amount->multipliedBy($that), $roundingMode);
+        $scale  = $this->currency->getDefaultFractionDigits();
+        $amount = $this->amount->multipliedBy($that)->withScale($scale, $roundingMode);
+
+        return new Money($this->currency, $amount);
     }
 
     /**
@@ -160,7 +181,8 @@ class Money
      */
     public function dividedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $amount = $this->amount->dividedBy($that, $this->currency->getDefaultFractionDigits(), $roundingMode);
+        $scale  = $this->currency->getDefaultFractionDigits();
+        $amount = $this->amount->dividedBy($that, $scale, $roundingMode);
 
         return new Money($this->currency, $amount);
     }
@@ -228,7 +250,8 @@ class Money
     /**
      * Returns whether this Money is equal to the given Money.
      *
-     * @param  Money   $that
+     * @param Money $that
+     *
      * @return boolean
      */
     public function isEqualTo(Money $that)

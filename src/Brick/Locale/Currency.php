@@ -85,15 +85,15 @@ class Currency
      *
      * @param string $code
      * @return Currency
-     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
-    public static function getInstance($code)
+    public static function of($code)
     {
         if (! isset(self::$instances[$code])) {
             self::loadCurrencyData();
 
             if (! isset(self::$currencies[$code])) {
-                throw new \RuntimeException('Invalid currency code: ' . $code);
+                throw new \InvalidArgumentException('Invalid currency code: ' . $code);
             }
 
             list ($currencyCode, $numericCode, $name, $symbol, $fractionDigits) = self::$currencies[$code];
@@ -116,7 +116,7 @@ class Currency
         $currencies = [];
 
         foreach (array_keys(self::$currencies) as $currencyCode) {
-            $currencies[] = self::getInstance($currencyCode);
+            $currencies[] = self::of($currencyCode);
         }
 
         return $currencies;

@@ -23,7 +23,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->currency = Currency::getInstance('EUR');
+        $this->currency = Currency::of('EUR');
         $this->money = new Money($this->currency, Decimal::of(10));
     }
 
@@ -92,8 +92,8 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testDifferentCurrenciesThrowException()
     {
-        $eur = new Money(Currency::getInstance('EUR'), Decimal::one());
-        $usd = new Money(Currency::getInstance('USD'), Decimal::one());
+        $eur = new Money(Currency::of('EUR'), Decimal::one());
+        $usd = new Money(Currency::of('USD'), Decimal::one());
 
         $eur->plus($usd);
     }

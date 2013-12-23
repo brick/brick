@@ -143,7 +143,7 @@ class Country
             throw new \LogicException('This country has no currency.');
         }
 
-        return Currency::getInstance($this->currencyCode);
+        return Currency::of($this->currencyCode);
     }
 
     /**

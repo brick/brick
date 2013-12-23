@@ -14,7 +14,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
      */
     public function testAccessors($currencyCode, $numericCode, $digits, $name, $symbol)
     {
-        $currency = Currency::getInstance($currencyCode);
+        $currency = Currency::of($currencyCode);
 
         $this->assertEquals($currencyCode, $currency->getCurrencyCode());
         $this->assertEquals($numericCode, $currency->getNumericCode());
@@ -49,12 +49,12 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetInstance()
     {
-        $this->assertSame(Currency::getInstance('EUR'), Currency::getInstance('EUR'));
+        $this->assertSame(Currency::of('EUR'), Currency::of('EUR'));
     }
 
     public function testIsEqualTo()
     {
-        $original = Currency::getInstance('EUR');
+        $original = Currency::of('EUR');
         $copy = unserialize(serialize($original));
 
         /** @var $copy Currency */
