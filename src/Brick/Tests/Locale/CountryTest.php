@@ -15,7 +15,7 @@ class CountryTest extends \PHPUnit_Framework_TestCase
      */
     public function testAccessors($code, $currency, $name)
     {
-        $country = Country::getInstance($code);
+        $country = Country::of($code);
 
         $this->assertEquals($code, $country->getCode());
         $this->assertEquals($name, $country->getName());
@@ -50,12 +50,12 @@ class CountryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetInstance()
     {
-        $this->assertSame(Country::getInstance('US'), Country::getInstance('US'));
+        $this->assertSame(Country::of('US'), Country::of('US'));
     }
 
     public function testIsEqualTo()
     {
-        $original = Country::getInstance('US');
+        $original = Country::of('US');
         $copy = unserialize(serialize($original));
 
         /** @var $copy Country */

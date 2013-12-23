@@ -65,7 +65,7 @@ class Country
      * @return Country
      * @throws \RuntimeException
      */
-    public static function getInstance($code)
+    public static function of($code)
     {
         if (! isset(self::$instances[$code])) {
             self::loadCountryData();
@@ -94,7 +94,7 @@ class Country
         $countries = [];
 
         foreach (self::$countries as $countryCode => $data) {
-            $countries[] = self::getInstance($countryCode);
+            $countries[] = self::of($countryCode);
         }
 
         return $countries;
