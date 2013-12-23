@@ -48,7 +48,7 @@ class Decimal
     {
         static $zero;
 
-        return $zero ?: $zero = new self('0');
+        return $zero ?: $zero = new Decimal('0');
     }
 
     /**
@@ -60,7 +60,7 @@ class Decimal
     {
         static $one;
 
-        return $one ?: $one = new self('1');
+        return $one ?: $one = new Decimal('1');
     }
 
     /**
@@ -80,11 +80,11 @@ class Decimal
     public static function of($value)
     {
         if (is_int($value)) {
-            return new self((string) $value);
+            return new Decimal((string) $value);
         }
 
         if (is_string($value)) {
-            if (preg_match(self::DECIMAL_REGEXP, $value, $matches) == 0) {
+            if (preg_match(Decimal::DECIMAL_REGEXP, $value, $matches) == 0) {
                 $message = 'String is not a valid decimal number: ' . $value;
                 throw new \InvalidArgumentException($message);
             }
@@ -92,7 +92,7 @@ class Decimal
             $value = $matches[0];
             $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
 
-            return new self($value, $scale);
+            return new Decimal($value, $scale);
         }
 
         throw new \InvalidArgumentException('Expected integer or string, got ' . gettype($value) . '.');
@@ -110,7 +110,7 @@ class Decimal
         $scale = max($this->scale, $that->scale);
         $value = bcadd($this->value, $that->value, $scale);
 
-        return new self($value, $scale);
+        return new Decimal($value, $scale);
     }
 
     /**
@@ -125,7 +125,7 @@ class Decimal
         $scale = max($this->scale, $that->scale);
         $value = bcsub($this->value, $that->value, $scale);
 
-        return new self($value, $scale);
+        return new Decimal($value, $scale);
     }
 
     /**
@@ -140,7 +140,7 @@ class Decimal
         $scale = $this->scale + $that->scale;
         $value = bcmul($this->value, $that->value, $scale);
 
-        return new self($value, $scale);
+        return new Decimal($value, $scale);
     }
 
     /**
@@ -270,7 +270,7 @@ class Decimal
             $result = bcadd($result, $unit, $scale);
         }
 
-        return new self($result, $scale);
+        return new Decimal($result, $scale);
     }
 
     /**
@@ -287,7 +287,7 @@ class Decimal
             return $this;
         }
 
-        return $this->dividedBy(self::one(), $scale, $roundingMode);
+        return $this->dividedBy(Decimal::one(), $scale, $roundingMode);
     }
 
     /**
@@ -301,13 +301,13 @@ class Decimal
     }
 
     /**
-     * Returns the inverse of this Decimal number.
+     * Returns a decimal representing the inverse of this decimal.
      *
      * @return Decimal
      */
     public function negated()
     {
-        return self::zero()->minus($this);
+        return Decimal::zero()->minus($this);
     }
 
     /**
@@ -385,7 +385,7 @@ class Decimal
      */
     public function isZero()
     {
-        return $this->isEqualTo(self::zero());
+        return $this->isEqualTo(Decimal::zero());
     }
 
     /**
@@ -395,7 +395,7 @@ class Decimal
      */
     public function isNegative()
     {
-        return $this->isLessThan(self::zero());
+        return $this->isLessThan(Decimal::zero());
     }
 
     /**
@@ -405,7 +405,7 @@ class Decimal
      */
     public function isNegativeOrZero()
     {
-        return $this->isLessThanOrEqualTo(self::zero());
+        return $this->isLessThanOrEqualTo(Decimal::zero());
     }
 
     /**
@@ -415,7 +415,7 @@ class Decimal
      */
     public function isPositive()
     {
-        return $this->isGreaterThan(self::zero());
+        return $this->isGreaterThan(Decimal::zero());
     }
 
     /**
@@ -425,7 +425,7 @@ class Decimal
      */
     public function isPositiveOrZero()
     {
-        return $this->isGreaterThanOrEqualTo(self::zero());
+        return $this->isGreaterThanOrEqualTo(Decimal::zero());
     }
 
     /**
