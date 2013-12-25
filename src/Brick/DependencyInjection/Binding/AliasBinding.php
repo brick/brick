@@ -14,14 +14,22 @@ class AliasBinding extends Binding
     /**
      * @var string
      */
-    private $key;
+    private $target;
 
     /**
-     * @param string $key
+     * @param string $target
      */
-    public function __construct($key)
+    public function __construct($target)
     {
-        $this->key = $key;
+        $this->target = $target;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve(Container $container)
+    {
+        return $container->get($this->target);
     }
 
     /**
@@ -30,13 +38,5 @@ class AliasBinding extends Binding
     public function getDefaultScope()
     {
         return Scope::prototype();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resolve(Container $container)
-    {
-        return $container->get($this->key);
     }
 }

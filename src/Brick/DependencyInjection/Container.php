@@ -2,6 +2,8 @@
 
 namespace Brick\DependencyInjection;
 
+use Brick\DependencyInjection\Binding\AliasBinding;
+use Brick\DependencyInjection\Binding\ClassOrClosureBinding;
 use Brick\DependencyInjection\InjectionPolicy\NullPolicy;
 use Brick\DependencyInjection\ValueResolver\ContainerValueResolver;
 use Brick\Reflection\ReflectionTools;
@@ -89,6 +91,8 @@ class Container
     /**
      * Sets a single value.
      *
+     * The value will be returned as is when requested with get().
+     *
      * @param string $key   The key, class or interface name.
      * @param string $value The value to set.
      *
@@ -102,7 +106,9 @@ class Container
     }
 
     /**
-     * Sets several values.
+     * Sets multiple values.
+     *
+     * This is equivalent to calling set() for each key-value pair.
      *
      * @param array $values An associative array of key-value pairs.
      *
@@ -116,13 +122,61 @@ class Container
     }
 
     /**
+     * Binds a key to a class name or a closure to be instantiated/invocated.
+     *
+     * By default, the key is bound to itself, so these two lines of code are equivalent;
+     *
+     *     $container->bind('Class\Name')
+     *     $container->bind('Class\Name')->to('Class\Name')
+     *
+     * It can be used to bind an interface to a class to be instantiated:
+     *
+     *     $container->bind('Interface\Name')->to('Class\Name')
+     *
+     * The key can also be bound to a closure to return any value:
+     *
+     *     $container->bind('Class\Or\Interface\Name')->to(function() {
+     *         return new Class\Name();
+     *     });
+     *
+     * Any parameters required by the closure will be automatically resolved.
+     *
      * @param string $key
      *
-     * @return BindingHelper
+     * @return ClassOrClosureBinding
      */
     public function bind($key)
     {
-        return new BindingHelper($this, $key);
+        return $this->items[$key] = new ClassOrClosureBinding($key);
+    }
+
+    /**
+     * Creates an alias from one entry to another.
+     *
+     * This method can be used for use cases as simple as:
+     *
+     *     $container->alias('my.alias', 'my.service');
+     *
+     * This is particularly useful when you have already registered a class by its name,
+     * but now want to make it resolvable through an interface name it implements as well:
+     *
+     *     $container->bind('Class\Name');
+     *     $container->alias('Interface\Name', 'Class\Name');
+     *
+     * An alias always queries the current value by default, unless you change its scope,
+     * which may be used for advanced use cases, such as creating singletons out of a prototype class:
+     *
+     *     $container->bind('Class\Name')->in(Scope::prototype());
+     *     $container->alias('my.shared.instance', 'Class\Name')->in(Scope::singleton());
+     *
+     * @param string $key
+     * @param string $target
+     *
+     * @return AliasBinding
+     */
+    public function alias($key, $target)
+    {
+        return $this->items[$key] = new AliasBinding($target);
     }
 
     /**
@@ -139,7 +193,7 @@ class Container
 
                 foreach ($classes as $class) {
                     if ($this->injectionPolicy->isClassInjected($class)) {
-                        $this->bind($key)->toSelf(); // @todo allow to configure scope (singleton) with annotations
+                        $this->bind($key); // @todo allow to configure scope (singleton) with annotations
                         break;
                     }
                 }
@@ -154,15 +208,17 @@ class Container
      *
      * @return mixed
      *
-     * @throws DependencyInjectionException
+     * @throws DependencyInjectionException If the key is not registered.
      */
     public function get($key)
     {
         if (is_array($key)) {
             $result = [];
+
             foreach ($key as $k => $v) {
                 $result[$k] = $this->get($v);
             }
+
             return $result;
         }
 

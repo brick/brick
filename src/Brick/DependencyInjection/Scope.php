@@ -3,7 +3,7 @@
 namespace Brick\DependencyInjection;
 
 /**
- * Defines the re-usability of a result.
+ * Defines the re-usability of a resolved type.
  */
 abstract class Scope
 {

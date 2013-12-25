@@ -26,11 +26,11 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->set('someservice.lifetime', 3600);
 
-        $container->bind('Brick\Tests\SomeService')->toSelf()->withParameters([
+        $container->bind('Brick\Tests\SomeService')->with([
             'lifetime' => 'someservice.lifetime'
         ]);
 
-        $container->bind('Brick\Tests\AnotherService')->toSelf();
+        $container->bind('Brick\Tests\AnotherService');
 
         $service = $container->get('Brick\Tests\AnotherService');
 
@@ -52,7 +52,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         $containerWithoutAnnotations = Container::create();
 
-        $containerWithoutAnnotations->bind('Brick\Tests\DatabaseConnection')->toSelf()->withParameters([
+        $containerWithoutAnnotations->bind('Brick\Tests\DatabaseConnection')->with([
             'hostname' => 'db.host',
             'username' => 'db.user',
             'password' => 'db.pass'
@@ -78,17 +78,15 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->set('foo', 'bar');
         $container->bind('Brick\Tests\DatabaseConnection')
-            ->toSelf()
+            
             ->in($dbScope)
-            ->withParameters([
+            ->with([
                 'hostname' => 'foo',
                 'username' => 'foo',
                 'password' => 'foo'
             ]);
 
-        $container->bind('database.connection.shared')
-            ->aliasOf('Brick\Tests\DatabaseConnection')
-            ->in($aliasScope);
+        $container->alias('database.connection.shared', 'Brick\Tests\DatabaseConnection')->in($aliasScope);
 
         $this->assertResult($container, 'Brick\Tests\DatabaseConnection', $dbSame);
         $this->assertResult($container, 'database.connection.shared', $aliasSame);
