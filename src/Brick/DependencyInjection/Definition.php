@@ -3,9 +3,9 @@
 namespace Brick\DependencyInjection;
 
 /**
- * Base class for all bindings.
+ * Base class for definitions.
  */
-abstract class Binding
+abstract class Definition
 {
     /**
      * @var Scope|null
@@ -13,7 +13,7 @@ abstract class Binding
     private $scope = null;
 
     /**
-     * Sets the scope of this binding.
+     * Changes the scope of this definition.
      *
      * @param Scope $scope
      *
@@ -27,7 +27,7 @@ abstract class Binding
     }
 
     /**
-     * Resolves the value of this binding, according to the current scope.
+     * Resolves the value of this definition, according to the current scope.
      *
      * This method is for internal use by the Container.
      *
@@ -45,7 +45,7 @@ abstract class Binding
     }
 
     /**
-     * Resolves the value of this binding.
+     * Resolves the value of this definition, regardless of the Scope.
      *
      * This method is for internal use by the Scopes.
      *
@@ -56,7 +56,7 @@ abstract class Binding
     abstract public function resolve(Container $container);
 
     /**
-     * Returns the default scope for this binding if not set.
+     * Returns the default Scope for this definition when not set explicitly.
      *
      * @return Scope
      */

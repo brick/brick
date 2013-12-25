@@ -1,15 +1,15 @@
 <?php
 
-namespace Brick\DependencyInjection\Binding;
+namespace Brick\DependencyInjection\Definition;
 
-use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Definition;
 use Brick\DependencyInjection\Scope;
 use Brick\DependencyInjection\Container;
 
 /**
  * Resolves a key by pointing to another.
  */
-class AliasBinding extends Binding
+class AliasDefinition extends Definition
 {
     /**
      * @var string

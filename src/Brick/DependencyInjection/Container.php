@@ -2,8 +2,8 @@
 
 namespace Brick\DependencyInjection;
 
-use Brick\DependencyInjection\Binding\AliasBinding;
-use Brick\DependencyInjection\Binding\ClassOrClosureBinding;
+use Brick\DependencyInjection\Definition\AliasDefinition;
+use Brick\DependencyInjection\Definition\BindingDefinition;
 use Brick\DependencyInjection\InjectionPolicy\NullPolicy;
 use Brick\DependencyInjection\ValueResolver\ContainerValueResolver;
 use Brick\Reflection\ReflectionTools;
@@ -141,17 +141,19 @@ class Container
      *
      * Any parameters required by the closure will be automatically resolved.
      *
+     * Do not use bind() to attach an existing object instance. Use set() instead.
+     *
      * @param string $key
      *
-     * @return ClassOrClosureBinding
+     * @return BindingDefinition
      */
     public function bind($key)
     {
-        return $this->items[$key] = new ClassOrClosureBinding($key);
+        return $this->items[$key] = new BindingDefinition($key);
     }
 
     /**
-     * Creates an alias from one entry to another.
+     * Creates an alias from one key to another.
      *
      * This method can be used for use cases as simple as:
      *
@@ -164,7 +166,7 @@ class Container
      *     $container->alias('Interface\Name', 'Class\Name');
      *
      * An alias always queries the current value by default, unless you change its scope,
-     * which may be used for advanced use cases, such as creating singletons out of a prototype class:
+     * which may be used for advanced use cases, such as creating singletons out of a prototype:
      *
      *     $container->bind('Class\Name')->in(Scope::prototype());
      *     $container->alias('my.shared.instance', 'Class\Name')->in(Scope::singleton());
@@ -172,11 +174,11 @@ class Container
      * @param string $key
      * @param string $target
      *
-     * @return AliasBinding
+     * @return \Brick\DependencyInjection\Definition\AliasDefinition
      */
     public function alias($key, $target)
     {
-        return $this->items[$key] = new AliasBinding($target);
+        return $this->items[$key] = new AliasDefinition($target);
     }
 
     /**
@@ -228,7 +230,7 @@ class Container
 
         $value = $this->items[$key];
 
-        if ($value instanceof Binding) {
+        if ($value instanceof Definition) {
             return $value->get($this);
         }
 

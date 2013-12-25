@@ -1,15 +1,15 @@
 <?php
 
-namespace Brick\DependencyInjection\Binding;
+namespace Brick\DependencyInjection\Definition;
 
-use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Definition;
 use Brick\DependencyInjection\Scope;
 use Brick\DependencyInjection\Container;
 
 /**
  * Resolves a class name.
  */
-class ClassOrClosureBinding extends Binding
+class BindingDefinition extends Definition
 {
     /**
      * The class name to instantiate, or a closure to invoke.
@@ -36,7 +36,7 @@ class ClassOrClosureBinding extends Binding
     /**
      * @param \Closure|string $target
      *
-     * @return ClassOrClosureBinding
+     * @return BindingDefinition
      */
     public function to($target)
     {
@@ -50,7 +50,7 @@ class ClassOrClosureBinding extends Binding
      *
      * @param array $parameters
      *
-     * @return ClassOrClosureBinding
+     * @return BindingDefinition
      */
     public function with(array $parameters)
     {

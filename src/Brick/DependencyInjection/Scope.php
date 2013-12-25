@@ -3,7 +3,7 @@
 namespace Brick\DependencyInjection;
 
 /**
- * Defines the re-usability of a resolved type.
+ * Defines the re-usability of a resolved definition value.
  */
 abstract class Scope
 {
@@ -24,10 +24,12 @@ abstract class Scope
     }
 
     /**
-     * @param Binding   $binding
-     * @param Container $container
+     * Resolves if needed, and returns a value for the given definition.
+     *
+     * @param Definition $definition
+     * @param Container  $container
      *
      * @return mixed
      */
-    abstract public function get(Binding $binding, Container $container);
+    abstract public function get(Definition $definition, Container $container);
 }

@@ -3,14 +3,19 @@
 namespace Brick\DependencyInjection\Scope;
 
 use Brick\DependencyInjection\Scope;
-use Brick\DependencyInjection\Binding;
+use Brick\DependencyInjection\Definition;
 use Brick\DependencyInjection\Container;
 
 /**
- * The binding will be resolved once, then the same result will be returned every time it is requested.
+ * The definition will be resolved once, then the same result will be returned every time it is requested.
  */
 class Singleton extends Scope
 {
+    /**
+     * @var boolean
+     */
+    private $resolved = false;
+
     /**
      * @var mixed
      */
@@ -19,12 +24,13 @@ class Singleton extends Scope
     /**
      * {@inheritdoc}
      */
-    public function get(Binding $binding, Container $container)
+    public function get(Definition $definition, Container $container)
     {
-        if ($this->result) {
-            return $this->result;
+        if (! $this->resolved) {
+            $this->result   = $definition->resolve($container);
+            $this->resolved = true;
         }
 
-        return $this->result = $binding->resolve($container);
+        return $this->result;
     }
 }
