@@ -71,8 +71,8 @@ class BindingHelper
      * An alias always queries the current value by default, unless you change its scope,
      * which may be used for advanced use cases, such as creating singletons out of a prototype class:
      *
-     *     $container->bind('Class\Name')->toSelf()->withScope(Scope::prototype());
-     *     $container->bind('my.shared.instance')->aliasOf('Class\Name')->withScope(Scope::singleton());
+     *     $container->bind('Class\Name')->toSelf()->in(Scope::prototype());
+     *     $container->bind('my.shared.instance')->aliasOf('Class\Name')->in(Scope::singleton());
      *
      * @param string $key
      *

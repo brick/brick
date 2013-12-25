@@ -19,7 +19,7 @@ abstract class Binding
      *
      * @return static
      */
-    public function withScope(Scope $scope)
+    public function in(Scope $scope)
     {
         $this->scope = $scope;
 

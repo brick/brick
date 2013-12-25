@@ -79,7 +79,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container->set('foo', 'bar');
         $container->bind('Brick\Tests\DatabaseConnection')
             ->toSelf()
-            ->withScope($dbScope)
+            ->in($dbScope)
             ->withParameters([
                 'hostname' => 'foo',
                 'username' => 'foo',
@@ -88,7 +88,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('database.connection.shared')
             ->aliasOf('Brick\Tests\DatabaseConnection')
-            ->withScope($aliasScope);
+            ->in($aliasScope);
 
         $this->assertResult($container, 'Brick\Tests\DatabaseConnection', $dbSame);
         $this->assertResult($container, 'database.connection.shared', $aliasSame);
