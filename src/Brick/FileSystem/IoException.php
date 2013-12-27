@@ -8,6 +8,16 @@ namespace Brick\FileSystem;
 class IoException extends \RuntimeException
 {
     /**
+     * @param \Exception $e
+     *
+     * @return IoException
+     */
+    public static function wrap(\Exception $e)
+    {
+        return new self($e->getMessage(), $e->getCode(), $e);
+    }
+
+    /**
      * @param string $path
      * @return IoException
      */

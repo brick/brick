@@ -39,7 +39,7 @@ class PdoStorage implements SessionStorage
         'key-column'         => 's_key',         // The column containing the data key.
         'value-column'       => 's_value',       // The column containing the data value.
         'last-access-column' => 's_last_access', // The column containing the last access timestamp.
-        'last-access-grace'  => 60               // The imprecision allowed for the last access timestamp.
+        'last-access-grace'  => 60               // The imprecision allowed for the last access timestamp, in seconds.
     ];
 
     /**

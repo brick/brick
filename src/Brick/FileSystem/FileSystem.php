@@ -2,21 +2,42 @@
 
 namespace Brick\FileSystem;
 
+use Brick\ErrorHandler;
+
 /**
  * Utility class for filesystem calls.
  */
 class FileSystem
 {
     /**
+     * @var \Brick\ErrorHandler
+     */
+    private $errorHandler;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+        $this->errorHandler = new ErrorHandler(function (\ErrorException $e) {
+            throw IoException::wrap($e);
+        });
+    }
+
+    /**
      * Returns whether the given file or directory exists.
      *
      * @param string $path
      *
      * @return boolean
+     *
+     * @throws IoException If an unexpected error occurs.
      */
     public function exists($path)
     {
-        return @file_exists($path);
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return file_exists($path);
+        });
     }
 
     /**
