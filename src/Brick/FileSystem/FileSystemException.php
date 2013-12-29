@@ -22,36 +22,6 @@ class FileSystemException extends \RuntimeException
      *
      * @return FileSystemException
      */
-    public static function fileDoesNotExist($path)
-    {
-        return new self('File does not exist: ' . $path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return FileSystemException
-     */
-    public static function cannotRemoveDirectory($path)
-    {
-        return new self('Cannot remove directory: ' . $path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return FileSystemException
-     */
-    public static function cannotRemoveFile($path)
-    {
-        return new self('Cannot remove file: ' . $path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return FileSystemException
-     */
     public static function cannotGetRealPath($path)
     {
         return new self(sprintf(
