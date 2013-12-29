@@ -2,39 +2,53 @@
 
 namespace Brick\FileSystem;
 
+use Brick\ErrorHandler;
+
 /**
  * Object-oriented wrapper around native file functions.
  *
- * All PHP errors are muted, instead an exception is thrown when an error occurs.
+ * This class is a thin layer above native filesystem function calls,
+ * to provide a consistent object API that catches PHP errors and
+ * throws proper exceptions when an operation fails.
  */
 class File
 {
-    /**
-     * @var string
-     */
-    private $filename;
-
     /**
      * @var resource
      */
     private $handle;
 
     /**
+     * @var boolean
+     */
+    private $throw;
+
+    /**
+     * @var \Brick\ErrorHandler
+     */
+    private $errorHandler;
+
+    /**
      * Class constructor.
      *
-     * @param string $filename
-     * @param string $mode
+     * @param string $path The file path.
+     * @param string $mode The open mode. See the documentation for fopen() for available modes.
      *
-     * @throws IoException
+     * @throws FileSystemException If the file cannot be open.
      */
-    public function __construct($filename, $mode)
+    public function __construct($path, $mode)
     {
-        $this->filename = $filename;
-        $this->handle = @ fopen($filename, $mode);
+        $this->errorHandler = new ErrorHandler(function (\ErrorException $e) {
+            if ($this->throw) {
+                throw FileSystemException::wrap($e);
+            }
+        });
 
-        if ($this->handle === false) {
-            throw new IoException('Cannot open file ' . $filename);
-        }
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function () use ($path, $mode) {
+            $this->handle = fopen($path, $mode);
+        });
     }
 
     /**
@@ -42,15 +56,25 @@ class File
      */
     public function __destruct()
     {
-        @ fclose($this->handle);
+        $this->throw = false;
+
+        $this->errorHandler->swallow(E_WARNING, function() {
+            fclose($this->handle);
+        });
     }
 
     /**
      * @return boolean
+     *
+     * @throws FileSystemException
      */
     public function eof()
     {
-        return @ feof($this->handle);
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() {
+            return feof($this->handle);
+        });
     }
 
     /**
@@ -59,51 +83,45 @@ class File
      * If calling read() several times, the read will resume from the current position.
      * The pointer can be moved with seek().
      *
-     * @param integer|null $maxLength The maximum number of bytes to read, or null to read all.
+     * @param integer $length The maximum number of bytes to read, or null to read all.
      *
      * @return string
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
-    public function read($maxLength = null)
+    public function read($length)
     {
-        if ($maxLength === null) {
-            $data = @ stream_get_contents($this->handle);
-        } else {
-            $data = @ fread($this->handle, $maxLength);
-        }
+        $this->throw = true;
 
-        if ($data === false) {
-            throw new IoException('Error while reading file ' . $this->filename);
-        }
-
-        return $data;
+        return $this->errorHandler->swallow(E_WARNING, function($length) {
+            return fread($this->handle, $length);
+        });
     }
 
     /**
      * @param string $data The data to write.
      *
-     * @return File
+     * @return integer The number of bytes written.
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
     public function write($data)
     {
-        $length = @ fwrite($this->handle, $data);
+        $this->throw = true;
 
-        if ($length === false) {
-            throw new IoException('Error while writing to file ' . $this->filename);
-        }
-
-        return $this;
+        return $this->errorHandler->swallow(E_WARNING, function($data) {
+            return fwrite($this->handle, $data);
+        });
     }
 
     /**
+     * Locks the file in share mode.
+     *
      * @param boolean $blocking Whether to block while waiting for the lock. Defaults to true.
      *
      * @return boolean Whether the lock was acquired. Always true in blocking mode.
      *
-     * @throws IoException
+     * @throws FileSystemException If an error occurs.
      */
     public function lockShared($blocking = true)
     {
@@ -111,11 +129,13 @@ class File
     }
 
     /**
+     * Locks the file in exclusive mode.
+     *
      * @param boolean $blocking Whether to block while waiting for the lock. Defaults to true.
      *
      * @return boolean Whether the lock was acquired. Always true in blocking mode.
      *
-     * @throws IoException
+     * @throws FileSystemException If an error occurs.
      */
     public function lockExclusive($blocking = true)
     {
@@ -126,9 +146,9 @@ class File
      * @param integer $operation The operation, LOCK_SH or LOCK_EX.
      * @param boolean $blocking  Whether to block while waiting for the lock.
      *
-     * @return boolean
+     * @return boolean Whether the lock was successfully acquired.
      *
-     * @throws IoException
+     * @throws FileSystemException If an error occurs.
      */
     private function doLock($operation, $blocking)
     {
@@ -136,110 +156,85 @@ class File
             $operation |= LOCK_NB;
         }
 
-        $result = @ flock($this->handle, $operation, $wouldblock);
+        $this->throw = true;
 
-        if ($result === false && $wouldblock !== 1) {
-            // Windows returns false when a non-blocking lock is not available,
-            // but leaves $wouldblock at zero. There is no way to know whether the failure
-            // is just temporary or permanent.
-            if (! $this->isWindows()) {
-                throw new IoException('Error trying to acquire a lock on ' . $this->filename);
-            }
-        }
-
-        return $result;
+        return $this->errorHandler->swallow(E_WARNING, function() use ($operation) {
+            return flock($this->handle, $operation);
+        });
     }
 
     /**
-     * @return File
+     * @return void
      *
-     * @throws IoException
+     * @throws FileSystemException If an error occurs.
      */
     public function unlock()
     {
-        $result = @ flock($this->handle, LOCK_UN);
+        $this->throw = true;
 
-        if ($result === false) {
-            throw new IoException('Could not release a lock on ' . $this->filename);
-        }
-
-        return $this;
+        $this->errorHandler->swallow(E_WARNING, function() {
+            flock($this->handle, LOCK_UN);
+        });
     }
 
     /**
      * @param integer $offset
      * @param integer $whence
      *
-     * @return File
+     * @return void
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        $result = @ fseek($this->handle, $offset, $whence);
+        $this->throw = true;
 
-        if ($result !== 0) {
-            throw new IoException('Error while seeking on file ' . $this->filename);
-        }
-
-        return $this;
+        $this->errorHandler->swallow(E_WARNING, function() use ($offset, $whence) {
+            fseek($this->handle, $offset, $whence);
+        });
     }
 
     /**
      * @return integer
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
     public function tell()
     {
-        $offset = @ ftell($this->handle);
+        $this->throw = true;
 
-        if ($offset === false) {
-            throw new IoException('Error while getting offset with fseek() on file ' . $this->filename);
-        }
-
-        return $offset;
+        return $this->errorHandler->swallow(E_WARNING, function() {
+            return ftell($this->handle);
+        });
     }
 
     /**
      * @param integer $size
      *
-     * @return File
+     * @return void
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
     public function truncate($size)
     {
-        $result = @ ftruncate($this->handle, $size);
+        $this->throw = true;
 
-        if ($result === false) {
-            throw new IoException('Error while truncating file ' . $this->filename);
-        }
-
-        return $this;
+        $this->errorHandler->swallow(E_WARNING, function() use ($size) {
+            ftruncate($this->handle, $size);
+        });
     }
 
     /**
-     * @return File
+     * @return void
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
     public function flush()
     {
-        $result = @ fflush($this->handle);
+        $this->throw = true;
 
-        if ($result === false) {
-            throw new IoException('Could not flush() the file ' . $this->filename);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    private function isWindows()
-    {
-        return strtolower(substr(PHP_OS, 0, 3)) == 'win';
+        $this->errorHandler->swallow(E_WARNING, function() {
+            fflush($this->handle);
+        });
     }
 }

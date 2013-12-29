@@ -4,6 +4,7 @@ namespace Brick\Session\Storage;
 
 use Brick\FileSystem\File;
 use Brick\FileSystem\FileSystem;
+use Brick\FileSystem\FileSystemException;
 
 /**
  * File storage engine for storing sessions on the filesystem.
@@ -117,7 +118,7 @@ class FileStorage implements SessionStorage
      */
     public function updateId($oldId, $newId)
     {
-        return $this->fs->tryRename(
+        return $this->fs->tryMove(
             $this->getPath($oldId),
             $this->getPath($newId)
         );
@@ -131,7 +132,7 @@ class FileStorage implements SessionStorage
      *
      * @return \Brick\FileSystem\File
      *
-     * @throws \Brick\FileSystem\IoException
+     * @throws \Brick\FileSystem\FileSystemException
      */
     private function openFile($id, $key)
     {
@@ -148,7 +149,10 @@ class FileStorage implements SessionStorage
     {
         $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $id;
 
-        $this->fs->tryCreateDirectory($directoryPath);
+        try {
+            $this->fs->createDirectory($directoryPath);
+        }
+        catch (FileSystemException $e) {}
 
         if ($key === null) {
             return $directoryPath;

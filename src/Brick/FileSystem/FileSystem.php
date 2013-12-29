@@ -6,6 +6,9 @@ use Brick\ErrorHandler;
 
 /**
  * Utility class for filesystem calls.
+ *
+ * This class is a thin wrapper around native filesystem function calls,
+ * to provide a consistent API that catches PHP errors and throws proper exceptions when an operation fails.
  */
 class FileSystem
 {
@@ -15,26 +18,35 @@ class FileSystem
     private $errorHandler;
 
     /**
+     * @var boolean
+     */
+    private $throw = true;
+
+    /**
      * Class constructor.
      */
     public function __construct()
     {
         $this->errorHandler = new ErrorHandler(function (\ErrorException $e) {
-            throw IoException::wrap($e);
+            if ($this->throw) {
+                throw FileSystemException::wrap($e);
+            }
         });
     }
 
     /**
      * Returns whether the given file or directory exists.
      *
-     * @param string $path
+     * @param string $path The path to test.
      *
-     * @return boolean
+     * @return boolean True if the path exists, false otherwise.
      *
-     * @throws IoException If an unexpected error occurs.
+     * @throws FileSystemException If an unexpected error occurs.
      */
     public function exists($path)
     {
+        $this->throw = true;
+
         return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
             return file_exists($path);
         });
@@ -47,94 +59,171 @@ class FileSystem
      *
      * @return string The canonicalized path.
      *
-     * @throws IoException If an error occurs.
+     * @throws FileSystemException If the path does not exist or an unexpected error occurs.
      */
-    public function realpath($path)
+    public function realPath($path)
     {
-        $path = @realpath($path);
+        $path = realpath($path);
 
         if ($path === false) {
-            throw new IoException('Cannot get the real path of ' . $path);
+            throw FileSystemException::cannotGetRealPath($path);
         }
 
         return $path;
     }
 
     /**
-     * Creates a directory.
+     * Returns whether the given path is a directory.
+     *
+     * @param string $path The path to test.
+     *
+     * @return boolean True if the path exists and is a directory, false otherwise.
+     *
+     * @throws FileSystemException If an unknown error occurs.
+     */
+    public function isDirectory($path)
+    {
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return is_dir($path);
+        });
+    }
+
+    /**
+     * Creates a new directory.
      *
      * @param string  $path      The path of the directory to create.
      * @param integer $mode      The mode of the directory (ignored on Windows).
-     * @param boolean $recursive Whether to recursively create nested directories.
+     * @param boolean $recursive Whether to create parent directories if they do not exist.
      *
      * @return void
      *
-     * @throws IoException If the directory already exists, or cannot be created.
+     * @throws FileSystemException If the directory already exists or cannot be created.
      */
     public function createDirectory($path, $mode = 0777, $recursive = false)
     {
-        if (! $this->tryCreateDirectory($path, $mode, $recursive)) {
-            throw new IoException('Cannot create directory ' . $path);
-        }
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
+            mkdir($path, $mode, $recursive);
+        });
     }
 
     /**
-     * @param string  $path
-     * @param integer $mode
-     * @param boolean $recursive
+     * Attempts to create a new directory and returns the success as a boolean.
      *
-     * @return boolean
+     * Any error will be silently ignored and will make this method return false.
+     * Note that there is no way to know the reason of the failure.
+     *
+     * @param string  $path      The path of the directory to create.
+     * @param integer $mode      The mode of the directory (ignored on Windows).
+     * @param boolean $recursive Whether to create parent directories if they do not exist.
+     *
+     * @return boolean True if the directory was successfully created, false otherwise.
      */
     public function tryCreateDirectory($path, $mode = 0777, $recursive = false)
     {
-        return @ mkdir($path, $mode, $recursive);
+        $this->throw = false;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
+            return mkdir($path, $mode, $recursive);
+        });
     }
 
     /**
-     * @param string $path          The file path.
-     * @param string|resource $data The data to write to the file.
-     * @param bool $append          Whether to append or overwrite an existing file.
-     * @return int                  The number of bytes written.
-     * @throws IoException          If an error occurs while writing.
+     * Writes data to a given file.
+     *
+     * The following flags can be used, joined with the binary OR (`|`) operator:
+     *
+     * * FILE_USE_INCLUDE_PATH: Search for `path` in the include directory.
+     * * FILE_APPEND:           If `path` already exists, append the data to the file instead of overwriting it.
+     * * LOCK_EX:               Acquire an exclusive lock on the file while proceeding to the writing.
+     *
+     * @param string          $path  The file path.
+     * @param string|resource $data  The data to write to the file.
+     * @param integer         $flags A combination of zero or more flags.
+     *
+     * @return integer The number of bytes written.
+     *
+     * @throws FileSystemException If an error occurs while writing.
      */
-    public function put($path, $data, $append = false)
+    public function write($path, $data, $flags = 0)
     {
-        $flags = $append ? FILE_APPEND : 0;
-        $result = @file_put_contents($path, $data, $flags);
+        $this->throw = true;
 
-        if ($result === false) {
-            throw new IoException('Cannot write data to ' . $path);
-        }
-
-        return $result;
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path, $data, $flags) {
+            return file_put_contents($path, $data, $flags);
+        });
     }
 
     /**
      * @param string $path The file path.
-     * @return string      The file contents.
-     * @throws IoException If an error occurs while reading.
+     *
+     * @return string The file contents.
+     *
+     * @throws FileSystemException If an error occurs while reading.
      */
-    public function get($path)
+    public function read($path)
     {
-        $result = @file_get_contents($path);
+        $this->throw = true;
 
-        if ($result === false) {
-            throw new IoException('Cannot read data from ' . $path);
-        }
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return file_get_contents($path);
+        });
+    }
 
-        return $result;
+    /**
+     * Deletes a file or a directory.
+     *
+     * If the path points to a directory then the directory must be empty.
+     *
+     * @param string $path The file or directory path.
+     *
+     * @return void
+     *
+     * @return FileSystemException If the file does not exist, the directory is not empty, or another error occurs.
+     */
+    public function delete($path)
+    {
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            is_dir($path) ? rmdir($path) : unlink($path);
+        });
+    }
+
+    /**
+     * Attempts to delete a file or a directory.
+     *
+     * If the path points to a directory then the directory must be empty.
+     *
+     * @param string $path The file or directory path.
+     *
+     * @return boolean True if the file was successfully deleted, false otherwise.
+     */
+    public function tryDelete($path)
+    {
+        $this->throw = false;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return is_dir($path) ? rmdir($path) : unlink($path);
+        });
     }
 
     /**
      * Removes a file, link, or (recursively) a directory.
      *
      * @param string $path
-     * @throws IoException
+     *
+     * @return void
+     *
+     * @throws FileSystemException
      */
     public function remove($path)
     {
         if (! file_exists($path)) {
-            throw IoException::fileDoesNotExist($path);
+            throw FileSystemException::fileDoesNotExist($path);
         }
 
         if (is_dir($path)) {
@@ -144,43 +233,55 @@ class FileSystem
             }
 
             if (true !== @rmdir($path)) {
-                throw IoException::cannotRemoveDirectory($path);
+                throw FileSystemException::cannotRemoveDirectory($path);
             }
         } else {
             if (true !== @unlink($path)) {
-                throw IoException::cannotRemoveFile($path);
+                throw FileSystemException::cannotRemoveFile($path);
             }
         }
     }
 
     /**
-     * Renames a file, or throws an exception.
+     * Moves or renames a file to a target file.
      *
-     * @param string $oldName
-     * @param string $newName
+     * The file will be moved between directories if necessary.
+     * If `target` exists, it will be overwritten.
+     *
+     * @param string $source The source file path.
+     * @param string $target The target file path.
      *
      * @return void
      *
-     * @throws IoException
+     * @throws FileSystemException
      */
-    public function rename($oldName, $newName)
+    public function move($source, $target)
     {
-        if (! $this->tryRename($oldName, $newName)) {
-            throw new IoException('Cannot rename file');
-        }
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+            rename($source, $target);
+        });
     }
 
     /**
-     * Attempts to rename a file, and returns the success as a boolean.
+     * Attempts to move a file, and returns the success as a boolean.
      *
-     * @param string $oldName The old file name.
-     * @param string $newName The new file name.
+     * The file will be moved between directories if necessary.
+     * If `target` exists, it will be overwritten.
      *
-     * @return boolean Whether the rename was successful.
+     * @param string $source The source file path.
+     * @param string $target The target file path.
+     *
+     * @return boolean True if the file was successfully renamed, false otherwise.
      */
-    public function tryRename($oldName, $newName)
+    public function tryMove($source, $target)
     {
-        return @ rename($oldName, $newName);
+        $this->throw = false;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+            return rename($source, $target);
+        });
     }
 
     /**

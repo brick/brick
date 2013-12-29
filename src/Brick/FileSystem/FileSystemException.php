@@ -3,23 +3,24 @@
 namespace Brick\FileSystem;
 
 /**
- * Exception thrown by the FileSystem class.
+ * Exception thrown when a file system operation fails.
  */
-class IoException extends \RuntimeException
+class FileSystemException extends \RuntimeException
 {
     /**
      * @param \Exception $e
      *
-     * @return IoException
+     * @return FileSystemException
      */
     public static function wrap(\Exception $e)
     {
-        return new self($e->getMessage(), $e->getCode(), $e);
+        return new static($e->getMessage(), $e->getCode(), $e);
     }
 
     /**
      * @param string $path
-     * @return IoException
+     *
+     * @return FileSystemException
      */
     public static function fileDoesNotExist($path)
     {
@@ -28,7 +29,8 @@ class IoException extends \RuntimeException
 
     /**
      * @param string $path
-     * @return IoException
+     *
+     * @return FileSystemException
      */
     public static function cannotRemoveDirectory($path)
     {
@@ -37,10 +39,24 @@ class IoException extends \RuntimeException
 
     /**
      * @param string $path
-     * @return IoException
+     *
+     * @return FileSystemException
      */
     public static function cannotRemoveFile($path)
     {
         return new self('Cannot remove file: ' . $path);
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return FileSystemException
+     */
+    public static function cannotGetRealPath($path)
+    {
+        return new self(sprintf(
+            'Cannot get the real path of "%s"; check that the path exists.',
+            $path
+        ));
     }
 }

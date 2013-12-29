@@ -3,7 +3,6 @@
 namespace Brick\Type;
 
 use Brick\Math\Math;
-use Brick\Type\Cast;
 
 /**
  * Immutable strongly typed integer.

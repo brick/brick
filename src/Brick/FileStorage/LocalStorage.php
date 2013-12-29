@@ -3,7 +3,7 @@
 namespace Brick\FileStorage;
 
 use Brick\FileSystem\FileSystem;
-use Brick\FileSystem\IoException;
+use Brick\FileSystem\FileSystemException;
 
 /**
  * Filesystem implementation of the Storage interface.
@@ -69,8 +69,8 @@ class LocalStorage implements Storage
         $this->filesystem->tryCreateDirectory(dirname($path), 0777, true);
 
         try {
-            $this->filesystem->put($path, $data);
-        } catch (IoException $e) {
+            $this->filesystem->write($path, $data);
+        } catch (FileSystemException $e) {
             throw Exception\StorageException::putError($path, $e);
         }
     }
@@ -87,8 +87,8 @@ class LocalStorage implements Storage
                 throw Exception\NotFoundException::pathNotFound($path);
             }
 
-            return $this->filesystem->get($path);
-        } catch (IoException $e) {
+            return $this->filesystem->read($path);
+        } catch (FileSystemException $e) {
             throw Exception\StorageException::getError($path, $e);
         }
     }
@@ -106,7 +106,7 @@ class LocalStorage implements Storage
             }
 
             $this->filesystem->remove($path);
-        } catch (IoException $e) {
+        } catch (FileSystemException $e) {
             throw Exception\StorageException::deleteError($path, $e);
         }
     }

@@ -2,7 +2,6 @@
 
 namespace Brick\Packing;
 
-use Brick\Packing\ObjectPacker;
 use Brick\Reflection\ReflectionTools;
 
 /**
