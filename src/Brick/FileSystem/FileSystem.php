@@ -178,14 +178,25 @@ class FileSystem
      *
      * If the path points to a directory then the directory must be empty.
      *
-     * @param string $path The file or directory path.
+     * @param string  $path      The file or directory path.
+     * @param boolean $recursive Whether to delete recursively a directory.
+     *                           If false, an exception will be thrown if trying to delete a non-empty directory.
      *
      * @return void
      *
-     * @return FileSystemException If the file does not exist, the directory is not empty, or another error occurs.
+     * @return FileSystemException If the file does not exist, or an error occurs.
      */
-    public function delete($path)
+    public function delete($path, $recursive = false)
     {
+        if ($recursive && $this->isDirectory($path)) {
+            $flags = \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME;
+            $files = new \FilesystemIterator($path, $flags);
+
+            foreach ($files as $file) {
+                $this->delete($file, true);
+            }
+        }
+
         $this->throw = true;
 
         $this->errorHandler->swallow(E_WARNING, function() use ($path) {
@@ -209,37 +220,6 @@ class FileSystem
         return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
             return is_dir($path) ? rmdir($path) : unlink($path);
         });
-    }
-
-    /**
-     * Removes a file, link, or (recursively) a directory.
-     *
-     * @param string $path
-     *
-     * @return void
-     *
-     * @throws FileSystemException
-     */
-    public function remove($path)
-    {
-        if (! file_exists($path)) {
-            throw FileSystemException::fileDoesNotExist($path);
-        }
-
-        if (is_dir($path)) {
-            $files = new \FilesystemIterator($path, \FilesystemIterator::SKIP_DOTS);
-            foreach ($files as $file) {
-                $this->remove($file);
-            }
-
-            if (true !== @rmdir($path)) {
-                throw FileSystemException::cannotRemoveDirectory($path);
-            }
-        } else {
-            if (true !== @unlink($path)) {
-                throw FileSystemException::cannotRemoveFile($path);
-            }
-        }
     }
 
     /**

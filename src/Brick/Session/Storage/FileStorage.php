@@ -90,7 +90,7 @@ class FileStorage implements SessionStorage
      */
     public function remove($id, $key)
     {
-        $this->fs->remove($this->getPath($id, $key));
+        $this->fs->delete($this->getPath($id, $key), true);
     }
 
     /**
@@ -98,7 +98,7 @@ class FileStorage implements SessionStorage
      */
     public function clear($id)
     {
-        $this->fs->remove($this->getPath($id));
+        $this->fs->delete($this->getPath($id), true);
     }
 
     /**
@@ -108,7 +108,7 @@ class FileStorage implements SessionStorage
     {
         $this->fs->foreachFile($this->directory, function(\SplFileInfo $file) use ($lifetime) {
             if ($file->getATime() < time() - $lifetime) {
-                $this->fs->remove($file);
+                $this->fs->delete($file, true);
             }
         });
     }

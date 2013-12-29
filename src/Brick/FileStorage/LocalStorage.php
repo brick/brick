@@ -105,7 +105,7 @@ class LocalStorage implements Storage
                 throw Exception\NotFoundException::pathNotFound($path);
             }
 
-            $this->filesystem->remove($path);
+            $this->filesystem->delete($path, true);
         } catch (FileSystemException $e) {
             throw Exception\StorageException::deleteError($path, $e);
         }
