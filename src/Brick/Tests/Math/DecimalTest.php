@@ -2,523 +2,107 @@
 
 namespace Brick\Tests\Math;
 
-use Brick\Math\ArithmeticException;
 use Brick\Math\Decimal;
 use Brick\Math\RoundingMode;
 
 /**
- * Unit test for class Decimal.
+ * Unit tests for class Decimal.
  */
-class BigDecimalTest extends \PHPUnit_Framework_TestCase
+class DecimalTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param Decimal $expected
-     * @param Decimal $actual
-     */
-    private function assertDecimalEquals(Decimal $expected, Decimal $actual)
+    public function testEquality()
     {
-        $this->assertTrue(
-            $actual->isEqualTo($expected),
-            sprintf('Expected %s, got %s', $expected, $actual)
-        );
+        $a = Decimal::of('1.0');
+        $b = Decimal::of('1.00');
+
+        $this->assertTrue($a->isEqualTo($b));
+    }
+
+    public function testDecimal()
+    {
+        $number1 = Decimal::of('1.0123456789');
+        $number2 = Decimal::of('2.0987654321');
+
+        $expectedSum = Decimal::of('3.111111111');
+        $expectedDifference = Decimal::of('-1.0864197532');
+        $expectedProduct = Decimal::of('2.12467611621112635269');
+
+        // Check addition / subtraction
+        $this->assertTrue($number1->plus($number2)->isEqualTo($expectedSum));
+        $this->assertTrue($number1->minus($number2)->isEqualTo($expectedDifference));
+        $this->assertTrue($number1->plus($number2)->minus($number2)->isEqualTo($number1));
+
+        // Check multiplication
+        $this->assertTrue($number1->multipliedBy($number2)->isEqualTo($expectedProduct));
+
+        $times3 = $number1->multipliedBy(Decimal::of(3));
+        $this->assertTrue($number1->plus($number1)->plus($number1)->isEqualTo($times3));
+
+        // Check negation
+        $this->assertTrue($number1->negated()->negated()->isEqualTo($number1));
+        $this->assertTrue($number1->negated()->isNegative());
+
+        // Check absolute value
+        $this->assertTrue($number1->negated()->abs()->isEqualTo($number1));
+        $this->assertTrue($number2->negated()->abs()->isEqualTo($number2->abs()));
+
+        // Check positive test
+        $this->assertTrue($number1->isPositive());
+        $this->assertFalse($number1->minus($number1)->isPositive());
+        $this->assertTrue($number1->minus($number1)->isPositiveOrZero());
+        $this->assertFalse($number1->negated()->isPositive());
+        $this->assertTrue($number1->negated()->isNegative());
+
+        $this->assertTrue($number1->isLessThan($number2));
+        $this->assertTrue($number1->isLessThanOrEqualTo($number2));
+        $this->assertFalse($number1->isGreaterThan($number2));
+        $this->assertFalse($number1->isGreaterThanOrEqualTo($number2));
+
+        $this->assertTrue($number2->isGreaterThan($number1));
+        $this->assertTrue($number2->isGreaterThanOrEqualTo($number1));
+        $this->assertFalse($number2->isLessThan($number1));
+        $this->assertFalse($number2->isLessThanOrEqualTo($number1));
+
+        $this->assertFalse($number1->isLessThan($number1));
+        $this->assertTrue($number1->isLessThanOrEqualTo($number1));
+        $this->assertFalse($number1->isGreaterThan($number1));
+        $this->assertTrue($number1->isGreaterThanOrEqualTo($number1));
     }
 
     /**
-     * @dataProvider roundingModeProvider
-     *
-     * @param integer     $roundingMode The rounding mode.
-     * @param string      $number       The number to round.
-     * @param string|null $two          The expected rounding to a scale of two, or null if an exception is expected.
-     * @param string|null $one          The expected rounding to a scale of one, or null if an exception is expected.
-     * @param string|null $zero         The expected rounding to a scale of zero, or null if an exception is expected.
+     * @expectedException \RuntimeException
      */
-    public function testRoundingMode($roundingMode, $number, $two, $one, $zero)
+    public function testDivisionByZero()
     {
-        $number = Decimal::of($number);
-
-        foreach ([$zero, $one, $two] as $scale => $expected) {
-            if ($expected === null) {
-                try {
-                    $number->withScale($scale, $roundingMode);
-                }
-                catch (ArithmeticException $e) {
-                    continue;
-                }
-
-                $this->fail('Rounding %s did not trigger an ArithmeticException as expected.', $number->toString());
-            } else {
-                $expected = Decimal::of($expected);
-                $actual = $number->withScale($scale, $roundingMode);
-                $this->assertDecimalEquals($expected, $actual);
-            }
-        }
+        Decimal::one()->dividedBy(Decimal::zero());
     }
 
     /**
-     * @return array
+     * @expectedException \RuntimeException
      */
-    public function roundingModeProvider()
+    public function testDivisionWithRoundingNecessary()
     {
-        return [
-            [RoundingMode::UP,  '3.501',  '3.51',  '3.6',  '4'],
-            [RoundingMode::UP,  '3.500',  '3.50',  '3.5',  '4'],
-            [RoundingMode::UP,  '3.499',  '3.50',  '3.5',  '4'],
-            [RoundingMode::UP,  '3.001',  '3.01',  '3.1',  '4'],
-            [RoundingMode::UP,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::UP,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::UP,  '2.501',  '2.51',  '2.6',  '3'],
-            [RoundingMode::UP,  '2.500',  '2.50',  '2.5',  '3'],
-            [RoundingMode::UP,  '2.499',  '2.50',  '2.5',  '3'],
-            [RoundingMode::UP,  '2.001',  '2.01',  '2.1',  '3'],
-            [RoundingMode::UP,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::UP,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::UP,  '1.501',  '1.51',  '1.6',  '2'],
-            [RoundingMode::UP,  '1.500',  '1.50',  '1.5',  '2'],
-            [RoundingMode::UP,  '1.499',  '1.50',  '1.5',  '2'],
-            [RoundingMode::UP,  '1.001',  '1.01',  '1.1',  '2'],
-            [RoundingMode::UP,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::UP,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::UP,  '0.501',  '0.51',  '0.6',  '1'],
-            [RoundingMode::UP,  '0.500',  '0.50',  '0.5',  '1'],
-            [RoundingMode::UP,  '0.499',  '0.50',  '0.5',  '1'],
-            [RoundingMode::UP,  '0.001',  '0.01',  '0.1',  '1'],
-            [RoundingMode::UP,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::UP, '-0.001', '-0.01', '-0.1', '-1'],
-            [RoundingMode::UP, '-0.499', '-0.50', '-0.5', '-1'],
-            [RoundingMode::UP, '-0.500', '-0.50', '-0.5', '-1'],
-            [RoundingMode::UP, '-0.501', '-0.51', '-0.6', '-1'],
-            [RoundingMode::UP, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::UP, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::UP, '-1.001', '-1.01', '-1.1', '-2'],
-            [RoundingMode::UP, '-1.499', '-1.50', '-1.5', '-2'],
-            [RoundingMode::UP, '-1.500', '-1.50', '-1.5', '-2'],
-            [RoundingMode::UP, '-1.501', '-1.51', '-1.6', '-2'],
-            [RoundingMode::UP, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::UP, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::UP, '-2.001', '-2.01', '-2.1', '-3'],
-            [RoundingMode::UP, '-2.499', '-2.50', '-2.5', '-3'],
-            [RoundingMode::UP, '-2.500', '-2.50', '-2.5', '-3'],
-            [RoundingMode::UP, '-2.501', '-2.51', '-2.6', '-3'],
-            [RoundingMode::UP, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::UP, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::UP, '-3.001', '-3.01', '-3.1', '-4'],
-            [RoundingMode::UP, '-3.499', '-3.50', '-3.5', '-4'],
-            [RoundingMode::UP, '-3.500', '-3.50', '-3.5', '-4'],
-            [RoundingMode::UP, '-3.501', '-3.51', '-3.6', '-4'],
+        $p = Decimal::of('1.234');
+        $q = Decimal::of('123.456');
 
-            [RoundingMode::DOWN,  '3.501',  '3.50',  '3.5',  '3'],
-            [RoundingMode::DOWN,  '3.500',  '3.50',  '3.5',  '3'],
-            [RoundingMode::DOWN,  '3.499',  '3.49',  '3.4',  '3'],
-            [RoundingMode::DOWN,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::DOWN,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::DOWN,  '2.999',  '2.99',  '2.9',  '2'],
-            [RoundingMode::DOWN,  '2.501',  '2.50',  '2.5',  '2'],
-            [RoundingMode::DOWN,  '2.500',  '2.50',  '2.5',  '2'],
-            [RoundingMode::DOWN,  '2.499',  '2.49',  '2.4',  '2'],
-            [RoundingMode::DOWN,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::DOWN,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::DOWN,  '1.999',  '1.99',  '1.9',  '1'],
-            [RoundingMode::DOWN,  '1.501',  '1.50',  '1.5',  '1'],
-            [RoundingMode::DOWN,  '1.500',  '1.50',  '1.5',  '1'],
-            [RoundingMode::DOWN,  '1.499',  '1.49',  '1.4',  '1'],
-            [RoundingMode::DOWN,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::DOWN,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::DOWN,  '0.999',  '0.99',  '0.9',  '0'],
-            [RoundingMode::DOWN,  '0.501',  '0.50',  '0.5',  '0'],
-            [RoundingMode::DOWN,  '0.500',  '0.50',  '0.5',  '0'],
-            [RoundingMode::DOWN,  '0.499',  '0.49',  '0.4',  '0'],
-            [RoundingMode::DOWN,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::DOWN,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::DOWN, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::DOWN, '-0.499', '-0.49', '-0.4',  '0'],
-            [RoundingMode::DOWN, '-0.500', '-0.50', '-0.5',  '0'],
-            [RoundingMode::DOWN, '-0.501', '-0.50', '-0.5',  '0'],
-            [RoundingMode::DOWN, '-0.999', '-0.99', '-0.9',  '0'],
-            [RoundingMode::DOWN, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::DOWN, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::DOWN, '-1.499', '-1.49', '-1.4', '-1'],
-            [RoundingMode::DOWN, '-1.500', '-1.50', '-1.5', '-1'],
-            [RoundingMode::DOWN, '-1.501', '-1.50', '-1.5', '-1'],
-            [RoundingMode::DOWN, '-1.999', '-1.99', '-1.9', '-1'],
-            [RoundingMode::DOWN, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::DOWN, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::DOWN, '-2.499', '-2.49', '-2.4', '-2'],
-            [RoundingMode::DOWN, '-2.500', '-2.50', '-2.5', '-2'],
-            [RoundingMode::DOWN, '-2.501', '-2.50', '-2.5', '-2'],
-            [RoundingMode::DOWN, '-2.999', '-2.99', '-2.9', '-2'],
-            [RoundingMode::DOWN, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::DOWN, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::DOWN, '-3.499', '-3.49', '-3.4', '-3'],
-            [RoundingMode::DOWN, '-3.500', '-3.50', '-3.5', '-3'],
-            [RoundingMode::DOWN, '-3.501', '-3.50', '-3.5', '-3'],
+        $p->dividedBy($q);
+    }
 
-            [RoundingMode::CEILING,  '3.501',  '3.51',  '3.6',  '4'],
-            [RoundingMode::CEILING,  '3.500',  '3.50',  '3.5',  '4'],
-            [RoundingMode::CEILING,  '3.499',  '3.50',  '3.5',  '4'],
-            [RoundingMode::CEILING,  '3.001',  '3.01',  '3.1',  '4'],
-            [RoundingMode::CEILING,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::CEILING,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::CEILING,  '2.501',  '2.51',  '2.6',  '3'],
-            [RoundingMode::CEILING,  '2.500',  '2.50',  '2.5',  '3'],
-            [RoundingMode::CEILING,  '2.499',  '2.50',  '2.5',  '3'],
-            [RoundingMode::CEILING,  '2.001',  '2.01',  '2.1',  '3'],
-            [RoundingMode::CEILING,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::CEILING,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::CEILING,  '1.501',  '1.51',  '1.6',  '2'],
-            [RoundingMode::CEILING,  '1.500',  '1.50',  '1.5',  '2'],
-            [RoundingMode::CEILING,  '1.499',  '1.50',  '1.5',  '2'],
-            [RoundingMode::CEILING,  '1.001',  '1.01',  '1.1',  '2'],
-            [RoundingMode::CEILING,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::CEILING,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::CEILING,  '0.501',  '0.51',  '0.6',  '1'],
-            [RoundingMode::CEILING,  '0.500',  '0.50',  '0.5',  '1'],
-            [RoundingMode::CEILING,  '0.499',  '0.50',  '0.5',  '1'],
-            [RoundingMode::CEILING,  '0.001',  '0.01',  '0.1',  '1'],
-            [RoundingMode::CEILING,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::CEILING, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::CEILING, '-0.499', '-0.49', '-0.4',  '0'],
-            [RoundingMode::CEILING, '-0.500', '-0.50', '-0.5',  '0'],
-            [RoundingMode::CEILING, '-0.501', '-0.50', '-0.5',  '0'],
-            [RoundingMode::CEILING, '-0.999', '-0.99', '-0.9',  '0'],
-            [RoundingMode::CEILING, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::CEILING, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::CEILING, '-1.499', '-1.49', '-1.4', '-1'],
-            [RoundingMode::CEILING, '-1.500', '-1.50', '-1.5', '-1'],
-            [RoundingMode::CEILING, '-1.501', '-1.50', '-1.5', '-1'],
-            [RoundingMode::CEILING, '-1.999', '-1.99', '-1.9', '-1'],
-            [RoundingMode::CEILING, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::CEILING, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::CEILING, '-2.499', '-2.49', '-2.4', '-2'],
-            [RoundingMode::CEILING, '-2.500', '-2.50', '-2.5', '-2'],
-            [RoundingMode::CEILING, '-2.501', '-2.50', '-2.5', '-2'],
-            [RoundingMode::CEILING, '-2.999', '-2.99', '-2.9', '-2'],
-            [RoundingMode::CEILING, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::CEILING, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::CEILING, '-3.499', '-3.49', '-3.4', '-3'],
-            [RoundingMode::CEILING, '-3.500', '-3.50', '-3.5', '-3'],
-            [RoundingMode::CEILING, '-3.501', '-3.50', '-3.5', '-3'],
+    public function testDivisionWithRounding()
+    {
+        $p = Decimal::of('1.234');
+        $q = Decimal::of('123.456');
+        $r = Decimal::of('0.00999546397096941420425090720580611715914981855883');
 
-            [RoundingMode::FLOOR,  '3.501',  '3.50',  '3.5',  '3'],
-            [RoundingMode::FLOOR,  '3.500',  '3.50',  '3.5',  '3'],
-            [RoundingMode::FLOOR,  '3.499',  '3.49',  '3.4',  '3'],
-            [RoundingMode::FLOOR,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::FLOOR,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::FLOOR,  '2.999',  '2.99',  '2.9',  '2'],
-            [RoundingMode::FLOOR,  '2.501',  '2.50',  '2.5',  '2'],
-            [RoundingMode::FLOOR,  '2.500',  '2.50',  '2.5',  '2'],
-            [RoundingMode::FLOOR,  '2.499',  '2.49',  '2.4',  '2'],
-            [RoundingMode::FLOOR,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::FLOOR,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::FLOOR,  '1.999',  '1.99',  '1.9',  '1'],
-            [RoundingMode::FLOOR,  '1.501',  '1.50',  '1.5',  '1'],
-            [RoundingMode::FLOOR,  '1.500',  '1.50',  '1.5',  '1'],
-            [RoundingMode::FLOOR,  '1.499',  '1.49',  '1.4',  '1'],
-            [RoundingMode::FLOOR,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::FLOOR,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::FLOOR,  '0.999',  '0.99',  '0.9',  '0'],
-            [RoundingMode::FLOOR,  '0.501',  '0.50',  '0.5',  '0'],
-            [RoundingMode::FLOOR,  '0.500',  '0.50',  '0.5',  '0'],
-            [RoundingMode::FLOOR,  '0.499',  '0.49',  '0.4',  '0'],
-            [RoundingMode::FLOOR,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::FLOOR,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::FLOOR, '-0.001', '-0.01', '-0.1', '-1'],
-            [RoundingMode::FLOOR, '-0.499', '-0.50', '-0.5', '-1'],
-            [RoundingMode::FLOOR, '-0.500', '-0.50', '-0.5', '-1'],
-            [RoundingMode::FLOOR, '-0.501', '-0.51', '-0.6', '-1'],
-            [RoundingMode::FLOOR, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::FLOOR, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::FLOOR, '-1.001', '-1.01', '-1.1', '-2'],
-            [RoundingMode::FLOOR, '-1.499', '-1.50', '-1.5', '-2'],
-            [RoundingMode::FLOOR, '-1.500', '-1.50', '-1.5', '-2'],
-            [RoundingMode::FLOOR, '-1.501', '-1.51', '-1.6', '-2'],
-            [RoundingMode::FLOOR, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::FLOOR, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::FLOOR, '-2.001', '-2.01', '-2.1', '-3'],
-            [RoundingMode::FLOOR, '-2.499', '-2.50', '-2.5', '-3'],
-            [RoundingMode::FLOOR, '-2.500', '-2.50', '-2.5', '-3'],
-            [RoundingMode::FLOOR, '-2.501', '-2.51', '-2.6', '-3'],
-            [RoundingMode::FLOOR, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::FLOOR, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::FLOOR, '-3.001', '-3.01', '-3.1', '-4'],
-            [RoundingMode::FLOOR, '-3.499', '-3.50', '-3.5', '-4'],
-            [RoundingMode::FLOOR, '-3.500', '-3.50', '-3.5', '-4'],
-            [RoundingMode::FLOOR, '-3.501', '-3.51', '-3.6', '-4'],
+        $this->assertTrue($p->dividedBy($q, 50, RoundingMode::DOWN)->isEqualTo($r));
+    }
 
-            [RoundingMode::HALF_UP,  '3.501',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_UP,  '3.500',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_UP,  '3.499',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_UP,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_UP,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_UP,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_UP,  '2.501',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_UP,  '2.500',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_UP,  '2.499',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_UP,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_UP,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_UP,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_UP,  '1.501',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_UP,  '1.500',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_UP,  '1.499',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_UP,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_UP,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_UP,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_UP,  '0.501',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_UP,  '0.500',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_UP,  '0.499',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_UP,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_UP,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_UP, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_UP, '-0.499', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_UP, '-0.500', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_UP, '-0.501', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_UP, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_UP, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_UP, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_UP, '-1.499', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_UP, '-1.500', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_UP, '-1.501', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_UP, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_UP, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_UP, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_UP, '-2.499', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_UP, '-2.500', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_UP, '-2.501', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_UP, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_UP, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_UP, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_UP, '-3.499', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_UP, '-3.500', '-3.50', '-3.5', '-4'],
-            [RoundingMode::HALF_UP, '-3.501', '-3.50', '-3.5', '-4'],
+    public function testDivisionWithNoRoundingNecessary()
+    {
+        $p = Decimal::of('0.123456789');
+        $q = Decimal::of('0.00244140625');
+        $r = Decimal::of('50.5679007744');
 
-            [RoundingMode::HALF_DOWN,  '3.501',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_DOWN,  '3.500',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_DOWN,  '3.499',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_DOWN,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_DOWN,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_DOWN,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_DOWN,  '2.501',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_DOWN,  '2.500',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_DOWN,  '2.499',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_DOWN,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_DOWN,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_DOWN,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_DOWN,  '1.501',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_DOWN,  '1.500',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_DOWN,  '1.499',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_DOWN,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_DOWN,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_DOWN,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_DOWN,  '0.501',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_DOWN,  '0.500',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_DOWN,  '0.499',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_DOWN,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_DOWN,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_DOWN, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_DOWN, '-0.499', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_DOWN, '-0.500', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_DOWN, '-0.501', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_DOWN, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_DOWN, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_DOWN, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_DOWN, '-1.499', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_DOWN, '-1.500', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_DOWN, '-1.501', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_DOWN, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_DOWN, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_DOWN, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_DOWN, '-2.499', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_DOWN, '-2.500', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_DOWN, '-2.501', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_DOWN, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_DOWN, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_DOWN, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_DOWN, '-3.499', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_DOWN, '-3.500', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_DOWN, '-3.501', '-3.50', '-3.5', '-4'],
-
-            [RoundingMode::HALF_CEILING,  '3.501',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_CEILING,  '3.500',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_CEILING,  '3.499',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_CEILING,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_CEILING,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_CEILING,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_CEILING,  '2.501',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_CEILING,  '2.500',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_CEILING,  '2.499',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_CEILING,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_CEILING,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_CEILING,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_CEILING,  '1.501',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_CEILING,  '1.500',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_CEILING,  '1.499',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_CEILING,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_CEILING,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_CEILING,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_CEILING,  '0.501',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_CEILING,  '0.500',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_CEILING,  '0.499',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_CEILING,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_CEILING,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_CEILING, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_CEILING, '-0.499', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_CEILING, '-0.500', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_CEILING, '-0.501', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_CEILING, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_CEILING, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_CEILING, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_CEILING, '-1.499', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_CEILING, '-1.500', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_CEILING, '-1.501', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_CEILING, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_CEILING, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_CEILING, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_CEILING, '-2.499', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_CEILING, '-2.500', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_CEILING, '-2.501', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_CEILING, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_CEILING, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_CEILING, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_CEILING, '-3.499', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_CEILING, '-3.500', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_CEILING, '-3.501', '-3.50', '-3.5', '-4'],
-
-            [RoundingMode::HALF_FLOOR,  '3.501',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_FLOOR,  '3.500',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_FLOOR,  '3.499',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_FLOOR,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_FLOOR,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_FLOOR,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_FLOOR,  '2.501',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_FLOOR,  '2.500',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_FLOOR,  '2.499',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_FLOOR,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_FLOOR,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_FLOOR,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_FLOOR,  '1.501',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_FLOOR,  '1.500',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_FLOOR,  '1.499',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_FLOOR,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_FLOOR,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_FLOOR,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_FLOOR,  '0.501',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_FLOOR,  '0.500',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_FLOOR,  '0.499',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_FLOOR,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_FLOOR,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_FLOOR, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_FLOOR, '-0.499', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_FLOOR, '-0.500', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_FLOOR, '-0.501', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_FLOOR, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_FLOOR, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_FLOOR, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_FLOOR, '-1.499', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_FLOOR, '-1.500', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_FLOOR, '-1.501', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_FLOOR, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_FLOOR, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_FLOOR, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_FLOOR, '-2.499', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_FLOOR, '-2.500', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_FLOOR, '-2.501', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_FLOOR, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_FLOOR, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_FLOOR, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_FLOOR, '-3.499', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_FLOOR, '-3.500', '-3.50', '-3.5', '-4'],
-            [RoundingMode::HALF_FLOOR, '-3.501', '-3.50', '-3.5', '-4'],
-
-            [RoundingMode::HALF_EVEN,  '3.501',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_EVEN,  '3.500',  '3.50',  '3.5',  '4'],
-            [RoundingMode::HALF_EVEN,  '3.499',  '3.50',  '3.5',  '3'],
-            [RoundingMode::HALF_EVEN,  '3.001',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_EVEN,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_EVEN,  '2.999',  '3.00',  '3.0',  '3'],
-            [RoundingMode::HALF_EVEN,  '2.501',  '2.50',  '2.5',  '3'],
-            [RoundingMode::HALF_EVEN,  '2.500',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_EVEN,  '2.499',  '2.50',  '2.5',  '2'],
-            [RoundingMode::HALF_EVEN,  '2.001',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_EVEN,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_EVEN,  '1.999',  '2.00',  '2.0',  '2'],
-            [RoundingMode::HALF_EVEN,  '1.501',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_EVEN,  '1.500',  '1.50',  '1.5',  '2'],
-            [RoundingMode::HALF_EVEN,  '1.499',  '1.50',  '1.5',  '1'],
-            [RoundingMode::HALF_EVEN,  '1.001',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_EVEN,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_EVEN,  '0.999',  '1.00',  '1.0',  '1'],
-            [RoundingMode::HALF_EVEN,  '0.501',  '0.50',  '0.5',  '1'],
-            [RoundingMode::HALF_EVEN,  '0.500',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_EVEN,  '0.499',  '0.50',  '0.5',  '0'],
-            [RoundingMode::HALF_EVEN,  '0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_EVEN,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_EVEN, '-0.001',  '0.00',  '0.0',  '0'],
-            [RoundingMode::HALF_EVEN, '-0.499', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_EVEN, '-0.500', '-0.50', '-0.5',  '0'],
-            [RoundingMode::HALF_EVEN, '-0.501', '-0.50', '-0.5', '-1'],
-            [RoundingMode::HALF_EVEN, '-0.999', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_EVEN, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_EVEN, '-1.001', '-1.00', '-1.0', '-1'],
-            [RoundingMode::HALF_EVEN, '-1.499', '-1.50', '-1.5', '-1'],
-            [RoundingMode::HALF_EVEN, '-1.500', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_EVEN, '-1.501', '-1.50', '-1.5', '-2'],
-            [RoundingMode::HALF_EVEN, '-1.999', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_EVEN, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_EVEN, '-2.001', '-2.00', '-2.0', '-2'],
-            [RoundingMode::HALF_EVEN, '-2.499', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_EVEN, '-2.500', '-2.50', '-2.5', '-2'],
-            [RoundingMode::HALF_EVEN, '-2.501', '-2.50', '-2.5', '-3'],
-            [RoundingMode::HALF_EVEN, '-2.999', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_EVEN, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_EVEN, '-3.001', '-3.00', '-3.0', '-3'],
-            [RoundingMode::HALF_EVEN, '-3.499', '-3.50', '-3.5', '-3'],
-            [RoundingMode::HALF_EVEN, '-3.500', '-3.50', '-3.5', '-4'],
-            [RoundingMode::HALF_EVEN, '-3.501', '-3.50', '-3.5', '-4'],
-
-            [RoundingMode::UNNECESSARY,  '3.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '3.500',  '3.50',  '3.5', null],
-            [RoundingMode::UNNECESSARY,  '3.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '3.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '3.000',  '3.00',  '3.0',  '3'],
-            [RoundingMode::UNNECESSARY,  '2.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '2.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '2.500',  '2.50',  '2.5', null],
-            [RoundingMode::UNNECESSARY,  '2.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '2.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '2.000',  '2.00',  '2.0',  '2'],
-            [RoundingMode::UNNECESSARY,  '1.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '1.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '1.500',  '1.50',  '1.5', null],
-            [RoundingMode::UNNECESSARY,  '1.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '1.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '1.000',  '1.00',  '1.0',  '1'],
-            [RoundingMode::UNNECESSARY,  '0.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '0.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '0.500',  '0.50',  '0.5', null],
-            [RoundingMode::UNNECESSARY,  '0.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '0.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY,  '0.000',  '0.00',  '0.0',  '0'],
-            [RoundingMode::UNNECESSARY, '-0.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-0.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-0.500', '-0.50', '-0.5', null],
-            [RoundingMode::UNNECESSARY, '-0.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-0.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-1.000', '-1.00', '-1.0', '-1'],
-            [RoundingMode::UNNECESSARY, '-1.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-1.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-1.500', '-1.50', '-1.5', null],
-            [RoundingMode::UNNECESSARY, '-1.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-1.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-2.000', '-2.00', '-2.0', '-2'],
-            [RoundingMode::UNNECESSARY, '-2.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-2.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-2.500', '-2.50', '-2.5', null],
-            [RoundingMode::UNNECESSARY, '-2.501',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-2.999',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-3.000', '-3.00', '-3.0', '-3'],
-            [RoundingMode::UNNECESSARY, '-3.001',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-3.499',    null,   null, null],
-            [RoundingMode::UNNECESSARY, '-3.500', '-3.50', '-3.5', null],
-            [RoundingMode::UNNECESSARY, '-3.501',    null,   null, null],
-        ];
+        $this->assertTrue($p->dividedBy($q, 10)->isEqualTo($r));
     }
 }
