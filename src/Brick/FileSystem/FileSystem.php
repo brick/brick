@@ -91,6 +91,60 @@ class FileSystem
     }
 
     /**
+     * Returns whether the given path is a file.
+     *
+     * @param string $path The path to test.
+     *
+     * @return boolean True if the path exists and is a file, false otherwise.
+     *
+     * @throws FileSystemException If an unknown error occurs.
+     */
+    public function isFile($path)
+    {
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return is_file($path);
+        });
+    }
+
+    /**
+     * Returns whether the given path is a symbolic link.
+     *
+     * @param string $path The path to test.
+     *
+     * @return boolean True if the path exists and is a symbolic link, false otherwise.
+     *
+     * @throws FileSystemException If an unknown error occurs.
+     */
+    public function isLink($path)
+    {
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return is_link($path);
+        });
+    }
+
+    /**
+     * Returns the target of a symbolic link.
+     *
+     * @param string $path The symbolic link path.
+     *
+     * @return string The contents of the symbolic link path.
+     *
+     * @throws FileSystemException If the path does not exist, or is not a link.
+     */
+    public function readLink($path)
+    {
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            return readlink($path);
+        });
+    }
+
+    /**
      * Creates a new directory.
      *
      * @param string  $path      The path of the directory to create.
@@ -223,10 +277,9 @@ class FileSystem
     }
 
     /**
-     * Moves or renames a file to a target file.
+     * Moves or renames a file.
      *
-     * The file will be moved between directories if necessary.
-     * If `target` exists, it will be overwritten.
+     * If the target file exists, it will be overwritten.
      *
      * @param string $source The source file path.
      * @param string $target The target file path.
@@ -245,15 +298,14 @@ class FileSystem
     }
 
     /**
-     * Attempts to move a file, and returns the success as a boolean.
+     * Attempts to move or rename a file, and returns the success as a boolean.
      *
-     * The file will be moved between directories if necessary.
-     * If `target` exists, it will be overwritten.
+     * If the target file exists, it will be overwritten.
      *
      * @param string $source The source file path.
      * @param string $target The target file path.
      *
-     * @return boolean True if the file was successfully renamed, false otherwise.
+     * @return boolean True if the file was successfully moved, false otherwise.
      */
     public function tryMove($source, $target)
     {
@@ -265,8 +317,48 @@ class FileSystem
     }
 
     /**
-     * @param  string $source      The source file/folder.
-     * @param  string $destination The destination path.
+     * Copies a file.
+     *
+     * If the target file exists, it will be overwritten.
+     *
+     * @param string $source The source file path.
+     * @param string $target The target file path.
+     *
+     * @return void
+     *
+     * @throws FileSystemException
+     */
+    public function copy($source, $target)
+    {
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+            copy($source, $target);
+        });
+    }
+
+    /**
+     * Attempts to copy a file, and returns the success as a boolean.
+     *
+     * If the target file exists, it will be overwritten.
+     *
+     * @param string $source The source file path.
+     * @param string $target The target file path.
+     *
+     * @return boolean True if the file was successfully copied, false otherwise.
+     */
+    public function tryCopy($source, $target)
+    {
+        $this->throw = false;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+            return copy($source, $target);
+        });
+    }
+
+    /**
+     * @param string $source      The source file/folder.
+     * @param string $destination The destination path.
      *
      * @return void
      *
