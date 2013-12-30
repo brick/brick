@@ -5,6 +5,7 @@ namespace Brick\Session\Storage;
 use Brick\FileSystem\File;
 use Brick\FileSystem\FileSystem;
 use Brick\FileSystem\FileSystemException;
+use Brick\FileSystem\RecursiveFileIterator;
 
 /**
  * File storage engine for storing sessions on the filesystem.
@@ -73,7 +74,10 @@ class FileStorage implements SessionStorage
             $file->lockExclusive();
         }
 
-        $file->truncate(0)->seek(0)->write($value)->unlock();
+        $file->truncate(0);
+        $file->seek(0);
+        $file->write($value);
+        $file->unlock();
     }
 
     /**
@@ -106,11 +110,14 @@ class FileStorage implements SessionStorage
      */
     public function expire($lifetime)
     {
-        $this->fs->foreachFile($this->directory, function(\SplFileInfo $file) use ($lifetime) {
-            if ($file->getATime() < time() - $lifetime) {
-                $this->fs->delete($file, true);
+        /** @var \SplFileInfo[] $files */
+        $files = new RecursiveFileIterator($this->directory);
+
+        foreach ($files as $file) {
+            if ($file->isFile() && $file->getATime() < time() - $lifetime) {
+                $this->fs->delete($file);
             }
-        });
+        }
     }
 
     /**
@@ -149,10 +156,7 @@ class FileStorage implements SessionStorage
     {
         $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $id;
 
-        try {
-            $this->fs->createDirectory($directoryPath);
-        }
-        catch (FileSystemException $e) {}
+        $this->fs->tryCreateDirectory($directoryPath);
 
         if ($key === null) {
             return $directoryPath;

@@ -3,6 +3,7 @@
 namespace Brick\FileSystem;
 
 use Brick\ErrorHandler;
+use FilesystemIterator as FSI;
 
 /**
  * Utility class for filesystem calls.
@@ -61,7 +62,7 @@ class FileSystem
      *
      * @throws FileSystemException If the path does not exist or an unexpected error occurs.
      */
-    public function realPath($path)
+    public function getRealPath($path)
     {
         $path = realpath($path);
 
@@ -115,14 +116,52 @@ class FileSystem
      *
      * @return boolean True if the path exists and is a symbolic link, false otherwise.
      *
-     * @throws FileSystemException If an unknown error occurs.
+     * @throws FileSystemException If an error occurs.
      */
-    public function isLink($path)
+    public function isSymbolicLink($path)
     {
         $this->throw = true;
 
         return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
             return is_link($path);
+        });
+    }
+
+    /**
+     * Creates a symbolic link to a target.
+     *
+     * @param string $target The target path.
+     * @param string $link   The link path.
+     *
+     * @return void
+     *
+     * @throws FileSystemException If an error occurs.
+     */
+    public function createSymbolicLink($target, $link)
+    {
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($target, $link) {
+            symlink($target, $link);
+        });
+    }
+
+    /**
+     * Creates a new link (directory entry) for an existing file.
+     *
+     * @param string $target The target path.
+     * @param string $link   The link path.
+     *
+     * @return void
+     *
+     * @throws FileSystemException If an error occurs.
+     */
+    public function createLink($target, $link)
+    {
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($target, $link) {
+            link($target, $link);
         });
     }
 
@@ -135,7 +174,7 @@ class FileSystem
      *
      * @throws FileSystemException If the path does not exist, or is not a link.
      */
-    public function readLink($path)
+    public function readSymbolicLink($path)
     {
         $this->throw = true;
 
@@ -243,11 +282,10 @@ class FileSystem
     public function delete($path, $recursive = false)
     {
         if ($recursive && $this->isDirectory($path)) {
-            $flags = \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME;
-            $files = new \FilesystemIterator($path, $flags);
+            $files = new FSI($path, FSI::CURRENT_AS_PATHNAME | FSI::SKIP_DOTS);
 
-            foreach ($files as $file) {
-                $this->delete($file, true);
+            foreach ($files as $pathName) {
+                $this->delete($pathName, true);
             }
         }
 
@@ -319,14 +357,15 @@ class FileSystem
     /**
      * Copies a file.
      *
+     * Symbolic links will be resolved, and the target file will be copied.
      * If the target file exists, it will be overwritten.
      *
-     * @param string $source The source file path.
-     * @param string $target The target file path.
+     * @param string  $source    The source file path.
+     * @param string  $target    The target file path.
      *
      * @return void
      *
-     * @throws FileSystemException
+     * @throws FileSystemException If an error occurs.
      */
     public function copy($source, $target)
     {
@@ -340,6 +379,7 @@ class FileSystem
     /**
      * Attempts to copy a file, and returns the success as a boolean.
      *
+     * Symbolic links will be resolved, and the target file will be copied.
      * If the target file exists, it will be overwritten.
      *
      * @param string $source The source file path.
@@ -357,82 +397,30 @@ class FileSystem
     }
 
     /**
-     * @param string $source      The source file/folder.
-     * @param string $destination The destination path.
+     * Creates a mirror copy of a file or directory.
+     *
+     * Directories will be copied recursively.
+     * Symbolic links will be preserved.
+     *
+     * @param string $source The source file or directory path.
+     * @param string $target The target path.
      *
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws FileSystemException If an error occurs.
      */
-    public function recursiveCopy($source, $destination)
+    public function mirror($source, $target)
     {
-        if (file_exists($destination)) {
-            throw new \RuntimeException('The destination path already exists');
-        }
+        if ($this->isDirectory($source)) {
+            $files = new FSI($source, FSI::KEY_AS_FILENAME | FSI::CURRENT_AS_PATHNAME | FSI::SKIP_DOTS);
 
-        if (is_file($source)) {
-            copy($source, $destination);
-        }
-        elseif (is_dir($source)) {
-            mkdir($destination);
-            foreach (scandir($source) as $item) {
-                if ($item != '.' && $item != '..') {
-                    $this->recursiveCopy(
-                        $source . DIRECTORY_SEPARATOR . $item,
-                        $destination . DIRECTORY_SEPARATOR . $item
-                    );
-                }
+            foreach ($files as $fileName => $pathName) {
+                $this->mirror($pathName, $target . DIRECTORY_SEPARATOR . $fileName);
             }
+        } elseif ($this->isSymbolicLink($source)) {
+            $this->createSymbolicLink($this->readSymbolicLink($source), $target);
         } else {
-            throw new \RuntimeException(sprintf('The source file "%s" is of an unsupported type', $source));
-        }
-    }
-
-    /**
-     * Recurses over a directory and sub-directories and executes a function on each path.
-     *
-     * @param string   $path     The directory path.
-     * @param callable $callback The function to call, which will receive the following parameters:
-     *                           - a SplFileInfo
-     *                           - the relative path.
-     *
-     * @return void
-     */
-    public function foreachFile($path, callable $callback)
-    {
-        $this->browseDirectory($path, '', $callback);
-    }
-
-    /**
-     * Internal function for foreachFile().
-     *
-     * @param string   $fullPath
-     * @param string   $relativePath
-     * @param callable $callback
-     *
-     * @return void
-     */
-    private function browseDirectory($fullPath, $relativePath, callable $callback)
-    {
-        $iterator = new \DirectoryIterator($fullPath);
-
-        foreach ($iterator as $file) {
-            /** @var $file \DirectoryIterator */
-            if (! $file->isDot()) {
-                $fileName = $file->getFilename();
-                $fileFullPath = $fullPath . DIRECTORY_SEPARATOR . $fileName;
-                $fileRelativePath = $relativePath;
-                if ($fileRelativePath != '') {
-                    $fileRelativePath .= DIRECTORY_SEPARATOR;
-                }
-                $fileRelativePath .= $file->getFilename();
-
-                if ($file->isDir()) {
-                    self::browseDirectory($fileFullPath, $fileRelativePath, $callback);
-                } elseif ($file->isFile()) {
-                    $callback($file, $relativePath);
-                }
-            }
+            $this->copy($source, $target);
         }
     }
 }

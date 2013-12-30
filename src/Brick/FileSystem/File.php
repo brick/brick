@@ -83,18 +83,18 @@ class File
      * If calling read() several times, the read will resume from the current position.
      * The pointer can be moved with seek().
      *
-     * @param integer $length The maximum number of bytes to read, or null to read all.
+     * @param integer $length The maximum bytes to read. Defaults to -1 (read all the remaining buffer).
      *
      * @return string
      *
      * @throws FileSystemException
      */
-    public function read($length)
+    public function read($length = -1)
     {
         $this->throw = true;
 
         return $this->errorHandler->swallow(E_WARNING, function($length) {
-            return fread($this->handle, $length);
+            return stream_get_contents($this->handle, $length);
         });
     }
 
