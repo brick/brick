@@ -360,8 +360,8 @@ class FileSystem
      * Symbolic links will be resolved, and the target file will be copied.
      * If the target file exists, it will be overwritten.
      *
-     * @param string  $source    The source file path.
-     * @param string  $target    The target file path.
+     * @param string $source The source file path.
+     * @param string $target The target file path.
      *
      * @return void
      *

@@ -18,6 +18,8 @@ class FileStorage implements SessionStorage
     private $directory;
 
     /**
+     * @todo Currently unused
+     *
      * @var integer
      */
     private $mode;
@@ -47,7 +49,7 @@ class FileStorage implements SessionStorage
     {
         $file = $this->openFile($id, $key);
 
-        $lockContext ? $file->lockExclusive() : $file->lockShared();
+        $file->lock($lockContext);
         $data = $file->read();
 
         if ($lockContext) {
@@ -71,7 +73,7 @@ class FileStorage implements SessionStorage
             $file = $lockContext;
         } else {
             $file = $this->openFile($id, $key);
-            $file->lockExclusive();
+            $file->lock();
         }
 
         $file->truncate(0);
@@ -115,7 +117,7 @@ class FileStorage implements SessionStorage
 
         foreach ($files as $file) {
             if ($file->isFile() && $file->getATime() < time() - $lifetime) {
-                $this->fs->delete($file);
+                $this->fs->tryDelete($file);
             }
         }
     }

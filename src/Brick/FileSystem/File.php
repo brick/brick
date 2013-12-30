@@ -64,9 +64,11 @@ class File
     }
 
     /**
-     * @return boolean
+     * Returns whether the end-of-file has been reached.
      *
-     * @throws FileSystemException
+     * @return boolean True if the file pointer is at EOF, False otherwise.
+     *
+     * @throws FileSystemException If an error occurs.
      */
     public function eof()
     {
@@ -78,7 +80,7 @@ class File
     }
 
     /**
-     * Reads the file, optionally up to a given length.
+     * Reads from the file.
      *
      * If calling read() several times, the read will resume from the current position.
      * The pointer can be moved with seek().
@@ -99,6 +101,8 @@ class File
     }
 
     /**
+     * Writes to the file.
+     *
      * @param string $data The data to write.
      *
      * @return integer The number of bytes written.
@@ -115,55 +119,47 @@ class File
     }
 
     /**
-     * Locks the file in share mode.
+     * Acquires a lock on the file.
      *
-     * @param boolean $blocking Whether to block while waiting for the lock. Defaults to true.
+     * @param boolean $exclusive True to acquire an exclusive lock (default), or false to acquire a shared lock.
      *
-     * @return boolean Whether the lock was acquired. Always true in blocking mode.
-     *
-     * @throws FileSystemException If an error occurs.
-     */
-    public function lockShared($blocking = true)
-    {
-        return $this->doLock(LOCK_SH, $blocking);
-    }
-
-    /**
-     * Locks the file in exclusive mode.
-     *
-     * @param boolean $blocking Whether to block while waiting for the lock. Defaults to true.
-     *
-     * @return boolean Whether the lock was acquired. Always true in blocking mode.
+     * @return void
      *
      * @throws FileSystemException If an error occurs.
      */
-    public function lockExclusive($blocking = true)
+    public function lock($exclusive = true)
     {
-        return $this->doLock(LOCK_EX, $blocking);
-    }
-
-    /**
-     * @param integer $operation The operation, LOCK_SH or LOCK_EX.
-     * @param boolean $blocking  Whether to block while waiting for the lock.
-     *
-     * @return boolean Whether the lock was successfully acquired.
-     *
-     * @throws FileSystemException If an error occurs.
-     */
-    private function doLock($operation, $blocking)
-    {
-        if (! $blocking) {
-            $operation |= LOCK_NB;
-        }
-
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($operation) {
-            return flock($this->handle, $operation);
+        $this->errorHandler->swallow(E_WARNING, function() use ($exclusive) {
+            flock($this->handle, $exclusive ? LOCK_SH : LOCK_EX);
         });
     }
 
     /**
+     * Attempts to acquire a lock on the file.
+     *
+     * This method does not block. An invocation always returns immediately,
+     * either having acquired a lock on the requested region or having failed to do so.
+     *
+     * @param boolean $exclusive True to acquire an exclusive lock (default), or false to acquire a shared lock.
+     *
+     * @return boolean Whether the lock was acquired.
+     *
+     * @throws FileSystemException If an error occurs.
+     */
+    public function tryLock($exclusive = true)
+    {
+        $this->throw = true;
+
+        return $this->errorHandler->swallow(E_WARNING, function() use ($exclusive) {
+            return flock($this->handle, ($exclusive ? LOCK_SH : LOCK_EX) | LOCK_NB);
+        });
+    }
+
+    /**
+     * Releases the lock acquired on the file.
+     *
      * @return void
      *
      * @throws FileSystemException If an error occurs.
@@ -178,12 +174,14 @@ class File
     }
 
     /**
-     * @param integer $offset
-     * @param integer $whence
+     * Sets the position of the file read/write pointer.
+     *
+     * @param integer $offset The offset, measured in bytes.
+     * @param integer $whence One of SEEK_SET, SEEK_CUR, SEEK_END.
      *
      * @return void
      *
-     * @throws FileSystemException
+     * @throws FileSystemException If an error occurs.
      */
     public function seek($offset, $whence = SEEK_SET)
     {
@@ -195,9 +193,11 @@ class File
     }
 
     /**
-     * @return integer
+     * Returns the current position of the file read/write pointer.
      *
-     * @throws FileSystemException
+     * @return integer The pointer position, measured in bytes.
+     *
+     * @throws FileSystemException If an error occurs.
      */
     public function tell()
     {
@@ -209,11 +209,16 @@ class File
     }
 
     /**
-     * @param integer $size
+     * Truncates the file to a given length.
+     *
+     * If size is larger than the file then the file is extended with null bytes.
+     * If size is smaller than the file then the file is truncated to that size.
+     *
+     * @param integer $size The size to truncate to.
      *
      * @return void
      *
-     * @throws FileSystemException
+     * @throws FileSystemException If an error occurs.
      */
     public function truncate($size)
     {
@@ -225,9 +230,11 @@ class File
     }
 
     /**
+     * Forces the write of all buffered output to the file.
+     *
      * @return void
      *
-     * @throws FileSystemException
+     * @throws FileSystemException If an error occurs.
      */
     public function flush()
     {
