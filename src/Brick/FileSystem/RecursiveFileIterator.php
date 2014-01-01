@@ -5,55 +5,100 @@ namespace Brick\FileSystem;
 /**
  * Recursively crawls a directory looking for files.
  *
- * Behaves like FilesystemIte
- *
- * Keys are the file path.
- * Values are SplFileInfo objects.
+ * Each key represents the relative file path.
+ * Each value is a SplFileInfo object.
  */
-class RecursiveFileIterator extends \FilterIterator
+class RecursiveFileIterator implements \Iterator
 {
     /**
-     * @var callable|null
+     * @var string
      */
-    private $filter;
+    private $path;
+
+    /**
+     * @var \Iterator
+     */
+    private $iterator;
 
     /**
      * Class constructor.
      *
-     * @param string        $path   The file or directory path.
-     * @param callable|null $filter A filter function.
+     * @param string $path The directory path.
      *
-     * @throws FileSystemException If path does not exist, or an error occurs.
+     * @throws FileSystemException If the path does not exist, is not a directory, or an error occurs.
      */
-    public function __construct($path, callable $filter = null)
+    public function __construct($path)
     {
-        $this->filter = $filter;
+        $this->path = $path;
 
-        $flags
-            = \FilesystemIterator::KEY_AS_PATHNAME
+        $flags = 0
+            | \FilesystemIterator::KEY_AS_PATHNAME
             | \FilesystemIterator::CURRENT_AS_FILEINFO
             | \FilesystemIterator::SKIP_DOTS;
 
         try {
             $iterator = new \RecursiveDirectoryIterator($path, $flags);
-        } catch (\UnexpectedValueException  $e) {
+        } catch (\UnexpectedValueException $e) {
             throw FileSystemException::wrap($e);
         }
 
-        $iterator = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::SELF_FIRST);
-
-        parent::__construct($iterator);
+        $this->iterator = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::SELF_FIRST);
     }
 
     /**
-     * {@inheritdoc}
+     * Rewinds the Iterator to the first element.
+     *
+     * @return void
      */
-    public function accept()
+    public function rewind()
     {
-        if ($this->filter) {
-            return call_user_func($this->filter, parent::current());
-        }
+        $this->iterator->rewind();
+    }
 
-        return true;
+    /**
+     * Returns whether the current position is valid.
+     *
+     * @return boolean
+     */
+    public function valid()
+    {
+        return $this->iterator->valid();
+    }
+
+    /**
+     * Returns the relative path of the current file.
+     *
+     * @return integer
+     */
+    public function key()
+    {
+        return substr($this->iterator->key(), strlen($this->path) + 1);
+    }
+
+    /**
+     * Returns the current element.
+     *
+     * @return \SplFileInfo
+     *
+     * @throws FileSystemException If called after the last element has been returned.
+     */
+    public function current()
+    {
+        try {
+            return $this->iterator->current();
+        }
+        catch (\RuntimeException $e) {
+            throw FileSystemException::wrap($e);
+        }
+    }
+
+    /**
+     * Moves forward to the next element.
+     *
+     * @return void
+     */
+    public function next()
+    {
+        $this->iterator->next();
     }
 }
