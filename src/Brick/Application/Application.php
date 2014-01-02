@@ -207,15 +207,10 @@ class Application implements RequestHandler
             $this->checkResponse($response);
         } catch (HttpException $e) {
             $response = $this->handleHttpException($e, $request);
-        } catch (\Exception $e) { // @todo finally {} when moving to PHP5.5
+        } finally {
             $event = new Event\ControllerInvocatedEvent($request, $match, $instance);
             $this->eventDispatcher->dispatch($event);
-
-            throw $e;
         }
-
-        $event = new Event\ControllerInvocatedEvent($request, $match, $instance);
-        $this->eventDispatcher->dispatch($event);
 
         $event = new Event\ResponseReceivedEvent($request, $response, $match, $instance);
         $this->eventDispatcher->dispatch($event);
