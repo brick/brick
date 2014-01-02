@@ -2,7 +2,7 @@
 
 namespace Brick\Service\TextLocal;
 
-use Brick\Json\Json;
+use Brick\Json\JsonDecoder;
 use Brick\Service\Exception;
 use Brick\Curl\Curl;
 
@@ -13,8 +13,20 @@ class SmsApi
 {
     const API_URL = 'https://www.txtlocal.com/sendsmspost.php';
 
+    /**
+     * @var string
+     */
     protected $username;
+
+    /**
+     * @var string
+     */
     protected $password;
+
+    /**
+     * @var \Brick\Json\JsonDecoder
+     */
+    protected $jsonDecoder;
 
     /**
      * Class constructor.
@@ -26,6 +38,8 @@ class SmsApi
     {
         $this->username = (string) $username;
         $this->password = (string) $password;
+
+        $this->jsonDecoder = new JsonDecoder();
     }
 
     /**
@@ -62,7 +76,7 @@ class SmsApi
         $curl->setOption(CURLOPT_POSTFIELDS, http_build_query($postData));
 
         $json = $curl->execute();
-        $data = Json::decode($json);
+        $data = $this->jsonDecoder->decode($json);
 
         if (isset($data->Error)) {
             throw new Exception('TextLocal error: ' . $data->Error);

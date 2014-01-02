@@ -3,7 +3,7 @@
 namespace Brick\Browser;
 
 use Brick\Http\Response;
-use Brick\Json\Json;
+use Brick\Json\JsonDecoder;
 
 /**
  * Wraps a Response and provides tools to process it.
@@ -80,14 +80,21 @@ class ResponseParser
     /**
      * Parses the response as JSON.
      *
-     * @param bool $assoc
+     * Objects will be decoded as associative arrays.
      *
      * @return mixed
      *
      * @throws \Brick\Json\JsonException
      */
-    public function parseJson($assoc = false)
+    public function parseJson()
     {
-        return Json::decode($this->getText(), $assoc);
+        static $jsonDecoder;
+
+        if (! $jsonDecoder) {
+            $jsonDecoder = new JsonDecoder();
+            $jsonDecoder->decodeObjectsAsArrays(true);
+        }
+
+        return $jsonDecoder->decode($this->getText());
     }
 }
