@@ -26,17 +26,17 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->set('someservice.lifetime', 3600);
 
-        $container->bind('Brick\Tests\SomeService')->with([
+        $container->bind(SomeService::class)->with([
             'lifetime' => 'someservice.lifetime'
         ]);
 
-        $container->bind('Brick\Tests\AnotherService');
+        $container->bind(AnotherService::class);
 
-        $service = $container->get('Brick\Tests\AnotherService');
+        $service = $container->get(AnotherService::class);
 
-        $this->assertInstanceOf('Brick\Tests\AnotherService', $service);
-        $this->assertInstanceOf('Brick\Tests\DatabaseConnection', $service->connection);
-        $this->assertInstanceOf('Brick\Tests\SomeService', $service->service);
+        $this->assertInstanceOf(AnotherService::class, $service);
+        $this->assertInstanceOf(DatabaseConnection::class, $service->connection);
+        $this->assertInstanceOf(SomeService::class, $service->service);
 
         $this->assertEquals('localhost', $service->connection->hostname);
         $this->assertEquals('root', $service->connection->username);
@@ -52,7 +52,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         $containerWithoutAnnotations = Container::create();
 
-        $containerWithoutAnnotations->bind('Brick\Tests\DatabaseConnection')->with([
+        $containerWithoutAnnotations->bind(DatabaseConnection::class)->with([
             'hostname' => 'db.host',
             'username' => 'db.user',
             'password' => 'db.pass'
@@ -77,18 +77,15 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container = Container::create();
 
         $container->set('foo', 'bar');
-        $container->bind('Brick\Tests\DatabaseConnection')
-            
-            ->in($dbScope)
-            ->with([
+        $container->bind(DatabaseConnection::class)->in($dbScope)->with([
                 'hostname' => 'foo',
                 'username' => 'foo',
                 'password' => 'foo'
             ]);
 
-        $container->alias('database.connection.shared', 'Brick\Tests\DatabaseConnection')->in($aliasScope);
+        $container->alias('database.connection.shared', DatabaseConnection::class)->in($aliasScope);
 
-        $this->assertResult($container, 'Brick\Tests\DatabaseConnection', $dbSame);
+        $this->assertResult($container, DatabaseConnection::class, $dbSame);
         $this->assertResult($container, 'database.connection.shared', $aliasSame);
     }
 
@@ -115,8 +112,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $a = $container->get($key);
         $b = $container->get($key);
 
-        $this->assertInstanceOf('Brick\Tests\DatabaseConnection', $a);
-        $this->assertInstanceOf('Brick\Tests\DatabaseConnection', $b);
+        $this->assertInstanceOf(DatabaseConnection::class, $a);
+        $this->assertInstanceOf(DatabaseConnection::class, $b);
 
         $same ? $this->assertSame($a, $b) : $this->assertNotSame($a, $b);
     }

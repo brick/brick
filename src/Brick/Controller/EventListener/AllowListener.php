@@ -19,7 +19,7 @@ class AllowListener extends AbstractAnnotationListener
     {
         if ($event instanceof RouteMatchedEvent) {
             $controller = $event->getRouteMatch()->getControllerReflection();
-            $annotation = $this->getControllerAnnotation($controller, 'Brick\Controller\Annotation\Allow');
+            $annotation = $this->getControllerAnnotation($controller, Allow::class);
 
             if ($annotation instanceof Allow) {
                 $method = $event->getRequest()->getMethod();

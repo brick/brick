@@ -237,7 +237,7 @@ class Application implements RequestHandler
         if (! $response instanceof Response) {
             throw new \UnexpectedValueException(sprintf(
                 'Invalid response from controller: expected %s, got %s.',
-                'Brick\Http\Response',
+                Response::class,
                 is_object($response) ? get_class($response) : gettype($response)
             ));
         }

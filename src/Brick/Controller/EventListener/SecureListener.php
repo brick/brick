@@ -4,6 +4,7 @@ namespace Brick\Controller\EventListener;
 
 use Brick\Event\Event;
 use Brick\Application\Event\RouteMatchedEvent;
+use Brick\Controller\Annotation\Secure;
 use Brick\Http\Exception\HttpRedirectException;
 
 /**
@@ -41,7 +42,7 @@ class SecureListener extends AbstractAnnotationListener
             $controller = $event->getRouteMatch()->getControllerReflection();
             $request = $event->getRequest();
 
-            $secure = $this->hasControllerAnnotation($controller, 'Brick\Controller\Annotation\Secure');
+            $secure = $this->hasControllerAnnotation($controller, Secure::class);
 
             if ($secure != $request->isSecure()) {
                 if ($secure || $this->forceUnsecured) {
