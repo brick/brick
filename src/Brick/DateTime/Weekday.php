@@ -18,7 +18,7 @@ class Weekday
     const SUNDAY    = 7;
 
     /**
-     * Cache of all the week days.
+     * Cache of all the days of week.
      *
      * @var Weekday[]
      */
@@ -27,14 +27,14 @@ class Weekday
     /**
      * The ISO-8601 value for the day of the week, from 1 (Monday) to 7 (Sunday).
      *
-     * @var int
+     * @var integer
      */
     private $value;
 
     /**
      * Private constructor. Use of() to get a Weekday instance.
      *
-     * @param int $day
+     * @param integer $day
      */
     private function __construct($day)
     {
@@ -44,8 +44,10 @@ class Weekday
     /**
      * Returns an instance of Weekday for the given day-of-week value.
      *
-     * @param int $day The day of the week, from 1 (Monday) to 7 (Sunday).
+     * @param integer $day The day of the week, from 1 (Monday) to 7 (Sunday).
+     *
      * @return Weekday The Weekday instance.
+     *
      * @throws \UnexpectedValueException
      */
     public static function of($day)
@@ -142,6 +144,7 @@ class Weekday
      * Returns the current Weekday in the given timezone.
      *
      * @param \Brick\DateTime\TimeZone $timezone
+     *
      * @return Weekday
      */
     public static function today(TimeZone $timezone)
@@ -152,7 +155,8 @@ class Weekday
     /**
      * Factory method returning a Weekday from a Brick DateTime.
      *
-     * @param  ZonedDateTime $date
+     * @param ZonedDateTime $date
+     *
      * @return Weekday
      */
     public static function fromDateTime(ZonedDateTime $date)
@@ -164,6 +168,7 @@ class Weekday
      * Factory method returning a Weekday from a Brick Date.
      *
      * @param LocalDate $date
+     *
      * @return Weekday
      */
     public static function fromDate(LocalDate $date)
@@ -178,6 +183,7 @@ class Weekday
      * Returns the seven days of the week in an array.
      *
      * @param Weekday $first The day to return first. Optional, defaults to Monday.
+     *
      * @return Weekday[]
      */
     public static function getWeekdays(Weekday $first = null)
@@ -208,7 +214,7 @@ class Weekday
     /**
      * Returns the ISO 8601 value of this Weekday.
      *
-     * @return int The day-of-week, from 1 (Monday) to 7 (Sunday).
+     * @return integer The day-of-week, from 1 (Monday) to 7 (Sunday).
      */
     public function getValue()
     {
@@ -218,18 +224,24 @@ class Weekday
     /**
      * Returns whether this Weekday equals another Weekday.
      *
+     * Even though of() returns the same instance if the same day is requested several times,
+     * do *not* use strict object comparison to compare two Weekday instances,
+     * as it is possible to get a different instance for the same day using serialization.
+     *
      * @param Weekday $other
-     * @return bool
+     *
+     * @return boolean
      */
     public function isEqualTo(Weekday $other)
     {
-        return ($this->value == $other->value);
+        return $this->value === $other->value;
     }
 
     /**
      * Returns the Weekday that is the specified number of days after this one.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return Weekday
      */
     public function plus($days)
@@ -240,11 +252,82 @@ class Weekday
     /**
      * Returns the Weekday that is the specified number of days before this one.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return Weekday
      */
     public function minus($days)
     {
         return $this->plus(- $days);
+    }
+
+    /**
+     * Returns whether this Weekday represents Monday.
+     *
+     * @return boolean
+     */
+    public function isMonday()
+    {
+        return $this->value === self::MONDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Tuesday.
+     *
+     * @return boolean
+     */
+    public function isTuesday()
+    {
+        return $this->value === self::TUESDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Wednesday.
+     *
+     * @return boolean
+     */
+    public function isWednesday()
+    {
+        return $this->value === self::WEDNESDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Thursday.
+     *
+     * @return boolean
+     */
+    public function isThursday()
+    {
+        return $this->value === self::THURSDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Friday.
+     *
+     * @return boolean
+     */
+    public function isFriday()
+    {
+        return $this->value === self::FRIDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Saturday.
+     *
+     * @return boolean
+     */
+    public function isSaturday()
+    {
+        return $this->value === self::SATURDAY;
+    }
+
+    /**
+     * Returns whether this Weekday represents Sunday.
+     *
+     * @return boolean
+     */
+    public function isSunday()
+    {
+        return $this->value === self::SUNDAY;
     }
 }
