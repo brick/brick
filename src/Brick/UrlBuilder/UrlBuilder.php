@@ -56,7 +56,7 @@ class UrlBuilder
         $pos = strpos($url, '?');
         if (is_int($pos)) {
             parse_str(substr($url, $pos + 1), $query);
-            $parameters = array_merge($query, $parameters);
+            $parameters += $query;
 
             $url = substr($url, 0, $pos);
         }

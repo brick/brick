@@ -76,7 +76,7 @@ class ControllerValueResolver implements ValueResolver
      */
     public function addParameters(array $parameters)
     {
-        $this->parameters = array_merge($this->parameters, $parameters);
+        $this->parameters = $parameters + $this->parameters;
     }
 
     /**
