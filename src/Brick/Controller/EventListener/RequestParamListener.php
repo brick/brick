@@ -2,15 +2,17 @@
 
 namespace Brick\Controller\EventListener;
 
-use Brick\Controller\ParameterConverter\ParameterConverter;
-use Brick\Controller\ParameterConverter\NullConverter;
 use Brick\Controller\Annotation\RequestParam;
 use Brick\Application\Event\ControllerReadyEvent;
 use Brick\Event\Event;
 use Brick\Event\AbstractEventListener;
+use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Request;
 use Brick\Http\Exception\HttpBadRequestException;
 use Brick\Http\Exception\HttpInternalServerErrorException;
+use Brick\ObjectConverter\Exception\ObjectNotConvertibleException;
+use Brick\ObjectConverter\Exception\ObjectNotFoundException;
+use Brick\ObjectConverter\ObjectConverter;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -27,9 +29,9 @@ class RequestParamListener extends AbstractEventListener
     private $annotationReader;
 
     /**
-     * @var \Brick\Controller\ParameterConverter\ParameterConverter
+     * @var \Brick\ObjectConverter\ObjectConverter[]
      */
-    private $parameterConverter;
+    private $objectConverters = [];
 
     /**
      * @var \Brick\Reflection\ReflectionTools
@@ -37,16 +39,26 @@ class RequestParamListener extends AbstractEventListener
     private $reflectionTools;
 
     /**
-     * @param Reader                  $annotationReader
-     * @param ParameterConverter|null $converter
+     * @param Reader $annotationReader
      */
-    public function __construct(Reader $annotationReader, ParameterConverter $converter = null)
+    public function __construct(Reader $annotationReader)
     {
         AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
 
-        $this->annotationReader   = $annotationReader;
-        $this->parameterConverter = $converter ?: new NullConverter();
-        $this->reflectionTools    = new ReflectionTools();
+        $this->annotationReader = $annotationReader;
+        $this->reflectionTools  = new ReflectionTools();
+    }
+
+    /**
+     * @param ObjectConverter $converter
+     *
+     * @return static
+     */
+    public function addObjectConverter(ObjectConverter $converter)
+    {
+        $this->objectConverters[] = $converter;
+
+        return $this;
     }
 
     /**
@@ -137,7 +149,66 @@ class RequestParamListener extends AbstractEventListener
             throw $this->invalidArrayParameterException($controller, $annotation);
         }
 
-        return $this->parameterConverter->convertParameter($parameter, $value, $annotation->getOptions());
+        $class = $parameter->getClass();
+
+        if ($class) {
+            return $this->getObject($class->getName(), $value, $annotation->getOptions());
+        }
+
+        if ($parameter->isArray()) {
+            $types = $this->reflectionTools->getParameterTypes($parameter);
+
+            // Must be a single type.
+            if (count($types) != 1) {
+                return $value;
+            }
+
+            $type = $types[0];
+
+            // Must start with a backslash and end with empty square brackets.
+            if (substr($type, 0, 1) != '\\' || substr($type, -2) != '[]') {
+                return $value;
+            }
+
+            // Remove the leading slash and trailing square brackets.
+            $type = substr($type, 1, -2);
+
+            foreach ($value as & $item) {
+                $item = $this->getObject($type, $item, $annotation->getOptions());
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string       $className The class name.
+     * @param string|array $value     The parameter value,
+     * @param array        $options   The options passed to the annotation.
+     *
+     * @return object
+     *
+     * @throws \RuntimeException
+     */
+    private function getObject($className, $value, array $options)
+    {
+        foreach ($this->objectConverters as $converter) {
+            try {
+                $object = $converter->expand($className, $value, $options);
+            }
+            catch (ObjectNotConvertibleException $e) {
+                throw new HttpBadRequestException($e->getMessage(), $e->getCode(), $e);
+            }
+            catch (ObjectNotFoundException $e) {
+                throw new HttpNotFoundException($e->getMessage(), $e->getCode(), $e);
+            }
+
+            if ($object) {
+                return $object;
+            }
+        }
+
+        throw new HttpInternalServerErrorException('No object converter available for ' . $className);
     }
 
     /**

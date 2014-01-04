@@ -2,7 +2,7 @@
 
 namespace Brick\UrlBuilder;
 
-use Brick\IdentityResolver\IdentityResolver;
+use Brick\ObjectConverter\ObjectConverter;
 
 /**
  * @todo should maybe be called UriBuilder (i, not l)
@@ -10,18 +10,18 @@ use Brick\IdentityResolver\IdentityResolver;
 class UrlBuilder
 {
     /**
-     * @var \Brick\IdentityResolver\IdentityResolver[]
+     * @var \Brick\ObjectConverter\ObjectConverter[]
      */
-    private $resolvers = [];
+    private $objectConverters = [];
 
     /**
-     * @param IdentityResolver $resolver
+     * @param ObjectConverter $converter
      *
      * @return static
      */
-    public function addObjectResolver(IdentityResolver $resolver)
+    public function addObjectConverter(ObjectConverter $converter)
     {
-        $this->resolvers[] = $resolver;
+        $this->objectConverters[] = $converter;
 
         return $this;
     }
@@ -48,7 +48,7 @@ class UrlBuilder
                     unset($parameters[$key]);
                 }
                 if (is_object($value)) {
-                    $parameters[$key] = $this->resolveObject($value);
+                    $parameters[$key] = $this->convertObject($value);
                 }
             }
         }
@@ -71,20 +71,20 @@ class UrlBuilder
     /**
      * @param object $object
      *
-     * @return mixed
+     * @return string|array
      *
      * @throws \RuntimeException
      */
-    private function resolveObject($object)
+    private function convertObject($object)
     {
-        foreach ($this->resolvers as $resolver) {
-            $identity = $resolver->getIdentity($object);
+        foreach ($this->objectConverters as $resolver) {
+            $identity = $resolver->shrink($object);
 
             if ($identity !== null) {
                 return $identity;
             }
         }
 
-        throw new \RuntimeException('Cannot resolve identity of object ' . get_class($object));
+        throw new \RuntimeException('Cannot convert object ' . get_class($object));
     }
 }
