@@ -510,7 +510,7 @@ class LocalTime
     public function format(Locale $locale)
     {
         $formatter = new \IntlDateFormatter((string) $locale, \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT);
-        $formatter->setTimeZoneId('UTC');
+        $formatter->setTimeZone('UTC');
 
         $datetime = new \DateTime(null, new \DateTimeZone('UTC'));
         $this->applyToDateTime($datetime);

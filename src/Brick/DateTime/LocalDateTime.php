@@ -629,7 +629,7 @@ class LocalDateTime
     public function format(Locale $locale)
     {
         $formatter = new \IntlDateFormatter((string) $locale, \IntlDateFormatter::SHORT, \IntlDateFormatter::SHORT);
-        $formatter->setTimeZoneId('UTC');
+        $formatter->setTimeZone('UTC');
 
         $datetime = new \DateTime(null, new \DateTimeZone('UTC'));
         $this->getDate()->applyToDateTime($datetime);
