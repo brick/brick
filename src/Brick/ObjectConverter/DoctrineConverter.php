@@ -5,6 +5,7 @@ namespace Brick\ObjectConverter;
 use Brick\ObjectConverter\Exception\ObjectNotConvertibleException;
 use Brick\ObjectConverter\Exception\ObjectNotFoundException;
 
+use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\LockMode;
 
@@ -31,7 +32,7 @@ class DoctrineConverter implements ObjectConverter
      */
     public function shrink($object)
     {
-        if ($this->em->getMetadataFactory()->isTransient(get_class($object))) {
+        if ($this->isTransient($object)) {
             return null;
         }
 
@@ -57,7 +58,7 @@ class DoctrineConverter implements ObjectConverter
      */
     public function expand($className, $value, array $options = [])
     {
-        if ($this->em->getMetadataFactory()->isTransient($className)) {
+        if ($this->isTransient($className)) {
             return null;
         }
 
@@ -92,5 +93,21 @@ class DoctrineConverter implements ObjectConverter
         }
 
         throw new \RuntimeException('Invalid lock mode: ' . $options['lock']);
+    }
+
+    /**
+     * @param string|object $class
+     *
+     * @return boolean
+     */
+    private function isTransient($class)
+    {
+        if (is_object($class)) {
+            $class = ($class instanceof Proxy)
+                ? get_parent_class($class)
+                : get_class($class);
+        }
+
+        return $this->em->getMetadataFactory()->isTransient($class);
     }
 }
