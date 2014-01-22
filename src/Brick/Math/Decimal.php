@@ -2,6 +2,8 @@
 
 namespace Brick\Math;
 
+use Brick\Type\Cast;
+
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
@@ -64,38 +66,39 @@ class Decimal
     }
 
     /**
-     * Creates a decimal of the given value.
+     * Returns a decimal of the given value.
      *
-     * This method strictly accepts integers and string representations only.
-     * Floating point values are imprecise by design, thus if you want to convert a float
-     * to a decimal, you have to cast it to a string first, and by doing so you explicitly
-     * take responsibility of the potential loss of precision.
+     * Note: you should avoid passing floating point numbers to this method:
+     * being imprecise by design, they might not convert to the decimal value you expect.
+     * Prefer passing decimal numbers as strings, e.g `Decimal::of('0.1')` over `Decimal::of(0.1)`.
      *
-     * @param integer|string $value
+     * @param Decimal|number|string $value
      *
      * @return Decimal
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException If the type is not supported or the number is malformed.
      */
     public static function of($value)
     {
+        if ($value instanceof Decimal) {
+            return $value;
+        }
+
         if (is_int($value)) {
             return new Decimal((string) $value);
         }
 
-        if (is_string($value)) {
-            if (preg_match(Decimal::DECIMAL_REGEXP, $value, $matches) == 0) {
-                $message = 'String is not a valid decimal number: ' . $value;
-                throw new \InvalidArgumentException($message);
-            }
+        $value = Cast::toString($value);
 
-            $value = $matches[0];
-            $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
-
-            return new Decimal($value, $scale);
+        if (preg_match(Decimal::DECIMAL_REGEXP, $value, $matches) == 0) {
+            $message = 'String is not a valid decimal number: ' . $value;
+            throw new \InvalidArgumentException($message);
         }
 
-        throw new \InvalidArgumentException('Expected integer or string, got ' . gettype($value) . '.');
+        $value = $matches[0];
+        $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
+
+        return new Decimal($value, $scale);
     }
 
     /**
@@ -148,7 +151,18 @@ class Decimal
      */
     private function unscaledValue()
     {
-        return ltrim(str_replace('.', '', $this->toString()), '0');
+        $value = $this->toString();
+
+        $prefix = ($value[0] == '-') ? '-' : '';
+
+        if ($prefix == '-') {
+            $value = substr($value, 1);
+        }
+
+        $value = str_replace('.', '', $value);
+        $value = ltrim($value, '0');
+
+        return $prefix . $value;
     }
 
     /**
@@ -308,6 +322,41 @@ class Decimal
     public function negated()
     {
         return Decimal::zero()->minus($this);
+    }
+
+    /**
+     * @param Decimal $that
+     *
+     * @return Decimal
+     *
+     * @throws ArithmeticException If the argument is zero.
+     */
+    public function mod(Decimal $that)
+    {
+        if ($that->isZero()) {
+            throw ArithmeticException::divisionByZero();
+        }
+
+        $power = $that->scale - $this->scale;
+
+        $p = $this->unscaledValue();
+        $q = $that->unscaledValue();
+
+        if ($power > 0) {
+            // add $power zeros to p
+            $p .= str_repeat('0', $power);
+        } elseif ($power < 0) {
+            // add -$power zeros to q
+            $q .= str_repeat('0', -$power);
+        }
+
+        $mod = bcmod($p, $q);
+        $max = max($this->scale, $that->scale);
+
+        $multiplicand = bcpow(10, -$max, $max);
+        $result = bcmul($mod, $multiplicand, $max);
+
+        return new Decimal($result, $max);
     }
 
     /**

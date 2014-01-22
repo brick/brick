@@ -10,12 +10,24 @@ use Brick\Math\RoundingMode;
  */
 class DecimalTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param Decimal $expected
+     * @param Decimal $actual
+     */
+    public function assertDecimalEquals(Decimal $expected, Decimal $actual)
+    {
+        $this->assertTrue(
+            $actual->isEqualTo($expected),
+            sprintf('Expected %s, got %s', $expected, $actual)
+        );
+    }
+
     public function testEquality()
     {
         $a = Decimal::of('1.0');
         $b = Decimal::of('1.00');
 
-        $this->assertTrue($a->isEqualTo($b));
+        $this->assertDecimalEquals($a, $b);
     }
 
     public function testDecimal()
@@ -28,15 +40,15 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $expectedProduct = Decimal::of('2.12467611621112635269');
 
         // Check addition / subtraction
-        $this->assertTrue($number1->plus($number2)->isEqualTo($expectedSum));
-        $this->assertTrue($number1->minus($number2)->isEqualTo($expectedDifference));
-        $this->assertTrue($number1->plus($number2)->minus($number2)->isEqualTo($number1));
+        $this->assertDecimalEquals($expectedSum, $number1->plus($number2));
+        $this->assertDecimalEquals($expectedDifference, $number1->minus($number2));
+        $this->assertDecimalEquals($number1, $number1->plus($number2)->minus($number2));
 
         // Check multiplication
-        $this->assertTrue($number1->multipliedBy($number2)->isEqualTo($expectedProduct));
+        $this->assertDecimalEquals($expectedProduct, $number1->multipliedBy($number2));
 
         $times3 = $number1->multipliedBy(Decimal::of(3));
-        $this->assertTrue($number1->plus($number1)->plus($number1)->isEqualTo($times3));
+        $this->assertDecimalEquals($times3, $number1->plus($number1)->plus($number1));
 
         // Check negation
         $this->assertTrue($number1->negated()->negated()->isEqualTo($number1));
@@ -70,7 +82,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \RuntimeException
+     * @expectedException \Brick\Math\ArithmeticException
      */
     public function testDivisionByZero()
     {
@@ -78,7 +90,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \RuntimeException
+     * @expectedException \Brick\Math\ArithmeticException
      */
     public function testDivisionWithRoundingNecessary()
     {
@@ -103,6 +115,73 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $q = Decimal::of('0.00244140625');
         $r = Decimal::of('50.5679007744');
 
-        $this->assertTrue($p->dividedBy($q, 10)->isEqualTo($r));
+        $this->assertDecimalEquals($r, $p->dividedBy($q, 10));
+    }
+
+    /**
+     * @dataProvider modProvider
+     */
+    public function testMod($a, $b, $expected)
+    {
+        $a = Decimal::of($a);
+        $b = Decimal::of($b);
+
+        $expected = Decimal::of($expected);
+
+        $this->assertDecimalEquals($expected, $a->mod($b));
+    }
+
+    /**
+     * @return array
+     */
+    public function modProvider()
+    {
+        return [
+            [ '1.25',  '0.25',  '0.00'],
+            [ '1.26',  '0.25',  '0.01'],
+            [ '1.26', '-0.25',  '0.01'],
+            ['-1.26',  '0.25', '-0.01'],
+            ['-1.26', '-0.25', '-0.01'],
+
+            [ '1.251',  '0.25',  '0.001'],
+            [ '1.261',  '0.25',  '0.011'],
+            [ '1.261', '-0.25',  '0.011'],
+            ['-1.261',  '0.25', '-0.011'],
+            ['-1.261', '-0.25', '-0.011'],
+
+            [ '1.25',  '0.251',  '0.246'],
+            [ '1.26',  '0.251',  '0.005'],
+            [ '1.26', '-0.251',  '0.005'],
+            ['-1.26',  '0.251', '-0.005'],
+            ['-1.26', '-0.251', '-0.005'],
+
+            [ '1',  '0.03' , '0.01'],
+            [ '1', '-0.03' , '0.01'],
+            ['-1',  '0.03', '-0.01'],
+            ['-1', '-0.03', '-0.01'],
+
+            [ '1.0',  '0.03',  '0.01'],
+            [ '1.0', '-0.03',  '0.01'],
+            ['-1.0',  '0.03', '-0.01'],
+            ['-1.0', '-0.03', '-0.01'],
+
+            [ '1.234',  '1',  '0.234'],
+            [ '1.234', '-1',  '0.234'],
+            ['-1.234',  '1', '-0.234'],
+            ['-1.234', '-1', '-0.234'],
+
+            [ '1.234',  '1.0',  '0.234'],
+            [ '1.234', '-1.0',  '0.234'],
+            ['-1.234',  '1.0', '-0.234'],
+            ['-1.234', '-1.0', '-0.234']
+        ];
+    }
+
+    /**
+     * @expectedException \Brick\Math\ArithmeticException
+     */
+    public function testModZeroThrowsException()
+    {
+        Decimal::one()->mod(Decimal::zero());
     }
 }
