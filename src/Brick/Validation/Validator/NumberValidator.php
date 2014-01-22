@@ -58,7 +58,7 @@ class NumberValidator implements Validator
     }
 
     /**
-     * @param number|string $min
+     * @param number|string|null $min The minimum value, or null to remove it.
      *
      * @return static
      *
@@ -66,13 +66,17 @@ class NumberValidator implements Validator
      */
     public function setMin($min)
     {
-        $this->min = Decimal::of($min);
+        if ($min !== null) {
+            $min = Decimal::of($min);
+        }
+
+        $this->min = $min;
 
         return $this;
     }
 
     /**
-     * @param number|string $max
+     * @param number|string|null $max The maximum value, or null to remove it.
      *
      * @return static
      *
@@ -80,13 +84,17 @@ class NumberValidator implements Validator
      */
     public function setMax($max)
     {
-        $this->max = Decimal::of($max);
+        if ($max !== null) {
+            $max = Decimal::of($max);
+        }
+
+        $this->max = $max;
 
         return $this;
     }
 
     /**
-     * @param number|string $step
+     * @param number|string|null $step The step, or null to remove it.
      *
      * @return static
      *
@@ -94,10 +102,12 @@ class NumberValidator implements Validator
      */
     public function setStep($step)
     {
-        $step = Decimal::of($step);
+        if ($step !== null) {
+            $step = Decimal::of($step);
 
-        if ($step->isNegativeOrZero()) {
-            throw new \InvalidArgumentException('The number validator step must be strictly positive.');
+            if ($step->isNegativeOrZero()) {
+                throw new \InvalidArgumentException('The number validator step must be strictly positive.');
+            }
         }
 
         $this->step = $step;
