@@ -23,6 +23,8 @@ class Number extends Text
         parent::init();
 
         $this->validator = new NumberValidator();
+        $this->validator->setStep(1);
+
         $this->addValidator($this->validator);
     }
 
@@ -35,7 +37,9 @@ class Number extends Text
     }
 
     /**
-     * @param integer $min
+     * Sets the minimum value. Default is no minimum.
+     *
+     * @param number|string $min The minimum value.
      *
      * @return static
      */
@@ -47,7 +51,9 @@ class Number extends Text
     }
 
     /**
-     * @param integer $max
+     * Sets the maximum value. Default is no maximum.
+     *
+     * @param number|string $max The maximum value.
      *
      * @return static
      */
@@ -59,13 +65,15 @@ class Number extends Text
     }
 
     /**
-     * @param integer $step
+     * Sets the validation step. Default is 1.
+     *
+     * @param number|string $step The step, or "any" to allow any value.
      *
      * @return static
      */
     public function setStep($step)
     {
-        $this->validator->setStep($step);
+        $this->validator->setStep($step == 'any' ? null : $step);
 
         return $this->setAttribute('step', $step);
     }
