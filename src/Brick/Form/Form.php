@@ -198,6 +198,15 @@ class Form extends Base
 
     /**
      * @param string $name
+     * @return Element\Input\Number
+     */
+    public function addInputNumber($name)
+    {
+        return $this->addComponent(new Element\Input\Number($this, $name));
+    }
+
+    /**
+     * @param string $name
      * @return Element\Input\Password
      */
     public function addInputPassword($name)
