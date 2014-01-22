@@ -29,7 +29,7 @@ class ValidationResult
     /**
      * Returns whether this result has failures.
      *
-     * @return bool
+     * @return boolean
      */
     public function hasFailures()
     {
@@ -44,5 +44,13 @@ class ValidationResult
     public function getFailures()
     {
         return $this->failures;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSuccess()
+    {
+        return count($this->failures) == 0;
     }
 }
