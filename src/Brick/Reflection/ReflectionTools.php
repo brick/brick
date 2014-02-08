@@ -32,24 +32,20 @@ class ReflectionTools
     {
         $classes = $this->getClassHierarchy($class);
 
-        /** @var $methods \ReflectionMethod[] */
+        /** @var \ReflectionMethod[] $methods */
         $methods = [];
 
         foreach ($classes as $class) {
-            $mm = $class->getMethods();
+            foreach ($class->getMethods() as $method) {
+                if (! $method->isStatic()) {
+                    $key = $method->isPrivate() ? ($method->class . ':' . $method->name) : $method->name;
 
-            foreach ($mm as $m) {
-                if (! $m->isStatic()) {
-                    foreach ($methods as $key => $method) {
-                        if (! $method->isPrivate()) {
-                            if ($method->getName() == $m->getName()) {
-                                unset($methods[$key]);
-                                break;
-                            }
-                        }
+                    if (isset($methods[$key])) {
+                        // Key needs to be unset first for the new element to be on top of the array.
+                        unset($methods[$key]);
                     }
 
-                    $methods[] = $m;
+                    $methods[$key] = $method;
                 }
             }
         }
@@ -75,20 +71,16 @@ class ReflectionTools
         $properties = [];
 
         foreach ($classes as $class) {
-            $pp = $class->getProperties();
+            foreach ($class->getProperties() as $property) {
+                if (! $property->isStatic()) {
+                    $key = $property->isPrivate() ? ($property->class . ':' . $property->name) : $property->name;
 
-            foreach ($pp as $p) {
-                if (! $p->isStatic()) {
-                    foreach ($properties as $key => $property) {
-                        if (! $property->isPrivate()) {
-                            if ($property->getName() == $p->getName()) {
-                                unset($properties[$key]);
-                                break;
-                            }
-                        }
+                    if (isset($properties[$key])) {
+                        // Key needs to be unset first for the new element to be on top of the array.
+                        unset($properties[$key]);
                     }
 
-                    $properties[] = $p;
+                    $properties[$key] = $property;
                 }
             }
         }
