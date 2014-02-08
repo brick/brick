@@ -94,7 +94,7 @@ class Packer
             }
 
             $class = new \ReflectionClass($variable);
-            $properties = $this->reflectionTools->getProperties($class);
+            $properties = $this->reflectionTools->getClassProperties($class);
 
             if (! $class->isUserDefined()) {
                 if ($class->isCloneable()) {

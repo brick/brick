@@ -99,7 +99,7 @@ class Injector
      */
     private function injectMethods(\ReflectionClass $class, $object)
     {
-        foreach ($this->reflectionTools->getMethods($class) as $method) {
+        foreach ($this->reflectionTools->getClassMethods($class) as $method) {
             if ($this->policy->isMethodInjected($method)) {
                 $parameters = $this->getFunctionParameters($method);
                 $method->setAccessible(true);
@@ -116,7 +116,7 @@ class Injector
      */
     private function injectProperties(\ReflectionClass $class, $object)
     {
-        foreach ($this->reflectionTools->getProperties($class) as $property) {
+        foreach ($this->reflectionTools->getClassProperties($class) as $property) {
             if ($this->policy->isPropertyInjected($property)) {
                 $value = $this->resolver->getPropertyValue($property);
                 $property->setAccessible(true);

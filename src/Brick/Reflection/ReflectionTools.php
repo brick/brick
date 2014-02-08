@@ -28,7 +28,7 @@ class ReflectionTools
      *
      * @return \ReflectionMethod[]
      */
-    public function getMethods(\ReflectionClass $class)
+    public function getClassMethods(\ReflectionClass $class)
     {
         $classes = $this->getClassHierarchy($class);
 
@@ -67,7 +67,7 @@ class ReflectionTools
      *
      * @return \ReflectionProperty[]
      */
-    public function getProperties(\ReflectionClass $class)
+    public function getClassProperties(\ReflectionClass $class)
     {
         $classes = $this->getClassHierarchy($class);
 

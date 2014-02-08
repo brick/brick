@@ -12,7 +12,7 @@ class ReflectionToolsTest extends \PHPUnit_Framework_TestCase
     public function testGetMethodsDoesNotReturnStaticMethods()
     {
         $class = new \ReflectionClass(__NAMESPACE__ . '\\S');
-        $methods = (new ReflectionTools)->getMethods($class);
+        $methods = (new ReflectionTools)->getClassMethods($class);
 
         $this->assertCount(0, $methods);
     }
@@ -23,7 +23,7 @@ class ReflectionToolsTest extends \PHPUnit_Framework_TestCase
     public function testGetPropertiesDoesNotReturnStaticProperties()
     {
         $class = new \ReflectionClass(__NAMESPACE__ . '\\S');
-        $properties = (new ReflectionTools)->getProperties($class);
+        $properties = (new ReflectionTools)->getClassProperties($class);
 
         $this->assertCount(0, $properties);
     }
@@ -37,7 +37,7 @@ class ReflectionToolsTest extends \PHPUnit_Framework_TestCase
     public function testGetMethods($class, array $expected)
     {
         $class = new \ReflectionClass(__NAMESPACE__ . '\\' . $class);
-        $methods = (new ReflectionTools)->getMethods($class);
+        $methods = (new ReflectionTools)->getClassMethods($class);
 
         $actual = [];
 
@@ -60,7 +60,7 @@ class ReflectionToolsTest extends \PHPUnit_Framework_TestCase
     public function testGetProperties($class, array $expected)
     {
         $class = new \ReflectionClass(__NAMESPACE__ . '\\' . $class);
-        $properties = (new ReflectionTools)->getProperties($class);
+        $properties = (new ReflectionTools)->getClassProperties($class);
 
         $actual = [];
 
