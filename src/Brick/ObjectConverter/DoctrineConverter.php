@@ -74,14 +74,14 @@ class DoctrineConverter implements ObjectConverter
     /**
      * @param array $options
      *
-     * @return integer
+     * @return integer|null
      *
      * @throws \RuntimeException
      */
     private function getLockMode(array $options)
     {
         if (! isset($options['lock'])) {
-            return LockMode::NONE;
+            return null;
         }
 
         switch ($options['lock']) {
