@@ -67,11 +67,17 @@ class Injector
     public function instantiate($class, array $parameters = [])
     {
         $class = new \ReflectionClass($class);
+        $instance = $class->newInstanceWithoutConstructor();
+
         $constructor = $class->getConstructor();
 
-        $parameters = $constructor ? $this->getFunctionParameters($constructor, $parameters) : [];
+        if ($constructor) {
+            $parameters = $this->getFunctionParameters($constructor, $parameters);
+            $constructor->setAccessible(true);
+            $constructor->invokeArgs($instance, $parameters);
+        }
 
-        return $this->inject($class->newInstanceArgs($parameters));
+        return $this->inject($instance);
     }
 
     /**
