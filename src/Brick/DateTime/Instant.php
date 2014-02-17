@@ -233,6 +233,17 @@ class Instant extends PointInTime
      * @param TimeZone $timeZone
      * @return ZonedDateTime
      */
+    public function atTimeZone(TimeZone $timeZone)
+    {
+        return ZonedDateTime::ofInstant($this, $timeZone);
+    }
+
+    /**
+     * @deprecated Use atTimeZone()
+     *
+     * @param TimeZone $timeZone
+     * @return ZonedDateTime
+     */
     public function toZonedDateTime(TimeZone $timeZone)
     {
         return ZonedDateTime::ofInstant($this, $timeZone);
