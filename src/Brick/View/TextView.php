@@ -3,24 +3,44 @@
 namespace Brick\View;
 
 /**
- * Simple text view, to be used by controllers that need to render plain text in a layout.
- * @todo require html escaping?
+ * Simply renders any given text or HTML.
  */
-class TextView implements View
+class TextView extends AbstractView
 {
     /**
      * @var string
      */
-    protected $text;
+    private $html;
 
     /**
-     * Class constructor.
+     * Private constructor. Use factory methods to obtain an instance.
      *
-     * @param string $text
+     * @param string  $string
+     * @param boolean $escape
      */
-    public function __construct($text)
+    private function __construct($string, $escape)
     {
-        $this->text = (string) $text;
+        $this->html = $escape ? $this->escape($string) : (string) $string;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return TextView
+     */
+    public static function text($text)
+    {
+        return new self($text, true);
+    }
+
+    /**
+     * @param string $html
+     *
+     * @return TextView
+     */
+    public static function html($html)
+    {
+        return new self($html, false);
     }
 
     /**
@@ -28,6 +48,6 @@ class TextView implements View
      */
     public function render()
     {
-        return $this->text;
+        return $this->html;
     }
 }
