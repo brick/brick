@@ -72,9 +72,7 @@ class CheckboxGroup extends Group
      */
     protected function populate($value)
     {
-        if (is_array($value)) {
-            $this->setValues($value);
-        }
+        $this->setValues($value);
     }
 
     /**
