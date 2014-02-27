@@ -72,6 +72,8 @@ class String
             $string = mb_convert_encoding($string, self::ENCODING, $encoding);
         }
 
+        $string = \Normalizer::normalize($string);
+
         $this->string = $string;
         $this->length = mb_strlen($string, self::ENCODING);
     }
@@ -86,7 +88,7 @@ class String
             self::buildEncodings();
         }
 
-        return array_key_exists($encoding, self::$encodings);
+        return array_key_exists(strtolower($encoding), self::$encodings);
     }
 
     /**
@@ -211,7 +213,7 @@ class String
      */
     public function equalsIgnoreCase(String $string)
     {
-        return $this->toLowerCase() === $string->toLowerCase();
+        return $this->toLowerCase()->equals($string->toLowerCase());
     }
 
     /**
