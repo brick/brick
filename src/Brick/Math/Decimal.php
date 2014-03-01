@@ -66,6 +66,32 @@ class Decimal
     }
 
     /**
+     * Returns the minimum of the given values.
+     *
+     * @param Decimal $a
+     * @param Decimal $b
+     *
+     * @return Decimal
+     */
+    public static function min(Decimal $a, Decimal $b)
+    {
+        return $a->isLessThan($b) ? $a : $b;
+    }
+
+    /**
+     * Returns the maximum of the given values.
+     *
+     * @param Decimal $a
+     * @param Decimal $b
+     *
+     * @return Decimal
+     */
+    public static function max(Decimal $a, Decimal $b)
+    {
+        return $a->isGreaterThan($b) ? $a : $b;
+    }
+
+    /**
      * Returns a decimal of the given value.
      *
      * Note: you should avoid passing floating point numbers to this method:

@@ -36,6 +36,32 @@ class Money
     }
 
     /**
+     * Returns the minimum of the given values.
+     *
+     * @param Money $a
+     * @param Money $b
+     *
+     * @return Money
+     */
+    public static function min(Money $a, Money $b)
+    {
+        return $a->isLessThan($b) ? $a : $b;
+    }
+
+    /**
+     * Returns the maximum of the given values.
+     *
+     * @param Money $a
+     * @param Money $b
+     *
+     * @return Money
+     */
+    public static function max(Money $a, Money $b)
+    {
+        return $a->isGreaterThan($b) ? $a : $b;
+    }
+
+    /**
      * @param Currency $currency
      * @param Decimal  $amount
      * @param integer  $roundingMode
