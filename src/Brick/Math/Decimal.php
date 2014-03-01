@@ -128,14 +128,16 @@ class Decimal
     }
 
     /**
-     * Adds a Decimal number to this number.
+     * Returns the sum of this number and that one.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return Decimal
      */
-    public function plus(Decimal $that)
+    public function plus($that)
     {
+        $that = Decimal::of($that);
+
         $scale = max($this->scale, $that->scale);
         $value = bcadd($this->value, $that->value, $scale);
 
@@ -143,14 +145,16 @@ class Decimal
     }
 
     /**
-     * Subtracts a Decimal number from this number.
+     * Returns the difference of this number and that one.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return Decimal
      */
-    public function minus(Decimal $that)
+    public function minus($that)
     {
+        $that = Decimal::of($that);
+
         $scale = max($this->scale, $that->scale);
         $value = bcsub($this->value, $that->value, $scale);
 
@@ -158,14 +162,16 @@ class Decimal
     }
 
     /**
-     * Multiplies a Decimal number with this number.
+     * Returns the result of the multiplication of this number and that one.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return Decimal
      */
-    public function multipliedBy(Decimal $that)
+    public function multipliedBy($that)
     {
+        $that = Decimal::of($that);
+
         $scale = $this->scale + $that->scale;
         $value = bcmul($this->value, $that->value, $scale);
 
@@ -192,19 +198,21 @@ class Decimal
     }
 
     /**
-     * Divides a Decimal number from this number.
+     * Returns the result of the division of this number and that one.
      *
-     * @param Decimal      $that
-     * @param integer|null $scale
-     * @param integer      $roundingMode
+     * @param Decimal|number|string $that         The number to divide.
+     * @param integer|null          $scale        The scale, or null to use the scale of this number.
+     * @param integer               $roundingMode The rounding mode.
      *
      * @return Decimal
      *
      * @throws ArithmeticException
      * @throws \InvalidArgumentException
      */
-    public function dividedBy(Decimal $that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
+    public function dividedBy($that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        $that = Decimal::of($that);
+
         if ($that->isZero()) {
             throw ArithmeticException::divisionByZero();
         }
@@ -351,14 +359,16 @@ class Decimal
     }
 
     /**
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return Decimal
      *
      * @throws ArithmeticException If the argument is zero.
      */
-    public function mod(Decimal $that)
+    public function mod($that)
     {
+        $that = Decimal::of($that);
+
         if ($that->isZero()) {
             throw ArithmeticException::divisionByZero();
         }
@@ -386,70 +396,86 @@ class Decimal
     }
 
     /**
-     * Compares two Decimal numbers.
+     * Compares this number with the given one.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return integer [-1,0,1]
      */
-    private function compareTo(Decimal $that)
+    public function compareTo($that)
     {
+        $that = Decimal::of($that);
+
         return bccomp($this->value, $that->value, max($this->scale, $that->scale));
     }
 
     /**
      * Checks if this number is equal to that number.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isEqualTo(Decimal $that)
+    public function isEqualTo($that)
     {
+        $that = Decimal::of($that);
+
         return $this->compareTo($that) == 0;
     }
 
     /**
      * Checks if this number is strictly lower than that number.
      *
-     * @param Decimal $that
+     * @param Decimal|number|string $that
+     *
      * @return boolean
      */
-    public function isLessThan(Decimal $that)
+    public function isLessThan($that)
     {
+        $that = Decimal::of($that);
+
         return $this->compareTo($that) < 0;
     }
 
     /**
      * Checks if this number is lower than or equal to that number.
      *
-     * @param  Decimal $that
+     * @param Decimal|number|string $that
+     *
      * @return boolean
      */
-    public function isLessThanOrEqualTo(Decimal $that)
+    public function isLessThanOrEqualTo($that)
     {
+        $that = Decimal::of($that);
+
         return $this->compareTo($that) <= 0;
     }
 
     /**
      * Checks if this number is strictly greater than that number.
      *
-     * @param  Decimal $that
+     * @param Decimal|number|string $that
+     *
      * @return boolean
      */
-    public function isGreaterThan(Decimal $that)
+    public function isGreaterThan($that)
     {
+        $that = Decimal::of($that);
+
         return $this->compareTo($that) > 0;
     }
 
     /**
      * Checks if this number is greater than or equal to that number.
      *
-     * @param  Decimal $that
+     * @param Decimal|number|string $that
+     *
      * @return boolean
      */
-    public function isGreaterThanOrEqualTo(Decimal $that)
+    public function isGreaterThanOrEqualTo($that)
     {
+        $that = Decimal::of($that);
+
         return $this->compareTo($that) >= 0;
     }
 

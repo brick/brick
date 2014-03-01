@@ -62,19 +62,19 @@ class Money
     }
 
     /**
-     * @param Currency $currency
-     * @param Decimal  $amount
-     * @param integer  $roundingMode
+     * @param Currency              $currency
+     * @param Decimal|number|string $amount
+     * @param integer               $roundingMode
      *
      * @return Money
      *
      * @throws ArithmeticException       If the scale exceeds the currency scale and no rounding is requested.
      * @throws \InvalidArgumentException If an invalid rounding mode is given.
      */
-    public static function of(Currency $currency, Decimal $amount, $roundingMode = RoundingMode::UNNECESSARY)
+    public static function of(Currency $currency, $amount, $roundingMode = RoundingMode::UNNECESSARY)
     {
         $scale  = $currency->getDefaultFractionDigits();
-        $amount = $amount->withScale($scale, $roundingMode);
+        $amount = Decimal::of($amount)->withScale($scale, $roundingMode);
 
         return new Money($currency, $amount);
     }
@@ -186,13 +186,15 @@ class Money
     }
 
     /**
-     * @param Decimal $that
-     * @param integer $roundingMode
+     * @param Decimal|number|string $that
+     * @param integer               $roundingMode
      *
      * @return Money
      */
-    public function multipliedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
+    public function multipliedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        $that = Decimal::of($that);
+
         $scale  = $this->currency->getDefaultFractionDigits();
         $amount = $this->amount->multipliedBy($that)->withScale($scale, $roundingMode);
 
@@ -200,13 +202,15 @@ class Money
     }
 
     /**
-     * @param Decimal $that
-     * @param integer $roundingMode
+     * @param Decimal|number|string $that
+     * @param integer               $roundingMode
      *
      * @return Money
      */
-    public function dividedBy(Decimal $that, $roundingMode = RoundingMode::UNNECESSARY)
+    public function dividedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        $that = Decimal::of($that);
+
         $scale  = $this->currency->getDefaultFractionDigits();
         $amount = $this->amount->dividedBy($that, $scale, $roundingMode);
 
