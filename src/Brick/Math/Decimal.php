@@ -9,8 +9,6 @@ use Brick\Type\Cast;
  */
 class Decimal
 {
-    const DECIMAL_REGEXP = '/^[\-\+]?[0-9]+(?:\.([0-9]+))?$/';
-
     /**
      * The value of this decimal number as a string
      * (example: 1.23456)
@@ -144,9 +142,8 @@ class Decimal
 
         $value = Cast::toString($value);
 
-        if (preg_match(Decimal::DECIMAL_REGEXP, $value, $matches) == 0) {
-            $message = 'String is not a valid decimal number: ' . $value;
-            throw new \InvalidArgumentException($message);
+        if (preg_match('/^[\-\+]?[0-9]+(?:\.([0-9]+))?$/', $value, $matches) == 0) {
+            throw new \InvalidArgumentException(sprintf('%s does not represent a valid decimal number.', $value));
         }
 
         $value = $matches[0];
@@ -446,8 +443,6 @@ class Decimal
      */
     public function isEqualTo($that)
     {
-        $that = Decimal::of($that);
-
         return $this->compareTo($that) == 0;
     }
 
@@ -460,8 +455,6 @@ class Decimal
      */
     public function isLessThan($that)
     {
-        $that = Decimal::of($that);
-
         return $this->compareTo($that) < 0;
     }
 
@@ -474,8 +467,6 @@ class Decimal
      */
     public function isLessThanOrEqualTo($that)
     {
-        $that = Decimal::of($that);
-
         return $this->compareTo($that) <= 0;
     }
 
@@ -488,8 +479,6 @@ class Decimal
      */
     public function isGreaterThan($that)
     {
-        $that = Decimal::of($that);
-
         return $this->compareTo($that) > 0;
     }
 
@@ -502,8 +491,6 @@ class Decimal
      */
     public function isGreaterThanOrEqualTo($that)
     {
-        $that = Decimal::of($that);
-
         return $this->compareTo($that) >= 0;
     }
 
@@ -577,8 +564,6 @@ class Decimal
     }
 
     /**
-     * Returns a string representation of this number.
-     *
      * @return string
      */
     public function __toString()
