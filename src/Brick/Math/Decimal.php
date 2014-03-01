@@ -68,27 +68,55 @@ class Decimal
     /**
      * Returns the minimum of the given values.
      *
-     * @param Decimal $a
-     * @param Decimal $b
+     * @param array<Decimal|number|string> An array of decimals to return the minimum value of.
      *
-     * @return Decimal
+     * @return Decimal The minimum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
-    public static function min(Decimal $a, Decimal $b)
+    public static function min(array $values)
     {
-        return $a->isLessThan($b) ? $a : $b;
+        $min = null;
+
+        foreach ($values as $value) {
+            $value = Decimal::of($value);
+            if ($min === null || $value->isLessThan($min)) {
+                $min = $value;
+            }
+        }
+
+        if ($min === null) {
+            throw new \InvalidArgumentException('Decimal::min() expects at least one value.');
+        }
+
+        return $min;
     }
 
     /**
      * Returns the maximum of the given values.
      *
-     * @param Decimal $a
-     * @param Decimal $b
+     * @param array<Decimal|number|string> An array of decimals to return the maximum value of.
      *
-     * @return Decimal
+     * @return Decimal The maximum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
-    public static function max(Decimal $a, Decimal $b)
+    public static function max(array $values)
     {
-        return $a->isGreaterThan($b) ? $a : $b;
+        $max = null;
+
+        foreach ($values as $value) {
+            $value = Decimal::of($value);
+            if ($max === null || $value->isGreaterThan($max)) {
+                $max = $value;
+            }
+        }
+
+        if ($max === null) {
+            throw new \InvalidArgumentException('Decimal::max() expects at least one value.');
+        }
+
+        return $max;
     }
 
     /**
