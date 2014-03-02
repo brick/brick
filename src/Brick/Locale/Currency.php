@@ -127,7 +127,7 @@ class Currency
      *
      * @return string
      */
-    public function getCurrencyCode()
+    public function getCode()
     {
         return $this->currencyCode;
     }

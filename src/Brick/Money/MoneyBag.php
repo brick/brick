@@ -27,7 +27,7 @@ class MoneyBag
      */
     public function get(Currency $currency)
     {
-        $currencyCode = $currency->getCurrencyCode();
+        $currencyCode = $currency->getCode();
 
         return isset($this->monies[$currencyCode])
             ? $this->monies[$currencyCode]
@@ -54,7 +54,7 @@ class MoneyBag
     public function add(Money $money)
     {
         $currency = $money->getCurrency();
-        $currencyCode = $currency->getCurrencyCode();
+        $currencyCode = $currency->getCode();
         $this->monies[$currencyCode] = $money->plus($this->get($currency));
 
         return $this;

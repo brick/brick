@@ -16,7 +16,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
     {
         $currency = Currency::of($currencyCode);
 
-        $this->assertEquals($currencyCode, $currency->getCurrencyCode());
+        $this->assertEquals($currencyCode, $currency->getCode());
         $this->assertEquals($numericCode, $currency->getNumericCode());
         $this->assertEquals($name, $currency->getName());
         $this->assertEquals($symbol, $currency->getSymbol());

@@ -19,8 +19,8 @@ class CurrencyMismatchException extends \RuntimeException
     {
         return new self(sprintf(
             'Currency mismatch: expected %s, got %s',
-            $expected->getCurrencyCode(),
-            $actual->getCurrencyCode()
+            $expected->getCode(),
+            $actual->getCode()
         ));
     }
 }

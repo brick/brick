@@ -375,7 +375,7 @@ class Money
      */
     public function toString()
     {
-        return $this->currency->getCurrencyCode() . ' ' . $this->amount->toString();
+        return $this->currency->getCode() . ' ' . $this->amount->toString();
     }
 
     /**
