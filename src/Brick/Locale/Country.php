@@ -45,8 +45,8 @@ class Country
      */
     private function __construct($code, $name, $currencyCode)
     {
-        $this->code     = $code;
-        $this->name     = $name;
+        $this->code         = $code;
+        $this->name         = $name;
         $this->currencyCode = $currencyCode;
     }
 
@@ -61,9 +61,13 @@ class Country
     }
 
     /**
+     * Returns the country matching the given country code.
+     *
      * @param string $code
+     *
      * @return Country
-     * @throws \RuntimeException
+     *
+     * @throws \RuntimeException If no country exists for this country code.
      */
     public static function of($code)
     {
@@ -121,6 +125,8 @@ class Country
     }
 
     /**
+     * Returns whether this Country has a Currency.
+     *
      * @return boolean
      */
     public function hasCurrency()
@@ -135,6 +141,7 @@ class Country
      * In countries such as Cuba or Panama, this might not be the one you expect.
      *
      * @return \Brick\Locale\Currency
+     *
      * @throws \LogicException
      */
     public function getCurrency()
@@ -147,7 +154,22 @@ class Country
     }
 
     /**
+     * @return string
+     *
+     * @throws \LogicException
+     */
+    public function getCurrencyCode()
+    {
+        if ($this->currencyCode === null) {
+            throw new \LogicException('This country has no currency.');
+        }
+
+        return $this->currencyCode;
+    }
+
+    /**
      * @param Country $country
+     *
      * @return boolean
      */
     public function isEqualTo(Country $country)
