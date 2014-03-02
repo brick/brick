@@ -5,6 +5,7 @@ namespace Brick\Tests\Money;
 use Brick\Money\Money;
 use Brick\Locale\Currency;
 use Brick\Math\Decimal;
+use Brick\Math\RoundingMode;
 
 /**
  * Unit test for class Money
@@ -24,12 +25,12 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->currency = Currency::of('EUR');
-        $this->money = new Money($this->currency, Decimal::of(10));
+        $this->money = Money::of($this->currency, Decimal::of(10));
     }
 
     public function testPlus()
     {
-        $newMoney = new Money($this->currency, Decimal::of('5.50'));
+        $newMoney = Money::of($this->currency, Decimal::of('5.50'));
 
         $this->assertTrue($this->money->isGreaterThanOrEqualTo($newMoney));
 
@@ -39,7 +40,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
     public function testMinus()
     {
-        $newMoney = new Money($this->currency, Decimal::of('5.50'));
+        $newMoney = Money::of($this->currency, Decimal::of('5.50'));
 
         $this->money = $this->money->minus($newMoney);
         $this->assertEquals($this->money->getAmount()->toString(), '4.50');
@@ -62,7 +63,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     public function testDividedBy()
     {
         $this->assertEquals('5.00', $this->money->dividedBy(Decimal::of(2))->getAmount()->toString());
-        $this->assertEquals('3.33', $this->money->dividedBy(Decimal::of(3), false)->getAmount()->toString());
+        $this->assertEquals('3.33', $this->money->dividedBy(Decimal::of(3), RoundingMode::DOWN)->getAmount()->toString());
     }
 
     /**
@@ -78,7 +79,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->money->isZero());
         $this->assertFalse($this->money->isNegative());
 
-        $newMoney = new Money($this->currency, Decimal::of(10));
+        $newMoney = Money::of($this->currency, Decimal::of(10));
 
         $this->money = $this->money->minus($newMoney);
         $this->assertTrue($this->money->isZero());
@@ -92,8 +93,8 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testDifferentCurrenciesThrowException()
     {
-        $eur = new Money(Currency::of('EUR'), Decimal::one());
-        $usd = new Money(Currency::of('USD'), Decimal::one());
+        $eur = Money::of(Currency::of('EUR'), Decimal::one());
+        $usd = Money::of(Currency::of('USD'), Decimal::one());
 
         $eur->plus($usd);
     }
