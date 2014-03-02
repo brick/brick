@@ -62,17 +62,26 @@ class Money
     }
 
     /**
-     * @param Currency              $currency
-     * @param Decimal|number|string $amount
-     * @param integer               $roundingMode
+     * @param Currency                    $currency
+     * @param Money|Decimal|number|string $amount
+     * @param integer                     $roundingMode
      *
      * @return Money
      *
+     * @throws CurrencyMismatchException If a money used as amount does not match the given currency.
      * @throws ArithmeticException       If the scale exceeds the currency scale and no rounding is requested.
      * @throws \InvalidArgumentException If an invalid rounding mode is given.
      */
     public static function of(Currency $currency, $amount, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        if ($amount instanceof Money) {
+            if ($amount->getCurrency()->isEqualTo($currency)) {
+                return $amount;
+            }
+
+            throw CurrencyMismatchException::currencyMismatch($currency, $amount->getCurrency());
+        }
+
         $scale  = $currency->getDefaultFractionDigits();
         $amount = Decimal::of($amount)->withScale($scale, $roundingMode);
 
@@ -145,42 +154,25 @@ class Money
     }
 
     /**
-     * @param Money $that
-     *
-     * @return void
-     *
-     * @throws \RuntimeException
-     */
-    private function checkCurrencyMatches(Money $that)
-    {
-        if (! $that->currency->isEqualTo($this->currency)) {
-            throw new \RuntimeException(sprintf('Currencies mismatch: %s != %s',
-                    $that->currency->getCurrencyCode(),
-                    $this->currency->getCurrencyCode())
-            );
-        }
-    }
-
-    /**
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return Money
      */
-    public function plus(Money $that)
+    public function plus($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return new Money($this->currency, $this->amount->plus($that->amount));
     }
 
     /**
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return Money
      */
-    public function minus(Money $that)
+    public function minus($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return new Money($this->currency, $this->amount->minus($that->amount));
     }
@@ -280,41 +272,41 @@ class Money
     /**
      * Returns whether this Money is equal to the given Money.
      *
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isEqualTo(Money $that)
+    public function isEqualTo($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return $this->amount->isEqualTo($that->amount);
     }
 
     /**
-     * Returns whether this Money is less than the given Money.
+     * Returns whether this Money is less than the given amount.
      *
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isLessThan(Money $that)
+    public function isLessThan($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return $this->amount->isLessThan($that->amount);
     }
 
     /**
-     * Returns whether this Money is less than or equal to the given Money.
+     * Returns whether this Money is less than or equal to the given amount.
      *
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isLessThanOrEqualTo(Money $that)
+    public function isLessThanOrEqualTo($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return $this->amount->isLessThanOrEqualTo($that->amount);
     }
@@ -322,13 +314,13 @@ class Money
     /**
      * Returns whether this Money is greater than the given Money.
      *
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isGreaterThan(Money $that)
+    public function isGreaterThan($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return $this->amount->isGreaterThan($that->amount);
     }
@@ -336,13 +328,13 @@ class Money
     /**
      * Returns whether this Money is greater than or equal to the given Money.
      *
-     * @param Money $that
+     * @param Money|Decimal|number|string $that
      *
      * @return boolean
      */
-    public function isGreaterThanOrEqualTo(Money $that)
+    public function isGreaterThanOrEqualTo($that)
     {
-        $this->checkCurrencyMatches($that);
+        $that = Money::of($this->currency, $that);
 
         return $this->amount->isGreaterThanOrEqualTo($that->amount);
     }
