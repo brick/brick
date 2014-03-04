@@ -12,6 +12,8 @@ use Brick\Validation\ValidationFailure;
 abstract class Component extends Base
 {
     /**
+     * The owning form.
+     *
      * @var \Brick\Form\Form
      */
     protected $form;
@@ -51,6 +53,7 @@ abstract class Component extends Base
 
     /**
      * @param \Brick\Filter\Filter $filter
+     *
      * @return static
      */
     public function addFilter(Filter $filter)
@@ -113,7 +116,9 @@ abstract class Component extends Base
      * Validation errors will be accessible via hasErrors() and getErrors().
      *
      * @param string|array|null $value
+     *
      * @return void
+     *
      * @throws \InvalidArgumentException If the given value is not of a correct type for this Component.
      */
     public function validate($value)
@@ -140,7 +145,9 @@ abstract class Component extends Base
      * Returns whether the given value is of the correct type for this Component.
      *
      * @param mixed $value
+     *
      * @return void
+     *
      * @throws \InvalidArgumentException If the given value is not of a correct type for this Component.
      */
     private function checkCorrectType($value)
@@ -161,6 +168,7 @@ abstract class Component extends Base
 
     /**
      * @param \Brick\Validation\ValidationFailure $failure
+     *
      * @return void
      */
     private function addValidationFailure(ValidationFailure $failure)
@@ -188,6 +196,7 @@ abstract class Component extends Base
      * state does change upon submission (text inputs, checkboxes, selects, ...)
      *
      * @param string|array $value
+     *
      * @return void
      */
     protected function populate($value)
@@ -210,6 +219,7 @@ abstract class Component extends Base
      * Sets the name of the component, that will be posted in the form data.
      *
      * @param string $name
+     *
      * @return void
      */
     abstract protected function setName($name);

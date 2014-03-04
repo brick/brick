@@ -160,6 +160,15 @@ class Form extends Base
 
     /**
      * @param string $name
+     * @return Element\Input\Date
+     */
+    public function addInputDate($name)
+    {
+        return $this->addComponent(new Element\Input\Date($this, $name));
+    }
+
+    /**
+     * @param string $name
      * @return Element\Input\Email
      */
     public function addInputEmail($name)
@@ -250,6 +259,15 @@ class Form extends Base
     public function addInputText($name)
     {
         return $this->addComponent(new Element\Input\Text($this, $name));
+    }
+
+    /**
+     * @param string $name
+     * @return Element\Input\Time
+     */
+    public function addInputTime($name)
+    {
+        return $this->addComponent(new Element\Input\Time($this, $name));
     }
 
     /**
