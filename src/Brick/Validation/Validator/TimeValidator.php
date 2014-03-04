@@ -15,10 +15,6 @@ class TimeValidator implements Validator
      */
     public function validate($value)
     {
-        if (! is_null($value) && ! is_string($value)) {
-            throw new \InvalidArgumentException('Value must be a string or null');
-        }
-
         $result = new ValidationResult();
 
         if (preg_match('/^([0-9]{2})\:([0-9]{2})(?:\:([0-9]{2}))?$/', $value, $matches) == 0) {

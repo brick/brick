@@ -37,10 +37,6 @@ class LengthValidator implements Validator
      */
     public function validate($value)
     {
-        if (! is_null($value) && ! is_string($value)) {
-            throw new \InvalidArgumentException('Value must be a string or null');
-        }
-
         $result = new ValidationResult();
         $length = strlen($value);
 
