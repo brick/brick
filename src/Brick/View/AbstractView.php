@@ -16,14 +16,11 @@ abstract class AbstractView implements View
 
         try {
             require $this->getScriptPath();
-        } catch (\Exception $e) {
-            // Cleanup the buffer if an exception occurs.
-            ob_end_clean();
-
-            throw $e;
+        } finally {
+            $content = ob_get_clean();
         }
 
-        return ob_get_clean();
+        return $content;
     }
 
     /**
