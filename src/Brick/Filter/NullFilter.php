@@ -3,7 +3,7 @@
 namespace Brick\Filter;
 
 /**
- * This filter returns null for an empty string.
+ * Returns null for an empty string.
  */
 class NullFilter implements Filter
 {

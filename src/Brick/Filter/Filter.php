@@ -8,9 +8,9 @@ namespace Brick\Filter;
 interface Filter
 {
     /**
-     * @param  mixed $value              The value to filter.
-     * @return mixed                     The filtered value.
-     * @throws \InvalidArgumentException If the value to filter is not valid.
+     * @param string $value The value to filter.
+     *
+     * @return string|null The filtered value, optionally null.
      */
     public function filter($value);
 }
