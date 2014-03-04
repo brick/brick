@@ -44,18 +44,18 @@ abstract class Element extends Component
          *
          * @var \Brick\Validation\Validator\RequiredValidator
          */
-        static $notBlankValidator = null;
+        static $requiredValidator = null;
 
-        if ($notBlankValidator === null) {
-            $notBlankValidator = new RequiredValidator();
+        if ($requiredValidator === null) {
+            $requiredValidator = new RequiredValidator();
         }
 
         if ($required) {
             $this->tag->setAttribute('required', 'required');
-            $this->addValidator($notBlankValidator);
+            $this->addValidator($requiredValidator);
         } else {
             $this->tag->removeAttribute('required');
-            $this->removeValidator($notBlankValidator);
+            $this->removeValidator($requiredValidator);
         }
 
         return $this;

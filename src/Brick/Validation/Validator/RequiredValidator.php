@@ -39,7 +39,7 @@ class RequiredValidator implements Validator
         }
 
         if ($value == '') {
-            $result->addFailure('validator.not-blank');
+            $result->addFailure('validator.required');
         }
 
         return $result;
