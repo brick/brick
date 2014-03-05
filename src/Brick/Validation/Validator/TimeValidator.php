@@ -20,7 +20,7 @@ class TimeValidator implements Validator
         if (preg_match('/^([0-9]{2})\:([0-9]{2})(?:\:([0-9]{2}))?$/', $value, $matches) == 0) {
             $result->addFailure('validator.time.invalid');
         } else {
-            if ($matches[1] > 24 || $matches[2] > 60 || (isset($matches[3]) && $matches[3] > 60)) {
+            if ($matches[1] > 23 || $matches[2] > 59 || (isset($matches[3]) && $matches[3] > 59)) {
                 $result->addFailure('validator.time.invalid');
             }
         }
