@@ -2,8 +2,6 @@
 
 namespace Brick\Form;
 
-use Brick\Validation\Validator\RequiredValidator;
-
 /**
  * Base class for form elements.
  */
@@ -39,34 +37,13 @@ abstract class Element extends Component
      */
     public function setRequired($required)
     {
-        /**
-         * This validator instance is shared across all elements.
-         *
-         * @var \Brick\Validation\Validator\RequiredValidator
-         */
-        static $requiredValidator = null;
-
-        if ($requiredValidator === null) {
-            $requiredValidator = new RequiredValidator();
-        }
-
         if ($required) {
             $this->tag->setAttribute('required', 'required');
-            $this->addValidator($requiredValidator);
         } else {
             $this->tag->removeAttribute('required');
-            $this->removeValidator($requiredValidator);
         }
 
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isRequired()
-    {
-        return $this->tag->hasAttribute('required');
+        return parent::setRequired($required);
     }
 
     /**

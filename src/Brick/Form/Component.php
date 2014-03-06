@@ -34,6 +34,11 @@ abstract class Component extends Base
     private $validators = [];
 
     /**
+     * @var boolean
+     */
+    private $required = false;
+
+    /**
      * Class constructor.
      *
      * @param Form   $form
@@ -127,18 +132,51 @@ abstract class Component extends Base
         $this->resetErrors();
 
         foreach ($this->filters as $filter) {
+            if ($value === null) {
+                break;
+            }
+
             $value = $filter->filter($value);
         }
 
-        foreach ($this->validators as $validator) {
-            foreach ($validator->validate($value)->getFailures() as $failure) {
-                $this->addValidationFailure($failure);
+        $empty = ($value === '' || $value === [] || $value === null);
+
+        if ($empty) {
+            if ($this->required) {
+                $this->addValidationFailure('form:this-field-is-required');
+            }
+        } else {
+            // @todo validators shouldn't run on arrays, only individual elements
+            foreach ($this->validators as $validator) {
+                foreach ($validator->validate($value)->getFailures() as $failure) {
+                    $this->addValidationFailure($failure->getMessageKey());
+                }
             }
         }
 
         if ($value !== null) {
             $this->populate($value);
         }
+    }
+
+    /**
+     * @param boolean $required
+     *
+     * @return static
+     */
+    public function setRequired($required)
+    {
+        $this->required = (bool) $required;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isRequired()
+    {
+        return $this->required;
     }
 
     /**
@@ -167,13 +205,13 @@ abstract class Component extends Base
     }
 
     /**
-     * @param \Brick\Validation\ValidationFailure $failure
+     * @param string $failure
      *
      * @return void
      */
-    private function addValidationFailure(ValidationFailure $failure)
+    private function addValidationFailure($failure)
     {
-        $this->addError($this->translator->translate($failure->getMessageKey()));
+        $this->addError($this->translator->translate($failure));
     }
 
     /**
