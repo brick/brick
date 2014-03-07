@@ -116,6 +116,22 @@ abstract class Component extends Base
     }
 
     /**
+     * Removes all validators of the given class name.
+     *
+     * @param string $className
+     *
+     * @return void
+     */
+    public function removeValidators($className)
+    {
+        foreach ($this->validators as $key => $validator) {
+            if ($validator instanceof $className) {
+                unset($this->validators[$key]);
+            }
+        }
+    }
+
+    /**
      * Validates the value upon form submission, and populates the component with this value.
      *
      * Validation errors will be accessible via hasErrors() and getErrors().

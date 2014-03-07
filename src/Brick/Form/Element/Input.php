@@ -4,6 +4,7 @@ namespace Brick\Form\Element;
 
 use Brick\Form\Element;
 use Brick\Html\SelfClosingTag;
+use Brick\Validation\Validator\PatternValidator;
 
 /**
  * Represents an input element.
@@ -37,6 +38,31 @@ abstract class Input extends Element
     public function getValue()
     {
         return $this->tag->getAttribute('value');
+    }
+
+    /**
+     * @param string $pattern
+     *
+     * @return static
+     */
+    public function setPattern($pattern)
+    {
+        $this->tag->setAttribute('pattern', $pattern);
+        $this->removeValidators(PatternValidator::class);
+        $this->addValidator(new PatternValidator($pattern));
+
+        return $this;
+    }
+
+    /**
+     * @return static
+     */
+    public function removePattern()
+    {
+        $this->tag->removeAttribute('pattern');
+        $this->removeValidators(PatternValidator::class);
+
+        return $this;
     }
 
     /**
