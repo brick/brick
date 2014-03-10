@@ -67,31 +67,37 @@ abstract class Tag
      * @param string $name
      * @param string $value
      *
-     * @return void
+     * @return static
      */
     public function setAttribute($name, $value)
     {
         $this->attributes[$name] = $value;
+
+        return $this;
     }
 
     /**
      * @param array $attributes
      *
-     * @return void
+     * @return static
      */
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes + $this->attributes;
+
+        return $this;
     }
 
     /**
      * @param string $name
      *
-     * @return void
+     * @return static
      */
     public function removeAttribute($name)
     {
         unset($this->attributes[$name]);
+
+        return $this;
     }
 
     /**
