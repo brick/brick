@@ -15,16 +15,18 @@ abstract class Tag
     /**
      * @var array
      */
-    protected $attributes = [];
+    protected $attributes;
 
     /**
      * Class constructor.
      *
      * @param string $name
+     * @param array  $attributes
      */
-    public function __construct($name)
+    public function __construct($name, array $attributes = [])
     {
         $this->name = $name;
+        $this->attributes = $attributes;
     }
 
     /**
