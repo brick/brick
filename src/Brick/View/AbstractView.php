@@ -12,10 +12,24 @@ abstract class AbstractView implements View
      */
     public function render()
     {
+        return $this->capture(function() {
+            require $this->getScriptPath();
+        });
+    }
+
+    /**
+     * Captures all output from the given function, and returns it.
+     *
+     * @param callable $function The function to execute. Must not have arguments.
+     *
+     * @return string
+     */
+    public function capture(callable $function)
+    {
         ob_start();
 
         try {
-            require $this->getScriptPath();
+            $function();
         } finally {
             $content = ob_get_clean();
         }
