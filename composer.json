@@ -14,7 +14,9 @@
         "phpunit/phpunit": "3.7.*",
         "doctrine/common": "*",
         "doctrine/dbal": "*",
-        "doctrine/orm": "*"
+        "doctrine/orm": "*",
+        "aws/aws-sdk-php": "*",
+        "symfony/css-selector": "*"
     },
     "autoload": {
         "psr-0": {

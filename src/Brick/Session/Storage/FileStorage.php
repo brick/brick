@@ -4,7 +4,6 @@ namespace Brick\Session\Storage;
 
 use Brick\FileSystem\File;
 use Brick\FileSystem\FileSystem;
-use Brick\FileSystem\FileSystemException;
 use Brick\FileSystem\RecursiveFileIterator;
 
 /**

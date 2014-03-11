@@ -24,11 +24,6 @@ class RequestBody
     private $content = null;
 
     /**
-     * @var boolean
-     */
-    private $readStarted = false;
-
-    /**
      * Class constructor.
      *
      * @param resource $stream
