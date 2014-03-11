@@ -2,51 +2,90 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates the length of a string.
  */
-class LengthValidator implements Validator
+class LengthValidator extends AbstractValidator
 {
     /**
-     * @var integer
+     * @var integer|null
      */
-    private $minLength;
+    private $minLength = null;
 
     /**
-     * @var integer
+     * @var integer|null
      */
-    private $maxLength;
+    private $maxLength = null;
 
     /**
-     * Class constructor.
-     *
-     * @param integer      $minLength
-     * @param integer|null $maxLength
+     * {@inheritdoc}
      */
-    public function __construct($minLength, $maxLength = null)
+    public function getPossibleMessages()
     {
-        $this->minLength = (int) $minLength;
-        $this->maxLength = ($maxLength === null) ? $this->minLength : (int) $maxLength;
+        return [
+            'validator.length.too-short' => 'The string is too short.',
+            'validator.length.too-long'  => 'The string is too long.'
+        ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    protected function validate($value)
     {
-        $result = new ValidationResult();
         $length = strlen($value);
 
-        if ($length < $this->minLength) {
-            $result->addFailure('validator.length.min', [$this->minLength]);
+        if ($this->minLength !== null && $length < $this->minLength) {
+            $this->addFailureMessage('validator.length.too-short');
+        } elseif ($this->maxLength !== null && $length > $this->maxLength) {
+            $this->addFailureMessage('validator.length.too-long');
         }
-        elseif ($length > $this->maxLength) {
-            $result->addFailure('validator.length.max', [$this->maxLength]);
-        }
+    }
 
-        return $result;
+    /**
+     * Sets a minimum length.
+     *
+     * @param integer $minLength
+     *
+     * @return static
+     */
+    public function setMinLength($minLength)
+    {
+        $this->minLength = (int) $minLength;
+
+        return $this;
+    }
+
+    /**
+     * Sets a maximum length.
+     *
+     * @param integer $maxLength
+     *
+     * @return static
+     */
+    public function setMaxLength($maxLength)
+    {
+        $this->maxLength = (int) $maxLength;
+
+        return $this;
+    }
+
+    /**
+     * Sets an exact length.
+     *
+     * @param integer $length
+     *
+     * @return static
+     */
+    public function setLength($length)
+    {
+        $length = (int) $length;
+
+        $this->minLength = $length;
+        $this->maxLength = $length;
+
+        return $this;
     }
 }

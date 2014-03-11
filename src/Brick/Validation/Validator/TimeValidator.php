@@ -2,29 +2,35 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates an RFC 3339 time.
  */
-class TimeValidator implements Validator
+class TimeValidator extends AbstractValidator
 {
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function getPossibleMessages()
     {
-        $result = new ValidationResult();
+        return [
+            'validator.time.invalid-format' => 'The time format is not valid.',
+            'validator.time.invalid-time'   => 'The time is not a valid time.'
+        ];
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function validate($value)
+    {
         if (preg_match('/^([0-9]{2})\:([0-9]{2})(?:\:([0-9]{2}))?$/', $value, $matches) == 0) {
-            $result->addFailure('validator.time.invalid');
+            $this->addFailureMessage('validator.time.invalid-format');
         } else {
             if ($matches[1] > 23 || $matches[2] > 59 || (isset($matches[3]) && $matches[3] > 59)) {
-                $result->addFailure('validator.time.invalid');
+                $this->addFailureMessage('validator.time.invalid-time');
             }
         }
-
-        return $result;
     }
 }

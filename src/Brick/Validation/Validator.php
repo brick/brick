@@ -8,11 +8,27 @@ namespace Brick\Validation;
 interface Validator
 {
     /**
-     * Validates the given value.
+     * Returns whether the given value is valid.
      *
      * @param string $value The value to validate.
      *
-     * @return ValidationResult The result of the validation.
+     * @return boolean `true` if the value is valid, `false` otherwise.
      */
-    public function validate($value);
+    public function isValid($value);
+
+    /**
+     * Returns the failure messages from the last validation.
+     *
+     * @return array The last failure messages.
+     */
+    public function getFailureMessages();
+
+    /**
+     * Returns all possible failure messages for this validator.
+     *
+     * Keys are unique identifiers to the message, values are the failure message in English.
+     *
+     * @return array
+     */
+    public function getPossibleMessages();
 }

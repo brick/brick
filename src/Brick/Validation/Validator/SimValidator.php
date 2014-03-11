@@ -6,9 +6,9 @@ use Brick\Validation\AbstractValidator;
 use Brick\Checksum\Luhn;
 
 /**
- * Validates the IMEI number of a mobile device.
+ * Validates a SIM card number (ICCID).
  */
-class ImeiValidator extends AbstractValidator
+class SimValidator extends AbstractValidator
 {
     /**
      * {@inheritdoc}
@@ -16,7 +16,7 @@ class ImeiValidator extends AbstractValidator
     public function getPossibleMessages()
     {
         return [
-            'validator.imei.invalid' => 'Invalid IMEI number.'
+            'validator.sim.invalid' => 'Invalid SIM card number.'
         ];
     }
 
@@ -25,8 +25,8 @@ class ImeiValidator extends AbstractValidator
      */
     protected function validate($value)
     {
-        if (! Luhn::isValid($value) || strlen($value) != 15) {
-            $this->addFailureMessage('validator.imei.invalid');
+        if (! Luhn::isValid($value) || strlen($value) != 19 && strlen($value) != 20) {
+            $this->addFailureMessage('validator.sim.invalid');
         }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Brick\Form\Element\Select\Option;
 
-use Brick\Form\Element\Select\Option\OptionOrGroup;
 use Brick\Html\ContainerTag;
 
 /**
@@ -62,7 +61,7 @@ class Option extends OptionOrGroup
     /**
      * @param bool $selected Whether to select (true) or unselect (false) this option.
      *
-     * @return \Brick\Form\Element\Select\Option
+     * @return \Brick\Form\Element\Select\Option\Option
      */
     public function setSelected($selected)
     {

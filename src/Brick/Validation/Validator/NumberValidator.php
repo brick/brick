@@ -2,55 +2,61 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 use Brick\Math\Decimal;
 
 /**
  * Validates a number.
  */
-class NumberValidator implements Validator
+class NumberValidator extends AbstractValidator
 {
     /**
-     * @var Decimal|null
+     * @var \Brick\Math\Decimal|null
      */
     private $min = null;
 
     /**
-     * @var Decimal|null
+     * @var \Brick\Math\Decimal|null
      */
     private $max = null;
 
     /**
-     * @var Decimal|null
+     * @var \Brick\Math\Decimal|null
      */
     private $step = null;
 
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function getPossibleMessages()
     {
-        $result = new ValidationResult();
+        return [
+            'validator.number.invalid' => 'The number is not valid.',
+            'validator.number.min'     => 'The number is too small.',
+            'validator.number.max'     => 'The number is too large.',
+            'validator.number.step'    => 'The number is not an acceptable value.',
+        ];
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function validate($value)
+    {
         try {
             $value = Decimal::of($value);
-
-            if ($this->min && $value->isLessThan($this->min)) {
-                $result->addFailure('validator.number.min', [$this->min]);
-            }
-            elseif ($this->max && $value->isGreaterThan($this->max)) {
-                $result->addFailure('validator.number.max', [$this->max]);
-            }
-            elseif ($this->step && ! $value->mod($this->step)->isZero()) {
-                $result->addFailure('validator.number.step', [$this->step]);
-            }
         }
         catch (\InvalidArgumentException $e) {
-            $result->addFailure('validator.number.invalid');
+            $this->addFailureMessage('validator.number.invalid');
         }
 
-        return $result;
+        if ($this->min && $value->isLessThan($this->min)) {
+            $this->addFailureMessage('validator.number.min');
+        } elseif ($this->max && $value->isGreaterThan($this->max)) {
+            $this->addFailureMessage('validator.number.max');
+        } elseif ($this->step && ! $value->mod($this->step)->isZero()) {
+            $this->addFailureMessage('validator.number.step');
+        }
     }
 
     /**
@@ -58,7 +64,7 @@ class NumberValidator implements Validator
      *
      * @return static
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException If not a valid number.
      */
     public function setMin($min)
     {
@@ -76,7 +82,7 @@ class NumberValidator implements Validator
      *
      * @return static
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException If not a valid number.
      */
     public function setMax($max)
     {
@@ -94,7 +100,7 @@ class NumberValidator implements Validator
      *
      * @return static
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException If the step is not a valid number or not positive.
      */
     public function setStep($step)
     {

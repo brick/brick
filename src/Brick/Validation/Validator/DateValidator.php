@@ -2,36 +2,44 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates an RFC 3339 date.
  */
-class DateValidator implements Validator
+class DateValidator extends AbstractValidator
 {
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function getPossibleMessages()
     {
-        $result = new ValidationResult();
+        return [
+            'validator.date.invalid-format' => 'The date format is not valid.',
+            'validator.date.invalid-date'   => 'The date is not a valid date.'
+        ];
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function validate($value)
+    {
         if (preg_match('/^([0-9]{4})\-([0-9]{2})\-([0-9]{2})$/', $value, $matches) == 0) {
-            $result->addFailure('validator.date.invalid');
-        } else {
-            list (, $year, $month, $day) = $matches;
+            $this->addFailureMessage('validator.date.invalid-format');
 
-            $year  = (int) $year;
-            $month = (int) $month;
-            $day   = (int) $day;
-
-            if (! $this->isDateValid($year, $month, $day)) {
-                $result->addFailure('validator.date.invalid');
-            }
+            return;
         }
 
-        return $result;
+        list (, $year, $month, $day) = $matches;
+
+        $year  = (int) $year;
+        $month = (int) $month;
+        $day   = (int) $day;
+
+        if (! $this->isDateValid($year, $month, $day)) {
+            $this->addFailureMessage('validator.date.invalid-date');
+        }
     }
 
     /**

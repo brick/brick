@@ -2,18 +2,27 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates that a string does not contain forbidden characters.
  */
-class ForbiddenCharsValidator implements Validator
+class ForbiddenCharsValidator extends AbstractValidator
 {
     /**
      * @var string
      */
     private $forbiddenChars;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPossibleMessages()
+    {
+        return [
+            'validator.forbidden-chars' => 'Invalid characters in the string.'
+        ];
+    }
 
     /**
      * Class constructor.
@@ -28,15 +37,12 @@ class ForbiddenCharsValidator implements Validator
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    protected function validate($value)
     {
-        $result = new ValidationResult();
         $regexp = '/[' . preg_quote($this->forbiddenChars, '/') . ']/';
 
         if (preg_match($regexp, $value) != 0) {
-            $result->addFailure('validator.forbidden.chars');
+            $this->addFailureMessage('validator.forbidden-chars');
         }
-
-        return $result;
     }
 }

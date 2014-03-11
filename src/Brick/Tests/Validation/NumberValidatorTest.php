@@ -7,15 +7,20 @@ use Brick\Validation\Validator\NumberValidator;
 /**
  * Unit tests for the number validator.
  */
-class NumberValidatorTest extends \PHPUnit_Framework_TestCase
+class NumberValidatorTest extends AbstractTestCase
 {
     public function testValidNumbers()
     {
         $validator = new NumberValidator();
 
-        $this->assertTrue($validator->validate('1')->isSuccess());
-        $this->assertTrue($validator->validate('1.23')->isSuccess());
-        $this->assertFalse($validator->validate('test')->isSuccess());
+        $this->doTestValidator($validator, [
+            '1'    => [],
+            '1.23' => [],
+            'test' => ['validator.number.invalid'],
+            ''     => ['validator.number.invalid'],
+            ' 0'   => ['validator.number.invalid'],
+            '0 '   => ['validator.number.invalid']
+        ]);
     }
 
     public function testMin()
@@ -23,9 +28,15 @@ class NumberValidatorTest extends \PHPUnit_Framework_TestCase
         $validator = new NumberValidator();
         $validator->setMin(1);
 
-        $this->assertFalse($validator->validate('0')->isSuccess());
-        $this->assertTrue($validator->validate('1')->isSuccess());
-        $this->assertTrue($validator->validate('2')->isSuccess());
+        $this->doTestValidator($validator, [
+            '0' => ['validator.number.min'],
+            '1' => [],
+            '2' => [],
+
+            '0.99' => ['validator.number.min'],
+            '1.00' => [],
+            '1.01' => []
+        ]);
     }
 
     public function testMax()
@@ -33,9 +44,15 @@ class NumberValidatorTest extends \PHPUnit_Framework_TestCase
         $validator = new NumberValidator();
         $validator->setMax(1);
 
-        $this->assertTrue($validator->validate('0')->isSuccess());
-        $this->assertTrue($validator->validate('1')->isSuccess());
-        $this->assertFalse($validator->validate('2')->isSuccess());
+        $this->doTestValidator($validator, [
+            '0' => [],
+            '1' => [],
+            '2' => ['validator.number.max'],
+
+            '0.99' => [],
+            '1.00' => [],
+            '1.01' => ['validator.number.max']
+        ]);
     }
 
     public function testStep()
@@ -43,8 +60,14 @@ class NumberValidatorTest extends \PHPUnit_Framework_TestCase
         $validator = new NumberValidator();
         $validator->setStep(2);
 
-        $this->assertTrue($validator->validate('0')->isSuccess());
-        $this->assertFalse($validator->validate('1')->isSuccess());
-        $this->assertTrue($validator->validate('2')->isSuccess());
+        $this->doTestValidator($validator, [
+            '0' => [],
+            '1' => ['validator.number.step'],
+            '2' => [],
+
+            '1.99' => ['validator.number.step'],
+            '2.00' => [],
+            '2.01' => ['validator.number.step']
+        ]);
     }
 }

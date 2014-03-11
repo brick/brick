@@ -18,9 +18,9 @@ abstract class Component extends Base
     protected $form;
 
     /**
-     * @var \Brick\Translation\Translator
+     * @var \Brick\Translation\Translator|null
      */
-    protected $translator;
+    protected $translator = null;
 
     /**
      * @var boolean
@@ -47,10 +47,6 @@ abstract class Component extends Base
     {
         $this->form = $form;
 
-        // @todo
-        $this->translator = new \Brick\Translation\Translator(new \Brick\Translation\Loader\NullLoader());
-        $this->translator->setLocale(\Brick\Locale\Locale::create('en'));
-
         $this->setName($name);
         $this->init();
     }
@@ -75,7 +71,7 @@ abstract class Component extends Base
         $empty = ($value === '' || $value === [] || $value === null);
 
         if ($empty && $this->required) {
-            $this->addTranslatedError('form-required');
+            $this->addTranslatableError('form.required', 'This field is required.');
         }
 
         if (! $empty && is_string($value)) {
@@ -136,13 +132,21 @@ abstract class Component extends Base
     }
 
     /**
+     * @param string $messageKey
      * @param string $message
      *
      * @return void
      */
-    private function addTranslatedError($message)
+    private function addTranslatableError($messageKey, $message)
     {
-        $this->addError($this->translator->translate($message));
+        if ($this->translator) {
+            $translatedMessage = $this->translator->translate($messageKey);
+            if ($translatedMessage !== $messageKey) {
+                $message = $translatedMessage;
+            }
+        }
+
+        $this->addError($message);
     }
 
     /**
@@ -167,8 +171,10 @@ abstract class Component extends Base
     private function validate($value)
     {
         foreach ($this->validators as $validator) {
-            foreach ($validator->validate($value)->getFailures() as $failure) {
-                $this->addTranslatedError($failure->getMessageKey());
+            if (! $validator->isValid($value)) {
+                foreach ($validator->getFailureMessages() as $messageKey => $message) {
+                    $this->addTranslatableError($messageKey, $message);
+                }
             }
         }
     }

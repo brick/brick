@@ -7,6 +7,8 @@ namespace Brick\Form\Attribute;
  */
 trait AutocompleteAttribute
 {
+    use AbstractTag;
+
     /**
      * @param string $autocomplete
      *

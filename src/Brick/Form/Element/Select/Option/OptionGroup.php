@@ -2,8 +2,6 @@
 
 namespace Brick\Form\Element\Select\Option;
 
-use Brick\Form\Element\Select\Option\Option;
-use Brick\Form\Element\Select\Option\OptionOrGroup;
 use Brick\Html\ContainerTag;
 
 /**
@@ -43,7 +41,7 @@ class OptionGroup extends OptionOrGroup
      * @param string $content The text content of this option.
      * @param string $value   The value of this option.
      *
-     * @return \Brick\Form\Element\Select\OptionGroup
+     * @return \Brick\Form\Element\Select\Option\OptionGroup
      */
     public function addOption($content, $value)
     {
@@ -57,7 +55,7 @@ class OptionGroup extends OptionOrGroup
      *
      * @param array $options The options as key-value pairs.
      *
-     * @return \Brick\Form\Element\Select\OptionGroup
+     * @return \Brick\Form\Element\Select\Option\OptionGroup
      */
     public function addOptions(array $options)
     {

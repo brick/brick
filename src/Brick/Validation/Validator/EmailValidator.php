@@ -2,8 +2,7 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates an email address.
@@ -18,21 +17,27 @@ use Brick\Validation\ValidationResult;
  *
  * @see http://www.w3.org/TR/html5/forms.html#states-of-the-type-attribute
  */
-class EmailValidator implements Validator
+class EmailValidator extends AbstractValidator
 {
-    const REGEXP = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/';
+    /**
+     * {@inheritdoc}
+     */
+    public function getPossibleMessages()
+    {
+        return [
+            'validator.email.invalid' => 'Invalid email address.'
+        ];
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    protected function validate($value)
     {
-        $result = new ValidationResult();
+        $regexp = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/';
 
-        if (preg_match(self::REGEXP, $value) == 0) {
-            $result->addFailure('validator.email.invalid');
+        if (preg_match($regexp, $value) == 0) {
+            $this->addFailureMessage('validator.email.invalid');
         }
-
-        return $result;
     }
 }

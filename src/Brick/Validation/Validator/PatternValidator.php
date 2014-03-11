@@ -2,18 +2,27 @@
 
 namespace Brick\Validation\Validator;
 
-use Brick\Validation\Validator;
-use Brick\Validation\ValidationResult;
+use Brick\Validation\AbstractValidator;
 
 /**
  * Validates a regular expression pattern.
  */
-class PatternValidator implements Validator
+class PatternValidator extends AbstractValidator
 {
     /**
      * @var string
      */
     private $pattern;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPossibleMessages()
+    {
+        return [
+            'validator.pattern.no-match' => 'The string does not match the given pattern.'
+        ];
+    }
 
     /**
      * Class constructor.
@@ -22,20 +31,16 @@ class PatternValidator implements Validator
      */
     public function __construct($pattern)
     {
-        $this->pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+        $this->pattern = '/^(?:' . str_replace('/', '\/', $pattern) . ')$/';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    protected function validate($value)
     {
-        $result = new ValidationResult();
-
         if (preg_match($this->pattern, $value) == 0) {
-            $result->addFailure('validator-pattern-does-not-match');
+            $this->addFailureMessage('validator.pattern.no-match');
         }
-
-        return $result;
     }
 }
