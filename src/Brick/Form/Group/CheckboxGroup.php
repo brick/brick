@@ -32,12 +32,13 @@ class CheckboxGroup extends Group
 
     /**
      * @param array $values
+     *
      * @return static
      */
     public function setValues(array $values)
     {
         foreach ($this->checkboxes as $checkbox) {
-            $checkbox->setChecked(in_array($checkbox->getValue(), $values));
+            $checkbox->setChecked(in_array($checkbox->getValue(), $values, true));
         }
 
         return $this;
@@ -70,7 +71,7 @@ class CheckboxGroup extends Group
     /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
         $this->setValues($value);
     }

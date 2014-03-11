@@ -10,6 +10,10 @@ use Brick\Http\Request;
  */
 class Form extends Base
 {
+    const ENCTYPE_URLENCODED = 'application/x-www-form-urlencoded';
+    const ENCTYPE_MULTIPART  = 'multipart/form-data';
+    const ENCTYPE_PLAIN      = 'text/plain';
+
     /**
      * @var \Brick\Html\ContainerTag
      */
@@ -77,18 +81,26 @@ class Form extends Base
     }
 
     /**
+     * @param string    $name
      * @param Component $component
+     *
      * @return Component
+     *
+     * @throws \RuntimeException
      */
-    private function addComponent(Component $component)
+    private function addComponent($name, Component $component)
     {
-        // @todo key = component name?
-        $this->components[] = $component;
+        if (isset($this->components[$name])) {
+            throw new \RuntimeException(sprintf('Duplicate component name "%"', $name));
+        }
+
+        $this->components[$name] = $component;
+
         return $component;
     }
 
     /**
-     * @return Component[]
+     * @return \Brick\Form\Component[]
      */
     public function getComponents()
     {
@@ -97,231 +109,341 @@ class Form extends Base
 
     /**
      * @param string $name
-     * @return Component
+     *
+     * @return \Brick\Form\Component
+     *
      * @throws \RuntimeException
      */
     public function getComponent($name)
     {
-        // @todo direct key lookup possible if we index by name
-
-        foreach ($this->components as $component) {
-            if ($component->getName() == $name) {
-                return $component;
-            }
+        if (isset($this->components[$name])) {
+            return $this->components[$name];
         }
 
-        throw new \RuntimeException('No component named ' . var_export($name, true));
+        throw new \RuntimeException(sprintf('No component named "%s"', $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Button\Button
      */
     public function addButtonButton($name)
     {
-        return $this->addComponent(new Element\Button\Button($this, $name));
+        return $this->addComponent($name, new Element\Button\Button($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Button\Reset
      */
     public function addButtonReset($name)
     {
-        return $this->addComponent(new Element\Button\Reset($this, $name));
+        return $this->addComponent($name, new Element\Button\Reset($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Button\Submit
      */
     public function addButtonSubmit($name)
     {
-        return $this->addComponent(new Element\Button\Submit($this, $name));
+        return $this->addComponent($name, new Element\Button\Submit($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Button
      */
     public function addInputButton($name)
     {
-        return $this->addComponent(new Element\Input\Button($this, $name));
+        return $this->addComponent($name, new Element\Input\Button($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Checkbox
      */
     public function addInputCheckbox($name)
     {
-        return $this->addComponent(new Element\Input\Checkbox($this, $name));
+        return $this->addComponent($name, new Element\Input\Checkbox($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Color
+     */
+    public function addInputColor($name)
+    {
+        return $this->addComponent($name, new Element\Input\Color($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Date
      */
     public function addInputDate($name)
     {
-        return $this->addComponent(new Element\Input\Date($this, $name));
+        return $this->addComponent($name, new Element\Input\Date($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\DateTime
+     */
+    public function addInputDateTime($name)
+    {
+        return $this->addComponent($name, new Element\Input\DateTime($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Element\Input\DateTimeLocal
+     */
+    public function addInputDateTimeLocal($name)
+    {
+        return $this->addComponent($name, new Element\Input\DateTimeLocal($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Email
      */
     public function addInputEmail($name)
     {
-        return $this->addComponent(new Element\Input\Email($this, $name));
+        return $this->addComponent($name, new Element\Input\Email($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\File
      */
     public function addInputFile($name)
     {
         $this->setEnctypeMultipart();
 
-        return $this->addComponent(new Element\Input\File($this, $name));
+        return $this->addComponent($name, new Element\Input\File($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Hidden
      */
     public function addInputHidden($name)
     {
-        return $this->addComponent(new Element\Input\Hidden($this, $name));
+        return $this->addComponent($name, new Element\Input\Hidden($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Image
      */
     public function addInputImage($name)
     {
-        return $this->addComponent(new Element\Input\Image($this, $name));
+        return $this->addComponent($name, new Element\Input\Image($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Month
+     */
+    public function addInputMonth($name)
+    {
+        return $this->addComponent($name, new Element\Input\Month($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Number
      */
     public function addInputNumber($name)
     {
-        return $this->addComponent(new Element\Input\Number($this, $name));
+        return $this->addComponent($name, new Element\Input\Number($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Password
      */
     public function addInputPassword($name)
     {
-        return $this->addComponent(new Element\Input\Password($this, $name));
+        return $this->addComponent($name, new Element\Input\Password($this, $name));
     }
 
     /**
-     * @todo maybe we could remove this method? Radio buttons only make sense in groups...
-     *
      * @param string $name
+     *
      * @return Element\Input\Radio
      */
     public function addInputRadio($name)
     {
-        return $this->addComponent(new Element\Input\Radio($this, $name));
+        return $this->addComponent($name, new Element\Input\Radio($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Range
+     */
+    public function addInputRange($name)
+    {
+        return $this->addComponent($name, new Element\Input\Range($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Reset
      */
     public function addInputReset($name)
     {
-        return $this->addComponent(new Element\Input\Reset($this, $name));
+        return $this->addComponent($name, new Element\Input\Reset($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Search
+     */
+    public function addInputSearch($name)
+    {
+        return $this->addComponent($name, new Element\Input\Search($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Submit
      */
     public function addInputSubmit($name)
     {
-        return $this->addComponent(new Element\Input\Submit($this, $name));
+        return $this->addComponent($name, new Element\Input\Submit($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Tel
+     */
+    public function addInputTel($name)
+    {
+        return $this->addComponent($name, new Element\Input\Tel($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Input\Text
      */
     public function addInputText($name)
     {
-        return $this->addComponent(new Element\Input\Text($this, $name));
+        return $this->addComponent($name, new Element\Input\Text($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Input\Time
      */
     public function addInputTime($name)
     {
-        return $this->addComponent(new Element\Input\Time($this, $name));
+        return $this->addComponent($name, new Element\Input\Time($this, $name));
     }
 
     /**
      * @param string $name
+     *
+     * @return Element\Input\Url
+     */
+    public function addInputUrl($name)
+    {
+        return $this->addComponent($name, new Element\Input\Url($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Element\Input\Week
+     */
+    public function addInputWeek($name)
+    {
+        return $this->addComponent($name, new Element\Input\Week($this, $name));
+    }
+
+    /**
+     * @param string $name
+     *
      * @return Element\Select\SingleSelect
      */
     public function addSingleSelect($name)
     {
-        return $this->addComponent(new Element\Select\SingleSelect($this, $name));
+        return $this->addComponent($name, new Element\Select\SingleSelect($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Select\MultipleSelect
      */
     public function addMultipleSelect($name)
     {
-        return $this->addComponent(new Element\Select\MultipleSelect($this, $name));
+        return $this->addComponent($name, new Element\Select\MultipleSelect($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Element\Textarea
      */
     public function addTextarea($name)
     {
-        return $this->addComponent(new Element\Textarea($this, $name));
+        return $this->addComponent($name, new Element\Textarea($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Group\CheckboxGroup
      */
     public function addCheckboxGroup($name)
     {
-        return $this->addComponent(new Group\CheckboxGroup($this, $name));
+        return $this->addComponent($name, new Group\CheckboxGroup($this, $name));
     }
 
     /**
      * @param string $name
+     *
      * @return Group\RadioGroup
      */
     public function addRadioGroup($name)
     {
-        return $this->addComponent(new Group\RadioGroup($this, $name));
+        return $this->addComponent($name, new Group\RadioGroup($this, $name));
     }
 
     /**
      * @param string $action
-     * @return Form
+     *
+     * @return \Brick\Form\Form
      */
     public function setAction($action)
     {
         $this->getTag()->setAttribute('action', $action);
+
         return $this;
     }
 
@@ -334,20 +456,22 @@ class Form extends Base
     }
 
     /**
-     * @return Form
+     * @return \Brick\Form\Form
      */
     public function setMethodGet()
     {
         $this->getTag()->setAttribute('method', 'get');
+
         return $this;
     }
 
     /**
-     * @return Form
+     * @return \Brick\Form\Form
      */
     public function setMethodPost()
     {
         $this->getTag()->setAttribute('method', 'post');
+
         return $this;
     }
 
@@ -362,7 +486,7 @@ class Form extends Base
     /**
      * Returns whether the form method is get. This is the default if no method is set.
      *
-     * @return bool
+     * @return boolean
      */
     public function isMethodGet()
     {
@@ -372,7 +496,7 @@ class Form extends Base
     /**
      * Returns whether the form method is post.
      *
-     * @return bool
+     * @return boolean
      */
     public function isMethodPost()
     {
@@ -380,29 +504,32 @@ class Form extends Base
     }
 
     /**
-     * @return Form
+     * @return \Brick\Form\Form
      */
     public function setEnctypeUrlencoded()
     {
-        $this->getTag()->setAttribute('enctype', 'application/x-www-form-urlencoded');
+        $this->getTag()->setAttribute('enctype', self::ENCTYPE_URLENCODED);
+
         return $this;
     }
 
     /**
-     * @return Form
+     * @return \Brick\Form\Form
      */
     public function setEnctypeMultipart()
     {
-        $this->getTag()->setAttribute('enctype', 'multipart/form-data');
+        $this->getTag()->setAttribute('enctype', self::ENCTYPE_MULTIPART);
+
         return $this;
     }
 
     /**
-     * @return Form
+     * @return \Brick\Form\Form
      */
     public function setEnctypeTextPlain()
     {
-        $this->getTag()->setAttribute('enctype', 'text/plain');
+        $this->getTag()->setAttribute('enctype', self::ENCTYPE_PLAIN);
+
         return $this;
     }
 
@@ -419,11 +546,13 @@ class Form extends Base
      *
      * @param string $name
      * @param string $value
+     *
      * @return static
      */
     public function setAttribute($name, $value)
     {
         $this->getTag()->setAttribute($name, $value);
+
         return $this;
     }
 
@@ -444,39 +573,58 @@ class Form extends Base
     }
 
     /**
-     * Checks if the submitted data is valid for this form, and populates the form.
+     * Populates the form with the request data.
      *
      * @param array $data
-     * @return bool
+     *
+     * @return \Brick\Form\Form
      */
-    public function isValid(array $data)
+    public function populate(array $data)
     {
-        $valid = true;
+        $this->resetErrors();
 
-        foreach ($this->components as $component) {
-            $name = $component->getName();
+        foreach ($this->components as $name => $component) {
             $value = isset($data[$name]) ? $data[$name] : null;
-            $component->validate($value);
-
-            if ($component->hasErrors()) {
-                $valid = false;
-            }
+            $component->populate($value);
         }
 
-        return $valid;
+        return $this;
     }
 
     /**
      * Checks if the submitted data is valid for the given Request, and populates the form.
      *
      * @param \Brick\Http\Request $request
+     *
      * @return boolean
      */
-    public function isValidForRequest(Request $request)
+    public function populateFromRequest(Request $request)
     {
-        $data = $this->isMethodPost() ? $request->getPost() : $request->getQuery();
+        return $this->populate(
+            $this->isMethodPost()
+                ? $request->getPost()
+                : $request->getQuery()
+        );
+    }
 
-        return $this->isValid($data);
+    /**
+     * Returns whether the form is valid.
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        if ($this->hasErrors()) {
+            return false;
+        }
+
+        foreach ($this->components as $component) {
+            if ($component->hasErrors()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

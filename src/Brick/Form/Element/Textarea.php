@@ -11,32 +11,37 @@ use Brick\Html\ContainerTag;
 class Textarea extends Element
 {
     /**
-     * This variable is purposefully redeclared to typehint the correct Tag subclass.
-     *
-     * @var \Brick\Html\ContainerTag
+     * @var \Brick\Html\ContainerTag|null
      */
-    protected $tag;
+    private $tag = null;
 
     /**
      * @var string
      */
-    protected $text = '';
+    private $text = '';
 
     /**
-     * Class constructor.
+     * {@inheritdoc}
      */
-    protected function init()
+    protected function getTag()
     {
-        $this->tag = new ContainerTag('textarea');
+        if ($this->tag === null) {
+            $this->tag = new ContainerTag('textarea');
+        }
+
+        return $this->tag;
     }
 
     /**
      * @param string $value
-     * @return Textarea
+     *
+     * @return static
      */
     public function setValue($value)
     {
         $this->text = $value;
+
+        return $this;
     }
 
     /**
@@ -50,7 +55,7 @@ class Textarea extends Element
     /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
         $this->setValue($value);
     }
@@ -58,9 +63,8 @@ class Textarea extends Element
     /**
      * {@inheritdoc}
      */
-    public function render()
+    protected function onBeforeRender()
     {
-        $this->getId(); // @todo find a better way to have it called once before render()
-        return $this->tag->setTextContent($this->text)->render();
+        $this->getTag()->setTextContent($this->text);
     }
 }

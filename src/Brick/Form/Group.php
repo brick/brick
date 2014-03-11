@@ -3,7 +3,7 @@
 namespace Brick\Form;
 
 /**
- * Base class for groups of form elements.
+ * Represents a group of form elements.
  */
 abstract class Group extends Component
 {

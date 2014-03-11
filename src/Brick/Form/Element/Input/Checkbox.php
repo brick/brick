@@ -2,6 +2,9 @@
 
 namespace Brick\Form\Element\Input;
 
+use Brick\Form\Attribute\CheckedAttribute;
+use Brick\Form\Attribute\RequiredAttribute;
+use Brick\Form\Attribute\ValueAttribute;
 use Brick\Form\Element\Input;
 
 /**
@@ -9,6 +12,10 @@ use Brick\Form\Element\Input;
  */
 class Checkbox extends Input
 {
+    use CheckedAttribute;
+    use RequiredAttribute;
+    use ValueAttribute;
+
     /**
      * {@inheritdoc}
      */
@@ -18,33 +25,10 @@ class Checkbox extends Input
     }
 
     /**
-     * @param bool $checked
-     * @return static
-     */
-    public function setChecked($checked)
-    {
-        if ($checked) {
-            $this->tag->setAttribute('checked', 'checked');
-        } else {
-            $this->tag->removeAttribute('checked');
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isChecked()
-    {
-        return $this->tag->hasAttribute('checked');
-    }
-
-    /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
-        $this->setChecked($value == $this->getValue());
+        $this->setChecked($value === $this->getValue());
     }
 }

@@ -14,11 +14,13 @@ abstract class Base
 
     /**
      * @param string $errorMessage
+     *
      * @return static
      */
     public function addError($errorMessage)
     {
         $this->errors[] = $errorMessage;
+
         return $this;
     }
 
@@ -28,6 +30,7 @@ abstract class Base
     public function resetErrors()
     {
         $this->errors = [];
+
         return $this;
     }
 
@@ -36,7 +39,7 @@ abstract class Base
      */
     public function hasErrors()
     {
-        return count($this->errors) != 0;
+        return count($this->errors) !== 0;
     }
 
     /**

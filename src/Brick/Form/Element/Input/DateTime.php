@@ -2,28 +2,24 @@
 
 namespace Brick\Form\Element\Input;
 
+use Brick\Form\Attribute\MinMaxStepAttributes;
 use Brick\Form\Element\Input;
 use Brick\Form\Attribute\AutocompleteAttribute;
-use Brick\Form\Attribute\MaxLengthAttribute;
-use Brick\Form\Attribute\PatternAttribute;
-use Brick\Form\Attribute\PlaceholderAttribute;
+use Brick\Form\Attribute\ListAttribute;
 use Brick\Form\Attribute\ReadOnlyAttribute;
 use Brick\Form\Attribute\RequiredAttribute;
-use Brick\Form\Attribute\SizeAttribute;
 use Brick\Form\Attribute\ValueAttribute;
 
 /**
- * Represents a password input element.
+ * Represents a datetime input element.
  */
-class Password extends Input
+class DateTime extends Input
 {
     use AutocompleteAttribute;
-    use MaxLengthAttribute;
-    use PatternAttribute;
-    use PlaceholderAttribute;
+    use ListAttribute;
+    use MinMaxStepAttributes;
     use ReadOnlyAttribute;
     use RequiredAttribute;
-    use SizeAttribute;
     use ValueAttribute;
 
     /**
@@ -31,7 +27,7 @@ class Password extends Input
      */
     protected function getType()
     {
-        return 'password';
+        return 'datetime';
     }
 
     /**

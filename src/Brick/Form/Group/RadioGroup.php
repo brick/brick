@@ -37,7 +37,7 @@ class RadioGroup extends Group
     public function setValue($value)
     {
         foreach ($this->radios as $radioButton) {
-            $radioButton->setChecked($radioButton->getValue() == $value);
+            $radioButton->setChecked($radioButton->getValue() === $value);
         }
 
         return $this;
@@ -68,7 +68,7 @@ class RadioGroup extends Group
     /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
         $this->setValue($value);
     }

@@ -3,8 +3,8 @@
 namespace Brick\Form\Element;
 
 use Brick\Form\Element;
-use Brick\Form\Element\Select\Option;
-use Brick\Form\Element\Select\OptionGroup;
+use Brick\Form\Element\Select\Option\Option;
+use Brick\Form\Element\Select\Option\OptionGroup;
 use Brick\Html\ContainerTag;
 
 /**
@@ -13,25 +13,27 @@ use Brick\Html\ContainerTag;
 abstract class Select extends Element
 {
     /**
-     * This variable is purposefully redeclared to typehint the correct Tag subclass.
-     *
-     * @var \Brick\Html\ContainerTag
+     * @var \Brick\Html\ContainerTag|null
      */
-    protected $tag;
+    private $tag = null;
 
     /**
      * The options and option groups in this Select.
      *
-     * @var \Brick\Form\Element\Renderable[]
+     * @var \Brick\Form\Element\Select\Option\OptionOrGroup[]
      */
     protected $elements = [];
 
     /**
      * {@inheritdoc}
      */
-    protected function init()
+    protected function getTag()
     {
-        $this->tag = new ContainerTag('select');
+        if ($this->tag === null) {
+            $this->tag = new ContainerTag('select');
+        }
+
+        return $this->tag;
     }
 
     /**
@@ -70,7 +72,7 @@ abstract class Select extends Element
      */
     public function addOptionGroup($label)
     {
-        $optionGroup = new Select\OptionGroup($label);
+        $optionGroup = new Select\Option\OptionGroup($label);
         $this->elements[] = $optionGroup;
 
         return $optionGroup;
@@ -79,7 +81,7 @@ abstract class Select extends Element
     /**
      * Returns all the options in this Select, including the ones nested in option groups.
      *
-     * @return Option[]
+     * @return \Brick\Form\Element\Select\Option\Option[]
      */
     protected function getOptions()
     {
@@ -100,16 +102,14 @@ abstract class Select extends Element
     /**
      * {@inheritdoc}
      */
-    public function render()
+    protected function onBeforeRender()
     {
-        $this->getId(); // @todo find a better way to have it called once before render()
-
         $content = '';
 
         foreach ($this->elements as $element) {
             $content .= $element->render();
         }
 
-        return $this->tag->setHtmlContent($content)->render();
+        $this->getTag()->setHtmlContent($content);
     }
 }

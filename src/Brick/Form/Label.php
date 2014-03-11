@@ -5,7 +5,7 @@ namespace Brick\Form;
 use Brick\Html\ContainerTag;
 
 /**
- * Represents a <label> tag that targets a form element.
+ * Represents a label that targets a form element.
  */
 class Label
 {
@@ -31,8 +31,11 @@ class Label
     }
 
     /**
+     * Sets the text content of the label.
+     *
      * @param string $text
-     * @return Label
+     *
+     * @return \Brick\Form\Label
      */
     public function setTextContent($text)
     {
@@ -42,8 +45,11 @@ class Label
     }
 
     /**
+     * Sets the HTML content of the label.
+     *
      * @param string $html
-     * @return Label
+     *
+     * @return \Brick\Form\Label
      */
     public function setHtmlContent($html)
     {
@@ -53,16 +59,18 @@ class Label
     }
 
     /**
+     * Renders the label.
+     *
      * @return string
      */
     public function render()
     {
-        $this->tag->setAttribute('for', $this->element->getId());
-
-        return $this->tag->render();
+        return $this->tag->setAttribute('for', $this->element->getId())->render();
     }
 
     /**
+     * Convenience magic method to render the label.
+     *
      * @return string
      */
     public function __toString()

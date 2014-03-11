@@ -1,14 +1,14 @@
 <?php
 
-namespace Brick\Form\Element\Select;
+namespace Brick\Form\Element\Select\Option;
 
+use Brick\Form\Element\Select\Option\OptionOrGroup;
 use Brick\Html\ContainerTag;
-use Brick\Form\Element\Renderable;
 
 /**
- * Represents an option for a select element.
+ * Represents an option inside a select element.
  */
-class Option implements Renderable
+class Option extends OptionOrGroup
 {
     /**
      * @var \Brick\Html\ContainerTag
@@ -28,12 +28,11 @@ class Option implements Renderable
      */
     public function __construct($content, $value)
     {
-        $this->tag = new ContainerTag('option');
-        $this->content = $content;
+        $this->tag = new ContainerTag('option', [
+            'value' => $value
+        ]);
 
-        if ($value !== null) {
-            $this->tag->setAttribute('value', $value);
-        }
+        $this->content = $content;
     }
 
     /**
@@ -61,8 +60,9 @@ class Option implements Renderable
     }
 
     /**
-     * @param bool $selected
-     * @return static
+     * @param bool $selected Whether to select (true) or unselect (false) this option.
+     *
+     * @return \Brick\Form\Element\Select\Option
      */
     public function setSelected($selected)
     {
@@ -71,6 +71,7 @@ class Option implements Renderable
         } else {
             $this->tag->removeAttribute('selected');
         }
+
         return $this;
     }
 

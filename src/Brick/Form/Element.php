@@ -8,26 +8,23 @@ namespace Brick\Form;
 abstract class Element extends Component
 {
     /**
-     * @var \Brick\Html\Tag
-     */
-    protected $tag;
-
-    /**
      * @var \Brick\Form\Label|null
      */
-    private $label = null;
+    protected $label;
 
     /**
      * @return string
      */
     public function getId()
     {
-        if (! $this->tag->hasAttribute('id')) {
+        $tag = $this->getTag();
+
+        if (! $tag->hasAttribute('id')) {
             $id = $this->form->generateElementId($this);
-            $this->tag->setAttribute('id', $id);
+            $tag->setAttribute('id', $id);
         }
 
-        return $this->tag->getAttribute('id');
+        return $tag->getAttribute('id');
     }
 
     /**
@@ -38,9 +35,9 @@ abstract class Element extends Component
     public function setRequired($required)
     {
         if ($required) {
-            $this->tag->setAttribute('required', 'required');
+            $this->getTag()->setAttribute('required', 'required');
         } else {
-            $this->tag->removeAttribute('required');
+            $this->getTag()->removeAttribute('required');
         }
 
         return parent::setRequired($required);
@@ -54,9 +51,9 @@ abstract class Element extends Component
     public function setDisabled($disabled)
     {
         if ($disabled) {
-            $this->tag->setAttribute('disabled', 'disabled');
+            $this->getTag()->setAttribute('disabled', 'disabled');
         } else {
-            $this->tag->removeAttribute('disabled');
+            $this->getTag()->removeAttribute('disabled');
         }
 
         return $this;
@@ -67,7 +64,7 @@ abstract class Element extends Component
      */
     public function isDisabled()
     {
-        return $this->tag->hasAttribute('disabled');
+        return $this->getTag()->hasAttribute('disabled');
     }
 
     /**
@@ -75,7 +72,7 @@ abstract class Element extends Component
      */
     protected function setName($name)
     {
-        $this->tag->setAttribute('name', $name);
+        $this->getTag()->setAttribute('name', $name);
     }
 
     /**
@@ -83,7 +80,7 @@ abstract class Element extends Component
      */
     public function getName()
     {
-        return $this->tag->getAttribute('name');
+        return $this->getTag()->getAttribute('name');
     }
 
     /**
@@ -96,7 +93,7 @@ abstract class Element extends Component
      */
     public function setAttribute($name, $value)
     {
-        $this->tag->setAttribute($name, $value);
+        $this->getTag()->setAttribute($name, $value);
 
         return $this;
     }
@@ -122,17 +119,45 @@ abstract class Element extends Component
      */
     public function setLabel($label)
     {
-        $this->getLabel()->setTextContent($label);
+        $this->label->setTextContent($label);
 
         return $this;
     }
 
     /**
-     * @return string
+     * Returns the HTML tag of this element.
+     *
+     * @return \Brick\Html\Tag
      */
-    abstract public function render();
+    abstract protected function getTag();
 
     /**
+     * Renders the element.
+     *
+     * If the element doesn't have an id, one is automatically assigned.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        $this->getId();
+        $this->onBeforeRender();
+
+        return $this->getTag()->render();
+    }
+
+    /**
+     * Called before the HTML tag is rendered.
+     *
+     * @return void
+     */
+    protected function onBeforeRender()
+    {
+    }
+
+    /**
+     * Convenience magic method to render the element.
+     *
      * @return string
      */
     public function __toString()

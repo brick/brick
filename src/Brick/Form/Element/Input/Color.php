@@ -4,26 +4,17 @@ namespace Brick\Form\Element\Input;
 
 use Brick\Form\Element\Input;
 use Brick\Form\Attribute\AutocompleteAttribute;
-use Brick\Form\Attribute\MaxLengthAttribute;
+use Brick\Form\Attribute\ListAttribute;
 use Brick\Form\Attribute\PatternAttribute;
-use Brick\Form\Attribute\PlaceholderAttribute;
-use Brick\Form\Attribute\ReadOnlyAttribute;
-use Brick\Form\Attribute\RequiredAttribute;
-use Brick\Form\Attribute\SizeAttribute;
 use Brick\Form\Attribute\ValueAttribute;
 
 /**
- * Represents a password input element.
+ * Represents a color input element.
  */
-class Password extends Input
+class Color extends Input
 {
     use AutocompleteAttribute;
-    use MaxLengthAttribute;
-    use PatternAttribute;
-    use PlaceholderAttribute;
-    use ReadOnlyAttribute;
-    use RequiredAttribute;
-    use SizeAttribute;
+    use ListAttribute;
     use ValueAttribute;
 
     /**
@@ -31,7 +22,7 @@ class Password extends Input
      */
     protected function getType()
     {
-        return 'password';
+        return 'color';
     }
 
     /**

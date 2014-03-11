@@ -1,28 +1,29 @@
 <?php
 
-namespace Brick\Form\Element\Select;
+namespace Brick\Form\Element\Select\Option;
 
+use Brick\Form\Element\Select\Option\Option;
+use Brick\Form\Element\Select\Option\OptionOrGroup;
 use Brick\Html\ContainerTag;
-use Brick\Form\Element\Renderable;
 
 /**
  * Represents an option group inside a select element.
  */
-class OptionGroup implements Renderable
+class OptionGroup extends OptionOrGroup
 {
     /**
      * The HTML tag used to render this OptionGroup.
      *
      * @var \Brick\Html\ContainerTag
      */
-    protected $tag;
+    private $tag;
 
     /**
      * The options inside this OptionGroup.
      *
-     * @var Option[]
+     * @var \Brick\Form\Element\Select\Option\Option[]
      */
-    protected $options = [];
+    private $options = [];
 
     /**
      * Class constructor.
@@ -31,8 +32,9 @@ class OptionGroup implements Renderable
      */
     public function __construct($label)
     {
-        $this->tag = new ContainerTag('optgroup');
-        $this->tag->setAttribute('label', $label);
+        $this->tag = new ContainerTag('optgroup', [
+            'label' => $label
+        ]);
     }
 
     /**
@@ -40,21 +42,22 @@ class OptionGroup implements Renderable
      *
      * @param string $content The text content of this option.
      * @param string $value   The value of this option.
-     * @return OptionGroup
+     *
+     * @return \Brick\Form\Element\Select\OptionGroup
      */
     public function addOption($content, $value)
     {
         $this->options[] = new Option($content, $value);
+
         return $this;
     }
 
     /**
      * Adds a batch of options to this OptionGroup.
      *
-     * The array format is [value] => content.
+     * @param array $options The options as key-value pairs.
      *
-     * @param array $options
-     * @return OptionGroup
+     * @return \Brick\Form\Element\Select\OptionGroup
      */
     public function addOptions(array $options)
     {
@@ -68,7 +71,7 @@ class OptionGroup implements Renderable
     /**
      * Returns the options in this OptionGroup.
      *
-     * @return Option[]
+     * @return \Brick\Form\Element\Select\Option\Option[]
      */
     public function getOptions()
     {

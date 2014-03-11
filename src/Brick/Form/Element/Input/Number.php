@@ -3,13 +3,28 @@
 namespace Brick\Form\Element\Input;
 
 use Brick\Form\Element\Input;
+use Brick\Form\Attribute\AutocompleteAttribute;
+use Brick\Form\Attribute\ListAttribute;
+use Brick\Form\Attribute\MinMaxStepAttributes;
+use Brick\Form\Attribute\PlaceholderAttribute;
+use Brick\Form\Attribute\ReadOnlyAttribute;
+use Brick\Form\Attribute\RequiredAttribute;
+use Brick\Form\Attribute\ValueAttribute;
 use Brick\Validation\Validator\NumberValidator;
 
 /**
  * Represents a number input element.
  */
-class Number extends Text
+class Number extends Input
 {
+    use AutocompleteAttribute;
+    use ListAttribute;
+    use MinMaxStepAttributes;
+    use PlaceholderAttribute;
+    use ReadOnlyAttribute;
+    use RequiredAttribute;
+    use ValueAttribute;
+
     /**
      * @var NumberValidator
      */
@@ -20,8 +35,6 @@ class Number extends Text
      */
     protected function init()
     {
-        parent::init();
-
         $this->validator = new NumberValidator();
         $this->validator->setStep(1);
 
@@ -37,44 +50,34 @@ class Number extends Text
     }
 
     /**
-     * Sets the minimum value. Default is no minimum.
-     *
-     * @param number|string $min The minimum value.
-     *
-     * @return static
+     * {@inheritdoc}
      */
-    public function setMin($min)
+    protected function doSetMin($min)
     {
         $this->validator->setMin($min);
-
-        return $this->setAttribute('min', $min);
     }
 
     /**
-     * Sets the maximum value. Default is no maximum.
-     *
-     * @param number|string $max The maximum value.
-     *
-     * @return static
+     * {@inheritdoc}
      */
-    public function setMax($max)
+    protected function doSetMax($max)
     {
         $this->validator->setMax($max);
-
-        return $this->setAttribute('max', $max);
     }
 
     /**
-     * Sets the validation step. Default is 1.
-     *
-     * @param number|string $step The step, or "any" to allow any value.
-     *
-     * @return static
+     * {@inheritdoc}
      */
-    public function setStep($step)
+    public function doSetStep($step)
     {
-        $this->validator->setStep($step == 'any' ? null : $step);
+        $this->validator->setStep($step === 'any' ? null : $step);
+    }
 
-        return $this->setAttribute('step', $step);
+    /**
+     * {@inheritdoc}
+     */
+    protected function doPopulate($value)
+    {
+        $this->setValue($value);
     }
 }

@@ -23,7 +23,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         }
 
         try {
-            $form->isValid([
+            $form->populate([
                 'drink' => []
             ]);
 
@@ -32,7 +32,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
             // Works as expected!
         }
 
-        $this->assertTrue($form->isValid([
+        $this->assertTrue($form->populate([
             'drink' => $selectedDrink
         ]));
 
@@ -56,7 +56,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         }
 
         try {
-            $form->isValid([
+            $form->populate([
                 'countries' => 'US'
             ]);
 
@@ -68,7 +68,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $expected = array_keys($countries, true);
         sort($expected);
 
-        $this->assertTrue($form->isValid([
+        $this->assertTrue($form->populate([
             'countries' => $expected
         ]));
 
@@ -131,7 +131,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         }
 
         try {
-            $form->isValid([
+            $form->populate([
                 'drink' => []
             ]);
 
@@ -140,7 +140,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
             // Works as expected!
         }
 
-        $this->assertTrue($form->isValid([
+        $this->assertTrue($form->populate([
             'drink' => $selectedDrink
         ]));
 
@@ -155,9 +155,9 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $form = new Form();
         $form->addInputText('city')->setRequired(true);
 
-        $this->assertFalse($form->isValid([]));
-        $this->assertFalse($form->isValid(['city' => '']));
-        $this->assertTrue($form->isValid(['city' => 'London']));
+        $this->assertFalse($form->populate([]));
+        $this->assertFalse($form->populate(['city' => '']));
+        $this->assertTrue($form->populate(['city' => 'London']));
     }
 
     public function testCheckboxGroup()
@@ -177,7 +177,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         }
 
         try {
-            $form->isValid([
+            $form->populate([
                 'countries' => 'US'
             ]);
 
@@ -186,7 +186,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
             // Works as expected!
         }
 
-        $this->assertTrue($form->isValid([
+        $this->assertTrue($form->populate([
             'countries' => array_keys($countries, true)
         ]));
 

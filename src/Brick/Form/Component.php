@@ -4,7 +4,6 @@ namespace Brick\Form;
 
 use Brick\Filter\Filter;
 use Brick\Validation\Validator;
-use Brick\Validation\ValidationFailure;
 
 /**
  * Base class for Element and Group. Aggregated by Form.
@@ -21,7 +20,12 @@ abstract class Component extends Base
     /**
      * @var \Brick\Translation\Translator
      */
-    private $translator;
+    protected $translator;
+
+    /**
+     * @var boolean
+     */
+    protected $required = false;
 
     /**
      * @var \Brick\Filter\Filter[]
@@ -32,11 +36,6 @@ abstract class Component extends Base
      * @var \Brick\Validation\Validator[]
      */
     private $validators = [];
-
-    /**
-     * @var boolean
-     */
-    private $required = false;
 
     /**
      * Class constructor.
@@ -52,88 +51,14 @@ abstract class Component extends Base
         $this->translator = new \Brick\Translation\Translator(new \Brick\Translation\Loader\NullLoader());
         $this->translator->setLocale(\Brick\Locale\Locale::create('en'));
 
-        $this->init();
         $this->setName($name);
+        $this->init();
     }
 
     /**
-     * @param \Brick\Filter\Filter $filter
+     * Populates the component with the given value.
      *
-     * @return static
-     */
-    public function addFilter(Filter $filter)
-    {
-        $this->filters[] = $filter;
-        return $this;
-    }
-
-    /**
-     * Adds a Validator to this Component.
-     *
-     * Adding twice the same instance of a validator has no effect.
-     *
-     * @param \Brick\Validation\Validator $validator
-     *
-     * @return static
-     */
-    public function addValidator(Validator $validator)
-    {
-        $hash = spl_object_hash($validator);
-        $this->validators[$hash] = $validator;
-
-        return $this;
-    }
-
-    /**
-     * Checks whether the given Validator instance has been added to this Component.
-     *
-     * @param \Brick\Validation\Validator $validator
-     *
-     * @return boolean
-     */
-    public function hasValidator(Validator $validator)
-    {
-        $hash = spl_object_hash($validator);
-
-        return isset($this->validators[$hash]);
-    }
-
-    /**
-     * Removes a Validator instance from this Component.
-     *
-     * Removing a non-existent validator has no effect.
-     *
-     * @param \Brick\Validation\Validator $validator
-     *
-     * @return static
-     */
-    public function removeValidator(Validator $validator)
-    {
-        $hash = spl_object_hash($validator);
-        unset($this->validators[$hash]);
-
-        return $this;
-    }
-
-    /**
-     * Removes all validators of the given class name.
-     *
-     * @param string $className
-     *
-     * @return void
-     */
-    public function removeValidators($className)
-    {
-        foreach ($this->validators as $key => $validator) {
-            if ($validator instanceof $className) {
-                unset($this->validators[$key]);
-            }
-        }
-    }
-
-    /**
-     * Validates the value upon form submission, and populates the component with this value.
-     *
+     * The value will be filtered and validated.
      * Validation errors will be accessible via hasErrors() and getErrors().
      *
      * @param string|array|null $value
@@ -142,37 +67,27 @@ abstract class Component extends Base
      *
      * @throws \InvalidArgumentException If the given value is not of a correct type for this Component.
      */
-    public function validate($value)
+    public function populate($value)
     {
         $this->checkCorrectType($value);
         $this->resetErrors();
 
-        foreach ($this->filters as $filter) {
-            if ($value === null) {
-                break;
-            }
-
-            $value = $filter->filter($value);
-        }
-
         $empty = ($value === '' || $value === [] || $value === null);
 
-        if ($empty) {
-            if ($this->required) {
-                $this->addValidationFailure('form:this-field-is-required');
-            }
-        } else {
-            // @todo validators shouldn't run on arrays, only individual elements
-            foreach ($this->validators as $validator) {
-                foreach ($validator->validate($value)->getFailures() as $failure) {
-                    $this->addValidationFailure($failure->getMessageKey());
-                }
-            }
+        if ($empty && $this->required) {
+            $this->addTranslatedError('form-required');
         }
 
-        if ($value !== null) {
-            $this->populate($value);
+        if (! $empty && is_string($value)) {
+            $value = $this->filter($value);
+            $this->validate($value);
         }
+
+        if ($value === null) {
+            $value = $this->isArray() ? [] : '';
+        }
+
+        $this->doPopulate($value);
     }
 
     /**
@@ -221,20 +136,179 @@ abstract class Component extends Base
     }
 
     /**
-     * @param string $failure
+     * @param string $message
      *
      * @return void
      */
-    private function addValidationFailure($failure)
+    private function addTranslatedError($message)
     {
-        $this->addError($this->translator->translate($failure));
+        $this->addError($this->translator->translate($message));
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    private function filter($value)
+    {
+        foreach ($this->filters as $filter) {
+            $value = $filter->filter($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return void
+     */
+    private function validate($value)
+    {
+        foreach ($this->validators as $validator) {
+            foreach ($validator->validate($value)->getFailures() as $failure) {
+                $this->addTranslatedError($failure->getMessageKey());
+            }
+        }
+    }
+
+    /**
+     * Adds a filter.
+     *
+     * Adding twice the same instance of a filter has no effect.
+     *
+     * @param \Brick\Filter\Filter $filter
+     *
+     * @return static
+     */
+    protected function addFilter(Filter $filter)
+    {
+        $hash = spl_object_hash($filter);
+        $this->filters[$hash] = $filter;
+
+        return $this;
+    }
+
+    /**
+     * Checks whether a filter is present.
+     *
+     * @param \Brick\Filter\Filter $filter
+     *
+     * @return boolean
+     */
+    protected function hasFilter(Filter $filter)
+    {
+        $hash = spl_object_hash($filter);
+
+        return isset($this->filters[$hash]);
+    }
+
+    /**
+     * Removes a filter.
+     *
+     * Removing a non-existent filter has no effect.
+     *
+     * @param \Brick\Filter\Filter $filter
+     *
+     * @return static
+     */
+    protected function removeFilter(Filter $filter)
+    {
+        $hash = spl_object_hash($filter);
+        unset($this->filters[$hash]);
+
+        return $this;
+    }
+
+    /**
+     * Removes all filters of the given class name.
+     *
+     * @param string $className
+     *
+     * @return static
+     */
+    protected function removeFilters($className)
+    {
+        foreach ($this->filters as $key => $filter) {
+            if ($filter instanceof $className) {
+                unset($this->filters[$key]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a validator.
+     *
+     * Adding twice the same instance of a validator has no effect.
+     *
+     * @param \Brick\Validation\Validator $validator
+     *
+     * @return static
+     */
+    protected function addValidator(Validator $validator)
+    {
+        $hash = spl_object_hash($validator);
+        $this->validators[$hash] = $validator;
+
+        return $this;
+    }
+
+    /**
+     * Checks whether a validator is present.
+     *
+     * @param \Brick\Validation\Validator $validator
+     *
+     * @return boolean
+     */
+    protected function hasValidator(Validator $validator)
+    {
+        $hash = spl_object_hash($validator);
+
+        return isset($this->validators[$hash]);
+    }
+
+    /**
+     * Removes a validator.
+     *
+     * Removing a non-existent validator has no effect.
+     *
+     * @param \Brick\Validation\Validator $validator
+     *
+     * @return static
+     */
+    protected function removeValidator(Validator $validator)
+    {
+        $hash = spl_object_hash($validator);
+        unset($this->validators[$hash]);
+
+        return $this;
+    }
+
+    /**
+     * Removes all validators of the given class name.
+     *
+     * @param string $className
+     *
+     * @return static
+     */
+    protected function removeValidators($className)
+    {
+        foreach ($this->validators as $key => $validator) {
+            if ($validator instanceof $className) {
+                unset($this->validators[$key]);
+            }
+        }
+
+        return $this;
     }
 
     /**
      * Initializes the component.
      *
-     * This method is to be called once, by the constructor only.
-     * It can be overridden by individual components to initialize themselves.
+     * This method is called at the end of the constructor.
      *
      * @return void
      */
@@ -249,11 +323,11 @@ abstract class Component extends Base
      * (buttons, file inputs, ...) but is overridden by elements whose
      * state does change upon submission (text inputs, checkboxes, selects, ...)
      *
-     * @param string|array $value
+     * @param string|array|null $value
      *
      * @return void
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
     }
 

@@ -11,6 +11,7 @@ class SingleSelect extends Select
 {
     /**
      * @param string $value
+     *
      * @return static
      */
     public function setValue($value)
@@ -39,7 +40,7 @@ class SingleSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
         $this->setValue($value);
     }

@@ -11,6 +11,7 @@ class MultipleSelect extends Select
 {
     /**
      * @param array $values
+     *
      * @return static
      */
     public function setValues(array $values)
@@ -49,7 +50,7 @@ class MultipleSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function populate($value)
+    protected function doPopulate($value)
     {
         $this->setValues($value);
     }
