@@ -3,7 +3,6 @@
 namespace Brick\Browser\Wrapper;
 
 use Brick\Browser\Element;
-use Symfony\Component\CssSelector\CssSelector;
 
 /**
  * Wraps a web element to extend its functionality.
