@@ -33,6 +33,30 @@ abstract class Button extends Element
     }
 
     /**
+     * @param string $text
+     *
+     * @return static
+     */
+    public function setTextContent($text)
+    {
+        $this->tag->setTextContent($text);
+
+        return $this;
+    }
+
+    /**
+     * @param string $html
+     *
+     * @return static
+     */
+    public function setHtmlContent($html)
+    {
+        $this->tag->setHtmlContent($html);
+
+        return $this;
+    }
+
+    /**
      * Returns the type of this button.
      *
      * @return string
