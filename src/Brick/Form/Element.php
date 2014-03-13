@@ -10,7 +10,7 @@ abstract class Element extends Component
     /**
      * @var \Brick\Form\Label|null
      */
-    protected $label;
+    private $label;
 
     /**
      * @return string
@@ -119,7 +119,7 @@ abstract class Element extends Component
      */
     public function setLabel($label)
     {
-        $this->label->setTextContent($label);
+        $this->getLabel()->setTextContent($label);
 
         return $this;
     }
