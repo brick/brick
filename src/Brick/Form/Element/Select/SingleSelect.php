@@ -10,14 +10,14 @@ use Brick\Form\Element\Select;
 class SingleSelect extends Select
 {
     /**
-     * @param string $value
+     * @param string|null $value
      *
      * @return static
      */
     public function setValue($value)
     {
         foreach ($this->getOptions() as $option) {
-            $option->setSelected($option->getValue() == $value);
+            $option->setSelected($value !== null && $option->getValue() === $value);
         }
 
         return $this;

@@ -79,10 +79,6 @@ abstract class Component extends Base
             $this->validate($value);
         }
 
-        if ($value === null) {
-            $value = $this->isArray() ? [] : '';
-        }
-
         $this->doPopulate($value);
     }
 

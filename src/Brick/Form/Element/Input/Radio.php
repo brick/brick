@@ -29,6 +29,6 @@ class Radio extends Input
      */
     protected function doPopulate($value)
     {
-        $this->setChecked($value === $this->getValue());
+        $this->setChecked($value !== null && $value === $this->getValue());
     }
 }

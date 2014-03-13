@@ -52,6 +52,6 @@ class MultipleSelect extends Select
      */
     protected function doPopulate($value)
     {
-        $this->setValues($value);
+        $this->setValues($value === null ? [] : $value);
     }
 }

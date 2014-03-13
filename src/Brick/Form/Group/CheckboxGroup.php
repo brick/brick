@@ -73,7 +73,7 @@ class CheckboxGroup extends Group
      */
     protected function doPopulate($value)
     {
-        $this->setValues($value);
+        $this->setValues($value === null ? [] : $value);
     }
 
     /**

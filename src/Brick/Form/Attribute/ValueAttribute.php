@@ -10,13 +10,17 @@ trait ValueAttribute
     use AbstractTag;
 
     /**
-     * @param string $value
+     * @param string|null $value
      *
      * @return static
      */
     public function setValue($value)
     {
-        $this->getTag()->setAttribute('value', $value);
+        if ($value !== null) {
+            $this->getTag()->setAttribute('value', $value);
+        } else {
+            $this->getTag()->removeAttribute('value');
+        }
 
         return $this;
     }
