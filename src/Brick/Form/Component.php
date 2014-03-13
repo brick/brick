@@ -176,6 +176,8 @@ abstract class Component extends Base
     }
 
     /**
+     * @todo protected
+     *
      * Adds a filter.
      *
      * Adding twice the same instance of a filter has no effect.
@@ -184,7 +186,7 @@ abstract class Component extends Base
      *
      * @return static
      */
-    protected function addFilter(Filter $filter)
+    public function addFilter(Filter $filter)
     {
         $hash = spl_object_hash($filter);
         $this->filters[$hash] = $filter;
@@ -242,6 +244,8 @@ abstract class Component extends Base
     }
 
     /**
+     * @todo protected
+     *
      * Adds a validator.
      *
      * Adding twice the same instance of a validator has no effect.
@@ -250,7 +254,7 @@ abstract class Component extends Base
      *
      * @return static
      */
-    protected function addValidator(Validator $validator)
+    public function addValidator(Validator $validator)
     {
         $hash = spl_object_hash($validator);
         $this->validators[$hash] = $validator;
