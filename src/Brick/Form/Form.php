@@ -596,7 +596,7 @@ class Form extends Base
      *
      * @param \Brick\Http\Request $request
      *
-     * @return boolean
+     * @return \Brick\Form\Form
      */
     public function populateFromRequest(Request $request)
     {
