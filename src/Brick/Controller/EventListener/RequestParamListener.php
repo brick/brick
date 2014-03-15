@@ -13,6 +13,7 @@ use Brick\Http\Exception\HttpInternalServerErrorException;
 use Brick\ObjectConverter\Exception\ObjectNotConvertibleException;
 use Brick\ObjectConverter\Exception\ObjectNotFoundException;
 use Brick\ObjectConverter\ObjectConverter;
+use Brick\Reflection\ImportResolver;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -159,22 +160,22 @@ class RequestParamListener extends AbstractEventListener
             $types = $this->reflectionTools->getParameterTypes($parameter);
 
             // Must be a single type.
-            if (count($types) != 1) {
-                return $value;
-            }
+            if (count($types) === 1) {
+                $type = $types[0];
 
-            $type = $types[0];
+                // Must end with empty square brackets.
+                if (substr($type, -2) === '[]') {
+                    // Remove the trailing square brackets.
+                    $type = substr($type, 0, -2);
 
-            // Must start with a backslash and end with empty square brackets.
-            if (substr($type, 0, 1) != '\\' || substr($type, -2) != '[]') {
-                return $value;
-            }
+                    // Resolve the type to its fully qualified name.
+                    $resolver = new ImportResolver($parameter);
+                    $type = $resolver->resolve($type);
 
-            // Remove the leading slash and trailing square brackets.
-            $type = substr($type, 1, -2);
-
-            foreach ($value as & $item) {
-                $item = $this->getObject($type, $item, $annotation->getOptions());
+                    foreach ($value as & $item) {
+                        $item = $this->getObject($type, $item, $annotation->getOptions());
+                    }
+                }
             }
         }
 
