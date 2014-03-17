@@ -84,6 +84,26 @@ class Label
     }
 
     /**
+     * Renders the opening tag.
+     *
+     * @return string
+     */
+    public function open()
+    {
+        return $this->tag->renderOpeningTag();
+    }
+
+    /**
+     * Render the closing tag.
+     *
+     * @return string
+     */
+    public function close()
+    {
+        return $this->tag->renderClosingTag();
+    }
+
+    /**
      * Convenience magic method to render the label.
      *
      * @return string
