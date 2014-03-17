@@ -47,6 +47,16 @@ class Textarea extends Element
     }
 
     /**
+     * @return bool
+     */
+    public function hasValue()
+    {
+        $value = $this->getTag()->getAttribute('value');
+
+        return $value !== null && $value !== '';
+    }
+
+    /**
      * @return string
      */
     public function getValue()

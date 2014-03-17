@@ -28,7 +28,7 @@ class SingleSelect extends Select
     }
 
     /**
-     * Returns the selected value, or null if no
+     * Returns the selected value, or null if none is selected.
      *
      * @return string|null
      */

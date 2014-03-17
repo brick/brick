@@ -22,6 +22,16 @@ trait ValueAttribute
     }
 
     /**
+     * @return bool
+     */
+    public function hasValue()
+    {
+        $value = $this->getTag()->getAttribute('value');
+
+        return $value !== null && $value !== '';
+    }
+
+    /**
      * Returns the value of the input.
      *
      * @return string
