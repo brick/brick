@@ -16,9 +16,11 @@ class Textarea extends Element
     private $tag = null;
 
     /**
+     * The textarea contents.
+     *
      * @var string
      */
-    private $text = '';
+    private $value = '';
 
     /**
      * {@inheritdoc}
@@ -39,7 +41,7 @@ class Textarea extends Element
      */
     public function setValue($value)
     {
-        $this->text = $value;
+        $this->value = (string) $value;
 
         return $this;
     }
@@ -49,7 +51,15 @@ class Textarea extends Element
      */
     public function getValue()
     {
-        return $this->text;
+        return $this->value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getValueOrNull()
+    {
+        return $this->value === '' ? null : $this->value;
     }
 
     /**
@@ -65,6 +75,6 @@ class Textarea extends Element
      */
     protected function onBeforeRender()
     {
-        $this->getTag()->setTextContent($this->text);
+        $this->getTag()->setTextContent($this->value);
     }
 }
