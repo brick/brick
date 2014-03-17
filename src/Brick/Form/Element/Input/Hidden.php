@@ -19,4 +19,12 @@ class Hidden extends Input
     {
         return 'hidden';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doPopulate($value)
+    {
+        $this->setValue($value);
+    }
 }

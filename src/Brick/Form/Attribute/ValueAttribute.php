@@ -10,26 +10,38 @@ trait ValueAttribute
     use AbstractTag;
 
     /**
-     * @param string|null $value
+     * @param string $value
      *
      * @return static
      */
     public function setValue($value)
     {
-        if ($value !== null) {
-            $this->getTag()->setAttribute('value', $value);
-        } else {
-            $this->getTag()->removeAttribute('value');
-        }
+        $this->getTag()->setAttribute('value', (string) $value);
 
         return $this;
     }
 
     /**
-     * @return string|null
+     * Returns the value of the input.
+     *
+     * @return string
      */
     public function getValue()
     {
-        return $this->getTag()->getAttribute('value');
+        $value = $this->getTag()->getAttribute('value');
+
+        return $value === null ? '' : $value;
+    }
+
+    /**
+     * Returns the value of the input, or null if empty.
+     *
+     * @return string|null
+     */
+    public function getValueOrNull()
+    {
+        $value = $this->getTag()->getAttribute('value');
+
+        return $value === '' ? null : $value;
     }
 }

@@ -29,6 +29,6 @@ class Checkbox extends Input
      */
     protected function doPopulate($value)
     {
-        $this->setChecked($value !== null && $value === $this->getValue());
+        $this->setChecked($value === $this->getValue());
     }
 }

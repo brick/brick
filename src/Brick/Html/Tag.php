@@ -8,11 +8,15 @@ namespace Brick\Html;
 abstract class Tag
 {
     /**
+     * The tag name.
+     *
      * @var string
      */
     protected $name;
 
     /**
+     * The tag attributes as an associative array.
+     *
      * @var array
      */
     protected $attributes;
@@ -25,7 +29,7 @@ abstract class Tag
      */
     public function __construct($name, array $attributes = [])
     {
-        $this->name = $name;
+        $this->name       = $name;
         $this->attributes = $attributes;
     }
 

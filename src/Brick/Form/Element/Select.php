@@ -39,7 +39,8 @@ abstract class Select extends Element
     /**
      * @param string $content The text content of this option.
      * @param string $value   The value of this option.
-     * @return Option
+     *
+     * @return \Brick\Form\Element\Select\Option\Option
      */
     public function addOption($content, $value)
     {
@@ -55,7 +56,8 @@ abstract class Select extends Element
      * The array format is [value] => content.
      *
      * @param array $options
-     * @return Select
+     *
+     * @return static
      */
     public function addOptions(array $options)
     {
@@ -68,7 +70,8 @@ abstract class Select extends Element
 
     /**
      * @param string $label The option group label.
-     * @return OptionGroup
+     *
+     * @return \Brick\Form\Element\Select\Option\OptionGroup
      */
     public function addOptionGroup($label)
     {

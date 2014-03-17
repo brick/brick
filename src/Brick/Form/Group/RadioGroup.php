@@ -32,6 +32,7 @@ class RadioGroup extends Group
 
     /**
      * @param string $value
+     *
      * @return static
      */
     public function setValue($value)

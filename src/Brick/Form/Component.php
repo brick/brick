@@ -61,20 +61,36 @@ abstract class Component extends Base
      *
      * @return void
      *
-     * @throws \InvalidArgumentException If the given value is not of a correct type for this Component.
+     * @throws \InvalidArgumentException If the given value is not of a correct type for this component.
      */
     public function populate($value)
     {
-        $this->checkCorrectType($value);
+        $isArray = $this->isArray();
+
+        if ($value === null) {
+            $value = $isArray ? [] : '';
+        } else {
+            $isCorrectType = $isArray ? is_array($value) : is_string($value);
+
+            if (! $isCorrectType) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Invalid value received for "%s": expected %s, got %s',
+                    $this->getName(),
+                    $isArray ? 'array' : 'string',
+                    gettype($value)
+                ));
+            }
+        }
+
         $this->resetErrors();
 
-        $empty = ($value === '' || $value === [] || $value === null);
+        $empty = ($value === '' || $value === []);
 
         if ($empty && $this->required) {
             $this->addTranslatableError('form.required', 'This field is required.');
         }
 
-        if (! $empty && is_string($value)) {
+        if (! $empty && ! $isArray) {
             $value = $this->filter($value);
             $this->validate($value);
         }
@@ -100,31 +116,6 @@ abstract class Component extends Base
     public function isRequired()
     {
         return $this->required;
-    }
-
-    /**
-     * Returns whether the given value is of the correct type for this Component.
-     *
-     * @param mixed $value
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException If the given value is not of a correct type for this Component.
-     */
-    private function checkCorrectType($value)
-    {
-        if ($value !== null) {
-            $isCorrectType = $this->isArray() ? is_array($value) : is_string($value);
-            $expectedType = $this->isArray() ? 'array' : 'string';
-            $actualType = gettype($value);
-
-            if (! $isCorrectType) {
-                $message = 'Invalid value received for "%s": expected %s, got %s';
-                $message = sprintf($message, $this->getName(), $expectedType, $actualType);
-
-                throw new \InvalidArgumentException($message);
-            }
-        }
     }
 
     /**
@@ -325,11 +316,9 @@ abstract class Component extends Base
     /**
      * Populates the component with the value(s) received from the form submission.
      *
-     * This method does nothing for elements whose state don't change upon submission
-     * (buttons, file inputs, ...) but is overridden by elements whose
-     * state does change upon submission (text inputs, checkboxes, selects, ...)
+     * Not all components care with a value, reset buttons for example will not implement this method.
      *
-     * @param string|array|null $value
+     * @param string|array $value
      *
      * @return void
      */

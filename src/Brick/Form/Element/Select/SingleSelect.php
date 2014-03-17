@@ -10,20 +10,26 @@ use Brick\Form\Element\Select;
 class SingleSelect extends Select
 {
     /**
-     * @param string|null $value
+     * @param string $value
      *
      * @return static
      */
     public function setValue($value)
     {
+        $oneSelected = false;
+
         foreach ($this->getOptions() as $option) {
-            $option->setSelected($value !== null && $option->getValue() === $value);
+            $thisSelected = ! $oneSelected && $option->getValue() === $value;
+            $oneSelected = $oneSelected || $thisSelected;
+            $option->setSelected($thisSelected);
         }
 
         return $this;
     }
 
     /**
+     * Returns the selected value, or null if no
+     *
      * @return string|null
      */
     public function getValue()

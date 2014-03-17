@@ -10,25 +10,29 @@ class ContainerTag extends Tag
     /**
      * @var string
      */
-    protected $content = '';
+    private $content = '';
 
     /**
      * @param string $content
+     *
      * @return static
      */
     public function setTextContent($content)
     {
         $this->content = htmlspecialchars($content);
+
         return $this;
     }
 
     /**
      * @param string $content
+     *
      * @return static
      */
     public function setHtmlContent($content)
     {
         $this->content = $content;
+
         return $this;
     }
 

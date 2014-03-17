@@ -28,9 +28,9 @@ abstract class Element extends Component
     }
 
     /**
-     * @param boolean $required
+     * @todo not all elements have a required attribute. This should probably be moved to a trait.
      *
-     * @return static
+     * {@inheritdoc}
      */
     public function setRequired($required)
     {

@@ -17,15 +17,7 @@ class Submit extends Input
     /**
      * @var boolean
      */
-    private $clicked = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getType()
-    {
-        return 'submit';
-    }
+    private $pressed = false;
 
     /**
      * Returns whether this submit button has been pressed to submit the form.
@@ -34,9 +26,9 @@ class Submit extends Input
      *
      * @return boolean
      */
-    public function isClicked()
+    public function isPressed()
     {
-        return $this->clicked;
+        return $this->pressed;
     }
 
     /**
@@ -44,6 +36,14 @@ class Submit extends Input
      */
     protected function doPopulate($value)
     {
-        $this->clicked = ($value === $this->getValue());
+        $this->pressed = ($value === $this->getValue());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getType()
+    {
+        return 'submit';
     }
 }

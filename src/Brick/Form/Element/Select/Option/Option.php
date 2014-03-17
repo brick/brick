@@ -12,12 +12,12 @@ class Option extends OptionOrGroup
     /**
      * @var \Brick\Html\ContainerTag
      */
-    protected $tag;
+    private $tag;
 
     /**
      * @var string
      */
-    protected $content;
+    private $content;
 
     /**
      * Class constructor.
@@ -51,7 +51,7 @@ class Option extends OptionOrGroup
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     public function isSelected()
     {
@@ -59,9 +59,9 @@ class Option extends OptionOrGroup
     }
 
     /**
-     * @param bool $selected Whether to select (true) or unselect (false) this option.
+     * @param boolean $selected Whether to select (true) or unselect (false) this option.
      *
-     * @return \Brick\Form\Element\Select\Option\Option
+     * @return static
      */
     public function setSelected($selected)
     {

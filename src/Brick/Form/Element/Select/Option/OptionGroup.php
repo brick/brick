@@ -41,7 +41,7 @@ class OptionGroup extends OptionOrGroup
      * @param string $content The text content of this option.
      * @param string $value   The value of this option.
      *
-     * @return \Brick\Form\Element\Select\Option\OptionGroup
+     * @return static
      */
     public function addOption($content, $value)
     {
@@ -55,7 +55,7 @@ class OptionGroup extends OptionOrGroup
      *
      * @param array $options The options as key-value pairs.
      *
-     * @return \Brick\Form\Element\Select\Option\OptionGroup
+     * @return static
      */
     public function addOptions(array $options)
     {
