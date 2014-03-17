@@ -31,6 +31,21 @@ class Label
     }
 
     /**
+     * Sets an attribute on the label tag.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return static
+     */
+    public function setAttribute($name, $value)
+    {
+        $this->tag->setAttribute($name, $value);
+
+        return $this;
+    }
+
+    /**
      * Sets the text content of the label.
      *
      * @param string $text
