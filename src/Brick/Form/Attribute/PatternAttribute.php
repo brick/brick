@@ -21,7 +21,7 @@ trait PatternAttribute
         $this->getTag()->setAttribute('pattern', $pattern);
         $this->removeValidators(PatternValidator::class);
 
-        if ($pattern != '') {
+        if ($pattern !== '') {
             $this->addValidator(new PatternValidator($pattern));
         }
 
