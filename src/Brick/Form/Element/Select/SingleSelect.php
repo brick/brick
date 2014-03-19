@@ -19,7 +19,7 @@ class SingleSelect extends Select
         $oneSelected = false;
 
         foreach ($this->getOptions() as $option) {
-            $thisSelected = ! $oneSelected && $option->getValue() === $value;
+            $thisSelected = ! $oneSelected && $option->getValue() == $value;
             $oneSelected = $oneSelected || $thisSelected;
             $option->setSelected($thisSelected);
         }
