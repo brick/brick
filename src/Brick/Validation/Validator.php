@@ -19,6 +19,8 @@ interface Validator
     /**
      * Returns the failure messages from the last validation.
      *
+     * Keys are unique identifiers to the message, values are the failure message in English.
+     *
      * @return array The last failure messages.
      */
     public function getFailureMessages();
