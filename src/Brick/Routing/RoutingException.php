@@ -8,30 +8,32 @@ namespace Brick\Routing;
 class RoutingException extends \RuntimeException
 {
     /**
-     * @param string $class
-     * @param string $method
+     * @param \ReflectionException $e
+     * @param string               $class
+     * @param string               $method
      *
      * @return RoutingException
      */
-    public static function invalidControllerClassMethod($class, $method)
+    public static function invalidControllerClassMethod(\ReflectionException $e, $class, $method)
     {
         return new self(sprintf(
             'Cannot find a controller method called %s::%s().',
             $class,
             $method
-        ));
+        ), 0, $e);
     }
 
     /**
-     * @param mixed $function
+     * @param \ReflectionException $e
+     * @param mixed                $function
      *
      * @return RoutingException
      */
-    public static function invalidControllerFunction($function)
+    public static function invalidControllerFunction(\ReflectionException $e, $function)
     {
         return new self(sprintf(
             'Invalid controller function: function name or closure expected, %s given.',
             is_string($function) ? '"' . $function . '"' : gettype($function)
-        ));
+        ), 0, $e);
     }
 }

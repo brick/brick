@@ -43,7 +43,7 @@ class RouteMatch
         try {
             return new self(new \ReflectionMethod($class, $method), $parameters);
         } catch (\ReflectionException $e) {
-            throw RoutingException::invalidControllerClassMethod($class, $method);
+            throw RoutingException::invalidControllerClassMethod($e, $class, $method);
         }
     }
 
@@ -62,7 +62,7 @@ class RouteMatch
         try {
             return new self(new \ReflectionFunction($function), $parameters);
         } catch (\ReflectionException $e) {
-            throw RoutingException::invalidControllerFunction($function);
+            throw RoutingException::invalidControllerFunction($e, $function);
         }
     }
 
