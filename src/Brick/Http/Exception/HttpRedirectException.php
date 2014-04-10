@@ -8,46 +8,23 @@ namespace Brick\Http\Exception;
 class HttpRedirectException extends HttpException
 {
     /**
-     * @var string
-     */
-    private $redirectUrl;
-
-    /**
-     * @var int
-     */
-    private $statusCode;
-
-    /**
      * Class constructor.
      *
-     * @param string $redirectUrl
-     * @param int    $statusCode
+     * @param string          $location    The redirect URL.
+     * @param int             $statusCode  The HTTP status code, 3XX.
+     * @param string          $message     An optional exception message for debugging.
+     * @param \Exception|null $previous    An optional previous exception for chaining.
      *
      * @throws \RuntimeException
      */
-    public function __construct($redirectUrl, $statusCode = 302)
+    public function __construct($location, $statusCode = 302, $message = '', \Exception $previous = null)
     {
         if ($statusCode < 300 || $statusCode >= 400) {
             throw new \RuntimeException('Invalid HTTP redirect status code: ' . $statusCode);
         }
 
-        $this->redirectUrl = $redirectUrl;
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeaders()
-    {
-        return ['Location' => $this->redirectUrl];
+        parent::__construct($statusCode, [
+            'Location' => $location
+        ]);
     }
 }

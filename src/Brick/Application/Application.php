@@ -156,7 +156,7 @@ class Application implements RequestHandler
      */
     private function handleUncaughtException(\Exception $exception, Request $request)
     {
-        $httpException = new HttpInternalServerErrorException('Uncaught exception', 0, $exception);
+        $httpException = new HttpInternalServerErrorException('Uncaught exception', $exception);
 
         return $this->handleHttpException($httpException, $request);
     }

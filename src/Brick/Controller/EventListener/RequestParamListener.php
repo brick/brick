@@ -198,10 +198,10 @@ class RequestParamListener extends AbstractEventListener
                 $object = $converter->expand($className, $value, $options);
             }
             catch (ObjectNotConvertibleException $e) {
-                throw new HttpBadRequestException($e->getMessage(), $e->getCode(), $e);
+                throw new HttpBadRequestException($e->getMessage(), $e);
             }
             catch (ObjectNotFoundException $e) {
-                throw new HttpNotFoundException($e->getMessage(), $e->getCode(), $e);
+                throw new HttpNotFoundException($e->getMessage(), $e);
             }
 
             if ($object) {

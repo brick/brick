@@ -8,10 +8,13 @@ namespace Brick\Http\Exception;
 class HttpForbiddenException extends HttpException
 {
     /**
-     * {@inheritdoc}
+     * Class constructor.
+     *
+     * @param string          $message  An optional exception message for debugging.
+     * @param \Exception|null $previous An optional previous exception for chaining.
      */
-    public function getStatusCode()
+    public function __construct($message = '', \Exception $previous = null)
     {
-        return 403;
+        parent::__construct(403, [], $message, $previous);
     }
 }

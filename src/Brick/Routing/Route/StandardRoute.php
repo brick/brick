@@ -57,13 +57,13 @@ class StandardRoute implements Route
         try {
             $reflectionClass = new \ReflectionClass($class);
         } catch (\ReflectionException $e) {
-            throw new HttpNotFoundException(sprintf('Controller class "%s" not found', $class));
+            throw new HttpNotFoundException(sprintf('Controller class "%s" not found', $class), $e);
         }
 
         try {
             $reflectionMethod = $reflectionClass->getMethod($method);
         } catch (\ReflectionException $e) {
-            throw new HttpNotFoundException(sprintf('Controller method "%s::%s()" not found', $class, $method));
+            throw new HttpNotFoundException(sprintf('Controller method "%s::%s()" not found', $class, $method), $e);
         }
 
         // @todo compute the exact path (correct capitalization and dashes), and 301-redirect if wrong request path.

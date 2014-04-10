@@ -10,10 +10,13 @@ namespace Brick\Http\Exception;
 class HttpServiceUnavailableException extends HttpException
 {
     /**
-     * {@inheritdoc}
+     * Class constructor.
+     *
+     * @param string          $message  An optional exception message for debugging.
+     * @param \Exception|null $previous An optional previous exception for chaining.
      */
-    public function getStatusCode()
+    public function __construct($message = '', \Exception $previous = null)
     {
-        return 503;
+        parent::__construct(503, [], $message, $previous);
     }
 }

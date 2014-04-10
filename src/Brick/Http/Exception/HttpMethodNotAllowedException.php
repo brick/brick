@@ -11,33 +11,18 @@ namespace Brick\Http\Exception;
 class HttpMethodNotAllowedException extends HttpException
 {
     /**
-     * @var array
-     */
-    private $allowedMethods;
-
-    /**
      * Class constructor.
      *
-     * @param array $allowedMethods The allowed HTTP methods.
+     * @param array           $allowedMethods The allowed HTTP methods.
+     * @param string          $message        An optional exception message for debugging.
+     * @param \Exception|null $previous       An optional previous exception for chaining.
      */
-    public function __construct(array $allowedMethods)
+    public function __construct(array $allowedMethods, $message = '', \Exception $previous = null)
     {
-        $this->allowedMethods = $allowedMethods;
-    }
+        $headers = [
+            'Allow' => implode(', ', $allowedMethods)
+        ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getStatusCode()
-    {
-        return 405;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeaders()
-    {
-        return ['Allow' => implode(', ', $this->allowedMethods)];
+        parent::__construct(400, $headers, $message, $previous);
     }
 }

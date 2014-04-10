@@ -49,7 +49,7 @@ class Router
                 $match = $route->match($request);
             }
             catch (RoutingException $e) {
-                throw new HttpNotFoundException($e->getMessage());
+                throw new HttpNotFoundException($e->getMessage(), $e);
             }
 
             if ($match !== null) {

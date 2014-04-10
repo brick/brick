@@ -9,10 +9,13 @@ namespace Brick\Http\Exception;
 class HttpInternalServerErrorException extends HttpException
 {
     /**
-     * {@inheritdoc}
+     * Class constructor.
+     *
+     * @param string          $message  An optional exception message for debugging.
+     * @param \Exception|null $previous An optional previous exception for chaining.
      */
-    public function getStatusCode()
+    public function __construct($message = '', \Exception $previous = null)
     {
-        return 500;
+        parent::__construct(500, [], $message, $previous);
     }
 }
