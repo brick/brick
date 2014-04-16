@@ -586,6 +586,26 @@ class Request extends Message
     }
 
     /**
+     * Returns the request URL with update query parameters.
+     *
+     * @param array $parameters The query parameters to add/replace.
+     *
+     * @return string The updated URL.
+     */
+    public function getUpdatedUrl(array $parameters)
+    {
+        $url = $this->getUrlBase() . $this->path;
+
+        $parameters += $this->query->toArray();
+
+        if ($parameters) {
+            $url .= '?' . http_build_query($parameters);
+        }
+
+        return $url;
+    }
+
+    /**
      * @return boolean
      */
     public function isSecure()
