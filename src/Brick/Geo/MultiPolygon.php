@@ -66,4 +66,14 @@ class MultiPolygon extends MultiSurface
         //@todo
         throw new \BadMethodCallException('Not implemented');
     }
+
+    /**
+     * Returns the polygons that compose this multipolygon.
+     *
+     * @return MultiPolygon[]
+     */
+    public function getPolygons()
+    {
+        return $this->geometries;
+    }
 }
