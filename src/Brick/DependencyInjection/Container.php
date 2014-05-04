@@ -50,8 +50,8 @@ class Container
         $this->injector = new Injector($this->valueResolver, $policy);
         $this->reflectionTools = new ReflectionTools();
 
-        $this->set(__CLASS__, $this);
-        $this->set(__NAMESPACE__ . '\Injector', $this->injector);
+        $this->set(self::class, $this);
+        $this->set(Injector::class, $this->injector);
     }
 
     /**
