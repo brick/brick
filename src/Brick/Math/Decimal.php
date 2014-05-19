@@ -251,18 +251,8 @@ class Decimal
             }
         }
 
-        $power = $scale - ($this->scale - $that->scale);
-
-        $p = $this->value;
-        $q = $that->value;
-
-        if ($power > 0) {
-            // add $power zeros to p
-            $p .= str_repeat('0', $power);
-        } elseif ($power < 0) {
-            // add -$power zeros to q
-            $q .= str_repeat('0', -$power);
-        }
+        $p = $this->valueWithScale($that->scale + $scale);
+        $q = $that->valueWithScale($this->scale - $scale);
 
         $calculator = Calculator::get();
         $result = $calculator->div($p, $q, $remainder);
@@ -277,7 +267,7 @@ class Decimal
         $double = $calculator->mul($remainder, '2');
         $diff = $calculator->sub($double, $q);
 
-        $isDiscardedFractionHalfOrMore   = ($diff[0] != '-');
+        $isDiscardedFractionHalfOrMore   = ($diff[0] !== '-');
         $isDiscardedFractionMoreThanHalf = $isDiscardedFractionHalfOrMore && ($diff !== '0');
 
         $increment = false;
@@ -315,8 +305,8 @@ class Decimal
                 break;
 
             case RoundingMode::HALF_EVEN:
-                $lastDigit = substr($result, -1);
-                $lastDigitIsEven = ($lastDigit % 2 == 0);
+                $lastDigit = (int) substr($result, -1);
+                $lastDigitIsEven = ($lastDigit % 2 === 0);
                 $increment = ($lastDigitIsEven ? $isDiscardedFractionMoreThanHalf : $isDiscardedFractionHalfOrMore);
                 break;
 
