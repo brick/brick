@@ -2,6 +2,7 @@
 
 namespace Brick\Tests\Math;
 
+use Brick\Math\Calculator;
 use Brick\Math\Decimal;
 use Brick\Math\RoundingMode;
 
@@ -11,10 +12,10 @@ use Brick\Math\RoundingMode;
 class DecimalTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param Decimal $expected
-     * @param Decimal $actual
+     * @param Decimal|string $expected
+     * @param Decimal        $actual
      */
-    public function assertDecimalEquals(Decimal $expected, Decimal $actual)
+    private function assertDecimalEquals($expected, Decimal $actual)
     {
         $this->assertTrue(
             $actual->isEqualTo($expected),
@@ -119,6 +120,29 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider divisionOfNegativeNumbersProvider
+     */
+    public function testDivisionOfNegativeNumbers($a, $b, $expected)
+    {
+        $actual = Decimal::of($a)->dividedBy($b);
+
+        $this->assertDecimalEquals($expected, $actual);
+    }
+
+    /**
+     * @return array
+     */
+    public function divisionOfNegativeNumbersProvider()
+    {
+        return [
+            [ '21',  '7',  '3'],
+            [ '21', '-7', '-3'],
+            ['-21',  '7', '-3'],
+            ['-21', '-7',  '3']
+        ];
+    }
+
+    /**
      * @dataProvider modProvider
      */
     public function testMod($a, $b, $expected)
@@ -183,5 +207,40 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     public function testModZeroThrowsException()
     {
         Decimal::one()->mod(Decimal::zero());
+    }
+
+    /**
+     * @dataProvider importExportProvider
+     */
+    public function testImportExport($value, $unscaledValue, $scale)
+    {
+        $decimal = Decimal::of($value);
+
+        $this->assertSame($unscaledValue, $decimal->getUnscaledValue());
+        $this->assertSame($scale, $decimal->getScale());
+        $this->assertSame($value, $decimal->toString());
+    }
+
+    /**
+     * @return array
+     */
+    public function importExportProvider()
+    {
+        return [
+            ['0',    '0',   0],
+            ['0.0',  '0',   1],
+            ['0.1',  '1',   1],
+            ['0.00', '0',   2],
+            ['0.01', '1',   2],
+            ['0.10', '10',  2],
+            ['0.11', '11',  2],
+            ['1',    '1',   0],
+            ['1.0',  '10',  1],
+            ['1.1',  '11',  1],
+            ['1.00', '100', 2],
+            ['1.01', '101', 2],
+            ['1.10', '110', 2],
+            ['1.11', '111', 2]
+        ];
     }
 }

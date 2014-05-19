@@ -10,16 +10,14 @@ use Brick\Type\Cast;
 class Decimal
 {
     /**
-     * The value of this decimal number as a string
-     * (example: 1.23456)
+     * The unscaled value of this decimal number as a string of digits with an optional negative sign.
      *
      * @var string
      */
     private $value;
 
     /**
-     * The scale (number of digits after the decimal point)
-     * of this decimal number
+     * The scale (number of digits after the decimal point) of this decimal number.
      *
      * @var integer
      */
@@ -30,7 +28,7 @@ class Decimal
      *
      * Use the factory methods instead.
      *
-     * @param string  $value The value, validated as a string.
+     * @param string  $value The unscaled value, validated as a string of digits with an optional negative sign.
      * @param integer $scale The scale, validated as an integer.
      */
     private function __construct($value, $scale = 0)
@@ -142,11 +140,23 @@ class Decimal
 
         $value = Cast::toString($value);
 
-        if (preg_match('/^[\-\+]?[0-9]+(?:\.([0-9]+))?$/', $value, $matches) == 0) {
+        if (preg_match('/^\-?[0-9]+(?:\.([0-9]+))?$/', $value, $matches) == 0) {
             throw new \InvalidArgumentException(sprintf('%s does not represent a valid decimal number.', $value));
         }
 
-        $value = $matches[0];
+        $value = str_replace('.', '', $matches[0]);
+        $negative = ($value[0] === '-');
+
+        $value = ltrim($value, '-0');
+
+        if ($value === '') {
+            $value = '0';
+        }
+
+        if ($negative) {
+            $value = '-' . $value;
+        }
+
         $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
 
         return new Decimal($value, $scale);
@@ -164,7 +174,11 @@ class Decimal
         $that = Decimal::of($that);
 
         $scale = max($this->scale, $that->scale);
-        $value = bcadd($this->value, $that->value, $scale);
+
+        $thisValue = $this->valueWithScale($scale);
+        $thatValue = $that->valueWithScale($scale);
+
+        $value = Calculator::get()->add($thisValue, $thatValue);
 
         return new Decimal($value, $scale);
     }
@@ -181,7 +195,11 @@ class Decimal
         $that = Decimal::of($that);
 
         $scale = max($this->scale, $that->scale);
-        $value = bcsub($this->value, $that->value, $scale);
+
+        $thisValue = $this->valueWithScale($scale);
+        $thatValue = $that->valueWithScale($scale);
+
+        $value = Calculator::get()->sub($thisValue, $thatValue);
 
         return new Decimal($value, $scale);
     }
@@ -198,28 +216,9 @@ class Decimal
         $that = Decimal::of($that);
 
         $scale = $this->scale + $that->scale;
-        $value = bcmul($this->value, $that->value, $scale);
+        $value = Calculator::get()->mul($this->value, $that->value);
 
         return new Decimal($value, $scale);
-    }
-
-    /**
-     * @return string
-     */
-    private function unscaledValue()
-    {
-        $value = $this->toString();
-
-        $prefix = ($value[0] == '-') ? '-' : '';
-
-        if ($prefix == '-') {
-            $value = substr($value, 1);
-        }
-
-        $value = str_replace('.', '', $value);
-        $value = ltrim($value, '0');
-
-        return $prefix . $value;
     }
 
     /**
@@ -254,8 +253,8 @@ class Decimal
 
         $power = $scale - ($this->scale - $that->scale);
 
-        $p = $this->unscaledValue();
-        $q = $that->unscaledValue();
+        $p = $this->value;
+        $q = $that->value;
 
         if ($power > 0) {
             // add $power zeros to p
@@ -265,25 +264,21 @@ class Decimal
             $q .= str_repeat('0', -$power);
         }
 
-        if ($q[0] == '-') {
-            $q = substr($q, 1);
+        $calculator = Calculator::get();
+        $result = $calculator->div($p, $q, $remainder);
+
+        $hasDiscardedFraction = ($remainder !== '0');
+        $isPositiveOrZero = ($remainder[0] !== '-');
+
+        if (! $isPositiveOrZero) {
+            $remainder = substr($remainder, 1);
         }
 
-        $mod = bcmod($p, $q);
-        $modSign = bccomp($mod, '0', 0);
-        $hasDiscardedFraction = ($modSign != 0);
+        $double = $calculator->mul($remainder, '2');
+        $diff = $calculator->sub($double, $q);
 
-        $isPositiveOrZero = $modSign >= 0;
-
-        if ($modSign < 0) {
-            $mod = substr($mod, 1);
-        }
-
-        $cmp = bccomp(bcmul($mod, '2', 0), $q, 0);
-        $isDiscardedFractionHalfOrMore   = $cmp >= 0;
-        $isDiscardedFractionMoreThanHalf = $cmp > 0;
-
-        $result = bcdiv($this->value, $that->value, $scale);
+        $isDiscardedFractionHalfOrMore   = ($diff[0] != '-');
+        $isDiscardedFractionMoreThanHalf = $isDiscardedFractionHalfOrMore && ($diff !== '0');
 
         $increment = false;
 
@@ -336,11 +331,11 @@ class Decimal
         }
 
         if ($increment) {
-            $unit = bcpow('10', -$scale, $scale);
-            if (! $isPositiveOrZero) {
-                $unit = '-' . $unit;
+            if ($isPositiveOrZero) {
+                $result = $calculator->add($result, '1');
+            } else {
+                $result = $calculator->sub($result, '1');
             }
-            $result = bcadd($result, $unit, $scale);
         }
 
         return new Decimal($result, $scale);
@@ -384,6 +379,8 @@ class Decimal
     }
 
     /**
+     * @todo this is actually the remainder, not the mod. Is this really needed, by the way?
+     *
      * @param Decimal|number|string $that
      *
      * @return Decimal
@@ -400,8 +397,8 @@ class Decimal
 
         $power = $that->scale - $this->scale;
 
-        $p = $this->unscaledValue();
-        $q = $that->unscaledValue();
+        $p = $this->value;
+        $q = $that->value;
 
         if ($power > 0) {
             // add $power zeros to p
@@ -411,17 +408,14 @@ class Decimal
             $q .= str_repeat('0', -$power);
         }
 
-        $mod = bcmod($p, $q);
+        Calculator::get()->div($p, $q, $mod);
         $max = max($this->scale, $that->scale);
 
-        $multiplicand = bcpow(10, -$max, $max);
-        $result = bcmul($mod, $multiplicand, $max);
-
-        return new Decimal($result, $max);
+        return new Decimal($mod, $max);
     }
 
     /**
-     * Compares this number with the given one.
+     * Compares this number to the given one.
      *
      * @param Decimal|number|string $that
      *
@@ -431,7 +425,16 @@ class Decimal
     {
         $that = Decimal::of($that);
 
-        return bccomp($this->value, $that->value, max($this->scale, $that->scale));
+        $thisValue = $this->value;
+        $thatValue = $that->value;
+
+        if ($this->scale > $that->scale) {
+            $thatValue .= str_repeat('0', $this->scale - $that->scale);
+        } elseif ($this->scale < $that->scale) {
+            $thisValue .= str_repeat('0', $that->scale - $this->scale);
+        }
+
+        return Calculator::get()->cmp($thisValue, $thatValue);
     }
 
     /**
@@ -443,7 +446,7 @@ class Decimal
      */
     public function isEqualTo($that)
     {
-        return $this->compareTo($that) == 0;
+        return $this->compareTo($that) === 0;
     }
 
     /**
@@ -545,11 +548,35 @@ class Decimal
     }
 
     /**
+     * @return string
+     */
+    public function getUnscaledValue()
+    {
+        return $this->value;
+    }
+
+    /**
      * @return integer
      */
     public function getScale()
     {
         return $this->scale;
+    }
+
+    /**
+     * @param int $scale
+     *
+     * @return string
+     */
+    private function valueWithScale($scale)
+    {
+        $value = $this->value;
+
+        if ($scale > $this->scale) {
+            $value .= str_repeat('0', $scale - $this->scale);
+        }
+
+        return $value;
     }
 
     /**
@@ -559,8 +586,14 @@ class Decimal
      */
     public function toString()
     {
-        // ensure that the trailing zeros are returned
-        return bcadd($this->value, '0', $this->scale);
+        if ($this->scale === 0) {
+            return $this->value;
+        }
+
+        $value = str_pad($this->value, $this->scale + 1, '0', STR_PAD_LEFT);
+        $result = substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
+
+        return $result;
     }
 
     /**
