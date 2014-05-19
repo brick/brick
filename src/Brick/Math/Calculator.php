@@ -68,6 +68,30 @@ abstract class Calculator
     }
 
     /**
+     * Returns the absolute value of a number.
+     *
+     * @param string $n The number.
+     *
+     * @return string The absolute value.
+     */
+    public function abs($n)
+    {
+        return ($n[0] === '-') ? substr($n, 1) : $n;
+    }
+
+    /**
+     * Negates a number.
+     *
+     * @param string $n The number.
+     *
+     * @return string The inverse value.
+     */
+    public function neg($n)
+    {
+        return ($n[0] === '-') ? substr($n, 1) : '-' . $n;
+    }
+
+    /**
      * Compares two numbers.
      *
      * @param string $a The first number.

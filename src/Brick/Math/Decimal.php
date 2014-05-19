@@ -10,7 +10,11 @@ use Brick\Type\Cast;
 class Decimal
 {
     /**
-     * The unscaled value of this decimal number as a string of digits with an optional negative sign.
+     * The unscaled value of this decimal number.
+     *
+     * This is a string of digits with an optional leading minus sign.
+     * No leading zero must be present.
+     * No leading minus sign must be present if the value is 0.
      *
      * @var string
      */
@@ -24,11 +28,9 @@ class Decimal
     private $scale;
 
     /**
-     * Class constructor, for internal use only.
+     * Private constructor. Use the factory methods.
      *
-     * Use the factory methods instead.
-     *
-     * @param string  $value The unscaled value, validated as a string of digits with an optional negative sign.
+     * @param string  $value The unscaled value, validated.
      * @param integer $scale The scale, validated as an integer.
      */
     private function __construct($value, $scale = 0)
@@ -59,6 +61,18 @@ class Decimal
         static $one;
 
         return $one ?: $one = new Decimal('1');
+    }
+
+    /**
+     * Returns a decimal number representing ten.
+     *
+     * @return Decimal
+     */
+    public static function ten()
+    {
+        static $ten;
+
+        return $ten ?: $ten = new Decimal('10');
     }
 
     /**
@@ -118,8 +132,9 @@ class Decimal
     /**
      * Returns a decimal of the given value.
      *
-     * Note: you should avoid passing floating point numbers to this method:
-     * being imprecise by design, they might not convert to the decimal value you expect.
+     * Note: you should avoid passing floating point numbers to this method.
+     * Being imprecise by design, they might not convert to the decimal value you expect.
+     * This would defeat the whole purpose of using the Decimal type.
      * Prefer passing decimal numbers as strings, e.g `Decimal::of('0.1')` over `Decimal::of(0.1)`.
      *
      * @param Decimal|number|string $value
@@ -153,7 +168,7 @@ class Decimal
             $value = '0';
         }
 
-        if ($negative) {
+        if ($negative && $value !== '0') {
             $value = '-' . $value;
         }
 
@@ -172,13 +187,10 @@ class Decimal
     public function plus($that)
     {
         $that = Decimal::of($that);
+        $this->scaleValues($this, $that, $a, $b);
 
-        $scale = max($this->scale, $that->scale);
-
-        $thisValue = $this->valueWithScale($scale);
-        $thatValue = $that->valueWithScale($scale);
-
-        $value = Calculator::get()->add($thisValue, $thatValue);
+        $value = Calculator::get()->add($a, $b);
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
 
         return new Decimal($value, $scale);
     }
@@ -193,13 +205,10 @@ class Decimal
     public function minus($that)
     {
         $that = Decimal::of($that);
+        $this->scaleValues($this, $that, $a, $b);
 
-        $scale = max($this->scale, $that->scale);
-
-        $thisValue = $this->valueWithScale($scale);
-        $thatValue = $that->valueWithScale($scale);
-
-        $value = Calculator::get()->sub($thisValue, $thatValue);
+        $value = Calculator::get()->sub($a, $b);
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
 
         return new Decimal($value, $scale);
     }
@@ -215,8 +224,8 @@ class Decimal
     {
         $that = Decimal::of($that);
 
-        $scale = $this->scale + $that->scale;
         $value = Calculator::get()->mul($this->value, $that->value);
+        $scale = $this->scale + $that->scale;
 
         return new Decimal($value, $scale);
     }
@@ -251,8 +260,8 @@ class Decimal
             }
         }
 
-        $p = $this->valueWithScale($that->scale + $scale);
-        $q = $that->valueWithScale($this->scale - $scale);
+        $p = $this->valueWithMinScale($that->scale + $scale);
+        $q = $that->valueWithMinScale($this->scale - $scale);
 
         $calculator = Calculator::get();
         $result = $calculator->div($p, $q, $remainder);
@@ -260,12 +269,8 @@ class Decimal
         $hasDiscardedFraction = ($remainder !== '0');
         $isPositiveOrZero = ($remainder[0] !== '-');
 
-        if (! $isPositiveOrZero) {
-            $remainder = substr($remainder, 1);
-        }
-
         $double = $calculator->mul($remainder, '2');
-        $diff = $calculator->sub($double, $q);
+        $diff = $calculator->sub($calculator->abs($double), $q);
 
         $isDiscardedFractionHalfOrMore   = ($diff[0] !== '-');
         $isDiscardedFractionMoreThanHalf = $isDiscardedFractionHalfOrMore && ($diff !== '0');
@@ -365,7 +370,7 @@ class Decimal
      */
     public function negated()
     {
-        return Decimal::zero()->minus($this);
+        return new Decimal(Calculator::get()->neg($this->value), $this->scale);
     }
 
     /**
@@ -385,23 +390,12 @@ class Decimal
             throw ArithmeticException::divisionByZero();
         }
 
-        $power = $that->scale - $this->scale;
+        $this->scaleValues($this, $that, $p, $q);
 
-        $p = $this->value;
-        $q = $that->value;
+        Calculator::get()->div($p, $q, $remainder);
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
 
-        if ($power > 0) {
-            // add $power zeros to p
-            $p .= str_repeat('0', $power);
-        } elseif ($power < 0) {
-            // add -$power zeros to q
-            $q .= str_repeat('0', -$power);
-        }
-
-        Calculator::get()->div($p, $q, $mod);
-        $max = max($this->scale, $that->scale);
-
-        return new Decimal($mod, $max);
+        return new Decimal($remainder, $scale);
     }
 
     /**
@@ -414,17 +408,9 @@ class Decimal
     public function compareTo($that)
     {
         $that = Decimal::of($that);
+        $this->scaleValues($this, $that, $a, $b);
 
-        $thisValue = $this->value;
-        $thatValue = $that->value;
-
-        if ($this->scale > $that->scale) {
-            $thatValue .= str_repeat('0', $this->scale - $that->scale);
-        } elseif ($this->scale < $that->scale) {
-            $thisValue .= str_repeat('0', $that->scale - $this->scale);
-        }
-
-        return Calculator::get()->cmp($thisValue, $thatValue);
+        return Calculator::get()->cmp($a, $b);
     }
 
     /**
@@ -494,7 +480,7 @@ class Decimal
      */
     public function isZero()
     {
-        return $this->isEqualTo(Decimal::zero());
+        return ($this->value === '0');
     }
 
     /**
@@ -504,7 +490,7 @@ class Decimal
      */
     public function isNegative()
     {
-        return $this->isLessThan(Decimal::zero());
+        return ($this->value[0] === '-');
     }
 
     /**
@@ -514,7 +500,7 @@ class Decimal
      */
     public function isNegativeOrZero()
     {
-        return $this->isLessThanOrEqualTo(Decimal::zero());
+        return ($this->value === '0') || ($this->value[0] === '-');
     }
 
     /**
@@ -524,7 +510,7 @@ class Decimal
      */
     public function isPositive()
     {
-        return $this->isGreaterThan(Decimal::zero());
+        return ($this->value !== '0') && ($this->value[0] !== '-');
     }
 
     /**
@@ -534,7 +520,7 @@ class Decimal
      */
     public function isPositiveOrZero()
     {
-        return $this->isGreaterThanOrEqualTo(Decimal::zero());
+        return ($this->value[0] !== '-');
     }
 
     /**
@@ -554,11 +540,33 @@ class Decimal
     }
 
     /**
-     * @param int $scale
+     * Puts the unscaled values on the given decimal numbers on the same scale.
+     *
+     * @param Decimal $x The first decimal number.
+     * @param Decimal $y The second decimal number.
+     * @param string  $a A variable to store the scaled integer value of $x.
+     * @param string  $b A variable to store the scaled integer value of $y.
+     *
+     * @return void
+     */
+    private function scaleValues(Decimal $x, Decimal $y, & $a, & $b)
+    {
+        $a = $x->value;
+        $b = $y->value;
+
+        if ($x->scale > $y->scale) {
+            $b .= str_repeat('0', $x->scale - $y->scale);
+        } elseif ($x->scale < $y->scale) {
+            $a .= str_repeat('0', $y->scale - $x->scale);
+        }
+    }
+
+    /**
+     * @param integer $scale
      *
      * @return string
      */
-    private function valueWithScale($scale)
+    private function valueWithMinScale($scale)
     {
         $value = $this->value;
 

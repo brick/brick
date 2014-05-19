@@ -243,4 +243,27 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
             ['1.11', '111', 2]
         ];
     }
+
+    /**
+     * @dataProvider isZeroProvider
+     */
+    public function testIsZero($number)
+    {
+        $this->assertTrue(Decimal::of($number)->isZero());
+    }
+
+    /**
+     * @return array
+     */
+    public function isZeroProvider()
+    {
+        return [
+            ['0'],
+            ['0.0'],
+            ['0.00'],
+            ['-0.00'],
+            ['-0.0'],
+            ['-0']
+        ];
+    }
 }
