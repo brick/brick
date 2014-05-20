@@ -143,19 +143,6 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider modProvider
-     */
-    public function testMod($a, $b, $expected)
-    {
-        $a = Decimal::of($a);
-        $b = Decimal::of($b);
-
-        $expected = Decimal::of($expected);
-
-        $this->assertDecimalEquals($expected, $a->mod($b));
-    }
-
-    /**
      * @return array
      */
     public function modProvider()
@@ -199,14 +186,6 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
             ['-1.234',  '1.0', '-0.234'],
             ['-1.234', '-1.0', '-0.234']
         ];
-    }
-
-    /**
-     * @expectedException \Brick\Math\ArithmeticException
-     */
-    public function testModZeroThrowsException()
-    {
-        Decimal::one()->mod(Decimal::zero());
     }
 
     /**

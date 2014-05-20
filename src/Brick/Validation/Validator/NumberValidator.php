@@ -3,6 +3,7 @@
 namespace Brick\Validation\Validator;
 
 use Brick\Validation\AbstractValidator;
+use Brick\Math\ArithmeticException;
 use Brick\Math\Decimal;
 
 /**
@@ -54,8 +55,12 @@ class NumberValidator extends AbstractValidator
             $this->addFailureMessage('validator.number.min');
         } elseif ($this->max && $value->isGreaterThan($this->max)) {
             $this->addFailureMessage('validator.number.max');
-        } elseif ($this->step && ! $value->mod($this->step)->isZero()) {
-            $this->addFailureMessage('validator.number.step');
+        } elseif ($this->step) {
+            try {
+                $value->dividedBy($this->step);
+            } catch (ArithmeticException $e) {
+                $this->addFailureMessage('validator.number.step');
+            }
         }
     }
 

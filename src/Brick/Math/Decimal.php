@@ -374,31 +374,6 @@ class Decimal
     }
 
     /**
-     * @todo this is actually the remainder, not the mod. Is this really needed, by the way?
-     *
-     * @param Decimal|number|string $that
-     *
-     * @return Decimal
-     *
-     * @throws ArithmeticException If the argument is zero.
-     */
-    public function mod($that)
-    {
-        $that = Decimal::of($that);
-
-        if ($that->isZero()) {
-            throw ArithmeticException::divisionByZero();
-        }
-
-        $this->scaleValues($this, $that, $p, $q);
-
-        Calculator::get()->div($p, $q, $remainder);
-        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
-
-        return new Decimal($remainder, $scale);
-    }
-
-    /**
      * Compares this number to the given one.
      *
      * @param Decimal|number|string $that
