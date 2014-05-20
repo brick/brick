@@ -2,8 +2,6 @@
 
 namespace Brick\Math;
 
-use Brick\Type\Cast;
-
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
@@ -23,6 +21,8 @@ class Decimal
     /**
      * The scale (number of digits after the decimal point) of this decimal number.
      *
+     * This must be zero or more.
+     *
      * @var integer
      */
     private $scale;
@@ -31,7 +31,7 @@ class Decimal
      * Private constructor. Use the factory methods.
      *
      * @param string  $value The unscaled value, validated.
-     * @param integer $scale The scale, validated as an integer.
+     * @param integer $scale The scale, validated.
      */
     private function __construct($value, $scale = 0)
     {
@@ -117,28 +117,18 @@ class Decimal
             return new Decimal((string) $value);
         }
 
-        $value = Cast::toString($value);
+        $value = (string) $value;
 
-        if (preg_match('/^\-?[0-9]+(?:\.([0-9]+))?$/', $value, $matches) == 0) {
+        if (preg_match('/^(\-?)([0-9]+)(?:\.([0-9]+))?()$/', $value, $matches) === 0) {
             throw new \InvalidArgumentException(sprintf('%s does not represent a valid decimal number.', $value));
         }
 
-        $value = str_replace('.', '', $matches[0]);
-        $negative = ($value[0] === '-');
+        list (, $sign, $decimal, $fraction) = $matches;
 
-        $value = ltrim($value, '-0');
+        $value = ltrim($decimal . $fraction, '0');
+        $value = ($value === '') ? '0' : $sign . $value;
 
-        if ($value === '') {
-            $value = '0';
-        }
-
-        if ($negative && $value !== '0') {
-            $value = '-' . $value;
-        }
-
-        $scale = isset($matches[1]) ? strlen($matches[1]) : 0;
-
-        return new Decimal($value, $scale);
+        return new Decimal($value, strlen($fraction));
     }
 
     /**
@@ -478,7 +468,7 @@ class Decimal
     }
 
     /**
-     * Puts the unscaled values on the given decimal numbers on the same scale.
+     * Puts the internal values on the given decimal numbers on the same scale.
      *
      * @param Decimal $x The first decimal number.
      * @param Decimal $y The second decimal number.
@@ -536,11 +526,7 @@ class Decimal
         $value = str_pad($value, $this->scale + 1, '0', STR_PAD_LEFT);
         $result = substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
 
-        if ($isNegative) {
-            $result = '-' . $result;
-        }
-
-        return $result;
+        return $isNegative ? '-' . $result : $result;
     }
 
     /**
