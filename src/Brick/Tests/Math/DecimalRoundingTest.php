@@ -24,10 +24,24 @@ class BigDecimalTest extends \PHPUnit_Framework_TestCase
     {
         $number = Decimal::of($number);
 
+        $this->doTestRoundingMode($roundingMode, $number, '1', $two, $one, $zero);
+        $this->doTestRoundingMode($roundingMode, $number->negated(), '-1', $two, $one, $zero);
+    }
+
+    /**
+     * @param integer     $roundingMode The rounding mode.
+     * @param Decimal     $number       The number to round.
+     * @param string      $divisor      The divisor.
+     * @param string|null $two          The expected rounding to a scale of two, or null if an exception is expected.
+     * @param string|null $one          The expected rounding to a scale of one, or null if an exception is expected.
+     * @param string|null $zero         The expected rounding to a scale of zero, or null if an exception is expected.
+     */
+    private function doTestRoundingMode($roundingMode, Decimal $number, $divisor, $two, $one, $zero)
+    {
         foreach ([$zero, $one, $two] as $scale => $expected) {
             if ($expected === null) {
                 try {
-                    $number->withScale($scale, $roundingMode);
+                    $number->dividedBy($divisor, $scale, $roundingMode);
                 }
                 catch (ArithmeticException $e) {
                     continue;
@@ -35,8 +49,7 @@ class BigDecimalTest extends \PHPUnit_Framework_TestCase
 
                 $this->fail('Rounding %s did not trigger an ArithmeticException as expected.', $number->toString());
             } else {
-                $expected = Decimal::of($expected);
-                $actual = $number->withScale($scale, $roundingMode);
+                $actual = $number->dividedBy($divisor, $scale, $roundingMode);
 
                 $this->assertTrue(
                     $actual->isEqualTo($expected),

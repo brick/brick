@@ -149,7 +149,7 @@ abstract class Calculator
      *
      * @param string $a The dividend.
      * @param string $b The divisor, must not be zero.
-     * @param string $r The remainder, will be set by this method.
+     * @param string $r A variable to store the remainder of the division.
      *
      * @return string The quotient.
      */

@@ -264,13 +264,14 @@ class Decimal
         $q = $that->valueWithMinScale($this->scale - $scale);
 
         $calculator = Calculator::get();
+
         $result = $calculator->div($p, $q, $remainder);
 
         $hasDiscardedFraction = ($remainder !== '0');
-        $isPositiveOrZero = ($remainder[0] !== '-');
+        $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');
 
         $double = $calculator->mul($remainder, '2');
-        $diff = $calculator->sub($calculator->abs($double), $q);
+        $diff = $calculator->sub($calculator->abs($double), $calculator->abs($q));
 
         $isDiscardedFractionHalfOrMore   = ($diff[0] !== '-');
         $isDiscardedFractionMoreThanHalf = $isDiscardedFractionHalfOrMore && ($diff !== '0');
@@ -563,8 +564,19 @@ class Decimal
             return $this->value;
         }
 
-        $value = str_pad($this->value, $this->scale + 1, '0', STR_PAD_LEFT);
+        $value = $this->value;
+        $isNegative = ($this->value[0] === '-');
+
+        if ($isNegative) {
+            $value = substr($value, 1);
+        }
+
+        $value = str_pad($value, $this->scale + 1, '0', STR_PAD_LEFT);
         $result = substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
+
+        if ($isNegative) {
+            $result = '-' . $result;
+        }
 
         return $result;
     }
