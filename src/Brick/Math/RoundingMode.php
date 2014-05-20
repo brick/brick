@@ -16,8 +16,8 @@ final class RoundingMode
     /**
      * Asserts that the requested operation has an exact result, hence no rounding is necessary.
      *
-     * If this rounding mode is specified on an operation that yields an inexact result,
-     * an ArithmeticException is thrown.
+     * If this rounding mode is specified on an operation that yields a result that
+     * cannot be represented at the requested scale, an ArithmeticException is thrown.
      */
     const UNNECESSARY = 0;
 

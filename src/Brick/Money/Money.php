@@ -130,7 +130,7 @@ class Money
      */
     public static function zero(Currency $currency)
     {
-        return Money::of($currency, Decimal::zero());
+        return Money::of($currency, Decimal::of(0));
     }
 
     /**

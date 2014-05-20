@@ -92,6 +92,30 @@ abstract class Calculator
     }
 
     /**
+     * Returns an integer representing the sign of the given number.
+     *
+     * * -1 if the number is negative
+     * *  0 if the number is zero
+     * *  1 if the number is positive
+     *
+     * @param string $n
+     *
+     * @return integer [-1, 0, 1]
+     */
+    public function sign($n)
+    {
+        if ($n === '0') {
+            return 0;
+        }
+
+        if ($n[0] === '-') {
+            return -1;
+        }
+
+        return 1;
+    }
+
+    /**
      * Compares two numbers.
      *
      * @param string $a The first number.
@@ -101,17 +125,7 @@ abstract class Calculator
      */
     public function cmp($a, $b)
     {
-        $c = $this->sub($a, $b);
-
-        if ($c === '0') {
-            return 0;
-        }
-
-        if ($c[0] === '-') {
-            return -1;
-        }
-
-        return 1;
+        return $this->sign($this->sub($a, $b));
     }
 
     /**

@@ -40,47 +40,11 @@ class Decimal
     }
 
     /**
-     * Returns a decimal number representing zero.
-     *
-     * @return Decimal
-     */
-    public static function zero()
-    {
-        static $zero;
-
-        return $zero ?: $zero = new Decimal('0');
-    }
-
-    /**
-     * Returns a decimal number representing one.
-     *
-     * @return Decimal
-     */
-    public static function one()
-    {
-        static $one;
-
-        return $one ?: $one = new Decimal('1');
-    }
-
-    /**
-     * Returns a decimal number representing ten.
-     *
-     * @return Decimal
-     */
-    public static function ten()
-    {
-        static $ten;
-
-        return $ten ?: $ten = new Decimal('10');
-    }
-
-    /**
      * Returns the minimum of the given values.
      *
      * @param array<Decimal|number|string> An array of decimals to return the minimum value of.
      *
-     * @return Decimal The minimum value.
+     * @return \Brick\Math\Decimal The minimum value.
      *
      * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
@@ -107,7 +71,7 @@ class Decimal
      *
      * @param array<Decimal|number|string> An array of decimals to return the maximum value of.
      *
-     * @return Decimal The maximum value.
+     * @return \Brick\Math\Decimal The maximum value.
      *
      * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
@@ -139,7 +103,7 @@ class Decimal
      *
      * @param Decimal|number|string $value
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      *
      * @throws \InvalidArgumentException If the type is not supported or the number is malformed.
      */
@@ -182,7 +146,7 @@ class Decimal
      *
      * @param Decimal|number|string $that
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function plus($that)
     {
@@ -200,7 +164,7 @@ class Decimal
      *
      * @param Decimal|number|string $that
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function minus($that)
     {
@@ -218,7 +182,7 @@ class Decimal
      *
      * @param Decimal|number|string $that
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function multipliedBy($that)
     {
@@ -237,10 +201,10 @@ class Decimal
      * @param integer|null          $scale        The scale, or null to use the scale of this number.
      * @param integer               $roundingMode The rounding mode.
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      *
-     * @throws ArithmeticException
-     * @throws \InvalidArgumentException
+     * @throws \Brick\Math\ArithmeticException If the divisor is zero or rounding is necessary.
+     * @throws \InvalidArgumentException       If the scale is invalid.
      */
     public function dividedBy($that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -264,21 +228,27 @@ class Decimal
         $q = $that->valueWithMinScale($this->scale - $scale);
 
         $calculator = Calculator::get();
-
         $result = $calculator->div($p, $q, $remainder);
 
         $hasDiscardedFraction = ($remainder !== '0');
         $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');
 
-        $double = $calculator->mul($remainder, '2');
-        $diff = $calculator->sub($calculator->abs($double), $calculator->abs($q));
+        $discardedFractionSign = function() use ($calculator, $remainder, $q) {
+            $r = $calculator->abs($calculator->mul($remainder, '2'));
+            $q = $calculator->abs($q);
 
-        $isDiscardedFractionHalfOrMore   = ($diff[0] !== '-');
-        $isDiscardedFractionMoreThanHalf = $isDiscardedFractionHalfOrMore && ($diff !== '0');
+            return $calculator->cmp($r, $q);
+        };
 
         $increment = false;
 
         switch ($roundingMode) {
+            case RoundingMode::UNNECESSARY:
+                if ($hasDiscardedFraction) {
+                    throw ArithmeticException::roundingNecessary();
+                }
+                break;
+
             case RoundingMode::UP:
                 $increment = $hasDiscardedFraction;
                 break;
@@ -295,31 +265,25 @@ class Decimal
                 break;
 
             case RoundingMode::HALF_UP:
-                $increment = $isDiscardedFractionHalfOrMore;
+                $increment = $discardedFractionSign() >= 0;
                 break;
 
             case RoundingMode::HALF_DOWN:
-                $increment = $isDiscardedFractionMoreThanHalf;
+                $increment = $discardedFractionSign() > 0;
                 break;
 
             case RoundingMode::HALF_CEILING:
-                $increment = $isPositiveOrZero ? $isDiscardedFractionHalfOrMore : $isDiscardedFractionMoreThanHalf;
+                $increment = $isPositiveOrZero ? $discardedFractionSign() >= 0 : $discardedFractionSign() > 0;
                 break;
 
             case RoundingMode::HALF_FLOOR:
-                $increment = $isPositiveOrZero ? $isDiscardedFractionMoreThanHalf : $isDiscardedFractionHalfOrMore;
+                $increment = $isPositiveOrZero ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
                 break;
 
             case RoundingMode::HALF_EVEN:
                 $lastDigit = (int) substr($result, -1);
                 $lastDigitIsEven = ($lastDigit % 2 === 0);
-                $increment = ($lastDigitIsEven ? $isDiscardedFractionMoreThanHalf : $isDiscardedFractionHalfOrMore);
-                break;
-
-            case RoundingMode::UNNECESSARY:
-                if ($hasDiscardedFraction) {
-                    throw ArithmeticException::roundingNecessary();
-                }
+                $increment = $lastDigitIsEven ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
                 break;
 
             default:
@@ -327,11 +291,9 @@ class Decimal
         }
 
         if ($increment) {
-            if ($isPositiveOrZero) {
-                $result = $calculator->add($result, '1');
-            } else {
-                $result = $calculator->sub($result, '1');
-            }
+            $result = $isPositiveOrZero
+                ? $calculator->add($result, '1')
+                : $calculator->sub($result, '1');
         }
 
         return new Decimal($result, $scale);
@@ -343,7 +305,7 @@ class Decimal
      * @param integer $scale
      * @param integer $roundingMode
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function withScale($scale, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -351,13 +313,13 @@ class Decimal
             return $this;
         }
 
-        return $this->dividedBy(Decimal::one(), $scale, $roundingMode);
+        return $this->dividedBy(1, $scale, $roundingMode);
     }
 
     /**
      * Returns a Decimal whose value is the absolute value of this Decimal.
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function abs()
     {
@@ -367,7 +329,7 @@ class Decimal
     /**
      * Returns a decimal representing the inverse of this decimal.
      *
-     * @return Decimal
+     * @return \Brick\Math\Decimal
      */
     public function negated()
     {
