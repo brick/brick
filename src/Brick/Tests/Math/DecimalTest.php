@@ -11,23 +11,11 @@ use Brick\Math\RoundingMode;
  */
 class DecimalTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param Decimal|string $expected
-     * @param Decimal|string $actual
-     */
-    private function assertDecimalEquals($expected, $actual)
-    {
-        $this->assertTrue(
-            Decimal::of($actual)->isEqualTo($expected),
-            sprintf('Expected %s, got %s', $expected, $actual)
-        );
-    }
-
     public function testEquality()
     {
-        $this->assertDecimalEquals('1', '1');
-        $this->assertDecimalEquals('1', '1.0');
-        $this->assertDecimalEquals('1', '1.00');
+        $this->assertEquals('1', '1');
+        $this->assertEquals('1', '1.0');
+        $this->assertEquals('1', '1.00');
     }
 
     public function testDecimal()
@@ -36,15 +24,15 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $number2 = Decimal::of('2.0987654321');
 
         // Test addition / subtraction
-        $this->assertDecimalEquals('3.111111111', $number1->plus($number2));
-        $this->assertDecimalEquals('-1.0864197532', $number1->minus($number2));
-        $this->assertDecimalEquals($number1, $number1->plus($number2)->minus($number2));
+        $this->assertEquals('3.111111111', $number1->plus($number2));
+        $this->assertEquals('-1.0864197532', $number1->minus($number2));
+        $this->assertEquals($number1, $number1->plus($number2)->minus($number2));
 
         // Test multiplication
-        $this->assertDecimalEquals('2.12467611621112635269', $number1->multipliedBy($number2));
+        $this->assertEquals('2.12467611621112635269', $number1->multipliedBy($number2));
 
         $times3 = $number1->multipliedBy(3);
-        $this->assertDecimalEquals($times3, $number1->plus($number1)->plus($number1));
+        $this->assertEquals($times3, $number1->plus($number1)->plus($number1));
 
         // Test negation
         $this->assertTrue($number1->negated()->negated()->isEqualTo($number1));
@@ -100,7 +88,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $q = Decimal::of('123.456');
         $r = Decimal::of('0.00999546397096941420425090720580611715914981855883');
 
-        $this->assertTrue($p->dividedBy($q, 50, RoundingMode::DOWN)->isEqualTo($r));
+        $this->assertEquals($r, $p->dividedBy($q, 50, RoundingMode::DOWN));
     }
 
     public function testDivisionWithNoRoundingNecessary()
@@ -109,7 +97,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
         $q = Decimal::of('0.00244140625');
         $r = Decimal::of('50.5679007744');
 
-        $this->assertDecimalEquals($r, $p->dividedBy($q, 10));
+        $this->assertEquals($r, $p->dividedBy($q, 10));
     }
 
     /**
@@ -117,9 +105,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionOfNegativeNumbers($a, $b, $expected)
     {
-        $actual = Decimal::of($a)->dividedBy($b);
-
-        $this->assertDecimalEquals($expected, $actual);
+        $this->assertEquals($expected, Decimal::of($a)->dividedBy($b));
     }
 
     /**
@@ -132,52 +118,6 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
             [ '21', '-7', '-3'],
             ['-21',  '7', '-3'],
             ['-21', '-7',  '3']
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function modProvider()
-    {
-        return [
-            [ '1.25',  '0.25',  '0.00'],
-            [ '1.26',  '0.25',  '0.01'],
-            [ '1.26', '-0.25',  '0.01'],
-            ['-1.26',  '0.25', '-0.01'],
-            ['-1.26', '-0.25', '-0.01'],
-
-            [ '1.251',  '0.25',  '0.001'],
-            [ '1.261',  '0.25',  '0.011'],
-            [ '1.261', '-0.25',  '0.011'],
-            ['-1.261',  '0.25', '-0.011'],
-            ['-1.261', '-0.25', '-0.011'],
-
-            [ '1.25',  '0.251',  '0.246'],
-            [ '1.26',  '0.251',  '0.005'],
-            [ '1.26', '-0.251',  '0.005'],
-            ['-1.26',  '0.251', '-0.005'],
-            ['-1.26', '-0.251', '-0.005'],
-
-            [ '1',  '0.03' , '0.01'],
-            [ '1', '-0.03' , '0.01'],
-            ['-1',  '0.03', '-0.01'],
-            ['-1', '-0.03', '-0.01'],
-
-            [ '1.0',  '0.03',  '0.01'],
-            [ '1.0', '-0.03',  '0.01'],
-            ['-1.0',  '0.03', '-0.01'],
-            ['-1.0', '-0.03', '-0.01'],
-
-            [ '1.234',  '1',  '0.234'],
-            [ '1.234', '-1',  '0.234'],
-            ['-1.234',  '1', '-0.234'],
-            ['-1.234', '-1', '-0.234'],
-
-            [ '1.234',  '1.0',  '0.234'],
-            [ '1.234', '-1.0',  '0.234'],
-            ['-1.234',  '1.0', '-0.234'],
-            ['-1.234', '-1.0', '-0.234']
         ];
     }
 
