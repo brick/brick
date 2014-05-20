@@ -67,6 +67,107 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider leadingPlusSignAndZeroProvider
+     */
+    public function testLeadingPlusSignAndZero($value, $expected)
+    {
+        $this->assertEquals($expected, Decimal::of($value));
+    }
+
+    /**
+     * @return array
+     */
+    public function leadingPlusSignAndZeroProvider()
+    {
+        return [
+            ['+9', '9'],
+            ['+9.9', '9.9'],
+
+            ['09', '9'],
+            ['09.9', '9.9'],
+
+            ['+09', '9'],
+            ['+09.9', '9.9'],
+
+            ['+9.9e1', '99'],
+            ['+09.9e1', '99'],
+        ];
+    }
+
+    /**
+     * @dataProvider exponentProvider
+     */
+    public function testExponent($value, $expected)
+    {
+        $this->assertEquals($expected, Decimal::of($value));
+        $this->assertEquals($expected, Decimal::of(strtoupper($value)));
+
+        $this->assertEquals($expected, Decimal::of('+' . $value));
+        $this->assertEquals($expected, Decimal::of('+' . strtoupper($value)));
+
+        $this->assertEquals('-' . $expected, Decimal::of('-' . $value));
+        $this->assertEquals('-' . $expected, Decimal::of('-' . strtoupper($value)));
+
+        if (strpos($value, 'e+') !== false) {
+            $value = str_replace('e+', 'e', $value);
+
+            $this->assertEquals($expected, Decimal::of($value));
+            $this->assertEquals($expected, Decimal::of(strtoupper($value)));
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function exponentProvider()
+    {
+        return [
+            ['1e-2', '0.01'],
+            ['1e-1', '0.1'],
+            ['1e-0', '1'],
+            ['1e+0', '1'],
+            ['1e+1', '10'],
+            ['1e+2', '100'],
+
+            ['1.2e-2', '0.012'],
+            ['1.2e-1', '0.12'],
+            ['1.2e-0', '1.2'],
+            ['1.2e+0', '1.2'],
+            ['1.2e+1', '12'],
+            ['1.2e+2', '120'],
+
+            ['1.23e-2', '0.0123'],
+            ['1.23e-1', '0.123'],
+            ['1.23e-0', '1.23'],
+            ['1.23e+0', '1.23'],
+            ['1.23e+1', '12.3'],
+            ['1.23e+2', '123'],
+
+            ['0.1e-2', '0.001'],
+            ['0.1e-1', '0.01'],
+            ['0.1e-0', '0.1'],
+            ['0.1e+0', '0.1'],
+            ['0.1e+1', '1'],
+            ['0.1e+2', '10'],
+
+            ['0e-1', '0'],
+            ['0e0', '0'],
+            ['0e1', '0'],
+
+            ['123.456e-4', '0.0123456'],
+            ['123.456e-3', '0.123456'],
+            ['123.456e-2', '1.23456'],
+            ['123.456e-1', '12.3456'],
+            ['123.456e-0', '123.456'],
+            ['123.456e+0', '123.456'],
+            ['123.456e+1', '1234.56'],
+            ['123.456e+2', '12345.6'],
+            ['123.456e+3', '123456'],
+            ['123.456e+4', '1234560'],
+        ];
+    }
+
+    /**
      * @expectedException \Brick\Math\ArithmeticException
      */
     public function testDivisionByZero()
@@ -153,6 +254,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
             ['1.01',   '101', 2],
             ['1.10',   '110', 2],
             ['1.11',   '111', 2],
+
             ['-0.1',  '-1',   1],
             ['-0.01', '-1',   2],
             ['-0.10', '-10',  2],
@@ -163,7 +265,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
             ['-1.00', '-100', 2],
             ['-1.01', '-101', 2],
             ['-1.10', '-110', 2],
-            ['-1.11', '-111', 2]
+            ['-1.11', '-111', 2],
         ];
     }
 
@@ -172,7 +274,10 @@ class DecimalTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsZero($number)
     {
-        $this->assertTrue(Decimal::of($number)->isZero());
+        $number = Decimal::of($number);
+
+        $this->assertTrue($number->isZero());
+        $this->assertSame('0', $number->getUnscaledValue());
     }
 
     /**

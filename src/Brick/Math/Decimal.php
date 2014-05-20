@@ -119,16 +119,29 @@ class Decimal
 
         $value = (string) $value;
 
-        if (preg_match('/^(\-?)([0-9]+)(?:\.([0-9]+))?()$/', $value, $matches) === 0) {
+        if (preg_match('/^([\-\+])?([0-9]+)(?:\.([0-9]+))?(?:[eE]([\-\+]?[0-9]+))?()$/', $value, $matches) === 0) {
             throw new \InvalidArgumentException(sprintf('%s does not represent a valid decimal number.', $value));
         }
 
-        list (, $sign, $decimal, $fraction) = $matches;
+        list (, $sign, $integer, $fraction, $exponent) = $matches;
 
-        $value = ltrim($decimal . $fraction, '0');
+        if ($sign === '+') {
+            $sign = '';
+        }
+
+        $value = ltrim($integer . $fraction, '0');
         $value = ($value === '') ? '0' : $sign . $value;
 
-        return new Decimal($value, strlen($fraction));
+        $scale = strlen($fraction) - $exponent;
+
+        if ($scale < 0) {
+            if ($value !== '0') {
+                $value .= str_repeat('0', - $scale);
+            }
+            $scale = 0;
+        }
+
+        return new Decimal($value, $scale);
     }
 
     /**
