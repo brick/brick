@@ -7,9 +7,9 @@ use Brick\Math\Decimal;
 use Brick\Math\RoundingMode;
 
 /**
- * Unit test for class Decimal.
+ * Rounding tests for class Decimal.
  */
-class BigDecimalTest extends \PHPUnit_Framework_TestCase
+class DecimalRoundingTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider roundingModeProvider

@@ -41,7 +41,7 @@ class Money
      * @param Money $a
      * @param Money $b
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public static function min(Money $a, Money $b)
     {
@@ -54,7 +54,7 @@ class Money
      * @param Money $a
      * @param Money $b
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public static function max(Money $a, Money $b)
     {
@@ -62,9 +62,9 @@ class Money
     }
 
     /**
-     * @param Currency                    $currency
-     * @param Money|Decimal|number|string $amount
-     * @param integer                     $roundingMode
+     * @param Currency|string             $currency     A Currency instance or currency code.
+     * @param Money|Decimal|number|string $amount       A Money instance or decimal amount.
+     * @param integer                     $roundingMode The rounding mode to use.
      *
      * @return Money
      *
@@ -72,8 +72,10 @@ class Money
      * @throws ArithmeticException       If the scale exceeds the currency scale and no rounding is requested.
      * @throws \InvalidArgumentException If an invalid rounding mode is given.
      */
-    public static function of(Currency $currency, $amount, $roundingMode = RoundingMode::UNNECESSARY)
+    public static function of($currency, $amount, $roundingMode = RoundingMode::UNNECESSARY)
     {
+        $currency = Currency::of($currency);
+
         if ($amount instanceof Money) {
             if ($amount->getCurrency()->isEqualTo($currency)) {
                 return $amount;
@@ -91,14 +93,18 @@ class Money
     /**
      * Parses a string representation of a money, such as USD 23.00.
      *
-     * @param string $string
+     * @param Money|string $string
      *
-     * @return Money
+     * @return \Brick\Money\Money
      *
-     * @throws MoneyParseException If the parsing fails.
+     * @throws \Brick\Money\MoneyParseException If the parsing fails.
      */
     public static function parse($string)
     {
+        if ($string instanceof Money) {
+            return $string;
+        }
+
         $parts = explode(' ', $string);
 
         if (count($parts) != 2) {
@@ -124,13 +130,13 @@ class Money
     /**
      * Returns a Money with zero value, in the given Currency.
      *
-     * @param Currency $currency
+     * @param \Brick\Locale\Currency $currency
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public static function zero(Currency $currency)
     {
-        return Money::of($currency, Decimal::of(0));
+        return Money::of($currency, 0);
     }
 
     /**
@@ -156,7 +162,7 @@ class Money
     /**
      * @param Money|Decimal|number|string $that
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public function plus($that)
     {
@@ -168,7 +174,7 @@ class Money
     /**
      * @param Money|Decimal|number|string $that
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public function minus($that)
     {
@@ -181,7 +187,7 @@ class Money
      * @param Decimal|number|string $that
      * @param integer               $roundingMode
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public function multipliedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -197,7 +203,7 @@ class Money
      * @param Decimal|number|string $that
      * @param integer               $roundingMode
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public function dividedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -212,7 +218,7 @@ class Money
     /**
      * Returns a copy of this Money with the value negated.
      *
-     * @return Money
+     * @return \Brick\Money\Money
      */
     public function negated()
     {
@@ -275,6 +281,8 @@ class Money
      * @param Money|Decimal|number|string $that
      *
      * @return boolean
+     *
+     * @throws CurrencyMismatchException
      */
     public function isEqualTo($that)
     {
@@ -289,6 +297,8 @@ class Money
      * @param Money|Decimal|number|string $that
      *
      * @return boolean
+     *
+     * @throws CurrencyMismatchException
      */
     public function isLessThan($that)
     {
@@ -303,6 +313,8 @@ class Money
      * @param Money|Decimal|number|string $that
      *
      * @return boolean
+     *
+     * @throws CurrencyMismatchException
      */
     public function isLessThanOrEqualTo($that)
     {
@@ -317,6 +329,8 @@ class Money
      * @param Money|Decimal|number|string $that
      *
      * @return boolean
+     *
+     * @throws CurrencyMismatchException
      */
     public function isGreaterThan($that)
     {
@@ -331,12 +345,50 @@ class Money
      * @param Money|Decimal|number|string $that
      *
      * @return boolean
+     *
+     * @throws CurrencyMismatchException
      */
     public function isGreaterThanOrEqualTo($that)
     {
         $that = Money::of($this->currency, $that);
 
         return $this->amount->isGreaterThanOrEqualTo($that->amount);
+    }
+
+    /**
+     * Returns a string containing the major value of the money.
+     *
+     * Example: 123.45 will return '123'.
+     *
+     * @return string
+     */
+    public function getAmountMajor()
+    {
+        return $this->amount->withScale(0, RoundingMode::DOWN)->getUnscaledValue();
+    }
+
+    /**
+     * Returns a string containing the minor value of the money.
+     *
+     * Example: 123.45 will return '45'.
+     *
+     * @return string
+     */
+    public function getAmountMinor()
+    {
+        return substr($this->amount->getUnscaledValue(), - $this->currency->getDefaultFractionDigits());
+    }
+
+    /**
+     * Returns a string containing the value of this money in cents.
+     *
+     * Example: 123.45 USD will return '12345'.
+     *
+     * @return string
+     */
+    public function getAmountCents()
+    {
+        return $this->amount->getUnscaledValue();
     }
 
     /**

@@ -83,25 +83,31 @@ class Currency
     /**
      * Returns the Currency instance for the given currency code.
      *
-     * @param string $code
+     * @param Currency|string $currency
+     *
      * @return Currency
+     *
      * @throws \InvalidArgumentException
      */
-    public static function of($code)
+    public static function of($currency)
     {
-        if (! isset(self::$instances[$code])) {
-            self::loadCurrencyData();
-
-            if (! isset(self::$currencies[$code])) {
-                throw new \InvalidArgumentException('Invalid currency code: ' . $code);
-            }
-
-            list ($currencyCode, $numericCode, $name, $symbol, $fractionDigits) = self::$currencies[$code];
-
-            self::$instances[$code] = new self($currencyCode, $numericCode, $name, $symbol, $fractionDigits);
+        if ($currency instanceof Currency) {
+            return $currency;
         }
 
-        return self::$instances[$code];
+        if (! isset(self::$instances[$currency])) {
+            self::loadCurrencyData();
+
+            if (! isset(self::$currencies[$currency])) {
+                throw new \InvalidArgumentException('Invalid currency code: ' . $currency);
+            }
+
+            list ($currencyCode, $numericCode, $name, $symbol, $fractionDigits) = self::$currencies[$currency];
+
+            self::$instances[$currency] = new self($currencyCode, $numericCode, $name, $symbol, $fractionDigits);
+        }
+
+        return self::$instances[$currency];
     }
 
     /**
