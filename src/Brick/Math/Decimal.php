@@ -145,6 +145,24 @@ class Decimal
     }
 
     /**
+     * Returns a decimal number representing zero.
+     *
+     * This value is cached to optimize memory consumption as it is frequently used.
+     *
+     * @return Decimal
+     */
+    public static function zero()
+    {
+        static $zero = null;
+
+        if ($zero === null) {
+            $zero = new Decimal('0');
+        }
+
+        return $zero;
+    }
+
+    /**
      * Returns the sum of this number and that one.
      *
      * @param Decimal|number|string $that
