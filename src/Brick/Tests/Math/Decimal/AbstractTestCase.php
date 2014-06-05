@@ -37,9 +37,9 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
     public function testEquality()
     {
-        $this->assertEquals('1', '1');
-        $this->assertEquals('1', '1.0');
-        $this->assertEquals('1', '1.00');
+        $this->assertDecimalEquals('1', '1');
+        $this->assertDecimalEquals('1', '1.0');
+        $this->assertDecimalEquals('1', '1.00');
     }
 
     public function testDecimal()
