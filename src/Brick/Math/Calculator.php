@@ -24,11 +24,11 @@ abstract class Calculator
      *
      * An instance is typically set only in unit tests: the autodetect is usually the best option.
      *
-     * @param \Brick\Math\Calculator $calculator
+     * @param \Brick\Math\Calculator|null $calculator The calculator instance, or NULL to revert to autodetect.
      *
      * @return void
      */
-    public static function set(Calculator $calculator)
+    public static function set(Calculator $calculator = null)
     {
         self::$instance = $calculator;
     }
