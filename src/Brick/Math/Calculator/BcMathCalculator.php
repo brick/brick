@@ -7,7 +7,7 @@ use Brick\Math\Calculator;
 /**
  * Calculator implementation built around the bcmath library.
  */
-class BcmathCalculator extends Calculator
+class BcMathCalculator extends Calculator
 {
     /**
      * {@inheritdoc}

@@ -61,7 +61,7 @@ abstract class Calculator
         }
 
         if (extension_loaded('bcmath')) {
-            return new Calculator\BcmathCalculator();
+            return new Calculator\BcMathCalculator();
         }
 
         throw new \RuntimeException('No math library is available. A native implementation is not available yet.');
