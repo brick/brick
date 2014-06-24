@@ -136,6 +136,8 @@ class Request extends Message
             $query = [];
         }
 
+        $headers['Host'] = $host;
+
         $this->query   = new ParameterMap($query);
         $this->post    = $post;
         $this->cookies = $cookies;
@@ -758,8 +760,15 @@ class Request extends Message
     {
         $string = $this->getHeaderString();
 
-        if (! $this->body->isEmpty()) {
-            $string .= $this->body->toString();
+        $body = $this->body->toString();
+
+        if ($body == '') {
+            $body = http_build_query($this->post->toArray());
+        }
+
+        if ($body != '') {
+            $this->setHeader('Content-Length', strlen($body));
+            $string .= $body;
             $string .= Message::CRLF;
         }
 
