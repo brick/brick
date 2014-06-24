@@ -210,14 +210,18 @@ class Browser extends SearchContext
     {
         $url = $this->httpClient->getAbsoluteUrl($form->getAction());
 
+        $headers = [
+            'Referer' => $this->getUrl()
+        ];
+
         if ($form->isPost()) {
             parse_str($form->getRawData(), $post);
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         } else {
             $url = $this->removeQueryString($url) . '?' . $form->getRawData();
             $post = [];
         }
 
-        $headers = ['Referer' => $this->getUrl()];
         $request = $this->httpClient->createRequest($form->getMethod(), $url, $post, [], $headers);
 
         $this->request($request, true, true);
