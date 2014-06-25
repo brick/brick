@@ -109,6 +109,18 @@ class Application implements RequestHandler
     }
 
     /**
+     * Runs the application.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $request = Request::getCurrent();
+        $response = $this->handle($request);
+        $response->send();
+    }
+
+    /**
      * @param \Brick\Http\Request $request
      * @return \Brick\Http\Response
      */
