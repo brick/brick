@@ -76,7 +76,7 @@ class Request extends Message
     private $clientIp;
 
     /**
-     * @var RequestBody
+     * @var MessageBody
      */
     private $body;
 
@@ -94,7 +94,7 @@ class Request extends Message
      * @param CookieMap       $cookies
      * @param array           $headers
      * @param UploadedFileMap $files
-     * @param resource        $body
+     * @param string|resource $body
      * @throws HttpBadRequestException
      */
     private function __construct(
@@ -136,13 +136,42 @@ class Request extends Message
             $query = [];
         }
 
+        $headers['Host'] = $host;
+
         $this->query   = new ParameterMap($query);
         $this->post    = $post;
         $this->cookies = $cookies;
-        $this->addHeaders($headers);
         $this->files   = $files;
 
-        $this->body = new RequestBody($body, $this->getContentLength());
+        if ($post->toArray()) {
+            $body = http_build_query($post->toArray());
+            $headers['Content-Length'] = strlen($body);
+
+            $this->body = new MessageBodyString($body);
+        } else {
+            if (is_resource($body)) {
+                if (! isset($headers['Content-Length'])) {
+                    $temp = fopen('php://temp', 'rb+');
+                    stream_copy_to_stream($body, $temp);
+                    $length = ftell($temp);
+                    fseek($temp, 0);
+                    $body = $temp;
+                } else {
+                    $length = 0;
+                }
+
+                $this->body = new MessageBodyResource($body);
+            } else {
+                $this->body = new MessageBodyString($body);
+                $length = strlen($body);
+            }
+
+            if ($length) {
+                $headers['Content-Length'] = $length;
+            }
+        }
+
+        $this->addHeaders($headers);
     }
 
     /**
@@ -456,7 +485,15 @@ class Request extends Message
     }
 
     /**
-     * @return RequestBody
+     * {@inheritdoc}
+     */
+    public function getHeader()
+    {
+        return $this->getHeaderString();
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getBody()
     {
@@ -743,27 +780,6 @@ class Request extends Message
     public function isAjax()
     {
         return $this->getFirstHeader('X-Requested-With') == 'XMLHttpRequest';
-    }
-
-    /**
-     * Returns the Request as a string, for debugging purposes.
-     *
-     * This magic method does not throw an exception if the request body is not available from PHP,
-     * and silently omits it instead. Note that calling this method consumes the request body stream,
-     * which will consequently only be available via toString() afterwards.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        $string = $this->getHeaderString();
-
-        if (! $this->body->isEmpty()) {
-            $string .= $this->body->toString();
-            $string .= Message::CRLF;
-        }
-
-        return $string;
     }
 
     /**

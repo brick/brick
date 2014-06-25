@@ -2,6 +2,7 @@
 
 namespace Brick\Http\Client;
 
+use Brick\Http\Listener\MessageListener;
 use Brick\Http\Server\RequestHandler;
 use Brick\Http\Request;
 
@@ -56,15 +57,22 @@ class Client
     private $cookieStore;
 
     /**
+     * @var \Brick\Http\Listener\MessageListener|null
+     */
+    private $messageListener;
+
+    /**
      * Class constructor.
      *
-     * @param \Brick\Http\Server\RequestHandler         $handler     A handler to serve the requests.
-     * @param \Brick\Http\Client\CookieStore|null $cookieStore A cookie store.
+     * @param \Brick\Http\Server\RequestHandler         $handler  A handler to serve the requests.
+     * @param \Brick\Http\Client\CookieStore|null       $store    An optional cookie store to re-use.
+     * @param \Brick\Http\Listener\MessageListener|null $listener An optional message listener.
      */
-    public function __construct(RequestHandler $handler, CookieStore $cookieStore = null)
+    public function __construct(RequestHandler $handler, CookieStore $store = null, MessageListener $listener = null)
     {
         $this->requestHandler = $handler;
-        $this->cookieStore = $cookieStore ?: new CookieStore();
+        $this->cookieStore = $store ?: new CookieStore();
+        $this->messageListener = $listener;
     }
 
     /**
@@ -118,7 +126,16 @@ class Client
         $cookies = $this->getCookiesForRequest($request);
         $request->setCookies($cookies);
 
+        if ($this->messageListener) {
+            $this->messageListener->listen($request);
+        }
+
         $response = $this->requestHandler->handle($request);
+
+        if ($this->messageListener) {
+            $this->messageListener->listen($response);
+        }
+
         $this->cookieStore->update($request, $response);
 
         $this->lastRequest = $request;

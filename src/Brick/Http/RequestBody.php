@@ -46,7 +46,7 @@ class RequestBody
      */
     public function isEmpty()
     {
-        return $this->toString() !== '';
+        return $this->toString() === '';
     }
 
     /**

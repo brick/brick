@@ -363,10 +363,18 @@ class Response extends Message
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function __toString()
+    public function getHeader()
     {
-        return $this->getHeaderString() . $this->content;
+        return $this->getHeaderString();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBody()
+    {
+        return new MessageBodyString($this->content);
     }
 }

@@ -181,4 +181,22 @@ abstract class Message
     {
         return implode('-', array_map('ucfirst', explode('_', strtolower($name))));
     }
+
+    /**
+     * @return string
+     */
+    abstract public function getHeader();
+
+    /**
+     * @return MessageBody
+     */
+    abstract public function getBody();
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getHeader() . $this->getBody()->toString();
+    }
 }

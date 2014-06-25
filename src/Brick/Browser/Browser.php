@@ -4,6 +4,7 @@ namespace Brick\Browser;
 
 use Brick\Browser\Exception\UnexpectedElementException;
 use Brick\Http\Client\Client;
+use Brick\Http\Listener\MessageListener;
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
@@ -44,11 +45,12 @@ class Browser extends SearchContext
     /**
      * Class constructor.
      *
-     * @param \Brick\Http\Server\RequestHandler $handler A handler to serve the requests.
+     * @param \Brick\Http\Server\RequestHandler         $handler  A handler to serve the requests.
+     * @param \Brick\Http\Listener\MessageListener|null $listener An optional message listener to use.
      */
-    public function __construct(RequestHandler $handler)
+    public function __construct(RequestHandler $handler, MessageListener $listener = null)
     {
-        $this->httpClient = new Client($handler);
+        $this->httpClient = new Client($handler, null, $listener);
         $this->httpClient->setHeaders([
             'User-Agent' => 'Brick/Browser'
         ]);
@@ -210,14 +212,18 @@ class Browser extends SearchContext
     {
         $url = $this->httpClient->getAbsoluteUrl($form->getAction());
 
+        $headers = [
+            'Referer' => $this->getUrl()
+        ];
+
         if ($form->isPost()) {
             parse_str($form->getRawData(), $post);
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         } else {
             $url = $this->removeQueryString($url) . '?' . $form->getRawData();
             $post = [];
         }
 
-        $headers = ['Referer' => $this->getUrl()];
         $request = $this->httpClient->createRequest($form->getMethod(), $url, $post, [], $headers);
 
         $this->request($request, true, true);
