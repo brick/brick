@@ -5,7 +5,6 @@ namespace Brick\Form\Element\Input;
 use Brick\Form\Element\Input;
 use Brick\Form\Attribute\AutocompleteAttribute;
 use Brick\Form\Attribute\ListAttribute;
-use Brick\Form\Attribute\PatternAttribute;
 use Brick\Form\Attribute\ValueAttribute;
 
 /**

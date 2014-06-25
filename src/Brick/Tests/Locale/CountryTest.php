@@ -3,7 +3,6 @@
 namespace Brick\Tests\Currency;
 
 use Brick\Locale\Country;
-use Brick\Locale\Currency;
 
 /**
  * Unit tests for class Country.

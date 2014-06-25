@@ -3,7 +3,6 @@
 namespace Brick\Tests\DateTime;
 
 use Brick\DateTime\Month;
-use Brick\DateTime\ZonedDateTime;
 
 /**
  * Unit tests for class Month.

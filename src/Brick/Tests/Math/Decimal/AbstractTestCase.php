@@ -204,7 +204,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionWithRoundingNecessary()
     {
-        $p = Decimal::of('1.234')->dividedBy('123.456');
+        Decimal::of('1.234')->dividedBy('123.456');
     }
 
     public function testDivisionWithRounding()
