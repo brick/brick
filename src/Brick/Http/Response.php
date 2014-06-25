@@ -200,11 +200,13 @@ class Response extends Message
 
     /**
      * @param Cookie $cookie
+     *
      * @return Response
      */
     public function setCookie(Cookie $cookie)
     {
         $this->cookies[] = $cookie;
+        $this->addHeader('Set-Cookie', $cookie->toString());
 
         return $this;
     }
@@ -343,37 +345,11 @@ class Response extends Message
     }
 
     /**
-     * @return string
-     */
-    public function getHeaderString()
-    {
-        $result = $this->getStatusLine() . Message::CRLF;
-
-        foreach ($this->getAllHeaders() as $header) {
-            $result .= $header->toString() . Message::CRLF;
-        }
-
-        foreach ($this->cookies as $cookie) {
-            $result .= 'Set-Cookie: ' . $cookie->toString() . Message::CRLF;
-        }
-
-        return $result . Message::CRLF;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getStatusLine()
     {
         return sprintf('HTTP/%s %d %s', $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeader()
-    {
-        return $this->getHeaderString();
     }
 
     /**

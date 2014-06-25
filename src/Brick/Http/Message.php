@@ -190,7 +190,16 @@ abstract class Message
     /**
      * @return string
      */
-    abstract public function getHeader();
+    public function getHeader()
+    {
+        $result = $this->getStatusLine() . Message::CRLF;
+
+        foreach ($this->getAllHeaders() as $header) {
+            $result .= $header->toString() . Message::CRLF;
+        }
+
+        return $result . Message::CRLF;
+    }
 
     /**
      * @return MessageBody

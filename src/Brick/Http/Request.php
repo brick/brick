@@ -140,8 +140,9 @@ class Request extends Message
 
         $this->query   = new ParameterMap($query);
         $this->post    = $post;
-        $this->cookies = $cookies;
         $this->files   = $files;
+
+        $this->doSetCookies($cookies);
 
         if ($post->toArray()) {
             $body = http_build_query($post->toArray());
@@ -455,26 +456,6 @@ class Request extends Message
     }
 
     /**
-     * Returns the request header as a string.
-     *
-     * @return string
-     */
-    public function getHeaderString()
-    {
-        $result = $this->getStatusLine() . Message::CRLF;
-
-        foreach ($this->getAllHeaders() as $header) {
-            $result .= $header->toString() . Message::CRLF;
-        }
-
-        if ($this->cookies->count()) {
-            $result .= sprintf('Cookie: %s' . Message::CRLF, $this->getCookieString());
-        }
-
-        return $result . Message::CRLF;
-    }
-
-    /**
      * @return UploadedFileMap
      */
     public function getFiles()
@@ -488,14 +469,6 @@ class Request extends Message
     public function getStatusLine()
     {
         return sprintf('%s %s HTTP/%s', $this->method, $this->requestUri, $this->protocolVersion);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeader()
-    {
-        return $this->getHeaderString();
     }
 
     /**
@@ -797,6 +770,20 @@ class Request extends Message
      */
     public function setCookies(array $cookies)
     {
-        $this->cookies = new CookieMap($cookies);
+        $this->doSetCookies(new CookieMap($cookies));
+    }
+
+    /**
+     * @param CookieMap $cookies
+     *
+     * @return void
+     */
+    private function doSetCookies(CookieMap $cookies)
+    {
+        $this->cookies = $cookies;
+
+        if ($cookies->toArray()) {
+            $this->setHeader('Cookie', $this->getCookieString());
+        }
     }
 }
