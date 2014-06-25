@@ -317,7 +317,7 @@ class Response extends Message
         }
 
         // Send the status line.
-        header(sprintf('HTTP/%s %d %s', $this->protocolVersion, $this->statusCode, $this->reasonPhrase));
+        header($this->getStatusLine());
 
         // Send the general headers.
         foreach ($this->getAllHeaders() as $header) {
