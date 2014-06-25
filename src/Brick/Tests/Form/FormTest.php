@@ -34,7 +34,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($form->populate([
             'drink' => $selectedDrink
-        ]));
+        ])->isValid());
 
         $this->assertEquals($selectedDrink, $select->getValue());
     }
@@ -70,7 +70,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($form->populate([
             'countries' => $expected
-        ]));
+        ])->isValid());
 
         $actual = $select->getValues();
         sort($actual);
@@ -142,7 +142,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($form->populate([
             'drink' => $selectedDrink
-        ]));
+        ])->isValid());
 
         foreach ($radioButtons->getElements() as $radioButton) {
             $shouldBeChecked = ($radioButton->getValue() == $selectedDrink);
@@ -155,9 +155,9 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $form = new Form();
         $form->addInputText('city')->setRequired(true);
 
-        $this->assertFalse($form->populate([]));
-        $this->assertFalse($form->populate(['city' => '']));
-        $this->assertTrue($form->populate(['city' => 'London']));
+        $this->assertFalse($form->populate([])->isValid());
+        $this->assertFalse($form->populate(['city' => ''])->isValid());
+        $this->assertTrue($form->populate(['city' => 'London'])->isValid());
     }
 
     public function testCheckboxGroup()
@@ -188,7 +188,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($form->populate([
             'countries' => array_keys($countries, true)
-        ]));
+        ])->isValid());
 
         foreach ($countryCheckboxes->getElements() as $checkbox) {
             $shouldBeChecked = $countries[$checkbox->getValue()];
