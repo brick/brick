@@ -185,6 +185,11 @@ abstract class Message
     /**
      * @return string
      */
+    abstract public function getStatusLine();
+
+    /**
+     * @return string
+     */
     abstract public function getHeader();
 
     /**

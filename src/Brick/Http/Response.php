@@ -347,7 +347,7 @@ class Response extends Message
      */
     public function getHeaderString()
     {
-        $result = sprintf('HTTP/%s %d %s' . Message::CRLF, $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
+        $result = $this->getStatusLine() . Message::CRLF;
 
         foreach ($this->getAllHeaders() as $header) {
             $result .= $header->toString() . Message::CRLF;
@@ -357,9 +357,15 @@ class Response extends Message
             $result .= 'Set-Cookie: ' . $cookie->toString() . Message::CRLF;
         }
 
-        $result .= Message::CRLF;
+        return $result . Message::CRLF;
+    }
 
-        return $result;
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatusLine()
+    {
+        return sprintf('HTTP/%s %d %s', $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
     }
 
     /**

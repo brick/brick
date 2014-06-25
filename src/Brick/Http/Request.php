@@ -461,7 +461,7 @@ class Request extends Message
      */
     public function getHeaderString()
     {
-        $result = sprintf('%s %s HTTP/%s' . Message::CRLF, $this->method, $this->requestUri, $this->protocolVersion);
+        $result = $this->getStatusLine() . Message::CRLF;
 
         foreach ($this->getAllHeaders() as $header) {
             $result .= $header->toString() . Message::CRLF;
@@ -471,9 +471,7 @@ class Request extends Message
             $result .= sprintf('Cookie: %s' . Message::CRLF, $this->getCookieString());
         }
 
-        $result .= Message::CRLF;
-
-        return $result;
+        return $result . Message::CRLF;
     }
 
     /**
@@ -482,6 +480,14 @@ class Request extends Message
     public function getFiles()
     {
         return $this->files;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatusLine()
+    {
+        return sprintf('%s %s HTTP/%s', $this->method, $this->requestUri, $this->protocolVersion);
     }
 
     /**
