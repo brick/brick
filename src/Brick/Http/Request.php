@@ -459,7 +459,7 @@ class Request extends Message
     /**
      * {@inheritdoc}
      */
-    public function getStatusLine()
+    public function getStartLine()
     {
         return sprintf('%s %s %s', $this->method, $this->requestUri, $this->protocolVersion);
     }

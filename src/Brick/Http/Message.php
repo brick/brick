@@ -21,9 +21,9 @@ abstract class Message
      * The message headers.
      * Keys store the lowercase header name, and values arrays of Header objects.
      *
-     * @var array
+     * @var Header[][]
      */
-    private $headers = [];
+    protected $headers = [];
 
     /**
      * Returns the protocol version, such as 'HTTP/1.0'.
@@ -48,51 +48,41 @@ abstract class Message
     }
 
     /**
-     * Returns all the Header objects.
+     * Returns the headers, optionally matching the given name.
+     *
+     * @param string|null $name A header name, or null to return all headers.
      *
      * @return Header[]
      */
-    public function getAllHeaders()
+    public function getHeaders($name = null)
     {
-        return count($this->headers) ? call_user_func_array('array_merge', $this->headers) : [];
+        if ($name === null) {
+            if ($this->headers) {
+                return call_user_func_array('array_merge', $this->headers);
+            }
+        } else {
+            if (isset($this->headers[$name = strtolower($name)])) {
+                return $this->headers[$name];
+            }
+        }
+
+        return [];
     }
 
     /**
-     * Removes all headers.
+     * Removes the headers, optionally matching the given name.
+     *
+     * @param string|null $name A header name, or null to remove all headers.
      *
      * @return static
      */
-    public function removeAllHeaders()
+    public function removeHeaders($name = null)
     {
-        $this->headers = [];
-
-        return $this;
-    }
-
-    /**
-     * Returns all the Header objects with the given name.
-     *
-     * @param string $name
-     *
-     * @return Header[]
-     */
-    public function getHeaders($name)
-    {
-        $name = strtolower($name);
-
-        return isset($this->headers[$name]) ? $this->headers[$name] : [];
-    }
-
-    /**
-     * Removes all headers with the given name.
-     *
-     * @param string $name
-     *
-     * @return static
-     */
-    public function removeHeaders($name)
-    {
-        unset($this->headers[strtolower($name)]);
+        if ($name === null) {
+            $this->headers = [];
+        } else {
+            unset($this->headers[strtolower($name)]);
+        }
 
         return $this;
     }
@@ -106,7 +96,7 @@ abstract class Message
      */
     public function hasHeader($name)
     {
-        return count($this->getHeaders($name)) != 0;
+        return isset($this->headers[strtolower($name)]);
     }
 
     /**
@@ -212,17 +202,19 @@ abstract class Message
     /**
      * @return string
      */
-    abstract public function getStatusLine();
+    abstract public function getStartLine();
 
     /**
      * @return string
      */
     public function getHeader()
     {
-        $result = $this->getStatusLine() . Message::CRLF;
+        $result = $this->getStartLine() . Message::CRLF;
 
-        foreach ($this->getAllHeaders() as $header) {
-            $result .= $header->toString() . Message::CRLF;
+        foreach ($this->headers as $headers) {
+            foreach ($headers as $header) {
+                $result .= $header->toString() . Message::CRLF;
+            }
         }
 
         return $result . Message::CRLF;

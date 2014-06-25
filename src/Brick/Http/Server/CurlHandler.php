@@ -58,7 +58,7 @@ class CurlHandler implements RequestHandler
     {
         $headers = [];
 
-        foreach ($request->getAllHeaders() as $header) {
+        foreach ($request->getHeaders() as $header) {
             $headers[] = $header->toString();
         }
 

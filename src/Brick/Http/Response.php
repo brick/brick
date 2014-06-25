@@ -292,10 +292,10 @@ class Response extends Message
         }
 
         // Send the status line.
-        header($this->getStatusLine());
+        header($this->getStartLine());
 
         // Send the general headers.
-        foreach ($this->getAllHeaders() as $header) {
+        foreach ($this->getHeaders() as $header) {
             header($header->toString(), false);
         }
 
@@ -322,7 +322,7 @@ class Response extends Message
     /**
      * {@inheritdoc}
      */
-    public function getStatusLine()
+    public function getStartLine()
     {
         return sprintf('%s %d %s', $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
     }
