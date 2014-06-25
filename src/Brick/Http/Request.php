@@ -43,11 +43,6 @@ class Request extends Message
     /**
      * @var string
      */
-    private $protocolVersion;
-
-    /**
-     * @var string
-     */
     private $host;
 
     /**
@@ -483,16 +478,6 @@ class Request extends Message
     public function getMethod()
     {
         return $this->method;
-    }
-
-    /**
-     * Returns the protocol version, such as 'HTTP/1.0'.
-     *
-     * @return string
-     */
-    public function getProtocolVersion()
-    {
-        return $this->protocolVersion;
     }
 
     /**

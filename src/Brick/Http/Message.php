@@ -13,12 +13,39 @@ abstract class Message
     const CRLF = "\r\n";
 
     /**
+     * @var string
+     */
+    protected $protocolVersion = Message::HTTP_1_0;
+
+    /**
      * The message headers.
      * Keys store the lowercase header name, and values arrays of Header objects.
      *
      * @var array
      */
     private $headers = [];
+
+    /**
+     * Returns the protocol version, such as 'HTTP/1.0'.
+     *
+     * @return string
+     */
+    public function getProtocolVersion()
+    {
+        return $this->protocolVersion;
+    }
+
+    /**
+     * @param string $version
+     *
+     * @return static
+     */
+    public function setProtocolVersion($version)
+    {
+        $this->protocolVersion = $version;
+
+        return $this;
+    }
 
     /**
      * Returns all the Header objects.

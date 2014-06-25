@@ -56,11 +56,6 @@ class Response extends Message
     ];
 
     /**
-     * @var string
-     */
-    private $protocolVersion = Message::HTTP_1_0;
-
-    /**
      * @todo should be a body object, just like RequestBody (can be shared)
      *
      * @var string
@@ -176,26 +171,6 @@ class Response extends Message
 
         $this->statusCode = $statusCode;
         $this->reasonPhrase = $reasonPhrase;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProtocolVersion()
-    {
-        return $this->protocolVersion;
-    }
-
-    /**
-     * @param string $version
-     *
-     * @return Response
-     */
-    public function setProtocolVersion($version)
-    {
-        $this->protocolVersion = $version;
-
-        return $this;
     }
 
     /**
