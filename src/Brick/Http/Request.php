@@ -272,8 +272,6 @@ class Request extends Message
         $protocol   = $server->get('SERVER_PROTOCOL');
         $clientIp   = $server->get('REMOTE_ADDR');
 
-        $protocol = preg_replace('!^HTTP/!', '', $protocol);
-
         $post    = new ParameterMap($_POST);
         $cookies = new CookieMap($_COOKIE);
         $files   = UploadedFileMap::createFromFilesGlobal($_FILES);
@@ -468,7 +466,7 @@ class Request extends Message
      */
     public function getStatusLine()
     {
-        return sprintf('%s %s HTTP/%s', $this->method, $this->requestUri, $this->protocolVersion);
+        return sprintf('%s %s %s', $this->method, $this->requestUri, $this->protocolVersion);
     }
 
     /**
@@ -488,6 +486,8 @@ class Request extends Message
     }
 
     /**
+     * Returns the protocol version, such as 'HTTP/1.0'.
+     *
      * @return string
      */
     public function getProtocolVersion()
