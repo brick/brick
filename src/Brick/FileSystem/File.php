@@ -95,7 +95,7 @@ class File
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function($length) {
+        return $this->errorHandler->swallow(E_WARNING, function() use ($length) {
             return stream_get_contents($this->handle, $length);
         });
     }
