@@ -487,7 +487,21 @@ class Request extends Message
      */
     public function isMethodSafe()
     {
-        return $this->isGet() || $this->isHead();
+        return $this->method === 'GET' || $this->method === 'HEAD';
+    }
+
+    /**
+     * Returns whether this request method matches the given one.
+     *
+     * Example: $request->is('post');
+     *
+     * @param string $method The method to test this request against, case-insensitive.
+     *
+     * @return boolean
+     */
+    public function is($method)
+    {
+        return $this->method === strtoupper($method);
     }
 
     /**
@@ -630,70 +644,6 @@ class Request extends Message
     public function getUserAgent()
     {
         return $this->getFirstHeader('User-Agent');
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isGet()
-    {
-        return $this->method == 'GET';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isHead()
-    {
-        return $this->method == 'HEAD';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPost()
-    {
-        return $this->method == 'POST';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPut()
-    {
-        return $this->method == 'PUT';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isDelete()
-    {
-        return $this->method == 'DELETE';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isOptions()
-    {
-        return $this->method == 'OPTIONS';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isTrace()
-    {
-        return $this->method == 'TRACE';
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isConnect()
-    {
-        return $this->method == 'CONNECT';
     }
 
     /**
