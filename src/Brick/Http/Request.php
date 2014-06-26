@@ -11,17 +11,17 @@ use Brick\Http\Exception\HttpBadRequestException;
 class Request extends Message
 {
     /**
-     * @var ParameterMap
+     * @var array
      */
     private $query;
 
     /**
-     * @var ParameterMap
+     * @var array
      */
     private $post;
 
     /**
-     * @var CookieMap
+     * @var array
      */
     private $cookies;
 
@@ -85,11 +85,12 @@ class Request extends Message
      * @param int             $port
      * @param string          $clientIp
      * @param bool            $isSecure
-     * @param ParameterMap    $post
-     * @param CookieMap       $cookies
+     * @param array           $post
+     * @param array           $cookies
      * @param array           $headers
      * @param UploadedFileMap $files
      * @param string|resource $body
+     *
      * @throws HttpBadRequestException
      */
     private function __construct(
@@ -100,8 +101,8 @@ class Request extends Message
         $port,
         $clientIp,
         $isSecure,
-        ParameterMap $post,
-        CookieMap $cookies,
+        array $post,
+        array $cookies,
         array $headers,
         UploadedFileMap $files,
         $body
@@ -133,14 +134,14 @@ class Request extends Message
 
         $headers['Host'] = $host;
 
-        $this->query   = new ParameterMap($query);
-        $this->post    = $post;
-        $this->files   = $files;
+        $this->query = $query;
+        $this->post  = $post;
+        $this->files = $files;
 
-        $this->doSetCookies($cookies);
+        $this->setCookies($cookies);
 
-        if ($post->toArray()) {
-            $body = http_build_query($post->toArray());
+        if ($post) {
+            $body = http_build_query($post);
             $headers['Content-Length'] = strlen($body);
 
             $this->body = new MessageBodyString($body);
@@ -234,8 +235,8 @@ class Request extends Message
             $port,
             $clientIp,
             $isSecure,
-            new ParameterMap($post),
-            new CookieMap($cookies),
+            $post,
+            $cookies,
             $headers,
             new UploadedFileMap($files),
             $body
@@ -267,8 +268,8 @@ class Request extends Message
         $protocol   = $server->get('SERVER_PROTOCOL');
         $clientIp   = $server->get('REMOTE_ADDR');
 
-        $post    = new ParameterMap($_POST);
-        $cookies = new CookieMap($_COOKIE);
+        $post    = $_POST;
+        $cookies = $_COOKIE;
         $files   = UploadedFileMap::createFromFilesGlobal($_FILES);
 
         $host = null;
@@ -369,7 +370,7 @@ class Request extends Message
      */
     public function hasQuery($name)
     {
-        return $this->query->has($name);
+        return isset($this->query[$name]);
     }
 
     /**
@@ -382,12 +383,14 @@ class Request extends Message
     public function getQuery($name = null)
     {
         if ($name === null) {
-            return $this->query->toArray();
-        } elseif ($this->query->has($name)) {
-            return $this->query->get($name);
-        } else {
-            return null;
+            return $this->query;
         }
+
+        if (isset($this->query[$name])) {
+            return $this->query[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -399,7 +402,7 @@ class Request extends Message
      */
     public function hasPost($name)
     {
-        return $this->post->has($name);
+        return isset($this->post[$name]);
     }
 
     /**
@@ -412,12 +415,14 @@ class Request extends Message
     public function getPost($name = null)
     {
         if ($name === null) {
-            return $this->post->toArray();
-        } elseif ($this->post->has($name)) {
-            return $this->post->get($name);
-        } else {
-            return null;
+            return $this->post;
         }
+
+        if (isset($this->post[$name])) {
+            return $this->post[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -430,12 +435,14 @@ class Request extends Message
     public function getCookie($name = null)
     {
         if ($name === null) {
-            return $this->cookies->toArray();
-        } elseif ($this->cookies->has($name)) {
-            return $this->cookies->get($name);
-        } else {
-            return null;
+            return $this->cookies;
         }
+
+        if (isset($this->cookies[$name])) {
+            return $this->cookies[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -445,7 +452,7 @@ class Request extends Message
      */
     public function getCookieString()
     {
-        return str_replace('&', '; ', http_build_query($this->cookies->toArray()));
+        return str_replace('&', '; ', http_build_query($this->cookies));
     }
 
     /**
@@ -597,7 +604,7 @@ class Request extends Message
     {
         $url = $this->getUrlBase() . $this->path;
 
-        $parameters += $this->query->toArray();
+        $parameters += $this->query;
 
         if ($parameters) {
             $url .= '?' . http_build_query($parameters);
@@ -747,27 +754,15 @@ class Request extends Message
     }
 
     /**
-     * @todo breaks the immutability, might not be kept.
-     *
      * @param array $cookies
      *
      * @return void
      */
     public function setCookies(array $cookies)
     {
-        $this->doSetCookies(new CookieMap($cookies));
-    }
-
-    /**
-     * @param CookieMap $cookies
-     *
-     * @return void
-     */
-    private function doSetCookies(CookieMap $cookies)
-    {
         $this->cookies = $cookies;
 
-        if ($cookies->toArray()) {
+        if ($cookies) {
             $this->setHeader('Cookie', $this->getCookieString());
         }
     }
