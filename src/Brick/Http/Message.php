@@ -110,7 +110,7 @@ abstract class Message
     {
         $headers = $this->getHeaders($name);
 
-        return count($headers) != 0 ? $headers[0]->getValue() : null;
+        return $headers ? $headers[0]->getValue() : null;
     }
 
     /**
@@ -124,7 +124,7 @@ abstract class Message
     {
         $headers = $this->getHeaders($name);
 
-        return count($headers) != 0 ? $headers[count($headers) - 1]->getValue() : null;
+        return $headers ? $headers[count($headers) - 1]->getValue() : null;
     }
 
     /**

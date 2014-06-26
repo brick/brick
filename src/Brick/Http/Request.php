@@ -26,7 +26,7 @@ class Request extends Message
     private $cookies;
 
     /**
-     * @var UploadedFileMap
+     * @var array
      */
     private $files;
 
@@ -88,7 +88,7 @@ class Request extends Message
      * @param array           $post
      * @param array           $cookies
      * @param array           $headers
-     * @param UploadedFileMap $files
+     * @param array           $files
      * @param string|resource $body
      *
      * @throws HttpBadRequestException
@@ -104,7 +104,7 @@ class Request extends Message
         array $post,
         array $cookies,
         array $headers,
-        UploadedFileMap $files,
+        array $files,
         $body
     ) {
         $requestUri = (string) $requestUri;
@@ -183,7 +183,9 @@ class Request extends Message
      * @param string $clientIp
      * @param string $protocol
      * @param resource|null $body
+     *
      * @return Request
+     *
      * @throws HttpBadRequestException
      */
     public static function create(
@@ -238,7 +240,7 @@ class Request extends Message
             $post,
             $cookies,
             $headers,
-            new UploadedFileMap($files),
+            $files,
             $body
         );
 
@@ -270,7 +272,7 @@ class Request extends Message
 
         $post    = $_POST;
         $cookies = $_COOKIE;
-        $files   = UploadedFileMap::createFromFilesGlobal($_FILES);
+        $files   = UploadedFileMap::createFromFilesGlobal($_FILES)->toArray();
 
         $host = null;
 
@@ -353,12 +355,13 @@ class Request extends Message
     }
 
     /**
-     * @param boolean $https
+     * @param boolean $secure
+     *
      * @return integer
      */
-    private static function getStandardPort($https)
+    private static function getStandardPort($secure)
     {
-        return $https ? 443 : 80;
+        return $secure ? 443 : 80;
     }
 
     /**
@@ -446,11 +449,37 @@ class Request extends Message
     }
 
     /**
-     * @return UploadedFileMap
+     * @param string $name
+     *
+     * @return \Brick\Http\UploadedFile|null
      */
-    public function getFiles()
+    public function getUploadedFile($name)
     {
-        return $this->files;
+        if (isset($this->files[$name])) {
+            if ($this->files[$name] instanceof UploadedFile) {
+                return $this->files[$name];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return \Brick\Http\UploadedFile[]
+     */
+    public function getUploadedFiles($name)
+    {
+        if (isset($this->files[$name])) {
+            if (is_array($this->files[$name])) {
+                return array_filter($this->files[$name], function($item) {
+                    return $item instanceof UploadedFile;
+                });
+            }
+        }
+
+        return [];
     }
 
     /**
