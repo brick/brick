@@ -448,7 +448,7 @@ class Request extends Message
         $path = explode('.', $path);
 
         foreach ($path as $item) {
-            if (is_array($value)) {
+            if (is_array($value) && isset($value[$item])) {
                 $value = $value[$item];
             } else {
                 return null;
