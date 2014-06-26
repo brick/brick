@@ -365,23 +365,19 @@ class Request extends Message
     }
 
     /**
-     * Returns whether this request has the given query parameter.
+     * Returns the query parameter(s).
      *
-     * @param string $name
+     * You can optionally use a full path to the query parameter:
      *
-     * @return boolean
-     */
-    public function hasQuery($name)
-    {
-        return isset($this->query[$name]);
-    }
-
-    /**
-     * Returns one or all query parameters.
+     *     $request->getQuery('foo[bar]');
      *
-     * @param string|null $name The parameter name, or null to return all parameters as an associative array.
+     * Or even simpler:
      *
-     * @return string|array|null The query parameter(s), or null if the named parameter is not present.
+     *     $request->getQuery('foo.bar');
+     *
+     * @param string|null $name The parameter name, or null to return all query parameters.
+     *
+     * @return string|array|null The query parameter(s), or null if the path is not found.
      */
     public function getQuery($name = null)
     {
@@ -389,31 +385,15 @@ class Request extends Message
             return $this->query;
         }
 
-        if (isset($this->query[$name])) {
-            return $this->query[$name];
-        }
-
-        return null;
+        return $this->resolvePath($this->query, $name);
     }
 
     /**
-     * Returns whether this request has the given post parameter.
+     * Returns the post parameter(s).
      *
-     * @param string $name
+     * @param string|null $name The parameter name, or null to return all post parameters.
      *
-     * @return boolean
-     */
-    public function hasPost($name)
-    {
-        return isset($this->post[$name]);
-    }
-
-    /**
-     * Returns one or all post parameters.
-     *
-     * @param string|null $name The parameter name, or null to return all parameters as an associative array.
-     *
-     * @return string|array|null The post parameter(s), or null if the named parameter is not present.
+     * @return string|array|null The post parameter(s), or null if the path is not found.
      */
     public function getPost($name = null)
     {
@@ -421,19 +401,15 @@ class Request extends Message
             return $this->post;
         }
 
-        if (isset($this->post[$name])) {
-            return $this->post[$name];
-        }
-
-        return null;
+        return $this->resolvePath($this->post, $name);
     }
 
     /**
-     * Returns one or all cookies.
+     * Returns the cookie(s).
      *
-     * @param string|null $name The cookie name, or null to return all cookies as an associative array.
+     * @param string|null $name The cookie name, or null to return all cookies.
      *
-     * @return string|array|null The cookie value(s), or null is the named cookie is not present.
+     * @return string|array|null The cookie value(s), or null if the path is not found.
      */
     public function getCookie($name = null)
     {
@@ -441,45 +417,45 @@ class Request extends Message
             return $this->cookies;
         }
 
-        if (isset($this->cookies[$name])) {
-            return $this->cookies[$name];
-        }
-
-        return null;
+        return $this->resolvePath($this->cookies, $name);
     }
 
     /**
-     * @param string $name
+     * Returns the uploaded file(s).
      *
-     * @return \Brick\Http\UploadedFile|null
+     * @param string|null $name The name of the file input field, or null to return all files.
+     *
+     * @return \Brick\Http\UploadedFile|array|null
      */
-    public function getUploadedFile($name)
+    public function getFile($name = null)
     {
-        if (isset($this->files[$name])) {
-            if ($this->files[$name] instanceof UploadedFile) {
-                return $this->files[$name];
-            }
+        if ($name === null) {
+            return $this->files;
         }
 
-        return null;
+        return $this->resolvePath($this->files, $name);
     }
 
     /**
-     * @param string $name
+     * @param array  $value
+     * @param string $path
      *
-     * @return \Brick\Http\UploadedFile[]
+     * @return mixed
      */
-    public function getUploadedFiles($name)
+    private function resolvePath(array $value, $path)
     {
-        if (isset($this->files[$name])) {
-            if (is_array($this->files[$name])) {
-                return array_filter($this->files[$name], function($item) {
-                    return $item instanceof UploadedFile;
-                });
+        $path = preg_replace('/\[(.*?)\]/', '.$1', $path);
+        $path = explode('.', $path);
+
+        foreach ($path as $item) {
+            if (is_array($value)) {
+                $value = $value[$item];
+            } else {
+                return null;
             }
         }
 
-        return [];
+        return $value;
     }
 
     /**
