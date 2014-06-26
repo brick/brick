@@ -446,16 +446,6 @@ class Request extends Message
     }
 
     /**
-     * Returns the semicolon-separated cookies as they should appear in the Cookie header.
-     *
-     * @return string
-     */
-    public function getCookieString()
-    {
-        return str_replace('&', '; ', http_build_query($this->cookies));
-    }
-
-    /**
      * @return UploadedFileMap
      */
     public function getFiles()
@@ -763,7 +753,8 @@ class Request extends Message
         $this->cookies = $cookies;
 
         if ($cookies) {
-            $this->setHeader('Cookie', $this->getCookieString());
+            $cookie = str_replace('&', '; ', http_build_query($cookies));
+            $this->setHeader('Cookie', $cookie);
         }
     }
 }

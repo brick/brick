@@ -22,7 +22,7 @@ class CurlHandler implements RequestHandler
         $curl->setOption(CURLOPT_RETURNTRANSFER, true);
         $curl->setOption(CURLOPT_URL, $request->getUrl());
         $curl->setOption(CURLOPT_HTTPHEADER, $this->getHeaders($request));
-        $curl->setOption(CURLOPT_COOKIE, $request->getCookieString());
+        $curl->setOption(CURLOPT_COOKIE, $request->getFirstHeader('Cookie'));
 
         if ($request->isPost()) {
             $curl->setOption(CURLOPT_POST, true);
