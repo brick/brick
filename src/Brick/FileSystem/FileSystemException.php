@@ -14,7 +14,7 @@ class FileSystemException extends \RuntimeException
      */
     public static function wrap(\Exception $e)
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        return new self($e->getMessage(), $e->getCode(), $e);
     }
 
     /**

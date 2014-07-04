@@ -113,7 +113,7 @@ class File
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function($data) {
+        return $this->errorHandler->swallow(E_WARNING, function() use ($data) {
             return fwrite($this->handle, $data);
         });
     }
