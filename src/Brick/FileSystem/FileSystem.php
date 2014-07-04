@@ -397,6 +397,44 @@ class FileSystem
     }
 
     /**
+     * Changes the current working directory.
+     *
+     * The current working directory is used to resolve relative paths.
+     *
+     * @param string $path The path to the new working directory.
+     *
+     * @return void
+     *
+     * @throws FileSystemException If the path is not a directory, or an error occurs.
+     */
+    public function changeWorkingDirectory($path)
+    {
+        $this->throw = true;
+
+        $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+            chdir($path);
+        });
+    }
+
+    /**
+     * Returns the current working directory.
+     *
+     * @return string
+     *
+     * @throws FileSystemException If an error occurs.
+     */
+    public function getWorkingDirectory()
+    {
+        $path = getcwd();
+
+        if ($path === false) {
+            throw FileSystemException::cannotGetWorkingDirectory();
+        }
+
+        return $path;
+    }
+
+    /**
      * Creates a mirror copy of a file or directory.
      *
      * Directories will be copied recursively.

@@ -29,4 +29,12 @@ class FileSystemException extends \RuntimeException
             $path
         ));
     }
+
+    /**
+     * @return FileSystemException
+     */
+    public static function cannotGetWorkingDirectory()
+    {
+        return new self('Cannot get the current working directory.');
+    }
 }
