@@ -11,13 +11,6 @@ namespace Brick;
 class ErrorHandler
 {
     /**
-     * An optional function that will recieve an ErrorException when an error is swallowed.
-     *
-     * @var callable|null
-     */
-    private $errorExceptionHandler;
-
-    /**
      * The transient error handler that will be registered every time the swallow() method is called.
      *
      * @var callable
@@ -45,13 +38,11 @@ class ErrorHandler
      */
     public function __construct(callable $handler = null)
     {
-        $this->errorExceptionHandler = $handler;
-
-        $this->transientErrorHandler = function($level, $message, $file, $line, $context) {
+        $this->transientErrorHandler = function($level, $message, $file, $line, $context) use ($handler) {
             if ($this->severity & $level) {
-                if ($this->errorExceptionHandler) {
+                if ($handler) {
                     $exception = new \ErrorException($message, 0, $level, $file, $line);
-                    call_user_func($this->errorExceptionHandler, $exception);
+                    call_user_func($handler, $exception);
                 }
             } elseif ($this->previousErrorHandler) {
                 call_user_func($this->previousErrorHandler, $level, $message, $file, $line, $context);
@@ -74,9 +65,9 @@ class ErrorHandler
      * or the default error handler if none is set. This is what would happen if the code was
      * executed outside of the swallow() methods.
      *
-     * @param integer  $severity
-     * @param callable $function
-     * @param array    $parameters
+     * @param integer  $severity   The severity of the errors to catch.
+     * @param callable $function   The function to call.
+     * @param array    $parameters Any parameters to pass to the function.
      *
      * @return mixed
      */
