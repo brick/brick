@@ -186,15 +186,14 @@ class Session implements SessionInterface
         $lifetime = $this->cookieParams['lifetime'];
         $expires = ($lifetime == 0) ? 0 : time() + $lifetime;
 
-        $cookie = Cookie::create(
-            $this->cookieParams['name'],
-            $this->id,
-            $expires,
-            $this->cookieParams['path'],
-            $this->cookieParams['domain'],
-            $this->cookieParams['secure'],
-            $this->cookieParams['http-only']
-        );
+        $cookie = new Cookie($this->cookieParams['name'], $this->id);
+
+        $cookie
+            ->setExpires($expires)
+            ->setPath($this->cookieParams['path'])
+            ->setDomain($this->cookieParams['domain'])
+            ->setSecure($this->cookieParams['secure'])
+            ->setHttpOnly($this->cookieParams['http-only']);
 
         $response->setCookie($cookie);
     }

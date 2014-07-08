@@ -58,31 +58,17 @@ class Response extends Message
     /**
      * @var integer
      */
-    private $statusCode;
+    private $statusCode = 200;
 
     /**
      * @var string
      */
-    private $reasonPhrase;
+    private $reasonPhrase = 'OK';
 
     /**
      * @var \Brick\Http\Cookie[]
      */
     private $cookies = [];
-
-    /**
-     * Class constructor.
-     *
-     * @param string  $content    The response content.
-     * @param integer $statusCode The response status code.
-     * @param array   $headers    The response headers as an associative array.
-     */
-    public function __construct($content = '', $statusCode = 200, array $headers = [])
-    {
-        $this->setContent($content);
-        $this->setStatusCode($statusCode);
-        $this->addHeaders($headers);
-    }
 
     /**
      * Parses a raw response string, including headers and body, and returns a Response object.
@@ -153,21 +139,45 @@ class Response extends Message
     }
 
     /**
+     * Returns the reason phrase of this response.
+     *
+     * @return string
+     */
+    public function getReasonPhrase()
+    {
+        return $this->reasonPhrase;
+    }
+
+    /**
      * Sets the status code of this response.
      *
      * @param integer     $statusCode   The status code.
-     * @param string|null $reasonPhrase The reason phrase, or null to use the default.
+     * @param string|null $reasonPhrase An optional reason phrase, or null to use the default.
+     *
+     * @return static
+     *
+     * @throws \InvalidArgumentException If the status code is not valid.
      */
     public function setStatusCode($statusCode, $reasonPhrase = null)
     {
+        $statusCode = (int) $statusCode;
+
+        if ($statusCode < 100 || $statusCode > 999) {
+            throw new \InvalidArgumentException('Invalid  status code: ' . $statusCode);
+        }
+
         if ($reasonPhrase === null) {
             $reasonPhrase = isset(self::$statusCodes[$statusCode])
                 ? self::$statusCodes[$statusCode]
-                : 'UNKNOWN';
+                : 'Unknown';
+        } else {
+            $reasonPhrase = (string) $reasonPhrase;
         }
 
-        $this->statusCode = (int) $statusCode;
-        $this->reasonPhrase = (string) $reasonPhrase;
+        $this->statusCode   = $statusCode;
+        $this->reasonPhrase = $reasonPhrase;
+
+        return $this;
     }
 
     /**
@@ -190,7 +200,7 @@ class Response extends Message
     public function setCookie(Cookie $cookie)
     {
         $this->cookies[] = $cookie;
-        $this->addHeader('Set-Cookie', $cookie->toString());
+        $this->addHeader('Set-Cookie', (string) $cookie);
 
         return $this;
     }

@@ -13,6 +13,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $request = new Request();
 
+        $this->assertSame('GET / HTTP/1.0', $request->getStartLine());
         $this->assertSame('HTTP/1.0', $request->getProtocolVersion());
         $this->assertNull($request->getBody());
         $this->assertSame([], $request->getHeaders());

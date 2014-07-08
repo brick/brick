@@ -4,6 +4,8 @@ namespace Brick\Http;
 
 /**
  * An HTTP cookie.
+ *
+ * @todo Max-Age support.
  */
 class Cookie
 {
@@ -28,56 +30,46 @@ class Cookie
      *
      * @var integer
      */
-    private $expires;
+    private $expires = 0;
 
     /**
-     * The path on which the cookie is valid.
+     * The path on which the cookie is valid, or null if not set.
      *
      * @var string|null
      */
-    private $path;
+    private $path = null;
 
     /**
-     * The domain on which the cookie is valid.
+     * The domain on which the cookie is valid, or null if not set.
      *
      * @var string|null
      */
-    private $domain;
+    private $domain = null;
 
     /**
      * Whether the cookie should only be sent on a secure connection.
      *
      * @var boolean
      */
-    private $secure;
+    private $secure = false;
 
     /**
      * Whether the cookie should only be sent over the HTTP protocol.
      *
      * @var boolean
      */
-    private $httpOnly;
+    private $httpOnly = false;
 
     /**
-     * @param string       $name     The name of the cookie.
-     * @param string       $value    The value of the cookie.
-     * @param integer      $expires  The unix timestamp when the cookie expires, or zero if browser session cookie.
-     * @param string|null  $path     The path the cookie is valid on.
-     * @param string|null  $domain   The domain the cookie is valid on.
-     * @param boolean      $hostOnly Whether the cookie is only valid on the domain itself.
-     * @param boolean      $secure   Whether the cookie should only be sent on secure connections.
-     * @param boolean      $httpOnly Whether the cookie should only be sent over HTTP.
+     * Class constructor.
+     *
+     * @param string $name  The name of the cookie.
+     * @param string $value The value of the cookie.
      */
-    private function __construct($name, $value, $expires, $path, $domain, $hostOnly, $secure, $httpOnly)
+    public function __construct($name, $value)
     {
-        $this->name     = $name;
-        $this->value    = $value;
-        $this->expires  = $expires;
-        $this->path     = $path;
-        $this->domain   = $domain;
-        $this->hostOnly = $hostOnly;
-        $this->secure   = $secure;
-        $this->httpOnly = $httpOnly;
+        $this->name  = (string) $name;
+        $this->value = (string) $value;
     }
 
     /**
@@ -103,7 +95,9 @@ class Cookie
      *
      * @param string $string
      *
-     * @return Cookie|null The cookie, or null if the cookie string is not valid.
+     * @return Cookie The cookie.
+     *
+     * @throws \InvalidArgumentException If the cookie string is not valid.
      */
     public static function parse($string)
     {
@@ -111,16 +105,23 @@ class Cookie
         $nameValue = explode('=', array_shift($parts), 2);
 
         if (count($nameValue) != 2) {
-            return null;
+            throw new \InvalidArgumentException('The cookie string is not valid.');
         }
 
         list ($name, $value) = $nameValue;
+
+        if ($name === '') {
+            throw new \InvalidArgumentException('The cookie string is not valid.');
+        }
+
+        if ($value === '') {
+            throw new \InvalidArgumentException('The cookie string is not valid.');
+        }
 
         $value = rawurldecode($value);
         $expires = 0;
         $path = null;
         $domain = null;
-        $hostOnly = true;
         $secure = false;
         $httpOnly = false;
 
@@ -139,30 +140,29 @@ class Cookie
                     if (count($elements) == 2) {
                         switch (strtolower($elements[0])) {
                             case 'expires':
-                                // @todo using @ to suppress the timezone warning, might not be the best thing to do
+                                // Using @ to suppress the timezone warning, might not be the best thing to do.
                                 if (is_int($time = @ strtotime($elements[1]))) {
                                     $expires = $time;
                                 }
                                 break;
 
                             case 'path':
-                                if (is_string($p = substr($elements[1], 0, strrpos($elements[1], '/')))) {
-                                    $path = $p;
-                                }
+                                    $path = $elements[1];
                                 break;
 
                             case 'domain':
                                 $domain = strtolower(ltrim($elements[1], '.'));
-                                $hostOnly = false;
-
-                            case 'max-age':
-                                // @todo
                         }
                     }
             }
         }
 
-        return new Cookie($name, $value, $expires, $path, $domain, $hostOnly, $secure, $httpOnly);
+        return (new Cookie($name, $value))
+            ->setExpires($expires)
+            ->setPath($path)
+            ->setDomain($domain)
+            ->setSecure($secure)
+            ->setHttpOnly($httpOnly);
     }
 
     /**
@@ -190,11 +190,41 @@ class Cookie
     }
 
     /**
+     * Sets the cookie expiry time.
+     *
+     * @param integer $expires The unix timestamp at which the cookie expires, zero for a transient cookie.
+     *
+     * @return static This cookie.
+     */
+    public function setExpires($expires)
+    {
+        $this->expires = (int) $expires;
+
+        return $this;
+    }
+
+    /**
      * @return string|null
      */
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * @param string|null $path
+     *
+     * @return static This cookie.
+     */
+    public function setPath($path)
+    {
+        if ($path !== null) {
+            $path = (string) $path;
+        }
+
+        $this->path = $path;
+
+        return $this;
     }
 
     /**
@@ -206,11 +236,27 @@ class Cookie
     }
 
     /**
+     * @param string|null $domain
+     *
+     * @return static This cookie.
+     */
+    public function setDomain($domain)
+    {
+        if ($domain !== null) {
+            $domain = (string) $domain;
+        }
+
+        $this->domain = $domain;
+
+        return $this;
+    }
+
+    /**
      * @return boolean
      */
     public function isHostOnly()
     {
-        return $this->hostOnly;
+        return $this->domain === null;
     }
 
     /**
@@ -222,11 +268,47 @@ class Cookie
     }
 
     /**
-     * @return boolean
+     * Sets whether this cookie should only be sent over a secure connection.
+     *
+     * @param boolean $secure True to only send over a secure connection, false otherwise.
+     *
+     * @return static This cookie.
+     */
+    public function setSecure($secure)
+    {
+        $this->secure = (bool) $secure;
+
+        return $this;
+    }
+
+    /**
+     * Returns whether to limit the scope of this cookie to HTTP requests.
+     *
+     * @return boolean True if this cookie should only be sent over a secure connection, false otherwise.
      */
     public function isHttpOnly()
     {
         return $this->httpOnly;
+    }
+
+    /**
+     * Sets whether to limit the scope of this cookie to HTTP requests.
+     *
+     * Set to true to instruct the user agent to omit the cookie when providing access to
+     * cookies via "non-HTTP" APIs (such as a web browser API that exposes cookies to scripts).
+     *
+     * This helps mitigate the risk of client side script accessing the protected cookie
+     * (provided that the user agent supports it).
+     *
+     * @param boolean $httpOnly
+     *
+     * @return static This cookie.
+     */
+    public function setHttpOnly($httpOnly)
+    {
+        $this->httpOnly = (bool) $httpOnly;
+
+        return $this;
     }
 
     /**
@@ -236,7 +318,7 @@ class Cookie
      */
     public function isExpired()
     {
-        return $this->expires != 0 && $this->expires < time();
+        return $this->expires !== 0 && $this->expires < time();
     }
 
     /**
@@ -249,17 +331,17 @@ class Cookie
      */
     public function isPersistent()
     {
-        return $this->expires != 0;
+        return $this->expires !== 0;
     }
 
     /**
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
         $cookie = $this->name . '=' . rawurlencode($this->value);
 
-        if ($this->expires != 0) {
+        if ($this->expires !== 0) {
             $cookie .= '; Expires=' . gmdate('r', $this->expires);
         }
 
@@ -280,13 +362,5 @@ class Cookie
         }
 
         return $cookie;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 }
