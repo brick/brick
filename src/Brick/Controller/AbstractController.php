@@ -86,21 +86,22 @@ abstract class AbstractController
      */
     private function createResponse($data, $contentType)
     {
-        return new Response($data, 200, [
-            'Content-Type' => $contentType
-        ]);
+        return (new Response())
+            ->setContent($data)
+            ->setHeader('Content-Type', $contentType);
     }
 
     /**
-     * @param string $uri
+     * @param string  $uri
      * @param integer $statusCode
+     *
      * @return \Brick\Http\Response
      */
     protected function redirect($uri, $statusCode = 302)
     {
-        return new Response('', $statusCode, [
-            'Location' => $uri
-        ]);
+        return (new Response())
+            ->setStatusCode($statusCode)
+            ->setHeader('Location', $uri);
     }
 
     /**

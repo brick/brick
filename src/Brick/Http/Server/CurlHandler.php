@@ -22,11 +22,11 @@ class CurlHandler implements RequestHandler
         $curl->setOption(CURLOPT_RETURNTRANSFER, true);
         $curl->setOption(CURLOPT_URL, $request->getUrl());
         $curl->setOption(CURLOPT_HTTPHEADER, $this->getHeaders($request));
-        $curl->setOption(CURLOPT_COOKIE, $request->getFirstHeader('Cookie'));
+        $curl->setOption(CURLOPT_COOKIE, $request->getHeader('Cookie'));
 
-        if ($request->isPost()) {
+        if ($request->isMethod('POST')) {
             $curl->setOption(CURLOPT_POST, true);
-        } elseif (! $request->isGet()) {
+        } elseif (! $request->isMethod('GET')) {
             $curl->setOption(CURLOPT_CUSTOMREQUEST, $request->getMethod());
         }
 
@@ -39,7 +39,7 @@ class CurlHandler implements RequestHandler
                 break;
         }
 
-        if ($request->isPost()) {
+        if ($request->isMethod('POST')) {
             // @todo passing as an array will set Content-Type multipart/form-data
             // @todo this does not handle file uploads either
             $curl->setOption(CURLOPT_POSTFIELDS, $request->getPost());
@@ -52,14 +52,17 @@ class CurlHandler implements RequestHandler
 
     /**
      * @param Request $request
+     *
      * @return array
      */
     private function getHeaders(Request $request)
     {
         $headers = [];
 
-        foreach ($request->getHeaders() as $header) {
-            $headers[] = $header->toString();
+        foreach ($request->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                $headers[] = $name . ': ' . $value;
+            }
         }
 
         // Overrides cURL sending an Expect header, to avoid receiving a 100 Continue.
