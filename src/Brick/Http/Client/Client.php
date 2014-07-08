@@ -98,10 +98,12 @@ class Client
      */
     public function createRequest($method, $url, array $post = [], array $cookies = [], array $headers = [])
     {
-        $headers = array_merge($this->headers, $headers);
-        $request = Request::create($url, $method, $post, $cookies, $headers);
-
-        return $request;
+        return (new Request())
+            ->setMethod($method)
+            ->setUrl($url)
+            ->setPost($post)
+            ->setCookies($cookies)
+            ->setHeaders($headers + $this->headers);
     }
 
     /**
@@ -166,13 +168,13 @@ class Client
             throw new \LogicException('There is no redirection to follow.');
         }
 
-        $location = $response->getFirstHeader('Location');
+        $location = $response->getHeader('Location');
         $location = $this->getAbsoluteUrl($location);
 
         $request = $this->getLastRequest();
 
         if ($request->hasHeader('Referer')) {
-            $headers = ['Referer' => $request->getFirstHeader('Referer')];
+            $headers = ['Referer' => $request->getHeader('Referer')];
         } else {
             $headers = [];
         }

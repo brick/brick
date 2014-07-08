@@ -2,366 +2,282 @@
 
 namespace Brick\Http;
 
-use Brick\Type\Map;
-use Brick\Http\Exception\HttpBadRequestException;
-
 /**
- * Represents an HTTP request.
+ * Represents an HTTP request received by the server.
  */
 class Request extends Message
 {
+    const PREFER_HTTP_HOST   = 0; // Prefer HTTP_HOST, fall back to SERVER_NAME and SERVER_PORT.
+    const PREFER_SERVER_NAME = 1; // Prefer SERVER_NAME and SERVER_PORT, fall back to HTTP_HOST.
+    const ONLY_HTTP_HOST     = 2; // Only use HTTP_HOST if available, ignore SERVER_NAME and SERVER_PORT.
+    const ONLY_SERVER_NAME   = 3; // Only use SERVER_NAME and SERVER_PORT if available, ignore HTTP_HOST.
+
     /**
+     * The standard HTTP methods.
+     *
+     * According to RFC 2616, all methods should be treated in a case-sensitive way.
+     * However, many implementations still do not comply with the spec and treat the method as case-insensitive.
+     *
+     * For maximum compatibility, this implementation follows the pragmatic principle of XMLHttpRequest:
+     * - If the method case-insensitively matches a standard method, consider it case-insensitive.
+     * - If the method is not in this list, consider it case-sensitive.
+     *
+     * @see http://www.w3.org/TR/XMLHttpRequest/
+     *
      * @var array
      */
-    private $query;
+    private static $standardMethods = [
+        'CONNECT',
+        'DELETE',
+        'GET',
+        'HEAD',
+        'OPTIONS',
+        'POST',
+        'PUT',
+        'TRACE',
+        'TRACK'
+    ];
 
     /**
      * @var array
      */
-    private $post;
+    private $query = [];
 
     /**
      * @var array
      */
-    private $cookies;
+    private $post = [];
 
     /**
      * @var array
      */
-    private $files;
+    private $cookies = [];
+
+    /**
+     * @var array
+     */
+    private $files = [];
 
     /**
      * @var boolean
      */
-    private $isSecure;
+    private $isSecure = false;
+
+    /**
+     * The request method.
+     *
+     * @var string
+     */
+    private $method = 'GET';
 
     /**
      * @var string
      */
-    private $method;
-
-    /**
-     * @var string
-     */
-    private $host;
+    private $host = 'localhost';
 
     /**
      * @var integer
      */
-    private $port;
+    private $port = 80;
+
+    /**
+     * The Request-URI.
+     *
+     * @var string
+     */
+    private $requestUri = '/';
+
+    /**
+     * The part before the `?` in the Request-URI.
+     *
+     * @var string
+     */
+    private $path = '/';
+
+    /**
+     * The part after the `?` in the Request-URI.
+     *
+     * @var string
+     */
+    private $queryString = '';
 
     /**
      * @var string
      */
-    private $requestUri;
+    private $clientIp = '0.0.0.0';
 
     /**
-     * @var string
-     */
-    private $path;
-
-    /**
-     * @var string|null
-     */
-    private $queryString;
-
-    /**
-     * @var string
-     */
-    private $clientIp;
-
-    /**
-     * @var MessageBody
-     */
-    private $body;
-
-    /**
-     * Class constructor.
+     * Returns a Request object representing the current request.
      *
-     * @param string          $method
-     * @param string          $requestUri
-     * @param string          $protocolVersion
-     * @param string          $host
-     * @param int             $port
-     * @param string          $clientIp
-     * @param bool            $isSecure
-     * @param array           $post
-     * @param array           $cookies
-     * @param array           $headers
-     * @param array           $files
-     * @param string|resource $body
+     * Note that due to the way PHP works, the request body will be empty
+     * when the Content-Type is multipart/form-data.
      *
-     * @throws HttpBadRequestException
-     */
-    private function __construct(
-        $method,
-        $requestUri,
-        $protocolVersion,
-        $host,
-        $port,
-        $clientIp,
-        $isSecure,
-        array $post,
-        array $cookies,
-        array $headers,
-        array $files,
-        $body
-    ) {
-        $requestUri = (string) $requestUri;
-
-        if ($requestUri === '' || $requestUri[0] !== '/') {
-            // @todo Proxy requests are valid and start with http[s]://
-            throw new HttpBadRequestException('The Request URI must not be empty, and must start with a slash.');
-        }
-
-        $this->method          = strtoupper($method);
-        $this->requestUri      = $requestUri;
-        $this->protocolVersion = (string) $protocolVersion;
-        $this->host            = (string) $host;
-        $this->port            = (int)    $port;
-        $this->clientIp        = (string) $clientIp;
-        $this->isSecure        = (bool)   $isSecure;
-
-        $this->path = parse_url($this->requestUri, PHP_URL_PATH);
-
-        $this->queryString = parse_url($this->requestUri, PHP_URL_QUERY);
-
-        if (is_string($this->queryString)) {
-            parse_str($this->queryString, $query);
-        } else {
-            $query = [];
-        }
-
-        $headers['Host'] = $host;
-
-        $this->query = $query;
-        $this->post  = $post;
-        $this->files = $files;
-
-        $this->setCookies($cookies);
-
-        if ($post) {
-            $body = http_build_query($post);
-            $headers['Content-Length'] = strlen($body);
-
-            $this->body = new MessageBodyString($body);
-        } else {
-            if (is_resource($body)) {
-                if (! isset($headers['Content-Length'])) {
-                    $temp = fopen('php://temp', 'rb+');
-                    stream_copy_to_stream($body, $temp);
-                    $length = ftell($temp);
-                    fseek($temp, 0);
-                    $body = $temp;
-                } else {
-                    $length = 0;
-                }
-
-                $this->body = new MessageBodyResource($body);
-            } else {
-                $this->body = new MessageBodyString($body);
-                $length = strlen($body);
-            }
-
-            if ($length) {
-                $headers['Content-Length'] = $length;
-            }
-        }
-
-        $this->addHeaders($headers);
-    }
-
-    /**
-     * Creates a Request from a URL. Used for simulating HTTP requests.
+     * Note that the query string data is purposefully parsed from the REQUEST_URI,
+     * and not just taken from the $_GET superglobal.
+     * This is to provide a consistent behaviour even when mod_rewrite is in use.
      *
-     * @param string $url
-     * @param string $method
-     * @param array  $post
-     * @param array  $cookies
-     * @param array  $headers
-     * @param array  $files
-     * @param string $clientIp
-     * @param string $protocol
-     * @param resource|null $body
+     * @param boolean $trustProxy     Whether to trust X-Forwarded-* headers.
+     * @param integer $hostPortSource One of the PREFER_* or ONLY_* constants.
      *
      * @return Request
-     *
-     * @throws HttpBadRequestException
      */
-    public static function create(
-        $url,
-        $method = 'GET',
-        array $post = [],
-        array $cookies = [],
-        array $headers = [],
-        array $files = [],
-        $clientIp = '0.0.0.0',
-        $protocol = self::HTTP_1_1,
-        $body = null
-    ) {
-        $urlParts = parse_url($url);
+    public static function getCurrent($trustProxy = false, $hostPortSource = self::PREFER_HTTP_HOST)
+    {
+        $request = new Request();
 
-        if (! isset($urlParts['scheme'])) {
-            throw new HttpBadRequestException('The URL provided has no scheme');
+        if (isset($_SERVER['HTTPS'])) {
+            if ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === '1') {
+                $request->isSecure = true;
+                $request->port = 443;
+            }
         }
 
-        $scheme = strtolower($urlParts['scheme']);
-        if (! in_array($scheme, ['http', 'https'])) {
-            throw new HttpBadRequestException('Invalid scheme: ' . $scheme);
+        $httpHost = null;
+        $httpPort = null;
+
+        $serverName = null;
+        $serverPort = null;
+
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+            $pos = strrpos($host, ':');
+
+            if ($pos === false) {
+                $httpHost = $host;
+                $httpPort = $request->port;
+            } else {
+                $httpHost = substr($host, 0, $pos);
+                $httpPort = (int) substr($host, $pos + 1);
+            }
         }
 
-        $isSecure = ($scheme == 'https');
-
-        if (! isset($urlParts['host'])) {
-            throw new HttpBadRequestException('The URL provided has no host');
+        if (isset($_SERVER['SERVER_NAME'])) {
+            $serverName = $_SERVER['SERVER_NAME'];
         }
 
-        $host = $urlParts['host'];
-
-        $port = isset($urlParts['port']) ? $urlParts['port'] : self::getStandardPort($isSecure);
-
-        $requestUri = isset($urlParts['path']) ? $urlParts['path'] : '/';
-        if (isset($urlParts['query'])) {
-            $requestUri .= '?' . $urlParts['query'];
+        if (isset($_SERVER['SERVER_PORT'])) {
+            $serverPort = (int) $_SERVER['SERVER_PORT'];
         }
 
-        if ($body === null) {
-            $body = fopen('php://memory', 'r');
+        $host = null;
+        $port = null;
+
+        switch ($hostPortSource) {
+            case self::PREFER_HTTP_HOST:
+                $host = ($httpHost !== null) ? $httpHost : $serverName;
+                $port = ($httpPort !== null) ? $httpPort : $serverPort;
+                break;
+
+            case self::PREFER_SERVER_NAME:
+                $host = ($serverName !== null) ? $serverName : $httpHost;
+                $port = ($serverPort !== null) ? $serverPort : $httpPort;
+                break;
+
+            case self::ONLY_HTTP_HOST:
+                $host = $httpHost;
+                $port = $httpPort;
+                break;
+
+            case self::ONLY_SERVER_NAME:
+                $host = $serverName;
+                $port = $serverPort;
+                break;
         }
 
-        $request = new Request(
-            $method,
-            $requestUri,
-            $protocol,
-            $host,
-            $port,
-            $clientIp,
-            $isSecure,
-            $post,
-            $cookies,
-            $headers,
-            $files,
-            $body
-        );
+        if ($host !== null) {
+            $request->host = $host;
+        }
+
+        if ($port !== null) {
+            $request->port = $port;
+        }
+
+        if (isset($_SERVER['REQUEST_METHOD'])) {
+            $request->method = $_SERVER['REQUEST_METHOD'];
+        }
+
+        if (isset($_SERVER['REQUEST_URI'])) {
+            $request->setRequestUri($_SERVER['REQUEST_URI']);
+        }
+
+        if (isset($_SERVER['SERVER_PROTOCOL'])) {
+            $request->protocolVersion = $_SERVER['SERVER_PROTOCOL'];
+        }
+
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $request->clientIp = $_SERVER['REMOTE_ADDR'];
+        }
+
+        $request->headers = self::getCurrentRequestHeaders();
+
+        $request->post    = $_POST;
+        $request->cookies = $_COOKIE;
+        $request->files   = UploadedFileMap::createFromFilesGlobal($_FILES);
+
+        if (isset($_SERVER['CONTENT_LENGTH']) || isset($_SERVER['HTTP_TRANSFER_ENCODING'])) {
+            $request->body = new MessageBodyResource(fopen('php://input', 'rb'));
+        }
+
+        if ($trustProxy) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $ips = preg_split('/,\s*/', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $request->clientIp = array_pop($ips);
+            }
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+                $request->host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+            }
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+                $request->port = (int) $_SERVER['HTTP_X_FORWARDED_PORT'];
+            }
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+                $request->isSecure = $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https';
+            }
+        }
 
         return $request;
     }
 
     /**
-     * Returns a Request object representing the current request.
+     * Returns the current request headers.
      *
-     * The query string data is purposefully parsed from the REQUEST_URI, and not from the $_GET superglobal,
-     * to provide a consistent behaviour even when mod_rewrite is in use.
-     *
-     * @todo use $_SERVER['REQUEST_SCHEME'] when available?
-     *
-     * @param boolean $trustProxy Whether to trust X-Forwarded-* headers.
-     *
-     * @return Request
-     * @throws HttpBadRequestException
-     */
-    public static function getCurrent($trustProxy = false)
-    {
-        $server = new Map($_SERVER, false);
-
-        $isSecure   = $server->has('HTTPS') && in_array(strtolower($server->get('HTTPS')), ['on', '1']);
-        $method     = $server->get('REQUEST_METHOD');
-        $requestUri = $server->get('REQUEST_URI');
-        $protocol   = $server->get('SERVER_PROTOCOL');
-        $clientIp   = $server->get('REMOTE_ADDR');
-
-        $post    = $_POST;
-        $cookies = $_COOKIE;
-        $files   = UploadedFileMap::createFromFilesGlobal($_FILES)->toArray();
-
-        $host = null;
-
-        $headers = self::getHeadersFromGlobals();
-
-        foreach ($headers as $name => $value) {
-            if (strtolower($name) == 'host') {
-                $host = $value;
-            }
-        }
-
-        if ($host === null) {
-            $host = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_SERVER['SERVER_ADDR'];
-        }
-
-        preg_match('/^(.*?)(?:\:([0-9]+))?$/', $host, $matches);
-
-        $host = $matches[1];
-        $port = isset($matches[2]) ? $matches[2] : self::getStandardPort($isSecure);
-
-        $body = fopen('php://input', 'rb');
-
-        if ($trustProxy) {
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $ips = preg_split('/,\s*/', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $ip = array_pop($ips);
-
-                $clientIp = $ip;
-            }
-
-            if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
-                $port = $_SERVER['HTTP_X_FORWARDED_PORT'];
-            }
-
-            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-                $isSecure = $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https';
-            }
-        }
-
-        return new Request(
-            $method,
-            $requestUri,
-            $protocol,
-            $host,
-            $port,
-            $clientIp,
-            $isSecure,
-            $post,
-            $cookies,
-            $headers,
-            $files,
-            $body
-        );
-    }
-
-    /**
-     * Returns an associative array of headers from the current request.
+     * The headers are prepared in the format expected by `Message::$headers`:
+     *   - keys are lowercased
+     *   - values are arrays of strings
      *
      * @return array
      */
-    private static function getHeadersFromGlobals()
+    private static function getCurrentRequestHeaders()
     {
-        if (is_array($headers = apache_request_headers())) {
-            return $headers;
-        }
-
         $headers = [];
 
+        if (function_exists('apache_request_headers')) {
+            $requestHeaders = apache_request_headers();
+
+            if ($requestHeaders) {
+                foreach ($requestHeaders as $key => $value) {
+                    $key = strtolower($key);
+                    $headers[$key] = [$value];
+                }
+
+                return $headers;
+            }
+        }
+
         foreach ($_SERVER as $key => $value) {
-            if (strpos($key, 'HTTP_') === 0) {
-                $headers[self::normalizeHeaderName(substr($key, 5))] = $value;
+            if (substr($key, 0, 5) === 'HTTP_') {
+                $key = substr($key, 5);
+            } elseif ($key !== 'CONTENT_TYPE' && $key !== 'CONTENT_LENGTH') {
+                continue;
             }
-            elseif (in_array($key, ['CONTENT_LENGTH', 'CONTENT_TYPE'])) {
-                // These variables are not prefixed with HTTP_
-                $headers[self::normalizeHeaderName($key)] = $value;
-            }
+
+            $key = strtolower(str_replace('_', '-', $key));
+            $headers[$key] = [$value];
         }
 
         return $headers;
-    }
-
-    /**
-     * @param boolean $secure
-     *
-     * @return integer
-     */
-    private static function getStandardPort($secure)
-    {
-        return $secure ? 443 : 80;
     }
 
     /**
@@ -389,6 +305,27 @@ class Request extends Message
     }
 
     /**
+     * Sets the query parameters.
+     *
+     * @param array $query The associative array of parameters.
+     *
+     * @return static This request.
+     */
+    public function setQuery(array $query)
+    {
+        $this->query = $query;
+        $this->queryString = http_build_query($query);
+
+        $this->requestUri = $this->path;
+
+        if ($this->queryString != '') {
+            $this->requestUri .= '?' . $this->queryString;
+        }
+
+        return $this;
+    }
+
+    /**
      * Returns the post parameter(s).
      *
      * @param string|null $name The parameter name, or null to return all post parameters.
@@ -402,6 +339,107 @@ class Request extends Message
         }
 
         return $this->resolvePath($this->post, $name);
+    }
+
+    /**
+     * Sets the post parameter.
+     *
+     * This will set a request body with the URL-encoded data,
+     * unless the Content-Type of this request is multipart/form-data,
+     * in which case the body is left as is.
+     *
+     * @param array $post The associative array of parameters.
+     *
+     * @return static This request.
+     */
+    public function setPost(array $post)
+    {
+        $this->post = $post;
+
+        if (! $this->isContentType('multipart/form-data')) {
+            $body = http_build_query($post);
+            $body = new MessageBodyString($body);
+
+            $this->setBody($body);
+            $this->setHeader('Content-Type', 'x-www-form-urlencoded');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the uploaded file by the given name.
+     *
+     * If no uploaded file exists by that name,
+     * or if the name maps to an array of uploaded files,
+     * this method returns NULL.
+     *
+     * @param string $name The name of the file input field.
+     *
+     * @return \Brick\Http\UploadedFile|null The uploaded file, or NULL if not found.
+     */
+    public function getFile($name)
+    {
+        $file = $this->resolvePath($this->files, $name);
+
+        if ($file instanceof UploadedFile) {
+            return $file;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the uploaded files under the given name.
+     *
+     * If no uploaded files by that name exist, an empty array is returned.
+     *
+     * @param string $name The name of the file input fields.
+     *
+     * @return \Brick\Http\UploadedFile[] The uploaded files.
+     */
+    public function getFiles($name = null)
+    {
+        if ($name === null) {
+            return $this->files;
+        }
+
+        $files = $this->resolvePath($this->files, $name);
+
+        if ($files instanceof UploadedFile) {
+            return [$files];
+        }
+
+        if (is_array($files)) {
+            return array_filter($files, function ($file) {
+                return $file instanceof UploadedFile;
+            });
+        }
+
+        return [];
+    }
+
+    /**
+     * Sets the uploaded files.
+     *
+     * This will replace the message body, if any, with an empty body.
+     * This is in line with the values available when dealing with a multipart request in PHP.
+     *
+     * @param array $files An associative array of uploaded files.
+     *
+     * @return static This request.
+     */
+    public function setFiles(array $files)
+    {
+        $this->files = $files;
+        $this->body  = new MessageBodyString('');
+
+        $this->setHeaders([
+            'Content-Type'   => 'multipart/form-data',
+            'Content-Length' => '0'
+        ]);
+
+        return $this;
     }
 
     /**
@@ -421,19 +459,40 @@ class Request extends Message
     }
 
     /**
-     * Returns the uploaded file(s).
+     * Adds cookies to this request.
      *
-     * @param string|null $name The name of the file input field, or null to return all files.
+     * Existing cookies with the same name will be replaced.
      *
-     * @return \Brick\Http\UploadedFile|array|null
+     * @param array $cookies An associative array of cookies.
+     *
+     * @return static This request.
      */
-    public function getFile($name = null)
+    public function addCookies(array $cookies)
     {
-        if ($name === null) {
-            return $this->files;
+        return $this->setCookies($cookies + $this->cookies);
+    }
+
+    /**
+     * Sets the cookies for this request.
+     *
+     * All existing cookies will be replaced.
+     *
+     * @param array $cookies An associative array of cookies.
+     *
+     * @return static This request.
+     */
+    public function setCookies(array $cookies)
+    {
+        $this->cookies = $cookies;
+
+        if ($cookies) {
+            $cookie = str_replace('&', '; ', http_build_query($cookies));
+            $this->setHeader('Cookie', $cookie);
+        } else {
+            $this->removeHeader('Cookie');
         }
 
-        return $this->resolvePath($this->files, $name);
+        return $this;
     }
 
     /**
@@ -467,15 +526,9 @@ class Request extends Message
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * @return string
+     * Returns the request method, such as GET or POST.
+     *
+     * @return string The request method.
      */
     public function getMethod()
     {
@@ -483,6 +536,41 @@ class Request extends Message
     }
 
     /**
+     * Sets the request method.
+     *
+     * If the method case-insensitively matches a standard method, it will be converted to uppercase.
+     *
+     * @param string $method The new request method.
+     *
+     * @return static This request.
+     */
+    public function setMethod($method)
+    {
+        $this->method = $this->fixMethodCase($method);
+
+        return $this;
+    }
+
+    /**
+     * Returns whether this request method matches the given one.
+     *
+     * Example: $request->isMethod('POST');
+     *
+     * If the method case-insensitively matches a standard method, the comparison will be case-insensitive.
+     * Otherwise, the comparison will be case-sensitive.
+     *
+     * @param string $method The method to test this request against.
+     *
+     * @return boolean True if this request matches the method, false otherwise.
+     */
+    public function isMethod($method)
+    {
+        return $this->method === $this->fixMethodCase($method);
+    }
+
+    /**
+     * Returns whether this request method is GET or HEAD.
+     *
      * @return boolean
      */
     public function isMethodSafe()
@@ -491,20 +579,25 @@ class Request extends Message
     }
 
     /**
-     * Returns whether this request method matches the given one.
+     * Fixes a method case.
      *
-     * Example: $request->is('post');
+     * @see \Brick\Http\Request::$standardMethods
      *
-     * @param string $method The method to test this request against, case-insensitive.
+     * @param string $method
      *
-     * @return boolean
+     * @return string
      */
-    public function is($method)
+    private function fixMethodCase($method)
     {
-        return $this->method === strtoupper($method);
+        $upperMethod = strtoupper($method);
+        $isStandard = in_array($upperMethod, self::$standardMethods, true);
+
+        return $isStandard ? $upperMethod : $method;
     }
 
     /**
+     * Returns the request scheme, http or https.
+     *
      * @return string
      */
     public function getScheme()
@@ -513,7 +606,33 @@ class Request extends Message
     }
 
     /**
-     * @return string
+     * Sets the request scheme.
+     *
+     * @param string $scheme The new request scheme.
+     *
+     * @return static This request.
+     *
+     * @throws \InvalidArgumentException If the scheme is not http or https.
+     */
+    public function setScheme($scheme)
+    {
+        $scheme = strtolower($scheme);
+
+        if ($scheme === 'http') {
+            $this->isSecure = false;
+        } elseif ($scheme === 'https') {
+            $this->isSecure = true;
+        } else {
+            throw new \InvalidArgumentException('The scheme must be http or https.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the host name of this request.
+     *
+     * @return string The host name.
      */
     public function getHost()
     {
@@ -521,7 +640,11 @@ class Request extends Message
     }
 
     /**
-     * @return array
+     * Returns the parts of the host name separated by dots, as an array.
+     *
+     * Example: `www.example.com` => `['www', 'example', 'com']`
+     *
+     * @return array The host parts.
      */
     public function getHostParts()
     {
@@ -529,7 +652,25 @@ class Request extends Message
     }
 
     /**
-     * @return int
+     * Sets the host name of this request.
+     *
+     * This will update the Host header accordingly.
+     *
+     * @param string $host The new host name.
+     *
+     * @return static This request.
+     */
+    public function setHost($host)
+    {
+        $this->host = (string) $host;
+
+        return $this->updateHostHeader();
+    }
+
+    /**
+     * Returns the port number of this request.
+     *
+     * @return integer The port number.
      */
     public function getPort()
     {
@@ -537,7 +678,46 @@ class Request extends Message
     }
 
     /**
-     * @return string
+     * Sets the port number of this request.
+     *
+     * This will update the Host header accordingly.
+     *
+     * @param integer $port The new port number.
+     *
+     * @return static This request.
+     */
+    public function setPort($port)
+    {
+        $this->port = (int) $port;
+
+        return $this->updateHostHeader();
+    }
+
+    /**
+     * Updates the Host header from the values of host and port.
+     *
+     * @return static This request.
+     */
+    private function updateHostHeader()
+    {
+        $host = $this->host;
+        $standardPort = $this->isSecure ? 443 : 80;
+
+        if ($this->port !== $standardPort) {
+            $host .= ':' . $this->port;
+        }
+
+        return $this->setHeader('Host', $host);
+    }
+
+    /**
+     * Returns the request path.
+     *
+     * This does not include the query string.
+     *
+     * Example: `/user/profile`
+     *
+     * @return string The request path.
      */
     public function getPath()
     {
@@ -545,6 +725,10 @@ class Request extends Message
     }
 
     /**
+     * Returns the parts of the path separated by slashes, as an array.
+     *
+     * Example: `/user/profile` => `['user', 'profile']`
+     *
      * @return array
      */
     public function getPathParts()
@@ -553,23 +737,76 @@ class Request extends Message
     }
 
     /**
-     * @return bool
+     * Sets the request path.
+     *
+     * Example: `/user/profile`
+     *
+     * @param string $path The new request path.
+     *
+     * @return static This request.
+     *
+     * @throws \InvalidArgumentException If the path is not valid.
      */
-    public function hasQueryString()
+    public function setPath($path)
     {
-        return $this->queryString !== null;
+        if (strpos($path, '?') !== false) {
+            throw new \InvalidArgumentException('The request path must not contain a query string.');
+        }
+
+        $this->path = (string) $path;
+
+        return $this->updateRequestUri();
     }
 
     /**
-     * @return string
+     * Returns the query string.
+     *
+     * The query string is the part after the `?` in the URL.
+     *
+     * If this request has no query string, an empty string is returned.
+     *
+     * @return string The query string.
      */
     public function getQueryString()
     {
-        return $this->queryString === null ? '' : $this->queryString;
+        return $this->queryString;
     }
 
     /**
-     * @return string
+     * Sets the query string.
+     *
+     * @param string $queryString The new query string.
+     *
+     * @return static This request.
+     */
+    public function setQueryString($queryString)
+    {
+        $this->queryString = (string) $queryString;
+        parse_str($this->queryString, $this->query);
+
+        return $this->updateRequestUri();
+    }
+
+    /**
+     * Updates the request URI from the values of path and query string.
+     *
+     * @return static This request.
+     */
+    private function updateRequestUri()
+    {
+        $this->requestUri = $this->path;
+
+        if ($this->queryString != '') {
+            $this->requestUri .= '?' . $this->queryString;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the request URI.
+     *
+     * @return string The request URI.
      */
     public function getRequestUri()
     {
@@ -577,25 +814,45 @@ class Request extends Message
     }
 
     /**
-     * @return boolean
+     * Sets the request URI.
+     *
+     * This will update the request path, query string, and query parameters.
+     *
+     * @param string $requestUri
+     *
+     * @return static
      */
-    private function isStandardPort()
+    public function setRequestUri($requestUri)
     {
-        return $this->port == self::getStandardPort($this->isSecure);
+        $requestUri = (string) $requestUri;
+        $pos = strpos($requestUri, '?');
+
+        if ($pos === false) {
+            $this->path = $requestUri;
+            $this->queryString = '';
+            $this->query = [];
+        } else {
+            $this->path = substr($requestUri, 0, $pos);
+            $queryString = substr($requestUri, $pos + 1);
+
+            if ($queryString === false) {
+                $this->queryString = '';
+                $this->query = [];
+            } else {
+                $this->queryString = $queryString;
+                parse_str($this->queryString, $this->query);
+            }
+        }
+
+        $this->requestUri = $requestUri;
+
+        return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getUrlBase()
-    {
-        $url  = sprintf('%s://%s', $this->getScheme(), $this->host);
-
-        return $this->isStandardPort() ? $url : $url . ':' . $this->port;
-    }
-
-    /**
-     * @return string
+     * Returns the URL of this request.
+     *
+     * @return string The request URL.
      */
     public function getUrl()
     {
@@ -603,7 +860,87 @@ class Request extends Message
     }
 
     /**
-     * Returns the request URL with update query parameters.
+     * Returns the scheme and host name of this request.
+     *
+     * @return string The base URL.
+     */
+    public function getUrlBase()
+    {
+        $url = sprintf('%s://%s', $this->getScheme(), $this->host);
+        $isStandardPort = ($this->port === ($this->isSecure ? 443 : 80));
+
+        return $isStandardPort ? $url : $url . ':' . $this->port;
+    }
+
+    /**
+     * Sets the request URL.
+     *
+     * @param string $url The new URL.
+     *
+     * @return static This request.
+     *
+     * @throws \InvalidArgumentException If the URL is not valid.
+     */
+    public function setUrl($url)
+    {
+        $components = parse_url($url);
+
+        if ($components === false) {
+            throw new \InvalidArgumentException('The URL provided is not valid.');
+        }
+
+        if (! isset($components['scheme'])) {
+            throw new \InvalidArgumentException('The URL must have a scheme.');
+        }
+
+        $scheme = strtolower($components['scheme']);
+
+        if ($scheme !== 'http' && $scheme !== 'https') {
+            throw new \InvalidArgumentException(sprintf('The URL scheme "%s" is not acceptable.', $scheme));
+        }
+
+        $isSecure = ($scheme === 'https');
+
+        if (! isset($components['host'])) {
+            throw new \InvalidArgumentException('The URL must have a host name.');
+        }
+
+        $host = $components['host'];
+
+        if (isset($components['port'])) {
+            $port = $components['port'];
+            $hostHeader = $host . ':' . $port;
+        } else {
+            $port = ($isSecure ? 443 : 80);
+            $hostHeader = $host;
+        }
+
+        $this->path = isset($components['path']) ? $components['path'] : '/';
+        $requestUri = $this->path;
+
+        if (isset($components['query'])) {
+            $this->queryString = $components['query'];
+            parse_str($this->queryString, $this->query);
+            $requestUri .= '?' . $this->queryString;
+        } else {
+            $this->queryString = '';
+            $this->query = [];
+        }
+
+        $this->setHeader('Host', $hostHeader);
+
+        $this->host = $host;
+        $this->port = $port;
+        $this->isSecure = $isSecure;
+        $this->requestUri = $requestUri;
+
+        return $this;
+    }
+
+    /**
+     * Returns the request URL with updated query parameters.
+     *
+     * @deprecated
      *
      * @param array $parameters The query parameters to add/replace.
      *
@@ -623,7 +960,9 @@ class Request extends Message
     }
 
     /**
-     * @return boolean
+     * Returns whether this request is sent over a secure connection (HTTPS).
+     *
+     * @return boolean True if the request is secure, false otherwise.
      */
     public function isSecure()
     {
@@ -631,7 +970,30 @@ class Request extends Message
     }
 
     /**
-     * @return string
+     * Sets whether this request is sent over a secure connection.
+     *
+     * @param boolean $isSecure True to mark the request as secure, false to mark it as not secure.
+     *
+     * @return static This request.
+     */
+    public function setSecure($isSecure)
+    {
+        $isSecure = (bool) $isSecure;
+        $isStandardPort = ($this->port === ($this->isSecure ? 443 : 80));
+
+        if ($isStandardPort) {
+            $this->port = $isSecure ? 443 : 80;
+        }
+
+        $this->isSecure = $isSecure;
+
+        return $this;
+    }
+
+    /**
+     * Returns the client IP address.
+     *
+     * @return string The IP address.
      */
     public function getClientIp()
     {
@@ -639,77 +1001,126 @@ class Request extends Message
     }
 
     /**
-     * @return string|null
+     * Sets the client IP address.
+     *
+     * @param string $ip The new IP address.
+     *
+     * @return static This request.
      */
-    public function getUserAgent()
+    public function setClientIp($ip)
     {
-        return $this->getFirstHeader('User-Agent');
+        $this->clientIp = (string) $ip;
+
+        return $this;
     }
 
     /**
-     * @return integer
-     */
-    public function getContentLength()
-    {
-        if ($this->hasHeader('Content-Length')) {
-            return (int) $this->getFirstHeader('Content-Length');
-        }
-
-        return 0;
-    }
-
-    /**
-     * @return array
+     * Returns the languages accepted by the client.
+     *
+     * This method parses the Accept-Language header,
+     * and returns an associative array where keys are language tags,
+     * and values are the associated weights in the range [0-1]. Highest weights are returned first.
+     *
+     * @return array The accepted languages.
      */
     public function getAcceptLanguage()
     {
-        if (! $this->hasHeader('Accept-Language')) {
-            return [];
-        }
+        return $this->parseQualityValues($this->getHeader('Accept-Language'));
+    }
+
+    /**
+     * Parses quality values as defined per RFC 7231 § 5.3.1.
+     *
+     * @param string $header The header value as a string.
+     *
+     * @return array The parsed values as an associative array mapping the string to the quality value.
+     */
+    private function parseQualityValues($header)
+    {
+        $values = $this->parseHeaderParameters($header);
 
         $result = [];
-        $languages = preg_split('/,\s*/', $this->getFirstHeader('Accept-Language'));
-        $pattern = '/^([a-z]+(?:[\-_][a-z]+)*)(?:;\s*q=(0(?:\.[0-9]+)?|1(?:\.0+)?))?$/i';
 
-        $weight = $total = count($languages);
+        $count = count($values);
+        $position = $count - 1;
 
-        foreach ($languages as $language) {
-            if (preg_match($pattern, $language, $matches) == 0) {
+        foreach ($values as $value => $parameters) {
+            $parameters = array_change_key_case($parameters, CASE_LOWER);
+
+            if (isset($parameters['q'])) {
+                if (preg_match('/^((?:0\.?[0-9]{0,3})|(?:1\.?0{0,3}))$/', $parameters['q']) === 0) {
+                    continue;
+                }
+
+                $quality = (float) $parameters['q'];
+            } else {
+                $quality = 1.0;
+            }
+
+            $weight = $position + $count * (int) ($quality * 1000.0);
+
+            $result[] = [$value, $quality, $weight];
+
+            $position--;
+        }
+
+        usort($result, function(array $a, array $b) {
+            return $b[2] - $a[2];
+        });
+
+        $values = [];
+
+        foreach ($result as $value) {
+            $values[$value[0]] = $value[1];
+        }
+
+        return $values;
+    }
+
+    /**
+     * Parses a header with multiple values and optional parameters.
+     *
+     * Example: text/html; charset=utf8, text/xml => ['text/html' => ['charset' => 'utf8'], 'text/xml' => []]
+     *
+     * @param string $header The header to parse.
+     *
+     * @return array An associative array of values and theirs parameters.
+     */
+    private function parseHeaderParameters($header)
+    {
+        $result = [];
+        $values = explode(',', $header);
+
+        foreach ($values as $parts) {
+            $parameters = [];
+            $parts = explode(';', $parts);
+            $item = trim(array_shift($parts));
+
+            if ($item === '') {
                 continue;
             }
 
-            $quality = isset($matches[2]) ? (float) $matches[2] : 1.0;
-            $quality = $quality * $total + $weight;
+            foreach ($parts as $part) {
+                if (preg_match('/^\s*([^\=]+)\=(.*?)\s*$/', $part, $matches) === 0) {
+                    continue;
+                }
 
-            $result[$matches[1]] = $quality;
-            $weight--;
+                $parameters[$matches[1]] = $matches[2];
+            }
+
+            $result[$item] = $parameters;
         }
 
-        arsort($result);
-
-        return array_keys($result);
+        return $result;
     }
 
     /**
-     * @return boolean
+     * Returns whether this request is sent with an XMLHttpRequest object.
+     *
+     * @return boolean True if the request is AJAX, false otherwise.
      */
     public function isAjax()
     {
-        return $this->getFirstHeader('X-Requested-With') == 'XMLHttpRequest';
-    }
-
-    /**
-     * @param array $cookies
-     *
-     * @return void
-     */
-    public function setCookies(array $cookies)
-    {
-        $this->cookies = $cookies;
-
-        if ($cookies) {
-            $cookie = str_replace('&', '; ', http_build_query($cookies));
-            $this->setHeader('Cookie', $cookie);
-        }
+        return $this->getHeader('X-Requested-With') === 'XMLHttpRequest';
     }
 }

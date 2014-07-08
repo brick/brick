@@ -3,7 +3,7 @@
 namespace Brick\Http;
 
 /**
- * Represents an HTTP response.
+ * Represents an HTTP response to send back to the client.
  */
 class Response extends Message
 {
@@ -12,7 +12,7 @@ class Response extends Message
      *
      * @var array
      */
-    private $statusCodes = [
+    private static $statusCodes = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -56,13 +56,6 @@ class Response extends Message
     ];
 
     /**
-     * @todo should be a body object, just like RequestBody (can be shared)
-     *
-     * @var string
-     */
-    private $content;
-
-    /**
      * @var integer
      */
     private $statusCode;
@@ -73,7 +66,7 @@ class Response extends Message
     private $reasonPhrase;
 
     /**
-     * @var Cookie[]
+     * @var \Brick\Http\Cookie[]
      */
     private $cookies = [];
 
@@ -84,7 +77,7 @@ class Response extends Message
      * @param integer $statusCode The response status code.
      * @param array   $headers    The response headers as an associative array.
      */
-    public function __construct($content = '', $statusCode = 200, $headers = [])
+    public function __construct($content = '', $statusCode = 200, array $headers = [])
     {
         $this->setContent($content);
         $this->setStatusCode($statusCode);
@@ -150,7 +143,9 @@ class Response extends Message
     }
 
     /**
-     * @return integer
+     * Returns the status code of this response.
+     *
+     * @return integer The status code.
      */
     public function getStatusCode()
     {
@@ -158,25 +153,39 @@ class Response extends Message
     }
 
     /**
+     * Sets the status code of this response.
+     *
      * @param integer     $statusCode   The status code.
      * @param string|null $reasonPhrase The reason phrase, or null to use the default.
      */
     public function setStatusCode($statusCode, $reasonPhrase = null)
     {
         if ($reasonPhrase === null) {
-            $reasonPhrase = isset($this->statusCodes[$statusCode])
-                ? $this->statusCodes[$statusCode]
+            $reasonPhrase = isset(self::$statusCodes[$statusCode])
+                ? self::$statusCodes[$statusCode]
                 : 'UNKNOWN';
         }
 
-        $this->statusCode = $statusCode;
-        $this->reasonPhrase = $reasonPhrase;
+        $this->statusCode = (int) $statusCode;
+        $this->reasonPhrase = (string) $reasonPhrase;
     }
 
     /**
-     * @param Cookie $cookie
+     * Returns the cookies currently set on this response.
      *
-     * @return Response
+     * @return \Brick\Http\Cookie[]
+     */
+    public function getCookies()
+    {
+        return $this->cookies;
+    }
+
+    /**
+     * Sets a cookie on this response.
+     *
+     * @param \Brick\Http\Cookie $cookie The cookie to set.
+     *
+     * @return static This response.
      */
     public function setCookie(Cookie $cookie)
     {
@@ -187,26 +196,36 @@ class Response extends Message
     }
 
     /**
-     * @return string
+     * Removes all cookies from this response.
+     *
+     * @return static This response.
      */
-    public function getContent()
+    public function removeCookies()
     {
-        return $this->content;
+        $this->cookies = [];
+
+        return $this->removeHeader('Set-Cookie');
     }
 
     /**
-     * @param string $content
+     * @param string|resource $content
      *
-     * @return Response
+     * @return static This response.
      */
     public function setContent($content)
     {
-        $this->content = (string) $content;
+        if (is_resource($content)) {
+            $body = new MessageBodyResource($content);
+        } else {
+            $body = new MessageBodyString($content);
+        }
 
-        return $this;
+        return $this->setBody($body);
     }
 
     /**
+     * Returns whether this response has an informational status code, 1xx.
+     *
      * @return boolean
      */
     public function isInformational()
@@ -215,6 +234,8 @@ class Response extends Message
     }
 
     /**
+     * Returns whether this response has a successful status code, 2xx.
+     *
      * @return boolean
      */
     public function isSuccessful()
@@ -223,6 +244,8 @@ class Response extends Message
     }
 
     /**
+     * Returns whether this response has a redirection status code, 3xx.
+     *
      * @return boolean
      */
     public function isRedirection()
@@ -231,6 +254,8 @@ class Response extends Message
     }
 
     /**
+     * Returns whether this response has a client error status code, 4xx.
+     *
      * @return boolean
      */
     public function isClientError()
@@ -239,6 +264,8 @@ class Response extends Message
     }
 
     /**
+     * Returns whether this response has a server error status code, 5xx.
+     *
      * @return boolean
      */
     public function isServerError()
@@ -247,41 +274,21 @@ class Response extends Message
     }
 
     /**
+     * Returns whether this response has the given status code.
+     *
+     * @param integer $statusCode
+     *
      * @return boolean
      */
-    public function isOk()
+    public function isStatusCode($statusCode)
     {
-        return 200 === $this->statusCode;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isForbidden()
-    {
-        return 403 === $this->statusCode;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isNotFound()
-    {
-        return 404 === $this->statusCode;
-    }
-
-    /**
-     * @return Cookie[]
-     */
-    public function getCookies()
-    {
-        return $this->cookies;
+        return $this->statusCode === (int) $statusCode;
     }
 
     /**
      * Sends the response.
      *
-     * Will fail if the headers have been already sent.
+     * This method will fail (return `false`) if the headers have been already sent.
      *
      * @return boolean Whether the response has been successfully sent.
      */
@@ -291,29 +298,16 @@ class Response extends Message
             return false;
         }
 
-        // Send the status line.
         header($this->getStartLine());
 
-        // Send the general headers.
-        foreach ($this->getHeaders() as $header) {
-            header($header->toString(), false);
+        foreach ($this->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                header($name . ': ' . $value, false);
+            }
         }
 
-        // Send the cookies.
-        foreach ($this->cookies as $cookie) {
-            setcookie(
-                $cookie->getName(),
-                $cookie->getValue(),
-                $cookie->getExpires(),
-                $cookie->getPath(),
-                $cookie->getDomain(),
-                $cookie->isSecure(),
-                $cookie->isHttpOnly()
-            );
-        }
+        echo (string) $this->body;
 
-        // Send the content.
-        echo $this->content;
         flush();
 
         return true;
@@ -325,13 +319,5 @@ class Response extends Message
     public function getStartLine()
     {
         return sprintf('%s %d %s', $this->protocolVersion, $this->statusCode, $this->reasonPhrase);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBody()
-    {
-        return new MessageBodyString($this->content);
     }
 }

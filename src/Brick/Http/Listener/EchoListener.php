@@ -41,13 +41,13 @@ class EchoListener implements MessageListener
     {
         if ($message instanceof Request) {
             if ($this->mask & self::REQUEST_HEADER) {
-                echo $message->getHeader();
+                echo $message->getHead();
             }
 
             if ($this->mask & self::REQUEST_BODY) {
-                echo $body = $message->getBody()->toString();
+                echo $body = $message->getBody();
 
-                if ($body != '') {
+                if ($body) {
                     echo Message::CRLF . Message::CRLF;
                 }
             }
@@ -55,13 +55,13 @@ class EchoListener implements MessageListener
 
         if ($message instanceof Response) {
             if ($this->mask & self::RESPONSE_HEADER) {
-                echo $message->getHeader();
+                echo $message->getHead();
             }
 
             if ($this->mask & self::RESPONSE_BODY) {
-                echo $body = $message->getBody()->toString();
+                echo $body = $message->getBody();
 
-                if ($body != '') {
+                if ($body) {
                     echo Message::CRLF . Message::CRLF;
                 }
             }

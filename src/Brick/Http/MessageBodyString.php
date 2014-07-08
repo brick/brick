@@ -37,7 +37,15 @@ class MessageBodyString implements MessageBody
     /**
      * {@inheritdoc}
      */
-    public function toString()
+    public function getSize()
+    {
+        return strlen($this->body);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
     {
         return $this->body;
     }

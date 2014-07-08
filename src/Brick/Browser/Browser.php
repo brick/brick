@@ -118,7 +118,7 @@ class Browser extends SearchContext
      */
     public function getContent()
     {
-        return $this->getLastResponse()->getContent();
+        return (string) $this->getLastResponse()->getBody();
     }
 
     /**

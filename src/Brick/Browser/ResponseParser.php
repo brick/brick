@@ -38,7 +38,7 @@ class ResponseParser
      */
     public function getText()
     {
-        return $this->response->getContent();
+        return (string) $this->response->getBody();
     }
 
     /**
@@ -51,7 +51,7 @@ class ResponseParser
     public function parseDocument()
     {
         $pattern ='/(x|ht)ml(?:.*;charset=(\S+))?/i';
-        $contentType = $this->response->getFirstHeader('Content-Type');
+        $contentType = $this->response->getHeader('Content-Type');
         $isDocument = (preg_match($pattern, $contentType, $matches) == 1);
         $charset = (isset($matches[2]) ? $matches[2] : 'UTF-8');
 
