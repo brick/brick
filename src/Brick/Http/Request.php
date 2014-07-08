@@ -938,28 +938,6 @@ class Request extends Message
     }
 
     /**
-     * Returns the request URL with updated query parameters.
-     *
-     * @deprecated
-     *
-     * @param array $parameters The query parameters to add/replace.
-     *
-     * @return string The updated URL.
-     */
-    public function getUpdatedUrl(array $parameters)
-    {
-        $url = $this->getUrlBase() . $this->path;
-
-        $parameters += $this->query;
-
-        if ($parameters) {
-            $url .= '?' . http_build_query($parameters);
-        }
-
-        return $url;
-    }
-
-    /**
      * Returns whether this request is sent over a secure connection (HTTPS).
      *
      * @return boolean True if the request is secure, false otherwise.
