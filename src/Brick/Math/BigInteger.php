@@ -3,13 +3,20 @@
 namespace Brick\Math;
 
 use Brick\Math\Calculator;
-use Brick\Type\Cast;
 
 /**
  * An arbitrary-size integer.
+ *
+ * All methods accepting a number as a parameter accept either a BigInteger instance,
+ * an integer, or a string representing an arbitrary size integer.
  */
 class BigInteger
 {
+    /**
+     * @var string
+     */
+    private $value;
+
     /**
      * Private constructor. Use the factory methods.
      *
@@ -274,6 +281,54 @@ class BigInteger
     public function negated()
     {
         return new BigInteger(Calculator::get()->neg($this->value));
+    }
+
+    /**
+     * Returns a BigInteger whose value is shifted left by the given number of bits (this << bits).
+     *
+     * @param integer $bits
+     *
+     * @return \Brick\Math\BigInteger
+     *
+     * @throws \InvalidArgumentException If `$bits` is negative.
+     */
+    public function shiftedLeft($bits)
+    {
+        $bits = (int) $bits;
+
+        if ($bits === 0) {
+            return $this;
+        }
+
+        if ($bits < 0) {
+            throw new \InvalidArgumentException('The number of bits to shift must not be negative.');
+        }
+
+        return $this->multipliedBy(Calculator::get()->pow('2', $bits));
+    }
+
+    /**
+     * Returns a BigInteger whose value is shifted right by the given number of bits (this >> bits).
+     *
+     * @param integer $bits
+     *
+     * @return \Brick\Math\BigInteger
+     *
+     * @throws \InvalidArgumentException If `$bits` is negative.
+     */
+    public function shiftedRight($bits)
+    {
+        $bits = (int) $bits;
+
+        if ($bits === 0) {
+            return $this;
+        }
+
+        if ($bits < 0) {
+            throw new \InvalidArgumentException('The number of bits to shift must not be negative.');
+        }
+
+        return $this->dividedBy(Calculator::get()->pow('2', $bits), RoundingMode::FLOOR);
     }
 
     /**
