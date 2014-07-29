@@ -348,6 +348,18 @@ class Decimal
     }
 
     /**
+     * Returns this number exponentiated.
+     *
+     * @param integer $exponent The exponent, as a positive-or-zero integer.
+     *
+     * @return Decimal
+     */
+    public function power($exponent)
+    {
+        return new Decimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
+    }
+
+    /**
      * Returns the inverse of this number.
      *
      * @return \Brick\Math\Decimal
@@ -499,7 +511,7 @@ class Decimal
     }
 
     /**
-     * Puts the internal values on the given decimal numbers on the same scale.
+     * Puts the internal values of the given decimal numbers on the same scale.
      *
      * @param Decimal $x The first decimal number.
      * @param Decimal $y The second decimal number.

@@ -168,4 +168,14 @@ abstract class Calculator
      * @return string The quotient.
      */
     abstract public function div($a, $b, & $r);
+
+    /**
+     * Exponentiates a number.
+     *
+     * @param string  $a The base.
+     * @param integer $e The exponent, must be a positive-or-zero integer.
+     *
+     * @return string The power.
+     */
+    abstract public function pow($a, $e);
 }

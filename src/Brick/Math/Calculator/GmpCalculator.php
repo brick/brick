@@ -44,4 +44,12 @@ class GmpCalculator extends Calculator
 
         return gmp_strval($q);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pow($a, $e)
+    {
+        return gmp_strval(gmp_pow($a, $e));
+    }
 }

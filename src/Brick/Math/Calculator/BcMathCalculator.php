@@ -42,4 +42,12 @@ class BcMathCalculator extends Calculator
 
         return bcdiv($a, $b, 0);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pow($a, $e)
+    {
+        return bcpow($a, $e, 0);
+    }
 }
