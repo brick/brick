@@ -356,6 +356,12 @@ class Decimal
      */
     public function power($exponent)
     {
+        $exponent = (int) $exponent;
+
+        if ($exponent < 0) {
+            throw new \InvalidArgumentException('The exponent cannot be negative.');
+        }
+
         return new Decimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
     }
 

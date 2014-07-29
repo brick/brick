@@ -91,7 +91,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider leadingPlusSignAndZeroProvider
+     * @dataProvider providerLeadingPlusSignAndZero
      */
     public function testLeadingPlusSignAndZero($value, $expected)
     {
@@ -101,7 +101,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function leadingPlusSignAndZeroProvider()
+    public function providerLeadingPlusSignAndZero()
     {
         return [
             ['+9', '9'],
@@ -119,7 +119,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider exponentProvider
+     * @dataProvider providerExponent
      */
     public function testExponent($value, $expected)
     {
@@ -143,7 +143,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function exponentProvider()
+    public function providerExponent()
     {
         return [
             ['1e-2', '0.01'],
@@ -226,7 +226,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider divisionOfNegativeNumbersProvider
+     * @dataProvider providerDivisionOfNegativeNumbers
      */
     public function testDivisionOfNegativeNumbers($a, $b, $expected)
     {
@@ -236,7 +236,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function divisionOfNegativeNumbersProvider()
+    public function providerDivisionOfNegativeNumbers()
     {
         return [
             [ '21',  '7',  '3'],
@@ -247,7 +247,83 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider importExportProvider
+     * @dataProvider providerPower
+     *
+     * @param string $number
+     * @param integer $exponent
+     * @param string $expected
+     */
+    public function testPower($number, $exponent, $expected)
+    {
+        $this->assertDecimalEquals($expected, Decimal::of($number)->power($exponent));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPower()
+    {
+        return [
+            ['-3', 0, '1'],
+            ['-2', 0, '1'],
+            ['-1', 0, '1'],
+            ['0',  0, '1'],
+            ['1',  0, '1'],
+            ['2',  0, '1'],
+            ['3',  0, '1'],
+
+            ['-3', 1, '-3'],
+            ['-2', 1, '-2'],
+            ['-1', 1, '-1'],
+            ['0',  1,  '0'],
+            ['1',  1,  '1'],
+            ['2',  1,  '2'],
+            ['3',  1,  '3'],
+
+            ['-3', 2, '9'],
+            ['-2', 2, '4'],
+            ['-1', 2, '1'],
+            ['0',  2, '0'],
+            ['1',  2, '1'],
+            ['2',  2, '4'],
+            ['3',  2, '9'],
+
+            ['-3', 3, '-27'],
+            ['-2', 3,  '-8'],
+            ['-1', 3,  '-1'],
+            ['0',  3,   '0'],
+            ['1',  3,   '1'],
+            ['2',  3,   '8'],
+            ['3',  3,  '27'],
+
+            ['0', PHP_INT_MAX, '0'],
+            ['1', PHP_INT_MAX, '1'],
+
+            ['-2', 255, '-57896044618658097711785492504343953926634992332820282019728792003956564819968'],
+            [ '2', 256, '115792089237316195423570985008687907853269984665640564039457584007913129639936'],
+
+            ['-1.23', 33, '-926.549609804623448265268294182900512918058893428212027689876489708283'],
+            [ '1.23', 34, '1139.65602005968684136628000184496763088921243891670079405854808234118809'],
+
+            ['-123456789', 8, '53965948844821664748141453212125737955899777414752273389058576481'],
+            ['9876543210', 7, '9167159269868350921847491739460569765344716959834325922131706410000000']
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNegativeExponentThrowsException()
+    {
+        Decimal::of(10)->power(-1);
+    }
+
+    /**
+     * @dataProvider providerImportExport
+     *
+     * @param string  $value         The decimal value to test.
+     * @param string  $unscaledValue The expected unscaled value.
+     * @param integer $scale         The expected scale.
      */
     public function testImportExport($value, $unscaledValue, $scale)
     {
@@ -261,7 +337,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function importExportProvider()
+    public function providerImportExport()
     {
         return [
             ['0',      '0',   0],
@@ -294,7 +370,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider isZeroProvider
+     * @dataProvider providerIsZero
      */
     public function testIsZero($number)
     {
@@ -307,7 +383,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function isZeroProvider()
+    public function providerIsZero()
     {
         return [
             ['0'],
@@ -315,12 +391,13 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             ['0.00'],
             ['-0.00'],
             ['-0.0'],
-            ['-0']
+            ['-0'],
+            ['+0']
         ];
     }
 
     /**
-     * @dataProvider roundingModeProvider
+     * @dataProvider providerRoundingMode
      *
      * @param integer     $roundingMode The rounding mode.
      * @param string      $number       The number to round.
@@ -366,7 +443,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function roundingModeProvider()
+    public function providerRoundingMode()
     {
         return [
             [RoundingMode::UP,  '3.501',  '3.51',  '3.6',  '4'],
