@@ -2,9 +2,6 @@
 
 namespace Brick\Http;
 
-use Brick\Type\Map;
-use OutOfBoundsException;
-
 /**
  * Represents a collection of UploadedFile instances, potentially nested in sub-arrays.
  * This object is immutable.
