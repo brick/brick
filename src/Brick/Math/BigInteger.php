@@ -84,7 +84,12 @@ class BigInteger
     /**
      * Returns a BigInteger of the given value.
      *
-     * @param BigInteger|integer|string $value
+     * The value can be a BigInteger, a native integer,
+     * or a string representing an integer in any base.
+     *
+     * The value can optionally be prefixed with the `+` or `-` sign.
+     *
+     * @param BigInteger|integer|string $value The value.
      *
      * @return BigInteger
      *
@@ -100,13 +105,88 @@ class BigInteger
             return new BigInteger((string) $value);
         }
 
-        $value = (string) $value;
+        return BigInteger::parse($value);
+    }
 
-        if (preg_match('/^\-?[0-9]+?$/', $value, $matches) == 0) {
-            throw new \InvalidArgumentException(sprintf('%s does not represent a valid number.', $value));
+    /**
+     * Parses a string containing an integer in the given base.
+     *
+     * @param string  $number The number to parse.
+     * @param integer $base   The base of the number.
+     *
+     * @return BigInteger
+     *
+     * @throws \InvalidArgumentException If the number is malformed.
+     */
+    public static function parse($number, $base = 10)
+    {
+        $number = (string) $number;
+        $base = (int) $base;
+
+        $dictionary = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+        if ($number === '') {
+            throw new \InvalidArgumentException('The value cannot be empty.');
         }
 
-        return new BigInteger($value);
+        if ($base < 2 || $base > 36) {
+            throw new \InvalidArgumentException('Invalid base: ' . $base);
+        }
+
+        if ($number[0] === '-') {
+            $sign = '-';
+            $number = substr($number, 1);
+        } elseif ($number[0] === '+') {
+            $sign = '';
+            $number = substr($number, 1);
+        } else {
+            $sign = '';
+        }
+
+        if ($number === false) {
+            throw new \InvalidArgumentException('The value cannot be empty.');
+        }
+
+        $number = ltrim($number, '0');
+
+        if ($number === '') {
+            // The result will be the same in any base, avoid further calculation.
+            return new BigInteger('0');
+        }
+
+        if ($number === '1') {
+            // The result will be the same in any base, avoid further calculation.
+            return new BigInteger($sign . '1');
+        }
+
+        if ($base === 10 && ctype_digit($number)) {
+            // The number is usable as is, avoid further calculation.
+            return new BigInteger($sign . $number);
+        }
+
+        $calc = Calculator::get();
+        $number = strtolower($number);
+
+        $result = '0';
+        $power = '1';
+
+        for ($i = strlen($number) - 1; $i >= 0; $i--) {
+            $char = $number[$i];
+            $index = strpos($dictionary, $char);
+
+            if ($index === false || $index >= $base) {
+                throw new \InvalidArgumentException(sprintf('"%s" is not a valid character in base %d.', $char, $base));
+            }
+
+            if ($index !== 0) {
+                $add = ($index === 1) ? $power : $calc->mul($power, (string) $index);
+                $result = $calc->add($result, $add);
+            }
+
+            $power = $calc->mul($power, $base);
+        }
+
+        return new BigInteger($sign . $result);
     }
 
     /**
