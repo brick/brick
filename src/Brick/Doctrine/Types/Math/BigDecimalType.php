@@ -1,22 +1,22 @@
 <?php
 
-namespace Brick\Doctrine\Types;
+namespace Brick\Doctrine\Types\Math;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Brick\Math\BigDecimal;
 
 /**
- * Doctrine type for \Brick\Math\Decimal
+ * Doctrine type for \Brick\Math\BigDecimal
  */
-class BrickDecimalType extends Type
+class BigDecimalType extends Type
 {
     /**
      * @return string
      */
     public function getName()
     {
-        return 'brickdecimal';
+        return 'BigDecimal';
     }
 
     /**
