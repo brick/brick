@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\Math;
 
 use Brick\Math\BigDecimal;
+use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -49,6 +50,10 @@ class BigDecimalType extends Type
             return null;
         }
 
-        return (string) $value;
+        if ($value instanceof BigDecimal) {
+            return (string) $value;
+        }
+
+        throw new UnexpectedValueException(BigDecimal::class, $value);
     }
 }

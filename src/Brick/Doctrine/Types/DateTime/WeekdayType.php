@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\DateTime;
 
 use Brick\DateTime\Weekday;
+use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -37,8 +38,11 @@ class WeekdayType extends Type
             return null;
         }
 
-        /** @var Weekday $value */
-        return $value->getValue();
+        if ($value instanceof Weekday) {
+            return $value->getValue();
+        }
+
+        throw new UnexpectedValueException(Weekday::class, $value);
     }
 
     /**

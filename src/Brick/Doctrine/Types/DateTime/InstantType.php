@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\DateTime;
 
 use Brick\DateTime\Instant;
+use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -37,8 +38,11 @@ class InstantType extends Type
             return null;
         }
 
-        /** @var Instant $value */
-        return $value->getTimestamp();
+        if ($value instanceof Instant) {
+            return $value->toString();
+        }
+
+        throw new UnexpectedValueException(Instant::class, $value);
     }
 
     /**

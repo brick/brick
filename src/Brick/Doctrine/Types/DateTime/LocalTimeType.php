@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\DateTime;
 
 use Brick\DateTime\LocalTime;
+use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -37,8 +38,11 @@ class LocalTimeType extends Type
             return null;
         }
 
-        /** @var $value LocalTime */
-        return $value->toString();
+        if ($value instanceof LocalTime) {
+            return $value->toString();
+        }
+
+        throw new UnexpectedValueException(LocalTime::class, $value);
     }
 
     /**

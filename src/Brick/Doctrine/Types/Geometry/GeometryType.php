@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\Geometry;
 
 use Brick\Geo\Geometry;
+use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -79,7 +80,11 @@ class GeometryType extends Type
             return null;
         }
 
-        return $value->asBinary();
+        if ($value instanceof Geometry) {
+            return $value->asBinary();
+        }
+
+        throw new UnexpectedValueException(Geometry::class, $value);
     }
 
     /**
