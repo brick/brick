@@ -116,7 +116,7 @@ class BigInteger
      *
      * @return BigInteger
      *
-     * @throws \InvalidArgumentException If the number is malformed.
+     * @throws \InvalidArgumentException If the number is invalid or the base is out of range.
      */
     public static function parse($number, $base = 10)
     {
@@ -130,7 +130,7 @@ class BigInteger
         }
 
         if ($base < 2 || $base > 36) {
-            throw new \InvalidArgumentException('Invalid base: ' . $base);
+            throw new \InvalidArgumentException(sprintf('Base %d is out of range [2, 36]', $base));
         }
 
         if ($number[0] === '-') {
@@ -533,6 +533,45 @@ class BigInteger
     public function isPositiveOrZero()
     {
         return ($this->value[0] !== '-');
+    }
+
+    /**
+     * Returns a string representation of this number in the given base.
+     *
+     * @param integer $base
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the base is out of range.
+     */
+    public function toString($base)
+    {
+        $base = (int) $base;
+
+        if ($base === 10) {
+            return $this->value;
+        }
+
+        if ($base < 2 || $base > 36) {
+            throw new \InvalidArgumentException(sprintf('Base %d is out of range [2, 36]', $base));
+        }
+
+        $dictionary = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+        $calc = Calculator::get();
+
+        $value = $this->value;
+        $base = (string) $base;
+        $result = '';
+
+        while ($value !== '0') {
+            $value = $calc->div($value, $base, $remainder);
+            $remainder = (int) $remainder;
+
+            $result .= $dictionary[$remainder];
+        }
+
+        return strrev($result);
     }
 
     /**
