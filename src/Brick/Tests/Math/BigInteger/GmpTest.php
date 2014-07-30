@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Tests\Math\Decimal;
+namespace Brick\Tests\Math\BigInteger;
 
 use Brick\Math\Calculator\GmpCalculator;
 

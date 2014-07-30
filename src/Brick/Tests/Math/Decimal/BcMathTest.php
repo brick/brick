@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Tests\Math\BigInteger;
+namespace Brick\Tests\Math\Decimal;
 
 use Brick\Math\Calculator\BcMathCalculator;
 
