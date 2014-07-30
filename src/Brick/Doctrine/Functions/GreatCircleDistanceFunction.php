@@ -8,9 +8,12 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Distance calculation between two points on the Earth, approximated as a sphere.
+ * Great circle distance function.
+ *
+ * This function calculates the distance between two points on the Earth, approximated as a sphere.
+ * It provides a fairly good precision (error < 0.5%) but is quite compute expensive.
  */
-class SphericalDistanceFunction extends FunctionNode
+class GreatCircleDistanceFunction extends FunctionNode
 {
     /**
      * The great-circle distance formula.
