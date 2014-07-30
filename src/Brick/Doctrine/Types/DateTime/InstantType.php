@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Maps an Instant to an integer column.
+ * Doctrine type for Instant. This type maps to an integer column.
  */
 class InstantType extends Type
 {

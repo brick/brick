@@ -2,17 +2,18 @@
 
 namespace Brick\Doctrine\Types\Math;
 
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Brick\Math\BigDecimal;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
- * Doctrine type for \Brick\Math\BigDecimal
+ * Doctrine type for BigDecimal.
  */
 class BigDecimalType extends Type
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -20,9 +21,7 @@ class BigDecimalType extends Type
     }
 
     /**
-     * @param  array                                     $fieldDeclaration
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string
+     * {@inheritdoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -30,9 +29,7 @@ class BigDecimalType extends Type
     }
 
     /**
-     * @param  string|null                               $value
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return \Brick\Math\BigDecimal|null
+     * {@inheritdoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -44,9 +41,7 @@ class BigDecimalType extends Type
     }
 
     /**
-     * @param  \Brick\Math\BigDecimal|null                 $value
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string|null
+     * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {

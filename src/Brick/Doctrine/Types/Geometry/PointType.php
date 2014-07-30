@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\Point;
 
 /**
- * Doctrine type for \Brick\Geo\Point.
+ * Doctrine type for Point.
  */
 class PointType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class PointType extends GeometryType
     }
 
     /**
-     * @param  string            $wkb
-     * @return \Brick\Geo\Point
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\MultiLineString;
 
 /**
- * Doctrine type for \Brick\Geo\MultiLineString.
+ * Doctrine type for MultiLineString.
  */
 class MultiLineStringType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class MultiLineStringType extends GeometryType
     }
 
     /**
-     * @param  string                      $wkb
-     * @return \Brick\Geo\MultiLineString
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

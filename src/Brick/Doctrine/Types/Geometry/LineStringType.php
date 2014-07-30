@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\LineString;
 
 /**
- * Doctrine type for \Brick\Geo\LineString.
+ * Doctrine type for LineString.
  */
 class LineStringType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class LineStringType extends GeometryType
     }
 
     /**
-     * @param  string                 $wkb
-     * @return \Brick\Geo\LineString
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

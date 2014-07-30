@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\MultiPolygon;
 
 /**
- * Doctrine type for \Brick\Geo\MultiPolygon.
+ * Doctrine type for MultiPolygon.
  */
 class MultiPolygonType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class MultiPolygonType extends GeometryType
     }
 
     /**
-     * @param  string                   $wkb
-     * @return \Brick\Geo\MultiPolygon
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

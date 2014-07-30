@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Maps a Weekday to an integer column.
+ * Doctrine type for Weekday. This type maps to an integer column.
  */
 class WeekdayType extends Type
 {

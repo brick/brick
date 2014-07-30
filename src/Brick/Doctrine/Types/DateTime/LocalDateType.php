@@ -2,13 +2,13 @@
 
 namespace Brick\Doctrine\Types\DateTime;
 
+use Brick\DateTime\LocalDate;
+
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
-use Brick\DateTime\LocalDate;
-
 /**
- * Doctrine type for \Brick\DateTime\LocalDate.
+ * Doctrine type for LocalDate.
  */
 class LocalDateType extends Type
 {

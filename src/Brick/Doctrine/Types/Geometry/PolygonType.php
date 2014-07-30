@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\Polygon;
 
 /**
- * Doctrine type for \Brick\Geo\Polygon.
+ * Doctrine type for Polygon.
  */
 class PolygonType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class PolygonType extends GeometryType
     }
 
     /**
-     * @param  string              $wkb
-     * @return \Brick\Geo\Polygon
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

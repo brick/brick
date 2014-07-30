@@ -5,12 +5,12 @@ namespace Brick\Doctrine\Types\Geometry;
 use Brick\Geo\MultiPoint;
 
 /**
- * Doctrine type for \Brick\Geo\MultiPoint.
+ * Doctrine type for MultiPoint.
  */
 class MultiPointType extends GeometryType
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -18,8 +18,7 @@ class MultiPointType extends GeometryType
     }
 
     /**
-     * @param  string                 $wkb
-     * @return \Brick\Geo\MultiPoint
+     * {@inheritdoc}
      */
     protected static function convertFromWkb($wkb)
     {

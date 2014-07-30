@@ -2,12 +2,13 @@
 
 namespace Brick\Doctrine\Types\Geometry;
 
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Brick\Geo\Geometry;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
- * Doctrine type for \Brick\Geo\Geometry
+ * Doctrine type for Geometry.
  */
 class GeometryType extends Type
 {
@@ -32,7 +33,8 @@ class GeometryType extends Type
      * Child classes will override this method,
      * to ensure that the returned Geometry is of the expected type.
      *
-     * @param  string   $wkb
+     * @param string $wkb
+     *
      * @return Geometry
      */
     protected static function convertFromWkb($wkb)
@@ -41,7 +43,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -49,9 +51,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @param  array                                     $fieldDeclaration
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string
+     * {@inheritdoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -59,9 +59,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @param  string|null                               $value
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return \Brick\Geo\Geometry|null
+     * {@inheritdoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -73,9 +71,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @param  \Brick\Geo\Geometry|null                 $value
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string|null
+     * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -87,7 +83,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @return boolean
+     * {@inheritdoc}
      */
     public function canRequireSQLConversion()
     {
@@ -95,9 +91,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @param  string                                    $sqlExpr
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string
+     * {@inheritdoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
@@ -105,9 +99,7 @@ class GeometryType extends Type
     }
 
     /**
-     * @param  string                                    $sqlExpr
-     * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string
+     * {@inheritdoc}
      */
     public function convertToPHPValueSQL($sqlExpr, $platform)
     {
