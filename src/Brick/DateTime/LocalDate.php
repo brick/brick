@@ -2,7 +2,6 @@
 
 namespace Brick\DateTime;
 
-use Brick\Math\Math;
 use Brick\Type\Cast;
 use Brick\Locale\Locale;
 
@@ -152,7 +151,7 @@ class LocalDate
 
         $leap = (new Year($year))->isLeap();
 
-        $monthOfYear = Month::of(Math::intDiv($dayOfYear - 1, 31) + 1);
+        $monthOfYear = Month::of(Math::div($dayOfYear - 1, 31) + 1);
         $monthEnd = $monthOfYear->firstDayOfYear($leap) + $monthOfYear->getLength($leap) - 1;
 
         if ($dayOfYear > $monthEnd) {
@@ -215,25 +214,25 @@ class LocalDate
         $adjust = 0;
         if ($zeroDay < 0) {
             // Adjust negative years to positive for calculation.
-            $adjustCycles = Math::intDiv(($zeroDay + 1), self::DAYS_PER_CYCLE) - 1;
+            $adjustCycles = Math::div(($zeroDay + 1), self::DAYS_PER_CYCLE) - 1;
             $adjust = $adjustCycles * 400;
             $zeroDay += -$adjustCycles * self::DAYS_PER_CYCLE;
         }
-        $yearEst = Math::intDiv(400 * $zeroDay + 591, self::DAYS_PER_CYCLE);
-        $doyEst = $zeroDay - (365 * $yearEst + Math::intDiv($yearEst, 4) - Math::intDiv($yearEst, 100) + Math::intDiv($yearEst, 400));
+        $yearEst = Math::div(400 * $zeroDay + 591, self::DAYS_PER_CYCLE);
+        $doyEst = $zeroDay - (365 * $yearEst + Math::div($yearEst, 4) - Math::div($yearEst, 100) + Math::div($yearEst, 400));
         if ($doyEst < 0) {
             // Fix estimate.
             $yearEst--;
-            $doyEst = $zeroDay - (365 * $yearEst + Math::intDiv($yearEst, 4) - Math::intDiv($yearEst, 100) + Math::intDiv($yearEst, 400));
+            $doyEst = $zeroDay - (365 * $yearEst + Math::div($yearEst, 4) - Math::div($yearEst, 100) + Math::div($yearEst, 400));
         }
         $yearEst += $adjust; // Reset any negative year.
         $marchDoy0 = $doyEst;
 
         // Convert march-based values back to January-based.
-        $marchMonth0 = Math::intDiv($marchDoy0 * 5 + 2, 153);
+        $marchMonth0 = Math::div($marchDoy0 * 5 + 2, 153);
         $month = ($marchMonth0 + 2) % 12 + 1;
-        $dom = $marchDoy0 - Math::intDiv($marchMonth0 * 306 + 5, 10) + 1;
-        $yearEst += Math::intDiv($marchMonth0, 10);
+        $dom = $marchDoy0 - Math::div($marchMonth0 * 306 + 5, 10) + 1;
+        $yearEst += Math::div($marchMonth0, 10);
 
         // Check year now we are certain it is correct.
         self::checkYear($yearEst);
@@ -601,12 +600,12 @@ class LocalDate
         $total = 365 * $y;
 
         if ($y >= 0) {
-            $total += Math::intDiv($y + 3, 4) - Math::intDiv($y + 99, 100) + Math::intDiv($y + 399, 400);
+            $total += Math::div($y + 3, 4) - Math::div($y + 99, 100) + Math::div($y + 399, 400);
         } else {
-            $total -= Math::intDiv($y, -4) - Math::intDiv($y, -100) + Math::intDiv($y, -400);
+            $total -= Math::div($y, -4) - Math::div($y, -100) + Math::div($y, -400);
         }
 
-        $total += Math::intDiv(367 * $m - 362, 12);
+        $total += Math::div(367 * $m - 362, 12);
         $total += $this->day - 1;
 
         if ($m > 2) {

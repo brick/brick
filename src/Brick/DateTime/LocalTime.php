@@ -3,7 +3,6 @@
 namespace Brick\DateTime;
 
 use Brick\Locale\Locale;
-use Brick\Math\Math;
 use Brick\Type\Cast;
 
 /**
@@ -135,9 +134,9 @@ class LocalTime
             throw new DateTimeException('Second of day must be in the interval [0-86399]');
         }
 
-        $hours = Math::intDiv($secondOfDay, self::SECONDS_PER_HOUR);
+        $hours = Math::div($secondOfDay, self::SECONDS_PER_HOUR);
         $secondOfDay -= $hours * self::SECONDS_PER_HOUR;
-        $minutes = Math::intDiv($secondOfDay, self::SECONDS_PER_MINUTE);
+        $minutes = Math::div($secondOfDay, self::SECONDS_PER_MINUTE);
         $secondOfDay -= $minutes * self::SECONDS_PER_MINUTE;
 
         return new LocalTime($hours, $minutes, $secondOfDay);
@@ -305,7 +304,7 @@ class LocalTime
             return $this;
         }
 
-        $newHour = Math::intDiv($newMofd, self::MINUTES_PER_HOUR);
+        $newHour = Math::div($newMofd, self::MINUTES_PER_HOUR);
         $newMinute = $newMofd % self::MINUTES_PER_HOUR;
 
         return new LocalTime($newHour, $newMinute, $this->second);
@@ -330,8 +329,8 @@ class LocalTime
             return $this;
         }
 
-        $newHour = Math::intDiv($newSofd, self::SECONDS_PER_HOUR);
-        $newMinute = Math::intDiv($newSofd, self::SECONDS_PER_MINUTE) % self::MINUTES_PER_HOUR;
+        $newHour = Math::div($newSofd, self::SECONDS_PER_HOUR);
+        $newMinute = Math::div($newSofd, self::SECONDS_PER_MINUTE) % self::MINUTES_PER_HOUR;
         $newSecond = $newSofd % self::SECONDS_PER_MINUTE;
 
         return new LocalTime($newHour, $newMinute, $newSecond);

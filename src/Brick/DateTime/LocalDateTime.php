@@ -2,7 +2,6 @@
 
 namespace Brick\DateTime;
 
-use Brick\Math\Math;
 use Brick\Type\Cast;
 use Brick\Locale\Locale;
 
@@ -513,9 +512,9 @@ class LocalDateTime
         }
 
         $totDays =
-            Math::intDiv($hours, LocalTime::HOURS_PER_DAY) +
-            Math::intDiv($minutes, LocalTime::MINUTES_PER_DAY) +
-            Math::intDiv($seconds, LocalTime::SECONDS_PER_DAY);
+            Math::div($hours, LocalTime::HOURS_PER_DAY) +
+            Math::div($minutes, LocalTime::MINUTES_PER_DAY) +
+            Math::div($seconds, LocalTime::SECONDS_PER_DAY);
         $totDays *= $sign;
 
         $totSeconds =
