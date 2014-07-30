@@ -17,7 +17,7 @@ class LocalDateType extends Type
      */
     public function getName()
     {
-        return 'localdate';
+        return 'LocalDate';
     }
 
     /**

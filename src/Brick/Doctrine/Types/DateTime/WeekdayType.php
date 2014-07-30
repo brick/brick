@@ -17,7 +17,7 @@ class WeekdayType extends Type
      */
     public function getName()
     {
-        return 'weekday';
+        return 'Weekday';
     }
 
     /**

@@ -17,7 +17,7 @@ class LocalTimeType extends Type
      */
     public function getName()
     {
-        return 'localtime';
+        return 'LocalTime';
     }
 
     /**

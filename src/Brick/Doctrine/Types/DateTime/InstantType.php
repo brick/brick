@@ -17,7 +17,7 @@ class InstantType extends Type
      */
     public function getName()
     {
-        return 'instant';
+        return 'Instant';
     }
 
     /**
