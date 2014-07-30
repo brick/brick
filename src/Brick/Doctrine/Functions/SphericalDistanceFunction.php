@@ -8,8 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Distance calculation between two points on the Earth,
- * approximated as a sphere.
+ * Distance calculation between two points on the Earth, approximated as a sphere.
  */
 class SphericalDistanceFunction extends FunctionNode
 {
@@ -32,7 +31,8 @@ class SphericalDistanceFunction extends FunctionNode
     private $arg2;
 
     /**
-     * @param  string $value
+     * @param string $value
+     *
      * @return string
      */
     private static function x($value)
@@ -41,7 +41,8 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  string $value
+     * @param string $value
+     *
      * @return string
      */
     private static function y($value)
@@ -50,7 +51,8 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $s
+     * @param \Doctrine\ORM\Query\SqlWalker $s
+     *
      * @return string
      */
     private function x1(SqlWalker $s)
@@ -59,7 +61,8 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $s
+     * @param \Doctrine\ORM\Query\SqlWalker $s
+     *
      * @return string
      */
     private function x2(SqlWalker $s)
@@ -68,7 +71,8 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $s
+     * @param \Doctrine\ORM\Query\SqlWalker $s
+     *
      * @return string
      */
     private function y1(SqlWalker $s)
@@ -77,7 +81,8 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $s
+     * @param \Doctrine\ORM\Query\SqlWalker $s
+     *
      * @return string
      */
     private function y2(SqlWalker $s)
@@ -86,8 +91,7 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $s
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $s)
     {
@@ -106,7 +110,7 @@ class SphericalDistanceFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {

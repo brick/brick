@@ -8,7 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * GeomFromText() function for Doctrine DQL.
+ * GeomFromText() function for geometries.
  */
 class GeomFromTextFunction extends FunctionNode
 {
@@ -18,8 +18,7 @@ class GeomFromTextFunction extends FunctionNode
     private $wkt;
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -30,8 +29,7 @@ class GeomFromTextFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
-     * @return void
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {

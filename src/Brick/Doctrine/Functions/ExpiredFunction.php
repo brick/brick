@@ -8,18 +8,17 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Doctrine Expired() function for dates.
+ * Expired() function for dates.
  */
 class ExpiredFunction extends FunctionNode
 {
     /**
      * @var \Doctrine\ORM\Query\AST\Node
      */
-    protected $date;
+    private $date;
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -30,7 +29,7 @@ class ExpiredFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {

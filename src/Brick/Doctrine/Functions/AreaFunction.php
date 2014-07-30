@@ -8,7 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Doctrine Area() function for geometries.
+ * Area() function for geometries.
  */
 class AreaFunction extends FunctionNode
 {
@@ -18,8 +18,7 @@ class AreaFunction extends FunctionNode
     private $arg;
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -30,7 +29,7 @@ class AreaFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {

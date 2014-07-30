@@ -8,7 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Doctrine Contains() function for geometries.
+ * Contains() function for geometries.
  */
 class ContainsFunction extends FunctionNode
 {
@@ -23,8 +23,7 @@ class ContainsFunction extends FunctionNode
     private $secondArg;
 
     /**
-     * @param  \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -36,7 +35,7 @@ class ContainsFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {

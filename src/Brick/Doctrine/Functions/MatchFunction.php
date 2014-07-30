@@ -8,7 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * Doctrine Match(field, value) function for MySQL FULLTEXT search.
+ * Match(field, value) function for MySQL FULLTEXT search.
  */
 class MatchFunction extends FunctionNode
 {
@@ -23,8 +23,7 @@ class MatchFunction extends FunctionNode
     private $value;
 
     /**
-     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return string
+     * {@inheritdoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -36,8 +35,7 @@ class MatchFunction extends FunctionNode
     }
 
     /**
-     * @param \Doctrine\ORM\Query\Parser $parser
-     * @return void
+     * {@inheritdoc}
      */
     public function parse(Parser $parser)
     {
