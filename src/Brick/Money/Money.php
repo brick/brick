@@ -4,7 +4,7 @@ namespace Brick\Money;
 
 use Brick\Locale\Currency;
 use Brick\Locale\Locale;
-use Brick\Math\Decimal;
+use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Brick\Math\ArithmeticException;
 
@@ -19,17 +19,17 @@ class Money
     private $currency;
 
     /**
-     * @var \Brick\Math\Decimal
+     * @var \Brick\Math\BigDecimal
      */
     private $amount;
 
     /**
      * Class constructor.
      *
-     * @param Currency $currency The currency.
-     * @param Decimal  $amount   The amount, with scale matching the currency's fraction digits.
+     * @param Currency   $currency The currency.
+     * @param BigDecimal $amount   The amount, with scale matching the currency's fraction digits.
      */
-    private function __construct(Currency $currency, Decimal $amount)
+    private function __construct(Currency $currency, BigDecimal $amount)
     {
         $this->currency = $currency;
         $this->amount   = $amount;
@@ -63,7 +63,7 @@ class Money
 
     /**
      * @param Currency|string             $currency     A Currency instance or currency code.
-     * @param Money|Decimal|number|string $amount       A Money instance or decimal amount.
+     * @param Money|BigDecimal|number|string $amount       A Money instance or decimal amount.
      * @param integer                     $roundingMode The rounding mode to use.
      *
      * @return Money
@@ -85,7 +85,7 @@ class Money
         }
 
         $scale  = $currency->getDefaultFractionDigits();
-        $amount = Decimal::of($amount)->withScale($scale, $roundingMode);
+        $amount = BigDecimal::of($amount)->withScale($scale, $roundingMode);
 
         return new Money($currency, $amount);
     }
@@ -113,7 +113,7 @@ class Money
 
         try {
             $currency = Currency::of($parts[0]);
-            $amount   = Decimal::of($parts[1]);
+            $amount   = BigDecimal::of($parts[1]);
         }
         catch (\InvalidArgumentException $e) {
             throw MoneyParseException::wrap($e);
@@ -152,7 +152,7 @@ class Money
     /**
      * Returns the amount of this Money, as a Decimal.
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function getAmount()
     {
@@ -160,7 +160,7 @@ class Money
     }
 
     /**
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return \Brick\Money\Money
      */
@@ -172,7 +172,7 @@ class Money
     }
 
     /**
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return \Brick\Money\Money
      */
@@ -184,14 +184,14 @@ class Money
     }
 
     /**
-     * @param Decimal|number|string $that
-     * @param integer               $roundingMode
+     * @param BigDecimal|number|string $that
+     * @param integer                  $roundingMode
      *
      * @return \Brick\Money\Money
      */
     public function multipliedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
 
         $scale  = $this->currency->getDefaultFractionDigits();
         $amount = $this->amount->multipliedBy($that)->withScale($scale, $roundingMode);
@@ -200,14 +200,14 @@ class Money
     }
 
     /**
-     * @param Decimal|number|string $that
-     * @param integer               $roundingMode
+     * @param BigDecimal|number|string $that
+     * @param integer                  $roundingMode
      *
      * @return \Brick\Money\Money
      */
     public function dividedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
 
         $scale  = $this->currency->getDefaultFractionDigits();
         $amount = $this->amount->dividedBy($that, $scale, $roundingMode);
@@ -278,7 +278,7 @@ class Money
     /**
      * Returns whether this Money is equal to the given Money.
      *
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return boolean
      *
@@ -294,7 +294,7 @@ class Money
     /**
      * Returns whether this Money is less than the given amount.
      *
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return boolean
      *
@@ -310,7 +310,7 @@ class Money
     /**
      * Returns whether this Money is less than or equal to the given amount.
      *
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return boolean
      *
@@ -326,7 +326,7 @@ class Money
     /**
      * Returns whether this Money is greater than the given Money.
      *
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return boolean
      *
@@ -342,7 +342,7 @@ class Money
     /**
      * Returns whether this Money is greater than or equal to the given Money.
      *
-     * @param Money|Decimal|number|string $that
+     * @param Money|BigDecimal|number|string $that
      *
      * @return boolean
      *

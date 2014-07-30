@@ -5,7 +5,7 @@ namespace Brick\Math;
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
-class Decimal
+class BigDecimal
 {
     /**
      * The unscaled value of this decimal number.
@@ -44,7 +44,7 @@ class Decimal
      *
      * @param array<Decimal|number|string> An array of decimals to return the minimum value of.
      *
-     * @return \Brick\Math\Decimal The minimum value.
+     * @return \Brick\Math\BigDecimal The minimum value.
      *
      * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
@@ -53,7 +53,7 @@ class Decimal
         $min = null;
 
         foreach ($values as $value) {
-            $value = Decimal::of($value);
+            $value = BigDecimal::of($value);
             if ($min === null || $value->isLessThan($min)) {
                 $min = $value;
             }
@@ -71,7 +71,7 @@ class Decimal
      *
      * @param array<Decimal|number|string> An array of decimals to return the maximum value of.
      *
-     * @return \Brick\Math\Decimal The maximum value.
+     * @return \Brick\Math\BigDecimal The maximum value.
      *
      * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
      */
@@ -80,7 +80,7 @@ class Decimal
         $max = null;
 
         foreach ($values as $value) {
-            $value = Decimal::of($value);
+            $value = BigDecimal::of($value);
             if ($max === null || $value->isGreaterThan($max)) {
                 $max = $value;
             }
@@ -101,20 +101,20 @@ class Decimal
      * This would defeat the whole purpose of using the Decimal type.
      * Prefer passing decimal numbers as strings, e.g `Decimal::of('0.1')` over `Decimal::of(0.1)`.
      *
-     * @param Decimal|number|string $value
+     * @param BigDecimal|number|string $value
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      *
      * @throws \InvalidArgumentException If the number is malformed.
      */
     public static function of($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof BigDecimal) {
             return $value;
         }
 
         if (is_int($value)) {
-            return new Decimal((string) $value);
+            return new BigDecimal((string) $value);
         }
 
         $value = (string) $value;
@@ -141,7 +141,7 @@ class Decimal
             $scale = 0;
         }
 
-        return new Decimal($value, $scale);
+        return new BigDecimal($value, $scale);
     }
 
     /**
@@ -149,14 +149,14 @@ class Decimal
      *
      * This value is cached to optimize memory consumption as it is frequently used.
      *
-     * @return Decimal
+     * @return BigDecimal
      */
     public static function zero()
     {
         static $zero = null;
 
         if ($zero === null) {
-            $zero = new Decimal('0');
+            $zero = new BigDecimal('0');
         }
 
         return $zero;
@@ -165,71 +165,71 @@ class Decimal
     /**
      * Returns the sum of this number and the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function plus($that)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
         $this->scaleValues($this, $that, $a, $b);
 
         $value = Calculator::get()->add($a, $b);
         $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
 
-        return new Decimal($value, $scale);
+        return new BigDecimal($value, $scale);
     }
 
     /**
      * Returns the difference of this number and the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function minus($that)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
         $this->scaleValues($this, $that, $a, $b);
 
         $value = Calculator::get()->sub($a, $b);
         $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
 
-        return new Decimal($value, $scale);
+        return new BigDecimal($value, $scale);
     }
 
     /**
      * Returns the result of the multiplication of this number and the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function multipliedBy($that)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
 
         $value = Calculator::get()->mul($this->value, $that->value);
         $scale = $this->scale + $that->scale;
 
-        return new Decimal($value, $scale);
+        return new BigDecimal($value, $scale);
     }
 
     /**
      * Returns the result of the division of this number and the given one.
      *
-     * @param Decimal|number|string $that         The number to divide.
+     * @param BigDecimal|number|string $that         The number to divide.
      * @param integer|null          $scale        The scale, or null to use the scale of this number.
      * @param integer               $roundingMode The rounding mode.
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      *
      * @throws \Brick\Math\ArithmeticException If the divisor is zero or rounding is necessary.
      * @throws \InvalidArgumentException       If the scale is invalid.
      */
     public function dividedBy($that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
 
         if ($that->isZero()) {
             throw ArithmeticException::divisionByZero();
@@ -317,7 +317,7 @@ class Decimal
                 : $calculator->sub($result, '1');
         }
 
-        return new Decimal($result, $scale);
+        return new BigDecimal($result, $scale);
     }
 
     /**
@@ -326,7 +326,7 @@ class Decimal
      * @param integer $scale
      * @param integer $roundingMode
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function withScale($scale, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -340,7 +340,7 @@ class Decimal
     /**
      * Returns the absolute value of this number.
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function abs()
     {
@@ -352,7 +352,7 @@ class Decimal
      *
      * @param integer $exponent The exponent, as a positive-or-zero integer.
      *
-     * @return Decimal
+     * @return BigDecimal
      */
     public function power($exponent)
     {
@@ -362,29 +362,29 @@ class Decimal
             throw new \InvalidArgumentException('The exponent cannot be negative.');
         }
 
-        return new Decimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
+        return new BigDecimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
     }
 
     /**
      * Returns the inverse of this number.
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function negated()
     {
-        return new Decimal(Calculator::get()->neg($this->value), $this->scale);
+        return new BigDecimal(Calculator::get()->neg($this->value), $this->scale);
     }
 
     /**
      * Compares this number to the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return integer [-1,0,1]
      */
     public function compareTo($that)
     {
-        $that = Decimal::of($that);
+        $that = BigDecimal::of($that);
         $this->scaleValues($this, $that, $a, $b);
 
         return Calculator::get()->cmp($a, $b);
@@ -393,7 +393,7 @@ class Decimal
     /**
      * Checks if this number is equal to the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return boolean
      */
@@ -405,7 +405,7 @@ class Decimal
     /**
      * Checks if this number is strictly lower than the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return boolean
      */
@@ -417,7 +417,7 @@ class Decimal
     /**
      * Checks if this number is lower than or equal to the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return boolean
      */
@@ -429,7 +429,7 @@ class Decimal
     /**
      * Checks if this number is strictly greater than the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return boolean
      */
@@ -441,7 +441,7 @@ class Decimal
     /**
      * Checks if this number is greater than or equal to the given one.
      *
-     * @param Decimal|number|string $that
+     * @param BigDecimal|number|string $that
      *
      * @return boolean
      */
@@ -519,14 +519,14 @@ class Decimal
     /**
      * Puts the internal values of the given decimal numbers on the same scale.
      *
-     * @param Decimal $x The first decimal number.
-     * @param Decimal $y The second decimal number.
+     * @param BigDecimal $x The first decimal number.
+     * @param BigDecimal $y The second decimal number.
      * @param string  $a A variable to store the scaled integer value of $x.
      * @param string  $b A variable to store the scaled integer value of $y.
      *
      * @return void
      */
-    private function scaleValues(Decimal $x, Decimal $y, & $a, & $b)
+    private function scaleValues(BigDecimal $x, BigDecimal $y, & $a, & $b)
     {
         $a = $x->value;
         $b = $y->value;

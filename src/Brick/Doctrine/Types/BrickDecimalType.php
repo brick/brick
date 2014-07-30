@@ -4,7 +4,7 @@ namespace Brick\Doctrine\Types;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Brick\Math\Decimal;
+use Brick\Math\BigDecimal;
 
 /**
  * Doctrine type for \Brick\Math\Decimal
@@ -32,7 +32,7 @@ class BrickDecimalType extends Type
     /**
      * @param  string|null                               $value
      * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return \Brick\Math\Decimal|null
+     * @return \Brick\Math\BigDecimal|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -40,11 +40,11 @@ class BrickDecimalType extends Type
             return null;
         }
 
-        return Decimal::of($value);
+        return BigDecimal::of($value);
     }
 
     /**
-     * @param  \Brick\Math\Decimal|null                 $value
+     * @param  \Brick\Math\BigDecimal|null                 $value
      * @param  \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return string|null
      */

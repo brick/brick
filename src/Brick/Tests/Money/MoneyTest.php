@@ -3,7 +3,7 @@
 namespace Brick\Tests\Money;
 
 use Brick\Money\Money;
-use Brick\Math\Decimal;
+use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
 /**
@@ -83,7 +83,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
         $this->assertDecimalEquals('USD 24.68', $money->multipliedBy(2));
         $this->assertDecimalEquals('USD 18.51', $money->multipliedBy('1.5'));
         $this->assertDecimalEquals('USD 14.80', $money->multipliedBy('1.2', RoundingMode::DOWN));
-        $this->assertDecimalEquals('USD 14.81', $money->multipliedBy(Decimal::of('1.2'), RoundingMode::UP));
+        $this->assertDecimalEquals('USD 14.81', $money->multipliedBy(BigDecimal::of('1.2'), RoundingMode::UP));
     }
 
     /**
@@ -100,7 +100,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('USD 6.17', $money->dividedBy(2));
         $this->assertEquals('USD 10.28', $money->dividedBy('1.2', RoundingMode::DOWN));
-        $this->assertEquals('USD 10.29', $money->dividedBy(Decimal::of('1.2'), RoundingMode::UP));
+        $this->assertEquals('USD 10.29', $money->dividedBy(BigDecimal::of('1.2'), RoundingMode::UP));
     }
 
     /**

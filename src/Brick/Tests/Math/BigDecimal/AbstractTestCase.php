@@ -1,10 +1,10 @@
 <?php
 
-namespace Brick\Tests\Math\Decimal;
+namespace Brick\Tests\Math\BigDecimal;
 
 use Brick\Math\ArithmeticException;
 use Brick\Math\Calculator;
-use Brick\Math\Decimal;
+use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
 /**
@@ -26,13 +26,13 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Decimal|string $expected
-     * @param Decimal|string $actual
+     * @param BigDecimal|string $expected
+     * @param BigDecimal|string $actual
      */
     private function assertDecimalEquals($expected, $actual)
     {
         $message = sprintf('Expected %s, got %s', $expected, $actual);
-        $this->assertTrue(Decimal::of($actual)->isEqualTo($expected), $message);
+        $this->assertTrue(BigDecimal::of($actual)->isEqualTo($expected), $message);
     }
 
     public function testEquality()
@@ -44,8 +44,8 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
     public function testDecimal()
     {
-        $number1 = Decimal::of('1.0123456789');
-        $number2 = Decimal::of('2.0987654321');
+        $number1 = BigDecimal::of('1.0123456789');
+        $number2 = BigDecimal::of('2.0987654321');
 
         // Test addition / subtraction
         $this->assertDecimalEquals('3.111111111', $number1->plus($number2));
@@ -196,7 +196,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionByZero()
     {
-        Decimal::of(1)->dividedBy(0);
+        BigDecimal::of(1)->dividedBy(0);
     }
 
     /**
@@ -204,23 +204,23 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionWithRoundingNecessary()
     {
-        Decimal::of('1.234')->dividedBy('123.456');
+        BigDecimal::of('1.234')->dividedBy('123.456');
     }
 
     public function testDivisionWithRounding()
     {
-        $p = Decimal::of('1.234');
-        $q = Decimal::of('123.456');
-        $r = Decimal::of('0.00999546397096941420425090720580611715914981855883');
+        $p = BigDecimal::of('1.234');
+        $q = BigDecimal::of('123.456');
+        $r = BigDecimal::of('0.00999546397096941420425090720580611715914981855883');
 
         $this->assertDecimalEquals($r, $p->dividedBy($q, 50, RoundingMode::DOWN));
     }
 
     public function testDivisionWithNoRoundingNecessary()
     {
-        $p = Decimal::of('0.123456789');
-        $q = Decimal::of('0.00244140625');
-        $r = Decimal::of('50.5679007744');
+        $p = BigDecimal::of('0.123456789');
+        $q = BigDecimal::of('0.00244140625');
+        $r = BigDecimal::of('50.5679007744');
 
         $this->assertDecimalEquals($r, $p->dividedBy($q, 10));
     }
@@ -230,7 +230,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testDivisionOfNegativeNumbers($a, $b, $expected)
     {
-        $this->assertDecimalEquals($expected, Decimal::of($a)->dividedBy($b));
+        $this->assertDecimalEquals($expected, BigDecimal::of($a)->dividedBy($b));
     }
 
     /**
@@ -255,7 +255,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testPower($number, $exponent, $expected)
     {
-        $this->assertDecimalEquals($expected, Decimal::of($number)->power($exponent));
+        $this->assertDecimalEquals($expected, BigDecimal::of($number)->power($exponent));
     }
 
     /**
@@ -315,7 +315,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testNegativeExponentThrowsException()
     {
-        Decimal::of(10)->power(-1);
+        BigDecimal::of(10)->power(-1);
     }
 
     /**
@@ -327,7 +327,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testImportExport($value, $unscaledValue, $scale)
     {
-        $decimal = Decimal::of($value);
+        $decimal = BigDecimal::of($value);
 
         $this->assertSame($unscaledValue, $decimal->getUnscaledValue());
         $this->assertSame($scale, $decimal->getScale());
@@ -374,7 +374,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testIsZero($number)
     {
-        $number = Decimal::of($number);
+        $number = BigDecimal::of($number);
 
         $this->assertTrue($number->isZero());
         $this->assertSame('0', $number->getUnscaledValue());
@@ -407,7 +407,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testRoundingMode($roundingMode, $number, $two, $one, $zero)
     {
-        $number = Decimal::of($number);
+        $number = BigDecimal::of($number);
 
         $this->doTestRoundingMode($roundingMode, $number, '1', $two, $one, $zero);
         $this->doTestRoundingMode($roundingMode, $number->negated(), '-1', $two, $one, $zero);
@@ -415,13 +415,13 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param integer     $roundingMode The rounding mode.
-     * @param Decimal     $number       The number to round.
+     * @param BigDecimal     $number       The number to round.
      * @param string      $divisor      The divisor.
      * @param string|null $two          The expected rounding to a scale of two, or null if an exception is expected.
      * @param string|null $one          The expected rounding to a scale of one, or null if an exception is expected.
      * @param string|null $zero         The expected rounding to a scale of zero, or null if an exception is expected.
      */
-    private function doTestRoundingMode($roundingMode, Decimal $number, $divisor, $two, $one, $zero)
+    private function doTestRoundingMode($roundingMode, BigDecimal $number, $divisor, $two, $one, $zero)
     {
         foreach ([$zero, $one, $two] as $scale => $expected) {
             if ($expected === null) {

@@ -13,7 +13,7 @@ interface CurrencyConverter
      * @param \Brick\Locale\Currency $from
      * @param \Brick\Locale\Currency $to
      *
-     * @return \Brick\Math\Decimal
+     * @return \Brick\Math\BigDecimal
      */
     public function getExchangeRate(Currency $from, Currency $to);
 

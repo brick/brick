@@ -4,7 +4,7 @@ namespace Brick\Validation\Validator;
 
 use Brick\Validation\AbstractValidator;
 use Brick\Math\ArithmeticException;
-use Brick\Math\Decimal;
+use Brick\Math\BigDecimal;
 
 /**
  * Validates a number.
@@ -12,17 +12,17 @@ use Brick\Math\Decimal;
 class NumberValidator extends AbstractValidator
 {
     /**
-     * @var \Brick\Math\Decimal|null
+     * @var \Brick\Math\BigDecimal|null
      */
     private $min = null;
 
     /**
-     * @var \Brick\Math\Decimal|null
+     * @var \Brick\Math\BigDecimal|null
      */
     private $max = null;
 
     /**
-     * @var \Brick\Math\Decimal|null
+     * @var \Brick\Math\BigDecimal|null
      */
     private $step = null;
 
@@ -45,7 +45,7 @@ class NumberValidator extends AbstractValidator
     protected function validate($value)
     {
         try {
-            $value = Decimal::of($value);
+            $value = BigDecimal::of($value);
         }
         catch (\InvalidArgumentException $e) {
             $this->addFailureMessage('validator.number.invalid');
@@ -74,7 +74,7 @@ class NumberValidator extends AbstractValidator
     public function setMin($min)
     {
         if ($min !== null) {
-            $min = Decimal::of($min);
+            $min = BigDecimal::of($min);
         }
 
         $this->min = $min;
@@ -92,7 +92,7 @@ class NumberValidator extends AbstractValidator
     public function setMax($max)
     {
         if ($max !== null) {
-            $max = Decimal::of($max);
+            $max = BigDecimal::of($max);
         }
 
         $this->max = $max;
@@ -110,7 +110,7 @@ class NumberValidator extends AbstractValidator
     public function setStep($step)
     {
         if ($step !== null) {
-            $step = Decimal::of($step);
+            $step = BigDecimal::of($step);
 
             if ($step->isNegativeOrZero()) {
                 throw new \InvalidArgumentException('The number validator step must be strictly positive.');
