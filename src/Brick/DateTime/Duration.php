@@ -126,7 +126,7 @@ class Duration
      */
     public static function between(ReadableInstant $startInclusive, ReadableInstant $endExclusive)
     {
-        return new Duration($endExclusive->getInstant()->getEpochSecond() - $startInclusive->getInstant()->getEpochSecond());
+        return new Duration($endExclusive->getInstant()->getTimestamp() - $startInclusive->getInstant()->getTimestamp());
     }
 
     /**

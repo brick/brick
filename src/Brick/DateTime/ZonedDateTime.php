@@ -124,7 +124,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function ofInstant(Instant $instant, TimeZone $timeZone)
     {
-        return ZonedDateTime::ofTimestamp($instant->getInstant()->getEpochSecond(), $timeZone);
+        return ZonedDateTime::ofTimestamp($instant->getInstant()->getTimestamp(), $timeZone);
     }
 
     /**

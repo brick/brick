@@ -20,7 +20,14 @@ class Instant extends ReadableInstant
      *
      * @var integer
      */
-    private $epochSecond;
+    private $timestamp;
+
+    /**
+     * The microseconds, in the range [0,999999].
+     *
+     * @var integer
+     */
+    private $microseconds;
 
     /**
      * The global default Clock to use.
@@ -59,21 +66,33 @@ class Instant extends ReadableInstant
     /**
      * Private constructor. Use of() to obtain an Instant.
      *
-     * @param int $timestamp The timestamp, validated as an integer.
+     * @param integer $timestamp    The timestamp, validated as an integer.
+     * @param integer $microseconds The microseconds, validated as an integer in the range [0,999999].
      */
-    private function __construct($timestamp)
+    private function __construct($timestamp, $microseconds = 0)
     {
-        $this->epochSecond = $timestamp;
+        $this->timestamp    = $timestamp;
+        $this->microseconds = $microseconds;
     }
 
     /**
-     * @param int $timestamp A UNIX timestamp.
+     * @param integer $timestamp    The UNIX timestamp.
+     * @param integer $microseconds The microseconds, in the range [0,999999].
+     *
      * @return Instant
-     * @throws \InvalidArgumentException If the given timestamp is not a valid integer.
+     *
+     * @throws \InvalidArgumentException If any of the parameters is not valid.
      */
-    public static function of($timestamp)
+    public static function of($timestamp, $microseconds = 0)
     {
-        return new Instant(Cast::toInteger($timestamp));
+        $timestamp    = Cast::toInteger($timestamp);
+        $microseconds = Cast::toInteger($microseconds);
+
+        if ($microseconds < 0 || $microseconds > 999999) {
+            throw new \InvalidArgumentException('Invalid number of microseconds.');
+        }
+
+        return new Instant($timestamp, $microseconds);
     }
 
     /**
@@ -94,6 +113,7 @@ class Instant extends ReadableInstant
 
     /**
      * Returns the minimum supported instant.
+     *
      * This could be used by an application as a "far past" instant.
      *
      * @return Instant
@@ -105,6 +125,7 @@ class Instant extends ReadableInstant
 
     /**
      * Returns the maximum supported instant.
+     *
      * This could be used by an application as a "far future" instant.
      *
      * @return Instant
@@ -115,108 +136,175 @@ class Instant extends ReadableInstant
     }
 
     /**
-     * Creates a new Instant, checking if a new instance is actually required.
+     * @todo duration micros
      *
-     * @param int $timestamp The timestamp, validated as an integer.
-     * @return Instant
-     */
-    private function create($timestamp)
-    {
-        if ($timestamp == $this->epochSecond) {
-            return $this;
-        }
-
-        return new Instant($timestamp);
-    }
-
-    /**
      * @param Duration $duration
+     *
      * @return Instant
      */
     public function plus(Duration $duration)
     {
-        return $this->create($this->epochSecond + $duration->getSeconds());
+        if ($duration->isZero()) {
+            return $this;
+        }
+
+        return new Instant($this->timestamp + $duration->getSeconds(), $this->microseconds);
     }
 
     /**
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return Instant
      */
     public function plusSeconds($seconds)
     {
-        return $this->create($this->epochSecond + Cast::toInteger($seconds));
+        $seconds = Cast::toInteger($seconds);
+
+        if ($seconds === 0) {
+            return $this;
+        }
+
+        return new Instant($this->timestamp + $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return Instant
      */
     public function plusMinutes($minutes)
     {
-        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
+        $minutes = Cast::toInteger($minutes);
+
+        if ($minutes === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_MINUTE * $minutes;
+
+        return new Instant($this->timestamp + $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return Instant
      */
     public function plusHours($hours)
     {
-        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
+        $hours = Cast::toInteger($hours);
+
+        if ($hours === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_HOUR * $hours;
+
+        return new Instant($this->timestamp + $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $days
+     * @param integer $days
+     *
      * @return Instant
      */
     public function plusDays($days)
     {
-        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
+        $days = Cast::toInteger($days);
+
+        if ($days === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_DAY * $days;
+
+        return new Instant($this->timestamp + $seconds, $this->microseconds);
     }
 
     /**
+     * @todo Duration micros
+     *
      * @param Duration $duration
+     *
      * @return Instant
      */
     public function minus(Duration $duration)
     {
-        return $this->create($this->epochSecond - $duration->getSeconds());
+        if ($duration->isZero()) {
+            return $this;
+        }
+
+        return new Instant($this->timestamp - $duration->getSeconds(), $this->microseconds);
     }
 
     /**
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return Instant
      */
     public function minusSeconds($seconds)
     {
-        return $this->create($this->epochSecond - Cast::toInteger($seconds));
+        $seconds = Cast::toInteger($seconds);
+
+        if ($seconds === 0) {
+            return $this;
+        }
+
+        return new Instant($this->timestamp - $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return Instant
      */
     public function minusMinutes($minutes)
     {
-        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
+        $minutes = Cast::toInteger($minutes);
+
+        if ($minutes === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_MINUTE * $minutes;
+
+        return new Instant($this->timestamp - $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return Instant
      */
     public function minusHours($hours)
     {
-        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
+        $hours = Cast::toInteger($hours);
+
+        if ($hours === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_HOUR * $hours;
+
+        return new Instant($this->timestamp - $seconds, $this->microseconds);
     }
 
     /**
-     * @param int $days
+     * @param integer $days
+     *
      * @return Instant
      */
     public function minusDays($days)
     {
-        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
+        $days = Cast::toInteger($days);
+
+        if ($days === 0) {
+            return $this;
+        }
+
+        $seconds = LocalTime::SECONDS_PER_DAY * $days;
+
+        return new Instant($this->timestamp - $seconds, $this->microseconds);
     }
 
     /**
@@ -230,15 +318,24 @@ class Instant extends ReadableInstant
     /**
      * @return integer
      */
-    public function getEpochSecond()
+    public function getTimestamp()
     {
-        return $this->epochSecond;
+        return $this->timestamp;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getMicroseconds()
+    {
+        return $this->microseconds;
     }
 
     /**
      * Returns a ZonedDateTime representing this Instant, in the given TimeZone.
      *
      * @param TimeZone $timeZone
+     *
      * @return ZonedDateTime
      */
     public function atTimeZone(TimeZone $timeZone)
@@ -250,6 +347,7 @@ class Instant extends ReadableInstant
      * @deprecated Use atTimeZone()
      *
      * @param TimeZone $timeZone
+     *
      * @return ZonedDateTime
      */
     public function toZonedDateTime(TimeZone $timeZone)
@@ -275,6 +373,7 @@ class Instant extends ReadableInstant
 
     /**
      * @param \DateTime $dateTime
+     *
      * @return Instant
      */
     public static function fromDateTime(\DateTime $dateTime)
@@ -284,11 +383,12 @@ class Instant extends ReadableInstant
 
     /**
      * @param \DateTimeZone $dateTimeZone
+     *
      * @return \DateTime
      */
     public function toDateTime(\DateTimeZone $dateTimeZone)
     {
-        $dateTime = new \DateTime('@' . $this->epochSecond, $dateTimeZone);
+        $dateTime = new \DateTime('@' . $this->timestamp, $dateTimeZone);
         $dateTime->setTimezone($dateTimeZone);
 
         return $dateTime;

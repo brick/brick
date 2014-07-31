@@ -26,7 +26,7 @@ abstract class ReadableInstant
      */
     public function compareTo(ReadableInstant $other)
     {
-        return $this->getInstant()->getEpochSecond() - $other->getInstant()->getEpochSecond();
+        return $this->getInstant()->getTimestamp() - $other->getInstant()->getTimestamp();
     }
 
     /**
