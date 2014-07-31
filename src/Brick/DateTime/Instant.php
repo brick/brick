@@ -89,7 +89,7 @@ class Instant extends PointInTime
      */
     public static function now()
     {
-        return new Instant(Instant::getDefaultClock()->getTimestamp());
+        return Instant::getDefaultClock()->getTime();
     }
 
     /**

@@ -2,12 +2,12 @@
 
 namespace Brick\DateTime\Clock;
 
+use Brick\DateTime\Instant;
 use Brick\DateTime\PointInTime;
 use Brick\Type\Cast;
 
 /**
- * Clock that always returns the same instant.
- * This is typically used for testing.
+ * This clock always returns the same instant. It is typically used for testing.
  */
 class FixedClock implements Clock
 {
@@ -49,8 +49,8 @@ class FixedClock implements Clock
     /**
      * {@inheritdoc}
      */
-    public function getTimestamp()
+    public function getTime()
     {
-        return $this->timestamp;
+        return Instant::of($this->timestamp);
     }
 }

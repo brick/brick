@@ -8,9 +8,9 @@ namespace Brick\DateTime\Clock;
 interface Clock
 {
     /**
-     * Returns the current UNIX timestamp.
+     * Returns the current time.
      *
-     * @return int
+     * @return \Brick\DateTime\Instant
      */
-    public function getTimestamp();
+    public function getTime();
 }

@@ -2,17 +2,18 @@
 
 namespace Brick\DateTime\Clock;
 
+use Brick\DateTime\Instant;
+
 /**
- * Clock that returns the system time.
- * This is the default clock.
+ * This clock returns the system time. It is the default clock.
  */
 class SystemClock implements Clock
 {
     /**
      * {@inheritdoc}
      */
-    public function getTimestamp()
+    public function getTime()
     {
-        return time();
+        return Instant::of(time());
     }
 }
