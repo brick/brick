@@ -124,7 +124,7 @@ class ZonedDateTime extends PointInTime
      */
     public static function ofInstant(Instant $instant, TimeZone $timeZone)
     {
-        return ZonedDateTime::ofTimestamp($instant->getTimestamp(), $timeZone);
+        return ZonedDateTime::ofTimestamp($instant->getInstant()->getEpochSecond(), $timeZone);
     }
 
     /**
@@ -292,9 +292,9 @@ class ZonedDateTime extends PointInTime
     /**
      * {@inheritdoc}
      */
-    public function getTimestamp()
+    public function getInstant()
     {
-        return $this->dateTime->getTimestamp();
+        return Instant::of($this->dateTime->getTimestamp());
     }
 
     /**
@@ -629,11 +629,13 @@ class ZonedDateTime extends PointInTime
     /**
      * Returns the instant represented by this ZonedDateTime.
      *
+     * @todo now redundant with getInstant(), remove.
+     *
      * @return Instant
      */
     public function toInstant()
     {
-        return Instant::of($this->getTimestamp());
+        return $this->getInstant();
     }
 
     /**

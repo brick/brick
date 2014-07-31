@@ -43,7 +43,7 @@ class FixedClock implements Clock
      */
     public static function atInstant(PointInTime $instant)
     {
-        return new FixedClock($instant->getTimestamp());
+        return new FixedClock($instant->getInstant()->getEpochSecond());
     }
 
     /**

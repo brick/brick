@@ -37,7 +37,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
         $timestamp = 1e9;
         $zonedDateTime = ZonedDateTime::ofTimestamp($timestamp, TimeZone::of($timeZone));
 
-        $this->assertEquals($timestamp, $zonedDateTime->getTimestamp());
+        $this->assertEquals($timestamp, $zonedDateTime->getInstant()->getEpochSecond());
         $this->assertEquals($formattedDatetime, $zonedDateTime->getDateTime()->toString());
     }
 
@@ -57,7 +57,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
         $date = LocalDate::of(2012, 6, 30);
         $datetime = ZonedDateTime::createFromDate($date, TimeZone::of('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
-        $this->assertEquals(1341039600, $datetime->getTimestamp());
+        $this->assertEquals(1341039600, $datetime->getInstant()->getEpochSecond());
     }
 
     public function testCreateFromDateAndTime()
@@ -67,7 +67,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
         $datetime = ZonedDateTime::createFromDateAndTime($date, $time, TimeZone::of('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
         $this->assertTrue($datetime->getTime()->isEqualTo($time));
-        $this->assertEquals(1341084896, $datetime->getTimestamp());
+        $this->assertEquals(1341084896, $datetime->getInstant()->getEpochSecond());
     }
 
     /**

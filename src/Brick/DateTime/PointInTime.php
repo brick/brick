@@ -8,9 +8,9 @@ namespace Brick\DateTime;
 abstract class PointInTime
 {
     /**
-     * @return int
+     * @return \Brick\DateTime\Instant
      */
-    abstract public function getTimestamp();
+    abstract public function getInstant();
 
     /**
      * Compares this instant with another.
@@ -26,7 +26,7 @@ abstract class PointInTime
      */
     public function compareTo(PointInTime $other)
     {
-        return $this->getTimestamp() - $other->getTimestamp();
+        return $this->getInstant()->getEpochSecond() - $other->getInstant()->getEpochSecond();
     }
 
     /**

@@ -49,7 +49,7 @@ class TimeZoneRegion extends TimeZone
      */
     public function getOffset(PointInTime $pointInTime)
     {
-        $instant = Instant::of($pointInTime->getTimestamp());
+        $instant = $pointInTime->getInstant();
         $dateTime = $instant->toDateTime(new \DateTimeZone('UTC'));
 
         return $this->zone->getOffset($dateTime);

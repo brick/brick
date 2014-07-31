@@ -18,9 +18,9 @@ class Instant extends PointInTime
     /**
      * The number of seconds since the epoch of 1970-01-01T00:00:00Z.
      *
-     * @var int
+     * @var integer
      */
-    private $timestamp;
+    private $epochSecond;
 
     /**
      * The global default Clock to use.
@@ -63,7 +63,7 @@ class Instant extends PointInTime
      */
     private function __construct($timestamp)
     {
-        $this->timestamp = $timestamp;
+        $this->epochSecond = $timestamp;
     }
 
     /**
@@ -122,7 +122,7 @@ class Instant extends PointInTime
      */
     private function create($timestamp)
     {
-        if ($timestamp == $this->timestamp) {
+        if ($timestamp == $this->epochSecond) {
             return $this;
         }
 
@@ -135,7 +135,7 @@ class Instant extends PointInTime
      */
     public function plus(Duration $duration)
     {
-        return $this->create($this->timestamp + $duration->getSeconds());
+        return $this->create($this->epochSecond + $duration->getSeconds());
     }
 
     /**
@@ -144,7 +144,7 @@ class Instant extends PointInTime
      */
     public function plusSeconds($seconds)
     {
-        return $this->create($this->timestamp + Cast::toInteger($seconds));
+        return $this->create($this->epochSecond + Cast::toInteger($seconds));
     }
 
     /**
@@ -153,7 +153,7 @@ class Instant extends PointInTime
      */
     public function plusMinutes($minutes)
     {
-        return $this->create($this->timestamp + LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
+        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
     }
 
     /**
@@ -162,7 +162,7 @@ class Instant extends PointInTime
      */
     public function plusHours($hours)
     {
-        return $this->create($this->timestamp + LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
+        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
     }
 
     /**
@@ -171,7 +171,7 @@ class Instant extends PointInTime
      */
     public function plusDays($days)
     {
-        return $this->create($this->timestamp + LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
+        return $this->create($this->epochSecond + LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
     }
 
     /**
@@ -180,7 +180,7 @@ class Instant extends PointInTime
      */
     public function minus(Duration $duration)
     {
-        return $this->create($this->timestamp - $duration->getSeconds());
+        return $this->create($this->epochSecond - $duration->getSeconds());
     }
 
     /**
@@ -189,7 +189,7 @@ class Instant extends PointInTime
      */
     public function minusSeconds($seconds)
     {
-        return $this->create($this->timestamp - Cast::toInteger($seconds));
+        return $this->create($this->epochSecond - Cast::toInteger($seconds));
     }
 
     /**
@@ -198,7 +198,7 @@ class Instant extends PointInTime
      */
     public function minusMinutes($minutes)
     {
-        return $this->create($this->timestamp - LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
+        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_MINUTE * Cast::toInteger($minutes));
     }
 
     /**
@@ -207,7 +207,7 @@ class Instant extends PointInTime
      */
     public function minusHours($hours)
     {
-        return $this->create($this->timestamp - LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
+        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_HOUR * Cast::toInteger($hours));
     }
 
     /**
@@ -216,15 +216,23 @@ class Instant extends PointInTime
      */
     public function minusDays($days)
     {
-        return $this->create($this->timestamp - LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
+        return $this->create($this->epochSecond - LocalTime::SECONDS_PER_DAY * Cast::toInteger($days));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getTimestamp()
+    public function getInstant()
     {
-        return $this->timestamp;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getEpochSecond()
+    {
+        return $this->epochSecond;
     }
 
     /**
@@ -280,7 +288,7 @@ class Instant extends PointInTime
      */
     public function toDateTime(\DateTimeZone $dateTimeZone)
     {
-        $dateTime = new \DateTime('@' . $this->getTimestamp(), $dateTimeZone);
+        $dateTime = new \DateTime('@' . $this->epochSecond, $dateTimeZone);
         $dateTime->setTimezone($dateTimeZone);
 
         return $dateTime;
