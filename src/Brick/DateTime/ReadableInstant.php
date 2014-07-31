@@ -13,6 +13,22 @@ abstract class ReadableInstant
     abstract public function getInstant();
 
     /**
+     * @return integer
+     */
+    public function getTimestamp()
+    {
+        return $this->getInstant()->getTimestamp();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getMicroseconds()
+    {
+        return $this->getInstant()->getMicroseconds();
+    }
+
+    /**
      * Compares this instant with another.
      *
      * Returns:
