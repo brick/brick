@@ -317,6 +317,22 @@ class Duration
     }
 
     /**
+     * Returns a copy of this Duration with the specified duration added.
+     *
+     * @param \Brick\DateTime\Duration $duration
+     *
+     * @return \Brick\DateTime\Duration
+     */
+    public function minus(Duration $duration)
+    {
+        if ($duration->isZero()) {
+            return $this;
+        }
+
+        return $this->plus($duration->negated());
+    }
+
+    /**
      * Returns a copy of this Duration with the specified duration in seconds subtracted.
      *
      * @param integer $seconds
