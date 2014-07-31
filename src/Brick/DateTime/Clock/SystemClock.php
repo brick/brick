@@ -14,6 +14,11 @@ class SystemClock implements Clock
      */
     public function getTime()
     {
-        return Instant::of(time());
+        list ($fraction, $timestamp) = explode(' ', microtime());
+
+        $timestamp = (int) $timestamp;
+        $microseconds = (int) substr($fraction, 2, 6);
+
+        return Instant::of($timestamp, $microseconds);
     }
 }
