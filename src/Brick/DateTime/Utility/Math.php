@@ -12,12 +12,13 @@ class Math
      *
      * @param integer $a The dividend, validated as an integer.
      * @param integer $b The divisor, validated as an integer.
+     * @param integer $r An optional variable to store the remainder of the division.
      *
      * @return integer The quotient of the division.
      */
-    public static function div($a, $b)
+    public static function div($a, $b, & $r = null)
     {
-        return ($a - ($a % $b)) / $b;
+        return ($a - ($r = $a % $b)) / $b;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Utility\Time;
 use Brick\Type\Cast;
 
 /**
@@ -136,8 +137,6 @@ class Instant extends ReadableInstant
     }
 
     /**
-     * @todo duration micros
-     *
      * @param Duration $duration
      *
      * @return Instant
@@ -148,7 +147,16 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        return new Instant($this->timestamp + $duration->getSeconds(), $this->microseconds);
+        Time::add(
+            $this->timestamp,
+            $this->microseconds,
+            $duration->getSeconds(),
+            $duration->getMicroseconds(),
+            $seconds,
+            $microseconds
+        );
+
+        return new Instant($seconds, $microseconds);
     }
 
     /**
@@ -164,7 +172,9 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        return new Instant($this->timestamp + $seconds, $this->microseconds);
+        Time::add($this->timestamp, $this->microseconds, $seconds, 0, $seconds, $microseconds);
+
+        return new Instant($seconds, $microseconds);
     }
 
     /**
@@ -176,13 +186,7 @@ class Instant extends ReadableInstant
     {
         $minutes = Cast::toInteger($minutes);
 
-        if ($minutes === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_MINUTE * $minutes;
-
-        return new Instant($this->timestamp + $seconds, $this->microseconds);
+        return $this->plusSeconds($minutes * LocalTime::SECONDS_PER_MINUTE);
     }
 
     /**
@@ -194,13 +198,7 @@ class Instant extends ReadableInstant
     {
         $hours = Cast::toInteger($hours);
 
-        if ($hours === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_HOUR * $hours;
-
-        return new Instant($this->timestamp + $seconds, $this->microseconds);
+        return $this->plusSeconds($hours * LocalTime::SECONDS_PER_HOUR);
     }
 
     /**
@@ -212,18 +210,10 @@ class Instant extends ReadableInstant
     {
         $days = Cast::toInteger($days);
 
-        if ($days === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_DAY * $days;
-
-        return new Instant($this->timestamp + $seconds, $this->microseconds);
+        return $this->plusSeconds($days * LocalTime::SECONDS_PER_DAY);
     }
 
     /**
-     * @todo Duration micros
-     *
      * @param Duration $duration
      *
      * @return Instant
@@ -234,7 +224,7 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        return new Instant($this->timestamp - $duration->getSeconds(), $this->microseconds);
+        return $this->plus($duration->negated());
     }
 
     /**
@@ -246,11 +236,7 @@ class Instant extends ReadableInstant
     {
         $seconds = Cast::toInteger($seconds);
 
-        if ($seconds === 0) {
-            return $this;
-        }
-
-        return new Instant($this->timestamp - $seconds, $this->microseconds);
+        return $this->plusSeconds(-$seconds);
     }
 
     /**
@@ -262,13 +248,7 @@ class Instant extends ReadableInstant
     {
         $minutes = Cast::toInteger($minutes);
 
-        if ($minutes === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_MINUTE * $minutes;
-
-        return new Instant($this->timestamp - $seconds, $this->microseconds);
+        return $this->plusMinutes(-$minutes);
     }
 
     /**
@@ -280,13 +260,7 @@ class Instant extends ReadableInstant
     {
         $hours = Cast::toInteger($hours);
 
-        if ($hours === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_HOUR * $hours;
-
-        return new Instant($this->timestamp - $seconds, $this->microseconds);
+        return $this->plusHours(-$hours);
     }
 
     /**
@@ -298,13 +272,7 @@ class Instant extends ReadableInstant
     {
         $days = Cast::toInteger($days);
 
-        if ($days === 0) {
-            return $this;
-        }
-
-        $seconds = LocalTime::SECONDS_PER_DAY * $days;
-
-        return new Instant($this->timestamp - $seconds, $this->microseconds);
+        return $this->plusDays(-$days);
     }
 
     /**
