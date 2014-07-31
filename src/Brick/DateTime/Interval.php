@@ -13,26 +13,26 @@ class Interval
     /**
      * The start instant, inclusive.
      *
-     * @var \Brick\DateTime\PointInTime
+     * @var \Brick\DateTime\ReadableInstant
      */
     private $start;
 
     /**
      * The end instant, exclusive.
      *
-     * @var \Brick\DateTime\PointInTime
+     * @var \Brick\DateTime\ReadableInstant
      */
     private $end;
 
     /**
      * Class constructor.
      *
-     * @param \Brick\DateTime\PointInTime $startInclusive The start instant, inclusive.
-     * @param \Brick\DateTime\PointInTime $endExclusive   The end instant, exclusive.
+     * @param \Brick\DateTime\ReadableInstant $startInclusive The start instant, inclusive.
+     * @param \Brick\DateTime\ReadableInstant $endExclusive   The end instant, exclusive.
      *
      * @throws \Brick\DateTime\DateTimeException
      */
-    public function __construct(PointInTime $startInclusive, PointInTime $endExclusive)
+    public function __construct(ReadableInstant $startInclusive, ReadableInstant $endExclusive)
     {
         if (! $endExclusive->isAfterOrEqualTo($startInclusive)) {
             throw new DateTimeException('The end instant must be after or equal to the start instant');
@@ -45,7 +45,7 @@ class Interval
     /**
      * Returns the start instant, inclusive, of this Interval.
      *
-     * @return \Brick\DateTime\PointInTime
+     * @return \Brick\DateTime\ReadableInstant
      */
     public function getStart()
     {
@@ -55,7 +55,7 @@ class Interval
     /**
      * Returns the end instant, exclusive, of this Interval.
      *
-     * @return \Brick\DateTime\PointInTime
+     * @return \Brick\DateTime\ReadableInstant
      */
     public function getEnd()
     {
@@ -65,11 +65,11 @@ class Interval
     /**
      * Returns a copy of this Interval with the start instant altered.
      *
-     * @param \Brick\DateTime\PointInTime $start
+     * @param \Brick\DateTime\ReadableInstant $start
      *
      * @return \Brick\DateTime\Interval
      */
-    public function withStart(PointInTime $start)
+    public function withStart(ReadableInstant $start)
     {
         return new Interval($start, $this->end);
     }
@@ -77,11 +77,11 @@ class Interval
     /**
      * Returns a copy of this Interval with the end instant altered.
      *
-     * @param \Brick\DateTime\PointInTime $end
+     * @param \Brick\DateTime\ReadableInstant $end
      *
      * @return \Brick\DateTime\Interval
      */
-    public function withEnd(PointInTime $end)
+    public function withEnd(ReadableInstant $end)
     {
         return new Interval($this->start, $end);
     }

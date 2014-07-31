@@ -10,7 +10,7 @@ use Brick\Locale\Locale;
  * A ZonedDateTime can be viewed as a LocalDateTime along with a time zone
  * and targets a specific point in time.
  */
-class ZonedDateTime extends PointInTime
+class ZonedDateTime extends ReadableInstant
 {
     /**
      * The local date-time.

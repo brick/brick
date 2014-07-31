@@ -3,7 +3,7 @@
 namespace Brick\DateTime\Clock;
 
 use Brick\DateTime\Instant;
-use Brick\DateTime\PointInTime;
+use Brick\DateTime\ReadableInstant;
 use Brick\Type\Cast;
 
 /**
@@ -38,10 +38,10 @@ class FixedClock implements Clock
     }
 
     /**
-     * @param \Brick\DateTime\PointInTime $instant
+     * @param \Brick\DateTime\ReadableInstant $instant
      * @return FixedClock
      */
-    public static function atInstant(PointInTime $instant)
+    public static function atInstant(ReadableInstant $instant)
     {
         return new FixedClock($instant->getInstant()->getEpochSecond());
     }

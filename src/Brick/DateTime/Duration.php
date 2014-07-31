@@ -119,12 +119,12 @@ class Duration
      * A Duration represents a directed distance between two points on the time-line.
      * As such, this method will return a negative duration if the end is before the start.
      *
-     * @param \Brick\DateTime\PointInTime $startInclusive The start instant, inclusive.
-     * @param \Brick\DateTime\PointInTime $endExclusive   The end instant, exclusive.
+     * @param \Brick\DateTime\ReadableInstant $startInclusive The start instant, inclusive.
+     * @param \Brick\DateTime\ReadableInstant $endExclusive   The end instant, exclusive.
      *
      * @return \Brick\DateTime\Duration
      */
-    public static function between(PointInTime $startInclusive, PointInTime $endExclusive)
+    public static function between(ReadableInstant $startInclusive, ReadableInstant $endExclusive)
     {
         return new Duration($endExclusive->getInstant()->getEpochSecond() - $startInclusive->getInstant()->getEpochSecond());
     }
@@ -132,11 +132,11 @@ class Duration
     /**
      * Returns a Duration representing the time elapsed since the given instant.
      *
-     * @param \Brick\DateTime\PointInTime $startInclusive
+     * @param \Brick\DateTime\ReadableInstant $startInclusive
      *
      * @return \Brick\DateTime\Duration
      */
-    public static function since(PointInTime $startInclusive)
+    public static function since(ReadableInstant $startInclusive)
     {
         return Duration::between($startInclusive, Instant::now());
     }

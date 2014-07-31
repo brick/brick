@@ -13,7 +13,7 @@ use Brick\Type\Cast;
  * Instant is easily and unambiguously persistable as an integer. It is not very meaningful to humans,
  * but can be converted to a `ZonedDateTime` by providing a time zone.
  */
-class Instant extends PointInTime
+class Instant extends ReadableInstant
 {
     /**
      * The number of seconds since the epoch of 1970-01-01T00:00:00Z.

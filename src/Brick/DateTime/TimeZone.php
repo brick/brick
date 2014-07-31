@@ -41,10 +41,10 @@ abstract class TimeZone
     abstract public function getId();
 
     /**
-     * @param PointInTime $pointInTime The instant.
+     * @param ReadableInstant $pointInTime The instant.
      * @return int The offset from UTC in seconds.
      */
-    abstract public function getOffset(PointInTime $pointInTime);
+    abstract public function getOffset(ReadableInstant $pointInTime);
 
     /**
      * @param TimeZone $other

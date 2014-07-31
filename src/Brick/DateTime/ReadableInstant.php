@@ -3,9 +3,9 @@
 namespace Brick\DateTime;
 
 /**
- * Base class for a point-in-time, such as Instant or ZonedDateTime.
+ * Base class for Instant and ZonedDateTime.
  */
-abstract class PointInTime
+abstract class ReadableInstant
 {
     /**
      * @return \Brick\DateTime\Instant
@@ -21,10 +21,10 @@ abstract class PointInTime
      * * a positive number if this instant is after the given one;
      * * zero if this instant equals the given one.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return int
      */
-    public function compareTo(PointInTime $other)
+    public function compareTo(ReadableInstant $other)
     {
         return $this->getInstant()->getEpochSecond() - $other->getInstant()->getEpochSecond();
     }
@@ -32,10 +32,10 @@ abstract class PointInTime
     /**
      * Returns whether this instant equals another.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return bool
      */
-    public function isEqualTo(PointInTime $other)
+    public function isEqualTo(ReadableInstant $other)
     {
         return $this->compareTo($other) == 0;
     }
@@ -43,10 +43,10 @@ abstract class PointInTime
     /**
      * Returns whether this instant is after another.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return bool
      */
-    public function isAfter(PointInTime $other)
+    public function isAfter(ReadableInstant $other)
     {
         return $this->compareTo($other) > 0;
     }
@@ -54,10 +54,10 @@ abstract class PointInTime
     /**
      * Returns whether this instant is after, or equal to, another.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return bool
      */
-    public function isAfterOrEqualTo(PointInTime $other)
+    public function isAfterOrEqualTo(ReadableInstant $other)
     {
         return $this->compareTo($other) >= 0;
     }
@@ -65,10 +65,10 @@ abstract class PointInTime
     /**
      * Returns whether this instant is before another.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return bool
      */
-    public function isBefore(PointInTime $other)
+    public function isBefore(ReadableInstant $other)
     {
         return $this->compareTo($other) < 0;
     }
@@ -76,10 +76,10 @@ abstract class PointInTime
     /**
      * Returns whether this instant is before, or equal to, another.
      *
-     * @param PointInTime $other
+     * @param ReadableInstant $other
      * @return bool
      */
-    public function isBeforeOrEqualTo(PointInTime $other)
+    public function isBeforeOrEqualTo(ReadableInstant $other)
     {
         return $this->compareTo($other) <= 0;
     }
@@ -87,11 +87,11 @@ abstract class PointInTime
     /**
      * Returns whether this instant is between the given instants, inclusive.
      *
-     * @param PointInTime $first
-     * @param PointInTime $last
+     * @param ReadableInstant $first
+     * @param ReadableInstant $last
      * @return bool
      */
-    public function isBetweenInclusive(PointInTime $first, PointInTime $last)
+    public function isBetweenInclusive(ReadableInstant $first, ReadableInstant $last)
     {
         return $this->isAfterOrEqualTo($first) && $this->isBeforeOrEqualTo($last);
     }
@@ -99,11 +99,11 @@ abstract class PointInTime
     /**
      * Returns whether this instant is between the given instants, exclusive.
      *
-     * @param PointInTime $first
-     * @param PointInTime $last
+     * @param ReadableInstant $first
+     * @param ReadableInstant $last
      * @return bool
      */
-    public function isBetweenExclusive(PointInTime $first, PointInTime $last)
+    public function isBetweenExclusive(ReadableInstant $first, ReadableInstant $last)
     {
         return $this->isAfter($first) && $this->isBefore($last);
     }

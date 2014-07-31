@@ -278,7 +278,7 @@ class TimeZoneOffset extends TimeZone
     /**
      * {@inheritdoc}
      */
-    public function getOffset(PointInTime $pointInTime)
+    public function getOffset(ReadableInstant $pointInTime)
     {
         return $this->totalSeconds;
     }
