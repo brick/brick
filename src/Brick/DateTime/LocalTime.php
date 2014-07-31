@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Utility\Math;
 use Brick\Locale\Locale;
 use Brick\Type\Cast;
 

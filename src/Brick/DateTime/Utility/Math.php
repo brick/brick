@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DateTime;
+namespace Brick\DateTime\Utility;
 
 /**
  * Internal utility class for calculations on integers.
