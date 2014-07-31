@@ -3,8 +3,6 @@
 namespace Brick\DateTime\Clock;
 
 use Brick\DateTime\Instant;
-use Brick\DateTime\ReadableInstant;
-use Brick\Type\Cast;
 
 /**
  * This clock always returns the same instant. It is typically used for testing.
@@ -14,36 +12,16 @@ class FixedClock implements Clock
     /**
      * @var int
      */
-    private $timestamp;
+    private $instant;
 
     /**
-     * Private constructor. Use a factory method to obtain a FixedClock.
+     * Class constructor.
      *
-     * @param int $timestamp The timestamp to set the clock at, validated as an integer.
+     * @param Instant $instant The time to set the clock at.
      */
-    private function __construct($timestamp)
+    public function __construct(Instant $instant)
     {
-        $this->timestamp = $timestamp;
-    }
-
-    /**
-     * Returns a FixedClock set at the given timestamp.
-     *
-     * @param int $timestamp The timestamp to set the clock at.
-     * @return FixedClock
-     */
-    public static function at($timestamp)
-    {
-        return new FixedClock(Cast::toInteger($timestamp));
-    }
-
-    /**
-     * @param \Brick\DateTime\ReadableInstant $instant
-     * @return FixedClock
-     */
-    public static function atInstant(ReadableInstant $instant)
-    {
-        return new FixedClock($instant->getInstant()->getEpochSecond());
+        $this->instant = $instant;
     }
 
     /**
@@ -51,6 +29,6 @@ class FixedClock implements Clock
      */
     public function getTime()
     {
-        return Instant::of($this->timestamp);
+        return $this->instant;
     }
 }
