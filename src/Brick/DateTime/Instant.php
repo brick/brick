@@ -344,18 +344,6 @@ class Instant extends ReadableInstant
     }
 
     /**
-     * @deprecated Use atTimeZone()
-     *
-     * @param TimeZone $timeZone
-     *
-     * @return ZonedDateTime
-     */
-    public function toZonedDateTime(TimeZone $timeZone)
-    {
-        return ZonedDateTime::ofInstant($this, $timeZone);
-    }
-
-    /**
      * @return string
      */
     public function toString()

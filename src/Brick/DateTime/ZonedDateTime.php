@@ -70,7 +70,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function now(TimeZone $timeZone)
     {
-        return Instant::now()->toZonedDateTime($timeZone);
+        return Instant::now()->atTimeZone($timeZone);
     }
 
     /**
