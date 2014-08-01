@@ -365,6 +365,60 @@ class BigDecimal
     }
 
     /**
+     * Returns a copy of this BigDecimal with the decimal point moved $n places to the left.
+     *
+     * @param integer $n
+     *
+     * @return BigDecimal
+     */
+    public function withPointMovedLeft($n)
+    {
+        $n = (int) $n;
+
+        if ($n === 0) {
+            return $this;
+        }
+
+        if ($n < 0) {
+            return $this->withPointMovedRight(-$n);
+        }
+
+        return new BigDecimal($this->value, $this->scale + $n);
+    }
+
+    /**
+     * Returns a copy of this BigDecimal with the decimal point moved $n places to the right.
+     *
+     * @param integer $n
+     *
+     * @return BigDecimal
+     */
+    public function withPointMovedRight($n)
+    {
+        $n = (int) $n;
+
+        if ($n === 0) {
+            return $this;
+        }
+
+        if ($n < 0) {
+            return $this->withPointMovedLeft(-$n);
+        }
+
+        $value = $this->value;
+        $scale = $this->scale - $n;
+
+        if ($scale < 0) {
+            $calculator = Calculator::get();
+            $power = $calculator->pow(10, -$scale);
+            $value = $calculator->mul($value, $power);
+            $scale = 0;
+        }
+
+        return new BigDecimal($value, $scale);
+    }
+
+    /**
      * Returns the absolute value of this number.
      *
      * @return \Brick\Math\BigDecimal
