@@ -13,6 +13,11 @@ use Brick\Math\Calculator;
 class BigInteger
 {
     /**
+     * The value, as a string of digits with optional leading minus sign.
+     *
+     * No leading zeros must be present.
+     * No leading minus sign must be present if the number is zero.
+     *
      * @var string
      */
     private $value;
@@ -536,6 +541,8 @@ class BigInteger
     }
 
     /**
+     * @todo test with negative numbers, probably broken
+     *
      * Returns a string representation of this number in the given base.
      *
      * @param integer $base

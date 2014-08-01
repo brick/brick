@@ -2,6 +2,8 @@
 
 namespace Brick\Math;
 
+use Brick\Type\Cast;
+
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
@@ -142,6 +144,31 @@ class BigDecimal
         }
 
         return new BigDecimal($value, $scale);
+    }
+
+    /**
+     * @param BigInteger|integer|string $value An integer representing the unscaled value of the number.
+     * @param integer                   $scale The scale of the number.
+     *
+     * @return BigDecimal
+     */
+    public static function ofUnscaledValue($value, $scale = 0)
+    {
+        $scale = (int) $scale;
+
+        if ($scale < 0) {
+            throw new \InvalidArgumentException('The scale cannot be negative.');
+        }
+
+        if (is_int($value)) {
+            return new BigDecimal((string) $value, $scale);
+        }
+
+        if (! $value instanceof BigInteger) {
+            $value = BigInteger::of($value);
+        }
+
+        return new BigDecimal((string) $value, $scale);
     }
 
     /**
@@ -517,6 +544,68 @@ class BigDecimal
     }
 
     /**
+     * Returns a string representing the integral part of this decimal number.
+     *
+     * Example: `-123.456` => `-123`.
+     *
+     * @return string
+     */
+    public function getIntegral()
+    {
+        if ($this->scale === 0) {
+            return $this->value;
+        }
+
+        $value = $this->getUnscaledValueWithLeadingZeros();
+
+        return substr($value, 0, -$this->scale);
+    }
+
+    /**
+     * Returns a string representing the fractional part of this decimal number.
+     *
+     * If the scale is zero, an empty string is returned.
+     *
+     * Examples: `-123.456` => '456', `123` => ''.
+     *
+     * @return string
+     */
+    public function getFraction()
+    {
+        if ($this->scale === 0) {
+            return '';
+        }
+
+        $value = $this->getUnscaledValueWithLeadingZeros();
+
+        return substr($value, -$this->scale);
+    }
+
+    /**
+     * Returns a string representation of this number.
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        if ($this->scale === 0) {
+            return $this->value;
+        }
+
+        $value = $this->getUnscaledValueWithLeadingZeros();
+
+        return substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
      * Puts the internal values of the given decimal numbers on the same scale.
      *
      * @param BigDecimal $x The first decimal number.
@@ -555,34 +644,35 @@ class BigDecimal
     }
 
     /**
-     * Returns a string representation of this number.
+     * Adds leading zeros if necessary to the unscaled value to represent the full decimal number.
      *
      * @return string
      */
-    public function toString()
+    private function getUnscaledValueWithLeadingZeros()
     {
-        if ($this->scale === 0) {
+        $value = $this->value;
+        $targetLength = $this->scale + 1;
+        $negative = ($value[0] === '-');
+        $length = strlen($value);
+
+        if ($negative) {
+            $length--;
+        }
+
+        if ($length >= $targetLength) {
             return $this->value;
         }
 
-        $value = $this->value;
-        $isNegative = ($this->value[0] === '-');
-
-        if ($isNegative) {
+        if ($negative) {
             $value = substr($value, 1);
         }
 
-        $value = str_pad($value, $this->scale + 1, '0', STR_PAD_LEFT);
-        $result = substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
+        $value = str_pad($value, $targetLength, '0', STR_PAD_LEFT);
 
-        return $isNegative ? '-' . $result : $result;
-    }
+        if ($negative) {
+            $value = '-' . $value;
+        }
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
+        return $value;
     }
 }

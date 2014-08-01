@@ -907,4 +907,56 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             [RoundingMode::UNNECESSARY, '-3.501',    null,   null, null],
         ];
     }
+
+    /**
+     * @dataProvider providerGetIntegral
+     *
+     * @param string $number   The number to test.
+     * @param string $expected The expected integral value.
+     */
+    public function testGetIntegral($number, $expected)
+    {
+        $this->assertSame($expected, BigDecimal::of($number)->getIntegral());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerGetIntegral()
+    {
+        return [
+            ['1.23', '1'],
+            ['-1.23', '-1'],
+            ['0.123', '0'],
+            ['0.001', '0'],
+            ['123.0', '123'],
+            ['12', '12']
+        ];
+    }
+
+    /**
+     * @dataProvider providerGetFraction
+     *
+     * @param string $number   The number to test.
+     * @param string $expected The expected fractional value.
+     */
+    public function testGetFraction($number, $expected)
+    {
+        $this->assertSame($expected, BigDecimal::of($number)->getFraction());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerGetFraction()
+    {
+        return [
+            ['1.23', '23'],
+            ['-1.23', '23'],
+            ['1', ''],
+            ['-1', ''],
+            ['0', ''],
+            ['0.001', '001']
+        ];
+    }
 }
