@@ -959,4 +959,74 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             ['0.001', '001']
         ];
     }
+
+    /**
+     * @dataProvider providerToBigInteger
+     *
+     * @param string  $decimal
+     * @param integer $roundingMode
+     * @param string  $expected
+     */
+    public function testToBigInteger($decimal, $roundingMode, $expected)
+    {
+        $actual = (string) BigDecimal::of($decimal)->toBigInteger($roundingMode);
+
+        $this->assertSame($expected, $actual);
+        $this->assertSame('-' . $expected, '-' . $actual);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToBigInteger()
+    {
+        return [
+            ['0',   RoundingMode::UNNECESSARY, '0'],
+            ['0',   RoundingMode::DOWN, '0'],
+            ['0',   RoundingMode::UP, '0'],
+            ['1',   RoundingMode::UNNECESSARY, '1'],
+            ['1',   RoundingMode::DOWN, '1'],
+            ['1',   RoundingMode::UP, '1'],
+            ['0.0', RoundingMode::UNNECESSARY, '0'],
+            ['0.0', RoundingMode::DOWN, '0'],
+            ['0.0', RoundingMode::UP, '0'],
+            ['0.1', RoundingMode::DOWN, '0'],
+            ['0.1', RoundingMode::UP, '1'],
+            ['1.0', RoundingMode::UNNECESSARY, '1'],
+            ['1.0', RoundingMode::DOWN, '1'],
+            ['1.0', RoundingMode::UP, '1'],
+            ['1.1', RoundingMode::DOWN,        '1'],
+            ['1.1', RoundingMode::UP, '2'],
+            ['0.01', RoundingMode::DOWN, '0'],
+            ['0.01', RoundingMode::UP, '1'],
+            ['1.01', RoundingMode::DOWN, '1'],
+            ['1.01', RoundingMode::UP, '2']
+        ];
+    }
+
+    /**
+     * @dataProvider providerToBigIntegerThrowsExceptionWhenRoundingNecessary
+     * @expectedException \Brick\Math\ArithmeticException
+     *
+     * @param string $decimal
+     */
+    public function testToBigIntegerThrowsExceptionWhenRoundingNecessary($decimal)
+    {
+        BigDecimal::of($decimal)->toBigInteger();
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToBigIntegerThrowsExceptionWhenRoundingNecessary()
+    {
+        return [
+            ['0.1'],
+
+            [ '1.001'],
+            [ '0.002'],
+            ['-1.001'],
+            ['-0.002']
+        ];
+    }
 }

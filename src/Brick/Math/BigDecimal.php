@@ -2,8 +2,6 @@
 
 namespace Brick\Math;
 
-use Brick\Type\Cast;
-
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
@@ -243,6 +241,8 @@ class BigDecimal
     }
 
     /**
+     * @todo inverse $scale and $roundingMode parameters order
+     *
      * Returns the result of the division of this number and the given one.
      *
      * @param BigDecimal|number|string $that         The number to divide.
@@ -579,6 +579,22 @@ class BigDecimal
         $value = $this->getUnscaledValueWithLeadingZeros();
 
         return substr($value, -$this->scale);
+    }
+
+    /**
+     * Converts this BigDecimal to a BigInteger, using rounding if necessary.
+     *
+     * @param integer $roundingMode
+     *
+     * @return BigInteger
+     */
+    public function toBigInteger($roundingMode = RoundingMode::UNNECESSARY)
+    {
+        if ($this->scale === 0) {
+            return BigInteger::of($this->value);
+        }
+
+        return BigInteger::of($this->dividedBy(1, 0, $roundingMode)->value);
     }
 
     /**
