@@ -87,20 +87,20 @@ class GeometryTest extends \PHPUnit_Framework_TestCase
         $p3 = Point::factory(1, 1);
         $p4 = Point::factory(0, 1);
 
-        foreach (array($p1, $p2, $p3, $p4) as $point) {
+        foreach ([$p1, $p2, $p3, $p4] as $point) {
             /** @var Point $point */
             $this->assertEquals($point->geometryType(), 'Point');
             $this->checkCloneIsEqual($point);
         }
 
         // LineString
-        $lineString = LineString::factory(array($p1, $p2, $p3));
+        $lineString = LineString::factory([$p1, $p2, $p3]);
 
         $this->assertEquals($lineString->geometryType(), 'LineString');
         $this->checkCloneIsEqual($lineString);
 
         // LinearRing
-        $linearRing = LinearRing::factory(array($p1, $p2, $p3, $p4, $p1));
+        $linearRing = LinearRing::factory([$p1, $p2, $p3, $p4, $p1]);
 
         // $this->assertEquals($linearRing->geometryType(), 'LinearRing');
         $this->checkCloneIsEqual($linearRing);
@@ -112,31 +112,31 @@ class GeometryTest extends \PHPUnit_Framework_TestCase
         $this->checkCloneIsEqual($line);
 
         // Polygon
-        $polygon = Polygon::factory(array($linearRing));
+        $polygon = Polygon::factory([$linearRing]);
 
         $this->assertEquals($polygon->geometryType(), 'Polygon');
         $this->checkCloneIsEqual($polygon);
 
         // MultiPoint
-        $multiPoint = MultiPoint::factory(array($p2, $p3, $p1));
+        $multiPoint = MultiPoint::factory([$p2, $p3, $p1]);
 
         $this->assertEquals($multiPoint->geometryType(), 'MultiPoint');
         $this->checkCloneIsEqual($multiPoint);
 
         // MultiLineString
-        $multiLineString = MultiLineString::factory(array($lineString, $linearRing, $line));
+        $multiLineString = MultiLineString::factory([$lineString, $linearRing, $line]);
 
         $this->assertEquals($multiLineString->geometryType(), 'MultiLineString');
         $this->checkCloneIsEqual($multiLineString);
 
         // MultiPolygon
-        $multiPolygon = MultiPolygon::factory(array($polygon));
+        $multiPolygon = MultiPolygon::factory([$polygon]);
 
         $this->assertEquals($multiPolygon->geometryType(), 'MultiPolygon');
         $this->checkCloneIsEqual($multiPolygon);
 
         // GeometryCollection
-        $collection = GeometryCollection::factory(array(
+        $collection = GeometryCollection::factory([
             $p1,
             $p2,
             $p3,
@@ -148,7 +148,7 @@ class GeometryTest extends \PHPUnit_Framework_TestCase
             $multiLineString,
             $polygon,
             $multiPolygon
-        ));
+        ]);
 
         $this->assertEquals($collection->geometryType(), 'GeometryCollection');
 

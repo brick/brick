@@ -9,10 +9,24 @@ use Brick\DateTime\LocalDate;
  */
 class LocalDateTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var LocalDate
+     */
     private $minDate;
+
+    /**
+     * @var LocalDate
+     */
     private $maxDate;
 
+    /**
+     * @var integer
+     */
     private $minValidEpochDay;
+
+    /**
+     * @var integer
+     */
     private $maxValidEpochDay;
 
     public function setUp()
@@ -24,7 +38,7 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
         $this->maxValidEpochDay = $this->maxDate->toEpochDay();
     }
 
-    public function testFactory()
+    public function testOf()
     {
         $date = LocalDate::of(2007, 7, 15);
 
@@ -34,70 +48,36 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerOfInvalidDateThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param integer $year  The year of the invalid date.
+     * @param integer $month The month of the invalid date.
+     * @param integer $day   The day of the invalid date.
      */
-    public function testFactory29FebNonLeap()
+    public function testOfInvalidDateThrowsException($year, $month, $day)
     {
-        LocalDate::of(2007, 2, 29);
+        LocalDate::of($year, $month, $day);
     }
 
     /**
-     * @expectedException \Brick\DateTime\DateTimeException
+     * @return array
      */
-    public function testFactory31Apr()
+    public function providerOfInvalidDateThrowsException()
     {
-        LocalDate::of(2007, 4, 31);
+        return [
+            [2007, 2, 29],
+            [2007, 4, 31],
+            [2007, 1, 0],
+            [2007, 1, 32],
+            [2007, 0, 1],
+            [2007, 13, 1],
+            [~PHP_INT_MAX, 1, 1],
+            [PHP_INT_MAX, 1, 1]
+        ];
     }
 
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryDayTooLow()
-    {
-        LocalDate::of(2007, 1, 0);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryDayTooHigh()
-    {
-        LocalDate::of(2007, 1, 32);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryMonthTooLow()
-    {
-        LocalDate::of(2007, 0, 1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryMonthTooHigh()
-    {
-        LocalDate::of(2007, 13, 1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryYearTooLow()
-    {
-        LocalDate::of(~PHP_INT_MAX, 1, 1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryYearTooHigh()
-    {
-        LocalDate::of(PHP_INT_MAX, 1, 1);
-    }
-
-    public function testFactoryOfYearDayNonLeap()
+    public function testOfYearDayNonLeap()
     {
         $date = LocalDate::of(2007, 1, 1);
         for ($i = 1; $i < 365; $i++) {
@@ -106,7 +86,7 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testFactoryOfYearDayLeap()
+    public function testOfYearDayLeap()
     {
         $date = LocalDate::of(2008, 1, 1);
         for ($i = 1; $i < 366; $i++) {
@@ -116,43 +96,29 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerOfInvalidYearDayThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param integer $year      The year.
+     * @param integer $dayOfYear The day-of-year.
      */
-    public function testFactoryOfYearDay366NonLeap()
+    public function testOfInvalidYearDayThrowsException($year, $dayOfYear)
     {
-        LocalDate::ofYearDay(2007, 366);
+        LocalDate::ofYearDay($year, $dayOfYear);
     }
 
     /**
-     * @expectedException \Brick\DateTime\DateTimeException
+     * @return array
      */
-    public function testFactoryOfYearDayWithDayTooLow()
+    public function providerOfInvalidYearDayThrowsException()
     {
-        LocalDate::ofYearDay(2007, 0);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryOfYearDayWithDayTooHigh()
-    {
-        LocalDate::ofYearDay(2007, 367);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryOfYearDayWithYearTooLow()
-    {
-        LocalDate::ofYearDay(~ PHP_INT_MAX, 1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testFactoryOfYearDayWithYearTooHigh()
-    {
-        LocalDate::ofYearDay(PHP_INT_MAX, 1);
+        return [
+            [2007, 366],
+            [2007, 0],
+            [2007, 367],
+            [~ PHP_INT_MAX, 1],
+            [PHP_INT_MAX, 1],
+        ];
     }
 
     /**

@@ -11,7 +11,7 @@ use Brick\DateTime\YearMonth;
  */
 class YearMonthTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFactory()
+    public function testOf()
     {
         $ym = YearMonth::of(2007, 7);
 

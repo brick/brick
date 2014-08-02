@@ -11,7 +11,7 @@ use Brick\DateTime\ZonedDateTime;
 use Brick\DateTime\Year;
 
 /**
- * Unit tests for class LocalTime.
+ * Unit tests for class LocalDateTime.
  */
 class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
 {
@@ -149,13 +149,13 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusSecondsFromZeroProvider
+     * @dataProvider providerPlusSecondsFromZero
      *
-     * @param int       $seconds
+     * @param integer   $seconds
      * @param LocalDate $date
-     * @param int       $hour
-     * @param int       $min
-     * @param int       $sec
+     * @param integer   $hour
+     * @param integer   $min
+     * @param integer   $sec
      */
     public function testPlusSecondsFromZero($seconds, LocalDate $date, $hour, $min, $sec)
     {
@@ -171,7 +171,7 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusSecondsFromZeroProvider()
+    public function providerPlusSecondsFromZero()
     {
         $tests = [];
 
@@ -360,13 +360,13 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusSecondsFromZeroProvider
+     * @dataProvider providerMinusSecondsFromZero
      *
-     * @param int       $seconds
+     * @param integer   $seconds
      * @param LocalDate $date
-     * @param int       $hour
-     * @param int       $min
-     * @param int       $sec
+     * @param integer   $hour
+     * @param integer   $min
+     * @param integer   $sec
      */
     public function testMinusSecondsFromZero($seconds, LocalDate $date, $hour, $min, $sec)
     {
@@ -382,9 +382,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusSecondsFromZeroProvider()
+    public function providerMinusSecondsFromZero()
     {
-        $tests = array();
+        $tests = [];
 
         $delta = 30;
         $i = 3660;

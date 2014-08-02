@@ -12,7 +12,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
     public function testSingleSelect()
     {
         // Setup some drinks, and which one should be checked.
-        $drinks = array('water', 'beer', 'wine');
+        $drinks = ['water', 'beer', 'wine'];
         $selectedDrink = 'beer';
 
         $form = new Form();
@@ -120,7 +120,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
     public function testRadioGroup()
     {
         // Setup some drinks, and which one should be checked.
-        $drinks = array('water', 'beer', 'wine');
+        $drinks = ['water', 'beer', 'wine'];
         $selectedDrink = 'beer';
 
         $form = new Form();

@@ -82,11 +82,11 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider isEqualToProvider
+     * @dataProvider providerIsEqualTo
      *
-     * @param int $hours   The hours of the period to compare.
-     * @param int $minutes The minutes of the period to compare.
-     * @param int $seconds The seconds of the period to compare.
+     * @param integer $hours   The hours of the period to compare.
+     * @param integer $minutes The minutes of the period to compare.
+     * @param integer $seconds The seconds of the period to compare.
      */
     public function testIsEqualTo($hours, $minutes, $seconds)
     {
@@ -99,7 +99,7 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function isEqualToProvider()
+    public function providerIsEqualTo()
     {
         return [
             [0, 60, 0],
@@ -118,14 +118,14 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider toDateIntervalProvider
+     * @dataProvider providerToDateInterval
      *
-     * @param int $years
-     * @param int $months
-     * @param int $days
-     * @param int $hours
-     * @param int $minutes
-     * @param int $seconds
+     * @param integer $years
+     * @param integer $months
+     * @param integer $days
+     * @param integer $hours
+     * @param integer $minutes
+     * @param integer $seconds
      */
     public function testToDateInterval($years, $months, $days, $hours, $minutes, $seconds)
     {
@@ -143,7 +143,7 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function toDateIntervalProvider()
+    public function providerToDateInterval()
     {
         return [
             [1, -2, 3, -4, 5, -6],

@@ -65,7 +65,10 @@ class LocalDateRangeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider countProvider
+     * @dataProvider providerCount
+     *
+     * @param string  $range The date range string representation.
+     * @param integer $count The expected day count.
      */
     public function testCount($range, $count)
     {
@@ -75,7 +78,7 @@ class LocalDateRangeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function countProvider()
+    public function providerCount()
     {
         return [
             ['2010-01-01/2010-01-01', 1],

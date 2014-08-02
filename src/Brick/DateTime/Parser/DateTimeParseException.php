@@ -11,6 +11,7 @@ class DateTimeParseException extends DateTimeException
 {
     /**
      * @param DateTimeParseContext $context
+     *
      * @return DateTimeParseException
      */
     public static function parseError(DateTimeParseContext $context)
@@ -24,6 +25,7 @@ class DateTimeParseException extends DateTimeException
 
     /**
      * @param DateTimeParseContext $context
+     *
      * @return DateTimeParseException
      */
     public static function unexpectedContent(DateTimeParseContext $context)
@@ -38,6 +40,7 @@ class DateTimeParseException extends DateTimeException
     /**
      * @param string      $textToParse The text being parsed.
      * @param string|null $reason      The reason, or null if no reason is available.
+     *
      * @return DateTimeParseException
      */
     public static function invalidTimeZoneOffset($textToParse, $reason = null)
@@ -53,6 +56,7 @@ class DateTimeParseException extends DateTimeException
 
     /**
      * @param string $textToParse
+     *
      * @return DateTimeParseException
      */
     public static function invalidDuration($textToParse)

@@ -9,6 +9,8 @@ class DateTimeParseContext
 {
     /**
      * The list of parsed data.
+     *
+     * @var array
      */
     private $parsed = [];
 
@@ -36,36 +38,37 @@ class DateTimeParseContext
     /**
      * The length of the text to parse.
      *
-     * @var int
+     * @var integer
      */
     private $length;
 
     /**
      * The current position in the text to parse.
      *
-     * @var int
+     * @var integer
      */
     private $position;
 
     /**
      * Private constructor. Use create() to create an instance.
      *
-     * @param string $text
-     * @param int $position
+     * @param string                    $text
+     * @param integer                   $position
      * @param DateTimeParseContext|null $parent
      */
     private function __construct($text, $position = 0, DateTimeParseContext $parent = null)
     {
-        $this->active = $this;
-        $this->text = $text;
+        $this->active   = $this;
+        $this->text     = $text;
         $this->position = $position;
-        $this->parent = $parent;
+        $this->parent   = $parent;
     }
 
     /**
      * Creates a `DateTimeParseContext`.
      *
      * @param string $text
+     *
      * @return DateTimeParseContext
      */
     public static function create($text)
@@ -86,7 +89,7 @@ class DateTimeParseContext
     /**
      * Returns the current string pointer position.
      *
-     * @return int
+     * @return integer
      */
     public function getPosition()
     {
@@ -106,8 +109,10 @@ class DateTimeParseContext
     /**
      * Marks the end of the parsing of an optional segment of the input.
      *
-     * @param bool $successful Whether the optional segment was successfully parsed.
+     * @param boolean $successful Whether the optional segment was successfully parsed.
+     *
      * @return void
+     *
      * @throws DateTimeParseException
      */
     public function endOptional($successful)
@@ -128,7 +133,8 @@ class DateTimeParseContext
 
     /**
      * @param string $field
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return void
      */
     public function setParsedField($field, $value)
@@ -137,7 +143,8 @@ class DateTimeParseContext
     }
 
     /**
-     * @param int $charCount
+     * @param integer $charCount
+     *
      * @return string
      */
     public function getNextChars($charCount)
@@ -169,7 +176,7 @@ class DateTimeParseContext
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     public function hasNext()
     {
@@ -178,6 +185,7 @@ class DateTimeParseContext
 
     /**
      * @return DateTimeParseResult
+     *
      * @throws DateTimeParseException
      */
     public function toParseResult()

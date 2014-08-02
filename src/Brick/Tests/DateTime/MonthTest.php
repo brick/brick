@@ -9,9 +9,6 @@ use Brick\DateTime\Month;
  */
 class MonthTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return void
-     */
     public function testConstants()
     {
         $this->assertEquals(1, Month::JANUARY);
@@ -29,29 +26,32 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerOfInvalidThrowsException
      * @expectedException \UnexpectedValueException
-     * @return void
-     */
-    public function testFactoryThrowsExceptionOnMonthTooLow()
-    {
-        Month::of(0);
-    }
-
-    /**
-     * @expectedException \UnexpectedValueException
-     * @return void
-     */
-    public function testFactoryThrowsExceptionOnMonthTooHigh()
-    {
-        Month::of(13);
-    }
-
-    /**
-     * @dataProvider monthFactoryMethodsProvider
      *
-     * @param  Month $month        The Month to test.
-     * @param  int   $integerValue The ISO 8601 day of the week integer value expected.
-     * @return void
+     * @param integer $invalidMonth
+     */
+    public function testOfInvalidThrowsException($invalidMonth)
+    {
+        Month::of($invalidMonth);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerOfInvalidThrowsException()
+    {
+        return [
+            [0],
+            [13]
+        ];
+    }
+
+    /**
+     * @dataProvider providerMonthFactoryMethods
+     *
+     * @param Month   $month        The Month to test.
+     * @param integer $integerValue The ISO 8601 day of the week integer value expected.
      */
     public function testMonthFactoryMethods(Month $month, $integerValue)
     {
@@ -59,35 +59,30 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for testMonthFactoryMethods().
-     *
      * @return array
      */
-    public function monthFactoryMethodsProvider()
+    public function providerMonthFactoryMethods()
     {
-        return array(
-            array(Month::january(), Month::JANUARY),
-            array(Month::february(), Month::FEBRUARY),
-            array(Month::march(), Month::MARCH),
-            array(Month::april(), Month::APRIL),
-            array(Month::may(), Month::MAY),
-            array(Month::june(), Month::JUNE),
-            array(Month::july(), Month::JULY),
-            array(Month::august(), Month::AUGUST),
-            array(Month::september(), Month::SEPTEMBER),
-            array(Month::october(), Month::OCTOBER),
-            array(Month::november(), Month::NOVEMBER),
-            array(Month::december(), Month::DECEMBER),
-        );
+        return [
+            [Month::january(), Month::JANUARY],
+            [Month::february(), Month::FEBRUARY],
+            [Month::march(), Month::MARCH],
+            [Month::april(), Month::APRIL],
+            [Month::may(), Month::MAY],
+            [Month::june(), Month::JUNE],
+            [Month::july(), Month::JULY],
+            [Month::august(), Month::AUGUST],
+            [Month::september(), Month::SEPTEMBER],
+            [Month::october(), Month::OCTOBER],
+            [Month::november(), Month::NOVEMBER],
+            [Month::december(), Month::DECEMBER],
+        ];
     }
 
-    /**
-     * @return void
-     */
     public function testPlusMinusEntireYears()
     {
         foreach (Month::getMonths() as $month) {
-            foreach (array (-24, -12, 0, 12, 24) as $monthsToAdd) {
+            foreach ([-24, -12, 0, 12, 24] as $monthsToAdd) {
                 $this->assertTrue($month->plus($monthsToAdd)->isEqualTo($month));
                 $this->assertTrue($month->minus($monthsToAdd)->isEqualTo($month));
             }
@@ -95,12 +90,11 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusMonthsProvider
+     * @dataProvider providerPlusMonths
      *
-     * @param int $base     The base month number.
-     * @param int $amount   The amount of months to add.
-     * @param int $expected The expected month number.
-     * @return void
+     * @param integer $base     The base month number.
+     * @param integer $amount   The amount of months to add.
+     * @param integer $expected The expected month number.
      */
     public function testPlusMonths($base, $amount, $expected)
     {
@@ -113,7 +107,7 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusMonthsProvider()
+    public function providerPlusMonths()
     {
         return [
             [1, -13, 12],
@@ -173,12 +167,11 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusMonthsProvider
+     * @dataProvider providerMinusMonths
      *
-     * @param int $base     The base month number.
-     * @param int $amount   The amount of months to subtract.
-     * @param int $expected The expected month number.
-     * @return void
+     * @param integer $base     The base month number.
+     * @param integer $amount   The amount of months to subtract.
+     * @param integer $expected The expected month number.
      */
     public function testMinusMonths($base, $amount, $expected)
     {
@@ -191,7 +184,7 @@ class MonthTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusMonthsProvider()
+    public function providerMinusMonths()
     {
         return [
             [1, -13, 2],

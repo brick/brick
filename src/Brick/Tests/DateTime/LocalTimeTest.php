@@ -9,54 +9,58 @@ use Brick\DateTime\LocalTime;
  */
 class LocalTimeTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return void
-     */
-    public function testMidnightFactoryMethod()
+    public function testMidnight()
     {
         $time = LocalTime::midnight();
 
-        $this->assertEquals($time->getHour(), 0);
-        $this->assertEquals($time->getMinute(), 0);
-        $this->assertEquals($time->getSecond(), 0);
+        $this->assertSame(0, $time->getHour());
+        $this->assertSame(0, $time->getMinute());
+        $this->assertSame(0, $time->getSecond());
     }
 
     /**
+     * @dataProvider providerOfInvalidSecondOfDayThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testCreateFromSecondOfDayTooLowShouldThrowException()
-    {
-        LocalTime::ofSecondOfDay(-1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     */
-    public function testCreateFromSecondOfDayTooHighShouldThrowException()
-    {
-        LocalTime::ofSecondOfDay(86400);
-    }
-
-    /**
-     * @dataProvider secondOfDayDataProvider
      *
-     * @param int $secondOfDay
-     * @param int $expectedHour
-     * @param int $expectedMinute
-     * @param int $expectedSecond
+     * @param integer $secondOfDay
      */
-    public function testCreateFromSecondOfDay($secondOfDay, $expectedHour, $expectedMinute, $expectedSecond)
+    public function testOfInvalidSecondOfDayThrowsException($secondOfDay)
     {
-        $actual = LocalTime::ofSecondOfDay($secondOfDay);
-        $expected = LocalTime::of($expectedHour, $expectedMinute, $expectedSecond);
-
-        $this->assertTrue($actual->isEqualTo($expected));
+        LocalTime::ofSecondOfDay($secondOfDay);
     }
 
     /**
      * @return array
      */
-    public function secondOfDayDataProvider()
+    public function providerOfInvalidSecondOfDayThrowsException()
+    {
+        return [
+            [-1],
+            [86400]
+        ];
+    }
+
+    /**
+     * @dataProvider providerOfSecondOfDay
+     *
+     * @param integer $secondOfDay
+     * @param integer $expectedHour
+     * @param integer $expectedMinute
+     * @param integer $expectedSecond
+     */
+    public function testOfSecondOfDay($secondOfDay, $expectedHour, $expectedMinute, $expectedSecond)
+    {
+        $localTime = LocalTime::ofSecondOfDay($secondOfDay);
+
+        $this->assertSame($expectedHour, $localTime->getHour());
+        $this->assertSame($expectedMinute, $localTime->getMinute());
+        $this->assertSame($expectedSecond, $localTime->getSecond());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerOfSecondOfDay()
     {
         return [
             [0, 0, 0, 0],
@@ -78,12 +82,12 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider parseDataProvider
+     * @dataProvider providerParse
      *
-     * @param string $string
-     * @param int    $hour
-     * @param int    $minute
-     * @param int    $second
+     * @param string  $string
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
      */
     public function testParse($string, $hour, $minute, $second)
     {
@@ -94,12 +98,9 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for testParse().
-     * The test strings include extra blank / non-numeric characters on purpose.
-     *
      * @return array
      */
-    public function parseDataProvider()
+    public function providerParse()
     {
         return [
             ['12:34', 12, 34, 0],
@@ -109,81 +110,65 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
+     * @dataProvider providerParseInvalidStringThrowsException
+     *
+     * @param string $string
      */
-    public function testParseInvalidStringShouldThrowException()
+    public function testParseInvalidStringThrowsException($string)
     {
         LocalTime::parse('12');
     }
 
     /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
+     * @return array
      */
-    public function testCreateTimeWithHourTooLowShouldThrowException()
+    public function providerParseInvalidStringThrowsException()
     {
-        LocalTime::of(-1, 0, 0);
+        return [
+            ['12'],
+            ['12.34'],
+            [' 12:34'],
+            ['12:34:56 '],
+        ];
     }
 
     /**
+     * @dataProvider providerOfInvalidTimeThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
+     *
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
      */
-    public function testCreateTimeWithHourTooHighShouldThrowException()
+    public function testOfInvalidTimeThrowsException($hour, $minute, $second)
     {
-        LocalTime::of(24, 0, 0);
+        LocalTime::of($hour, $minute, $second);
     }
 
     /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
+     * @return array
      */
-    public function testCreateTimeWithMinuteTooLowShouldThrowException()
+    public function providerOfInvalidTimeThrowsException()
     {
-        LocalTime::of(0, -1, 0);
+        return [
+            [-1, 0, 0],
+            [24, 0, 0],
+            [0, -1, 0],
+            [0, 60, 0],
+            [0, 0, -1],
+            [0, 0, 60]
+        ];
     }
 
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
-     */
-    public function testCreateTimeWithMinuteTooHighShouldThrowException()
-    {
-        LocalTime::of(0, 60, 0);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
-     */
-    public function testCreateTimeWithSecondTooLowShouldThrowException()
-    {
-        LocalTime::of(0, 0, -1);
-    }
-
-    /**
-     * @expectedException \Brick\DateTime\DateTimeException
-     * @return void
-     */
-    public function testCreateTimeWithSecondTooHighShouldThrowException()
-    {
-        LocalTime::of(0, 0, 60);
-    }
-
-    /**
-     * @return void
-     */
     public function testGetHourMinuteSecond()
     {
         $date = LocalTime::of(23, 29, 59);
 
-        $this->assertEquals(23, $date->getHour());
-        $this->assertEquals(29, $date->getMinute());
-        $this->assertEquals(59, $date->getSecond());
+        $this->assertSame(23, $date->getHour());
+        $this->assertSame(29, $date->getMinute());
+        $this->assertSame(59, $date->getSecond());
     }
 
-    /**
-     * @return void
-     */
     public function testCompare()
     {
         $a = LocalTime::of(12, 30, 45);
@@ -191,18 +176,17 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertLessThan(0, $a->compareTo($b));
         $this->assertGreaterThan(0, $b->compareTo($a));
-        $this->assertEquals(0, $a->compareTo($a));
-        $this->assertEquals(0, $b->compareTo($b));
+        $this->assertSame(0, $a->compareTo($a));
+        $this->assertSame(0, $b->compareTo($b));
     }
 
     /**
-     * @dataProvider toIntegerDataProvider
+     * @dataProvider providerToInteger
      *
-     * @param int $hour
-     * @param int $minute
-     * @param int $second
-     * @param int $result
-     * @return void
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
+     * @param integer $result
      */
     public function testToInteger($hour, $minute, $second, $result)
     {
@@ -213,21 +197,18 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function toIntegerDataProvider()
+    public function providerToInteger()
     {
-        return array(
-            array(0, 0, 0, 0),
-            array(1, 0, 0, 3600),
-            array(0, 1, 0, 60),
-            array(0, 0, 1, 1),
-            array(12, 34, 56, 45296),
-            array(23, 59, 59, 86399)
-        );
+        return [
+            [0, 0, 0, 0],
+            [1, 0, 0, 3600],
+            [0, 1, 0, 60],
+            [0, 0, 1, 1],
+            [12, 34, 56, 45296],
+            [23, 59, 59, 86399]
+        ];
     }
 
-    /**
-     * @return void
-     */
     public function testCastToString()
     {
         $time = LocalTime::of(12, 34, 56);
@@ -235,10 +216,10 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusHoursDataProvider
+     * @dataProvider providerPlusHours
      *
-     * @param int $hoursToAdd
-     * @param int $expectedHour
+     * @param integer $hoursToAdd
+     * @param integer $expectedHour
      */
     public function testPlusHours($hoursToAdd, $expectedHour)
     {
@@ -253,7 +234,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusHoursDataProvider()
+    public function providerPlusHours()
     {
         return [
             [-25, 13],
@@ -275,11 +256,11 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusMinutesDataProvider
+     * @dataProvider providerPlusMinutes
      *
-     * @param int $minutesToAdd
-     * @param int $expectedHour
-     * @param int $expectedMinute
+     * @param integer $minutesToAdd
+     * @param integer $expectedHour
+     * @param integer $expectedMinute
      */
     public function testPlusMinutes($minutesToAdd, $expectedHour, $expectedMinute)
     {
@@ -294,7 +275,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusMinutesDataProvider()
+    public function providerPlusMinutes()
     {
         return [
             [-1441, 12, 44],
@@ -316,12 +297,12 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusSecondsDataProvider
+     * @dataProvider providerPlusSeconds
      *
-     * @param int $secondsToAdd
-     * @param int $expectedHour
-     * @param int $expectedMinute
-     * @param int $expectedSecond
+     * @param integer $secondsToAdd
+     * @param integer $expectedHour
+     * @param integer $expectedMinute
+     * @param integer $expectedSecond
      */
     public function testPlusSeconds($secondsToAdd, $expectedHour, $expectedMinute, $expectedSecond)
     {
@@ -336,7 +317,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusSecondsDataProvider()
+    public function providerPlusSeconds()
     {
         return [
             [-86401, 15, 30, 44],
@@ -358,10 +339,10 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusHoursDataProvider
+     * @dataProvider providerMinusHours
      *
-     * @param int $hoursToSubtract
-     * @param int $expectedHour
+     * @param integer $hoursToSubtract
+     * @param integer $expectedHour
      */
     public function testMinusHours($hoursToSubtract, $expectedHour)
     {
@@ -376,7 +357,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusHoursDataProvider()
+    public function providerMinusHours()
     {
         return [
             [-25, 15],
@@ -398,11 +379,11 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusMinutesDataProvider
+     * @dataProvider providerMinusMinutes
      *
-     * @param int $minutesToSubtract
-     * @param int $expectedHour
-     * @param int $expectedMinute
+     * @param integer $minutesToSubtract
+     * @param integer $expectedHour
+     * @param integer $expectedMinute
      */
     public function testMinusMinutes($minutesToSubtract, $expectedHour, $expectedMinute)
     {
@@ -417,7 +398,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusMinutesDataProvider()
+    public function providerMinusMinutes()
     {
         return [
             [-1441, 12, 46],
@@ -439,12 +420,12 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusSecondsDataProvider
+     * @dataProvider providerMinusSeconds
      *
-     * @param int $secondsToSubtract
-     * @param int $expectedHour
-     * @param int $expectedMinute
-     * @param int $expectedSecond
+     * @param integer $secondsToSubtract
+     * @param integer $expectedHour
+     * @param integer $expectedMinute
+     * @param integer $expectedSecond
      */
     public function testMinusSeconds($secondsToSubtract, $expectedHour, $expectedMinute, $expectedSecond)
     {
@@ -459,7 +440,7 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusSecondsDataProvider()
+    public function providerMinusSeconds()
     {
         return [
             [-86401, 15, 30, 46],
@@ -480,9 +461,6 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @return void
-     */
     public function testMinMaxOf()
     {
         $a = LocalTime::of(11, 45);

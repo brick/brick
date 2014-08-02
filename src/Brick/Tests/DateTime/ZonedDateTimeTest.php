@@ -12,9 +12,6 @@ use Brick\DateTime\TimeZone;
  */
 class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return void
-     */
     public function testCreate()
     {
         $dateTimeZone = new \DateTimeZone('UTC');
@@ -26,11 +23,10 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider createFromTimestampDataProvider
+     * @dataProvider providerCreateFromTimestamp
      *
      * @param string $formattedDatetime
      * @param string $timeZone
-     * @return void
      */
     public function testCreateFromTimestamp($formattedDatetime, $timeZone)
     {
@@ -44,7 +40,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function createFromTimestampDataProvider()
+    public function providerCreateFromTimestamp()
     {
         return [
             ['2001-09-09T01:46:40', 'UTC'],
@@ -70,9 +66,6 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1341084896, $datetime->getInstant()->getTimestamp());
     }
 
-    /**
-     * @return void
-     */
     public function testChangeTimeZone()
     {
         $timezone1 = TimeZone::of('UTC');

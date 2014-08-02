@@ -947,7 +947,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
             [1, 0, 'PT1S'],
             [-1, 0, 'PT-1S'],
             [1, 1, 'PT1.000001S'],
-//            [-9, -999, 'PT-9.000999S'] @todo
+            [-9, -999, 'PT-9.000999S']
         ];
     }
 }
