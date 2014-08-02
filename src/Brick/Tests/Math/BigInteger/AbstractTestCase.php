@@ -219,6 +219,41 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerDivideAndRemainder
+     *
+     * @param string $dividend  The dividend.
+     * @param string $divisor   The divisor.
+     * @param string $quotient  The expected quotient.
+     * @param string $remainder The expected remainder.
+     */
+    public function testDivideAndRemainder($dividend, $divisor, $quotient, $remainder)
+    {
+        $q = BigInteger::of($dividend)->divideAndRemainder($divisor, $r);
+
+        $this->assertSame($quotient, (string) $q);
+        $this->assertSame($remainder, (string) $r);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerDivideAndRemainder()
+    {
+        return [
+            ['1000000000000000000000000000000', '3', '333333333333333333333333333333', '1'],
+            ['1000000000000000000000000000000', '9', '111111111111111111111111111111', '1'],
+            ['1000000000000000000000000000000', '11', '90909090909090909090909090909', '1'],
+            ['1000000000000000000000000000000', '13', '76923076923076923076923076923', '1'],
+            ['1000000000000000000000000000000', '21', '47619047619047619047619047619', '1'],
+
+            ['123456789123456789123456789', '987654321987654321', '124999998', '850308642973765431'],
+            ['123456789123456789123456789', '-87654321987654321', '-1408450676', '65623397056685793'],
+            ['-123456789123456789123456789', '7654321987654321', '-16129030020', '-1834176331740369'],
+            ['-123456789123456789123456789', '-654321987654321', '188678955396', '-205094497790673'],
+        ];
+    }
+
+    /**
      * @dataProvider providerShiftedLeft
      *
      * @param string  $number   The number to shift.

@@ -349,6 +349,30 @@ class BigInteger
     }
 
     /**
+     * @param BigInteger|integer|string $that      The divisor.
+     * @param BigDecimal                $remainder An optional variable to store the remainder.
+     *
+     * @return BigInteger
+     */
+    public function divideAndRemainder($that, & $remainder = null)
+    {
+        $that = BigInteger::of($that);
+
+        if ($that->isZero()) {
+            throw ArithmeticException::divisionByZero();
+        }
+
+        $p = $this->value;
+        $q = $that->value;
+
+        $calculator = Calculator::get();
+        $result = $calculator->div($p, $q, $remainder);
+        $remainder = new BigInteger($remainder);
+
+        return new BigInteger($result);
+    }
+
+    /**
      * Returns the absolute value of this number.
      *
      * @return \Brick\Math\BigInteger
