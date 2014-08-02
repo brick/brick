@@ -2,30 +2,32 @@
 
 namespace Brick\DateTime\Utility;
 
+use Brick\DateTime\LocalTime;
+
 /**
  * Internal utility class for calculations on time.
  */
 class Time
 {
     /**
-     * Adds two times consisting of seconds and microseconds.
+     * Adds two times consisting of seconds and nanoseconds.
      *
      * @param integer $seconds1 The seconds of the 1st time.
-     * @param integer $micros1  The microseconds of the 1st time.
+     * @param integer $nanos1   The nanoseconds of the 1st time.
      * @param integer $seconds2 The seconds of the 2nd time.
-     * @param integer $micros2  The microseconds of the 2nd time.
+     * @param integer $nanos2   The nanoseconds of the 2nd time.
      * @param integer $seconds  A variable to store the seconds of the result.
-     * @param integer $micros   A variable to store the microseconds of the result.
+     * @param integer $nanos    A variable to store the nanoseconds of the result.
      *
      * @return void
      */
-    public static function add($seconds1, $micros1, $seconds2, $micros2, & $seconds, & $micros)
+    public static function add($seconds1, $nanos1, $seconds2, $nanos2, & $seconds, & $nanos)
     {
         $seconds = $seconds1 + $seconds2;
-        $micros = $micros1 + $micros2;
+        $nanos = $nanos1 + $nanos2;
 
-        if ($micros > 999999) {
-            $micros -= 1000000;
+        if ($nanos >= LocalTime::NANOS_PER_SECOND) {
+            $nanos -= LocalTime::NANOS_PER_SECOND;
             $seconds++;
         }
     }

@@ -24,28 +24,24 @@ class Duration
     private $seconds;
 
     /**
-     * The microseconds adjustment to the duration, in the range 0 to 999,999.
+     * The nanoseconds adjustment to the duration, in the range 0 to 999,999,999.
      *
-     * A duration of -1 microsecond is stored as -1 seconds plus 999,999 microseconds.
+     * A duration of -1 nanoseconds is stored as -1 seconds plus 999,999,999 nanoseconds.
      *
      * @var integer
      */
-    private $microseconds;
+    private $nanos;
 
     /**
      * Private constructor. Use one of the factory methods to obtain a Duration.
      *
-     * @param integer $seconds      The duration in seconds, validated as an integer.
-     * @param integer $microseconds The microseconds adjustment, validated as an integer in the range 0 to 999,999.
+     * @param integer $seconds The duration in seconds, validated as an integer.
+     * @param integer $nanos   The nanoseconds adjustment, validated as an integer in the range 0 to 999,999,999.
      */
-    private function __construct($seconds, $microseconds = 0)
+    private function __construct($seconds, $nanos = 0)
     {
-        $this->seconds      = $seconds;
-        $this->microseconds = $microseconds;
-
-        assert(is_int($seconds), 'seconds is integer (' . gettype($seconds) . ')');
-        assert(is_int($microseconds), 'microseconds is integer (' . gettype($microseconds) . ')');
-        assert($microseconds >= 0 && $microseconds <= 999999, 'microseconds is in range (' . $microseconds . ')');
+        $this->seconds = $seconds;
+        $this->nanos   = $nanos;
     }
 
     /**
@@ -65,8 +61,8 @@ class Duration
      * the ISO-8601 format `PTnS` where `n` is the number of seconds.
      *
      * If the duration contains a number of seconds with a decimal point,
-     * and the number of decimal places exceeds the microsecond precision (6 digits),
-     * the duration will be silently truncated to 6 decimal places.
+     * and the number of decimal places exceeds the nanosecond precision (9 digits),
+     * the duration will be silently truncated to 9 decimal places.
      *
      * @param string $text
      *
@@ -87,51 +83,51 @@ class Duration
         }
 
         if (isset($matches[3])) {
-            $microseconds = substr($matches[3] . '000000', 0, 6);
-            $microseconds = (int) $microseconds;
+            $nanos = substr($matches[3] . '000000000', 0, 9);
+            $nanos = (int) $nanos;
         } else {
-            $microseconds = 0;
+            $nanos = 0;
         }
 
-        if ($matches[1] === '-' && $microseconds !== 0) {
-            $microseconds = 1000000 - $microseconds;
+        if ($matches[1] === '-' && $nanos !== 0) {
+            $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
             $seconds--;
         }
 
-        return new Duration($seconds, $microseconds);
+        return new Duration($seconds, $nanos);
     }
 
     /**
-     * Returns a Duration representing a number of seconds and an adjustment in microseconds.
+     * Returns a Duration representing a number of seconds and an adjustment in nanoseconds.
      *
-     * This method allows an arbitrary number of microseconds to be passed in.
-     * The factory will alter the values of the second and microsecond in order
-     * to ensure that the stored microsecond is in the range 0 to 999,999.
+     * This method allows an arbitrary number of nanoseconds to be passed in.
+     * The factory will alter the values of the second and nanosecond in order
+     * to ensure that the stored nanosecond is in the range 0 to 999,999,999.
      * For example, the following will result in the exactly the same duration:
      *
      * * Duration::ofSeconds(3, 1);
-     * * Duration::ofSeconds(4, -999999);
-     * * Duration::ofSeconds(2, 1000001);
+     * * Duration::ofSeconds(4, -999999999);
+     * * Duration::ofSeconds(2, 1000000001);
      *
-     * @param integer $seconds         The number of seconds of the duration.
-     * @param integer $microAdjustment The adjustment to the duration in microseconds.
+     * @param integer $seconds        The number of seconds of the duration.
+     * @param integer $nanoAdjustment The adjustment to the duration in nanoseconds.
      *
      * @return \Brick\DateTime\Duration
      */
-    public static function ofSeconds($seconds, $microAdjustment = 0)
+    public static function ofSeconds($seconds, $nanoAdjustment = 0)
     {
         $seconds = Cast::toInteger($seconds);
-        $microAdjustment = Cast::toInteger($microAdjustment);
+        $nanoAdjustment = Cast::toInteger($nanoAdjustment);
 
-        $microseconds = $microAdjustment % 1000000;
-        $seconds += ($microAdjustment - $microseconds) / 1000000;
+        $nanoseconds = $nanoAdjustment % LocalTime::NANOS_PER_SECOND;
+        $seconds += ($nanoAdjustment - $nanoseconds) / LocalTime::NANOS_PER_SECOND;
 
-        if ($microseconds < 0) {
-            $microseconds += 1000000;
+        if ($nanoseconds < 0) {
+            $nanoseconds += LocalTime::NANOS_PER_SECOND;
             $seconds--;
         }
 
-        return new Duration($seconds, $microseconds);
+        return new Duration($seconds, $nanoseconds);
     }
 
     /**
@@ -187,9 +183,9 @@ class Duration
         $endExclusive = $endExclusive->getInstant();
 
         $seconds = $endExclusive->getTimestamp() - $startInclusive->getTimestamp();
-        $microseconds = $endExclusive->getMicroseconds() - $startInclusive->getMicroseconds();
+        $nanos = $endExclusive->getNanos() - $startInclusive->getNanos();
 
-        return Duration::ofSeconds($seconds, $microseconds);
+        return Duration::ofSeconds($seconds, $nanos);
     }
 
     /**
@@ -211,7 +207,7 @@ class Duration
      */
     public function isZero()
     {
-        return $this->seconds === 0 && $this->microseconds === 0;
+        return $this->seconds === 0 && $this->nanos === 0;
     }
 
     /**
@@ -221,7 +217,7 @@ class Duration
      */
     public function isPositive()
     {
-        return $this->seconds > 0 || ($this->seconds === 0 && $this->microseconds > 0);
+        return $this->seconds > 0 || ($this->seconds === 0 && $this->nanos !== 0);
     }
 
     /**
@@ -251,7 +247,7 @@ class Duration
      */
     public function isNegativeOrZero()
     {
-        return $this->seconds < 0 || ($this->seconds === 0 && $this->microseconds === 0);
+        return $this->seconds < 0 || ($this->seconds === 0 && $this->nanos === 0);
     }
 
     /**
@@ -269,14 +265,14 @@ class Duration
 
         Time::add(
             $this->seconds,
-            $this->microseconds,
+            $this->nanos,
             $duration->seconds,
-            $duration->microseconds,
+            $duration->nanos,
             $seconds,
-            $microseconds
+            $nanos
         );
 
-        return new Duration($seconds, $microseconds);
+        return new Duration($seconds, $nanos);
     }
 
     /**
@@ -294,7 +290,7 @@ class Duration
             return $this;
         }
 
-        return new Duration($this->seconds + $seconds, $this->microseconds);
+        return new Duration($this->seconds + $seconds, $this->nanos);
     }
 
     /**
@@ -427,12 +423,12 @@ class Duration
         }
 
         $seconds = $this->seconds * $multiplicand;
-        $totalmicros = $this->microseconds * $multiplicand;
+        $totalnanos = $this->nanos * $multiplicand;
 
-        $microseconds = $totalmicros % 1000000;
-        $seconds += ($totalmicros - $microseconds) / 1000000;
+        $nanoseconds = $totalnanos % LocalTime::NANOS_PER_SECOND;
+        $seconds += ($totalnanos - $nanoseconds) / LocalTime::NANOS_PER_SECOND;
 
-        return new Duration($seconds, $microseconds);
+        return new Duration($seconds, $nanoseconds);
     }
 
     /**
@@ -444,8 +440,8 @@ class Duration
      */
     private function create(BigDecimal $decimal)
     {
-        $micros = $decimal->withPointMovedRight(6)->toBigInteger();
-        $divRem = $micros->divideAndRemainder(1000000);
+        $nanos = $decimal->withPointMovedRight(9)->toBigInteger();
+        $divRem = $nanos->divideAndRemainder(LocalTime::NANOS_PER_SECOND);
 
         return Duration::ofSeconds($divRem[0]->toInteger(), $divRem[1]->toInteger());
     }
@@ -488,14 +484,14 @@ class Duration
         }
 
         $seconds = -$this->seconds;
-        $microseconds = $this->microseconds;
+        $nanos = $this->nanos;
 
-        if ($microseconds !== 0) {
-            $microseconds = 1000000 - $microseconds;
+        if ($nanos !== 0) {
+            $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
             $seconds--;
         }
 
-        return new Duration($seconds, $microseconds);
+        return new Duration($seconds, $nanos);
     }
 
     /**
@@ -523,13 +519,13 @@ class Duration
             return $seconds > 0 ? 1 : -1;
         }
 
-        $microseconds = $this->microseconds - $that->microseconds;
+        $nanos = $this->nanos - $that->nanos;
 
-        if ($microseconds === 0) {
+        if ($nanos === 0) {
             return 0;
         }
 
-        return $microseconds > 0 ? 1 : -1;
+        return $nanos > 0 ? 1 : -1;
     }
 
     /**
@@ -603,37 +599,37 @@ class Duration
     }
 
     /**
-     * Returns the microseconds adjustment of this Duration.
+     * Returns the nanoseconds adjustment of this Duration.
      *
      * @return integer
      */
-    public function getMicroseconds()
+    public function getNanos()
     {
-        return $this->microseconds;
+        return $this->nanos;
     }
 
     /**
-     * Returns the duration as a BigDecimal representing the number of seconds and microseconds.
+     * Returns the duration as a BigDecimal.
      *
      * @return BigDecimal
      */
     public function toSeconds()
     {
-        return BigDecimal::of($this->seconds)->plus(BigDecimal::ofUnscaledValue($this->microseconds, 6));
+        return BigDecimal::of($this->seconds)->plus(BigDecimal::ofUnscaledValue($this->nanos, 9));
     }
 
     /**
      * Returns an ISO-8601 seconds based string representation of this duration.
      *
-     * If the microseconds part is zero, it is omitted from the output.
-     * Examples: `PT123S`, `PT123.456789S`.
+     * If the decimal part is zero, it is omitted from the output.
+     * Examples: `PT123S`, `PT123.45`.
      *
      * @return string
      */
     public function toString()
     {
         $seconds = $this->seconds;
-        $microseconds = $this->microseconds;
+        $nanos = $this->nanos;
 
         $string = 'PT';
 
@@ -641,16 +637,16 @@ class Duration
             $string .= '-';
             $seconds = -$seconds;
 
-            if ($microseconds !== 0) {
-                $microseconds = 1000000 - $microseconds;
+            if ($nanos !== 0) {
+                $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
                 $seconds--;
             }
         }
 
         $string .= $seconds;
 
-        if ($microseconds !== 0) {
-            $string .= sprintf('.%06d', $microseconds);
+        if ($nanos !== 0) {
+            $string .= sprintf('.%09d', $nanos);
         }
 
         return $string . 'S';

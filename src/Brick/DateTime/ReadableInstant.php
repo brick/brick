@@ -23,9 +23,9 @@ abstract class ReadableInstant
     /**
      * @return integer
      */
-    public function getMicroseconds()
+    public function getNanos()
     {
-        return $this->getInstant()->getMicroseconds();
+        return $this->getInstant()->getNanos();
     }
 
     /**

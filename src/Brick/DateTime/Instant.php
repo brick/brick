@@ -24,11 +24,11 @@ class Instant extends ReadableInstant
     private $timestamp;
 
     /**
-     * The microseconds, in the range [0,999999].
+     * The nanoseconds adjustment to the epoch seconds, in the range 0 to 999,999,999.
      *
      * @var integer
      */
-    private $microseconds;
+    private $nanos;
 
     /**
      * The global default Clock to use.
@@ -67,48 +67,48 @@ class Instant extends ReadableInstant
     /**
      * Private constructor. Use of() to obtain an Instant.
      *
-     * @param integer $timestamp    The timestamp, validated as an integer.
-     * @param integer $microseconds The microseconds, validated as an integer in the range [0,999999].
+     * @param integer $timestamp The timestamp, validated as an integer.
+     * @param integer $nanos     The nanoseconds, validated as an integer in the range 0 to 999,999,999.
      */
-    private function __construct($timestamp, $microseconds = 0)
+    private function __construct($timestamp, $nanos = 0)
     {
-        $this->timestamp    = $timestamp;
-        $this->microseconds = $microseconds;
+        $this->timestamp = $timestamp;
+        $this->nanos     = $nanos;
     }
 
     /**
-     * Returns an Instant representing a number of seconds and an adjustment in microseconds.
+     * Returns an Instant representing a number of seconds and an adjustment in nanoseconds.
      *
-     * This method allows an arbitrary number of microseconds to be passed in.
-     * The factory will alter the values of the second and microsecond in order
-     * to ensure that the stored microsecond is in the range 0 to 999,999.
+     * This method allows an arbitrary number of nanoseconds to be passed in.
+     * The factory will alter the values of the second and nanosecond in order
+     * to ensure that the stored nanosecond is in the range 0 to 999,999,999.
      * For example, the following will result in the exactly the same duration:
      *
      * * Instant::of(3, 1);
-     * * Duration::of(4, -999999);
-     * * Duration::of(2, 1000001);
+     * * Duration::of(4, -999999999);
+     * * Duration::of(2, 1000000001);
      *
-     * @param integer $timestamp       The number of seconds since the UNIX epoch of 1970-01-01T00:00:00Z.
-     * @param integer $microAdjustment The adjustment to the epoch second in microseconds.
+     * @param integer $timestamp      The number of seconds since the UNIX epoch of 1970-01-01T00:00:00Z.
+     * @param integer $nanoAdjustment The adjustment to the epoch second in nanoseconds.
      *
      * @return Instant
      *
-     * @throws \InvalidArgumentException If any of the parameters is not valid.
+     * @throws \InvalidArgumentException If the parameters are not valid integers.
      */
-    public static function of($timestamp, $microAdjustment = 0)
+    public static function of($timestamp, $nanoAdjustment = 0)
     {
         $seconds = Cast::toInteger($timestamp);
-        $microAdjustment = Cast::toInteger($microAdjustment);
+        $nanoAdjustment = Cast::toInteger($nanoAdjustment);
 
-        $microseconds = $microAdjustment % 1000000;
-        $seconds += ($microAdjustment - $microseconds) / 1000000;
+        $nanos = $nanoAdjustment % LocalTime::NANOS_PER_SECOND;
+        $seconds += ($nanoAdjustment - $nanos) / LocalTime::NANOS_PER_SECOND;
 
-        if ($microseconds < 0) {
-            $microseconds += 1000000;
+        if ($nanos < 0) {
+            $nanos += LocalTime::NANOS_PER_SECOND;
             $seconds--;
         }
 
-        return new Instant($seconds, $microseconds);
+        return new Instant($seconds, $nanos);
     }
 
     /**
@@ -164,14 +164,14 @@ class Instant extends ReadableInstant
 
         Time::add(
             $this->timestamp,
-            $this->microseconds,
+            $this->nanos,
             $duration->getSeconds(),
-            $duration->getMicroseconds(),
+            $duration->getNanos(),
             $seconds,
-            $microseconds
+            $nanos
         );
 
-        return new Instant($seconds, $microseconds);
+        return new Instant($seconds, $nanos);
     }
 
     /**
@@ -187,9 +187,9 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        Time::add($this->timestamp, $this->microseconds, $seconds, 0, $seconds, $microseconds);
+        Time::add($this->timestamp, $this->nanos, $seconds, 0, $seconds, $nanos);
 
-        return new Instant($seconds, $microseconds);
+        return new Instant($seconds, $nanos);
     }
 
     /**
@@ -309,9 +309,9 @@ class Instant extends ReadableInstant
     /**
      * @return integer
      */
-    public function getMicroseconds()
+    public function getNanos()
     {
-        return $this->microseconds;
+        return $this->nanos;
     }
 
     /**
