@@ -7,7 +7,7 @@ namespace Brick\DateTime;
  *
  * This class is immutable.
  */
-class Weekday
+class DayOfWeek
 {
     const MONDAY    = 1;
     const TUESDAY   = 2;
@@ -20,7 +20,7 @@ class Weekday
     /**
      * Cache of all the days of week.
      *
-     * @var Weekday[]
+     * @var DayOfWeek[]
      */
     private static $values = [];
 
@@ -32,7 +32,7 @@ class Weekday
     private $value;
 
     /**
-     * Private constructor. Use of() to get a Weekday instance.
+     * Private constructor. Use of() to get a DayOfWeek instance.
      *
      * @param integer $day
      */
@@ -42,11 +42,11 @@ class Weekday
     }
 
     /**
-     * Returns an instance of Weekday for the given day-of-week value.
+     * Returns an instance of DayOfWeek for the given day-of-week value.
      *
      * @param integer $day The day of the week, from 1 (Monday) to 7 (Sunday).
      *
-     * @return Weekday The Weekday instance.
+     * @return DayOfWeek The DayOfWeek instance.
      *
      * @throws \UnexpectedValueException
      */
@@ -61,7 +61,7 @@ class Weekday
 
         if (is_int($day)) {
             if (! isset(self::$values[$day])) {
-                self::$values[$day] = new Weekday($day);
+                self::$values[$day] = new DayOfWeek($day);
             }
 
             return self::$values[$day];
@@ -71,93 +71,93 @@ class Weekday
     }
 
     /**
-     * Returns a Weekday representing Monday.
+     * Returns a DayOfWeek representing Monday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function monday()
     {
-        return Weekday::of(Weekday::MONDAY);
+        return DayOfWeek::of(DayOfWeek::MONDAY);
     }
 
     /**
-     * Returns a Weekday representing Tuesday.
+     * Returns a DayOfWeek representing Tuesday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function tuesday()
     {
-        return Weekday::of(Weekday::TUESDAY);
+        return DayOfWeek::of(DayOfWeek::TUESDAY);
     }
 
     /**
-     * Returns a Weekday representing Wednesday.
+     * Returns a DayOfWeek representing Wednesday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function wednesday()
     {
-        return Weekday::of(Weekday::WEDNESDAY);
+        return DayOfWeek::of(DayOfWeek::WEDNESDAY);
     }
 
     /**
-     * Returns a Weekday representing Thursday.
+     * Returns a DayOfWeek representing Thursday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function thursday()
     {
-        return Weekday::of(Weekday::THURSDAY);
+        return DayOfWeek::of(DayOfWeek::THURSDAY);
     }
 
     /**
-     * Returns a Weekday representing Friday.
+     * Returns a DayOfWeek representing Friday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function friday()
     {
-        return Weekday::of(Weekday::FRIDAY);
+        return DayOfWeek::of(DayOfWeek::FRIDAY);
     }
 
     /**
-     * Returns a Weekday representing Saturday.
+     * Returns a DayOfWeek representing Saturday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function saturday()
     {
-        return Weekday::of(Weekday::SATURDAY);
+        return DayOfWeek::of(DayOfWeek::SATURDAY);
     }
 
     /**
-     * Returns a Weekday representing Sunday.
+     * Returns a DayOfWeek representing Sunday.
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function sunday()
     {
-        return Weekday::of(Weekday::SUNDAY);
+        return DayOfWeek::of(DayOfWeek::SUNDAY);
     }
 
     /**
-     * Returns the current Weekday in the given timezone.
+     * Returns the current DayOfWeek in the given timezone.
      *
      * @param \Brick\DateTime\TimeZone $timezone
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function today(TimeZone $timezone)
     {
-        return Weekday::fromDateTime(ZonedDateTime::now($timezone));
+        return DayOfWeek::fromDateTime(ZonedDateTime::now($timezone));
     }
 
     /**
-     * Factory method returning a Weekday from a Brick DateTime.
+     * Returns the DayOfWeek of the given ZonedDateTime.
      *
      * @param ZonedDateTime $date
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function fromDateTime(ZonedDateTime $date)
     {
@@ -165,40 +165,40 @@ class Weekday
     }
 
     /**
-     * Factory method returning a Weekday from a Brick Date.
+     * Returns the DayOfWeek of the given LocalDate.
      *
      * @param LocalDate $date
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public static function fromDate(LocalDate $date)
     {
         $dateTime = new \DateTime(null, new \DateTimeZone('UTC'));
         $date->applyToDateTime($dateTime);
 
-        return Weekday::of($dateTime->format('N'));
+        return DayOfWeek::of($dateTime->format('N'));
     }
 
     /**
      * Returns the seven days of the week in an array.
      *
-     * @param Weekday $first The day to return first. Optional, defaults to Monday.
+     * @param DayOfWeek $first The day to return first. Optional, defaults to Monday.
      *
-     * @return Weekday[]
+     * @return DayOfWeek[]
      */
-    public static function getWeekdays(Weekday $first = null)
+    public static function getAll(DayOfWeek $first = null)
     {
-        $weekdays = [];
-        $first = $first ?: Weekday::monday();
+        $days = [];
+        $first = $first ?: DayOfWeek::monday();
         $current = $first;
 
         do {
-            $weekdays[] = $current;
+            $days[] = $current;
             $current = $current->plus(1);
         }
         while (! $current->isEqualTo($first));
 
-        return $weekdays;
+        return $days;
     }
 
     /**
@@ -212,7 +212,7 @@ class Weekday
     }
 
     /**
-     * Returns the ISO 8601 value of this Weekday.
+     * Returns the ISO 8601 value of this DayOfWeek.
      *
      * @return integer The day-of-week, from 1 (Monday) to 7 (Sunday).
      */
@@ -222,39 +222,39 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday equals another Weekday.
+     * Returns whether this DayOfWeek equals another DayOfWeek.
      *
      * Even though of() returns the same instance if the same day is requested several times,
-     * do *not* use strict object comparison to compare two Weekday instances,
+     * do *not* use strict object comparison to compare two DayOfWeek instances,
      * as it is possible to get a different instance for the same day using serialization.
      *
-     * @param Weekday $other
+     * @param DayOfWeek $that
      *
      * @return boolean
      */
-    public function isEqualTo(Weekday $other)
+    public function isEqualTo(DayOfWeek $that)
     {
-        return $this->value === $other->value;
+        return $this->value === $that->value;
     }
 
     /**
-     * Returns the Weekday that is the specified number of days after this one.
+     * Returns the DayOfWeek that is the specified number of days after this one.
      *
      * @param integer $days
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public function plus($days)
     {
-        return Weekday::of((((($this->value - 1 + $days) % 7) + 7) % 7) + 1);
+        return DayOfWeek::of((((($this->value - 1 + $days) % 7) + 7) % 7) + 1);
     }
 
     /**
-     * Returns the Weekday that is the specified number of days before this one.
+     * Returns the DayOfWeek that is the specified number of days before this one.
      *
      * @param integer $days
      *
-     * @return Weekday
+     * @return DayOfWeek
      */
     public function minus($days)
     {
@@ -262,7 +262,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Monday.
+     * Returns whether this DayOfWeek represents Monday.
      *
      * @return boolean
      */
@@ -272,7 +272,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Tuesday.
+     * Returns whether this DayOfWeek represents Tuesday.
      *
      * @return boolean
      */
@@ -282,7 +282,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Wednesday.
+     * Returns whether this DayOfWeek represents Wednesday.
      *
      * @return boolean
      */
@@ -292,7 +292,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Thursday.
+     * Returns whether this DayOfWeek represents Thursday.
      *
      * @return boolean
      */
@@ -302,7 +302,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Friday.
+     * Returns whether this DayOfWeek represents Friday.
      *
      * @return boolean
      */
@@ -312,7 +312,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Saturday.
+     * Returns whether this DayOfWeek represents Saturday.
      *
      * @return boolean
      */
@@ -322,7 +322,7 @@ class Weekday
     }
 
     /**
-     * Returns whether this Weekday represents Sunday.
+     * Returns whether this DayOfWeek represents Sunday.
      *
      * @return boolean
      */

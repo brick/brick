@@ -315,11 +315,11 @@ class LocalDate
     }
 
     /**
-     * @return Weekday
+     * @return DayOfWeek
      */
     public function getDayOfWeek()
     {
-        return Weekday::of(Math::floorMod($this->toEpochDay() + 3, 7) + 1);
+        return DayOfWeek::of(Math::floorMod($this->toEpochDay() + 3, 7) + 1);
     }
 
     /**

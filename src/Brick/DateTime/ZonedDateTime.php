@@ -240,7 +240,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return Weekday
+     * @return DayOfWeek
      */
     public function getDayOfWeek()
     {

@@ -150,7 +150,7 @@ class LocalDateTime
     }
 
     /**
-     * @return Weekday
+     * @return DayOfWeek
      */
     public function getDayOfWeek()
     {

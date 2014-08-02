@@ -2,23 +2,23 @@
 
 namespace Brick\Doctrine\Types\DateTime;
 
-use Brick\DateTime\Weekday;
+use Brick\DateTime\DayOfWeek;
 use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Doctrine type for Weekday. This type maps to an integer column.
+ * Doctrine type for DayOfWeek. This type maps to an integer column.
  */
-class WeekdayType extends Type
+class DayOfWeekType extends Type
 {
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return 'Weekday';
+        return 'DayOfWeek';
     }
 
     /**
@@ -38,11 +38,11 @@ class WeekdayType extends Type
             return null;
         }
 
-        if ($value instanceof Weekday) {
+        if ($value instanceof DayOfWeek) {
             return $value->getValue();
         }
 
-        throw new UnexpectedValueException(Weekday::class, $value);
+        throw new UnexpectedValueException(DayOfWeek::class, $value);
     }
 
     /**
@@ -54,7 +54,7 @@ class WeekdayType extends Type
             return null;
         }
 
-        return Weekday::of($value);
+        return DayOfWeek::of($value);
     }
 
     /**

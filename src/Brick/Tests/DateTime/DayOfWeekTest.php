@@ -2,13 +2,13 @@
 
 namespace Brick\Tests\DateTime;
 
-use Brick\DateTime\Weekday;
+use Brick\DateTime\DayOfWeek;
 use Brick\DateTime\LocalDate;
 
 /**
- * Unit tests for class Weekday.
+ * Unit tests for class DayOfWeek.
  */
-class WeekdayTest extends \PHPUnit_Framework_TestCase
+class DayOfWeekTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider providerOfInvalidDayThrowsException
@@ -18,7 +18,7 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
      */
     public function testOfInvalidDayThrowsException($day)
     {
-        Weekday::of($day);
+        DayOfWeek::of($day);
     }
 
     /**
@@ -34,45 +34,45 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
 
     public function testConstants()
     {
-        $this->assertSame(1, Weekday::MONDAY);
-        $this->assertSame(2, Weekday::TUESDAY);
-        $this->assertSame(3, Weekday::WEDNESDAY);
-        $this->assertSame(4, Weekday::THURSDAY);
-        $this->assertSame(5, Weekday::FRIDAY);
-        $this->assertSame(6, Weekday::SATURDAY);
-        $this->assertSame(7, Weekday::SUNDAY);
+        $this->assertSame(1, DayOfWeek::MONDAY);
+        $this->assertSame(2, DayOfWeek::TUESDAY);
+        $this->assertSame(3, DayOfWeek::WEDNESDAY);
+        $this->assertSame(4, DayOfWeek::THURSDAY);
+        $this->assertSame(5, DayOfWeek::FRIDAY);
+        $this->assertSame(6, DayOfWeek::SATURDAY);
+        $this->assertSame(7, DayOfWeek::SUNDAY);
     }
 
     /**
-     * @dataProvider providerWeekdayFactoryMethods
+     * @dataProvider providerDayOfWeekFactoryMethods
      *
-     * @param Weekday $weekday      The Weekday to test.
-     * @param integer $integerValue The ISO 8601 day of the week integer value expected.
+     * @param DayOfWeek $dayOfWeek    The DayOfWeek to test.
+     * @param integer   $integerValue The ISO 8601 day of the week integer value expected.
      */
-    public function testWeekdayFactoryMethods(Weekday $weekday, $integerValue)
+    public function testDayOfWeekFactoryMethods(DayOfWeek $dayOfWeek, $integerValue)
     {
-        $this->assertEquals($integerValue, $weekday->getValue());
+        $this->assertEquals($integerValue, $dayOfWeek->getValue());
     }
 
     /**
      * @return array
      */
-    public function providerWeekdayFactoryMethods()
+    public function providerDayOfWeekFactoryMethods()
     {
         return [
-            [Weekday::monday(), Weekday::MONDAY],
-            [Weekday::tuesday(), Weekday::TUESDAY],
-            [Weekday::wednesday(), Weekday::WEDNESDAY],
-            [Weekday::thursday(), Weekday::THURSDAY],
-            [Weekday::friday(), Weekday::FRIDAY],
-            [Weekday::saturday(), Weekday::SATURDAY],
-            [Weekday::sunday(), Weekday::SUNDAY]
+            [DayOfWeek::monday(), DayOfWeek::MONDAY],
+            [DayOfWeek::tuesday(), DayOfWeek::TUESDAY],
+            [DayOfWeek::wednesday(), DayOfWeek::WEDNESDAY],
+            [DayOfWeek::thursday(), DayOfWeek::THURSDAY],
+            [DayOfWeek::friday(), DayOfWeek::FRIDAY],
+            [DayOfWeek::saturday(), DayOfWeek::SATURDAY],
+            [DayOfWeek::sunday(), DayOfWeek::SUNDAY]
         ];
     }
 
-    public function testGetWeekdays()
+    public function testGetAll()
     {
-        for ($day = Weekday::MONDAY; $day <= Weekday::SUNDAY; $day++) {
+        for ($day = DayOfWeek::MONDAY; $day <= DayOfWeek::SUNDAY; $day++) {
             $expected = [];
             $actual = [];
 
@@ -80,8 +80,8 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
                 $expected[] = (($day + $i - 1) % 7) + 1;
             }
 
-            foreach (Weekday::getWeekdays(Weekday::of($day)) as $weekday) {
-                $actual[] = $weekday->getValue();
+            foreach (DayOfWeek::getAll(DayOfWeek::of($day)) as $dayOfWeek) {
+                $actual[] = $dayOfWeek->getValue();
             }
 
             $this->assertTrue($actual === $expected);
@@ -89,50 +89,52 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider providerGetWeekdayFromLocalDate
+     * @todo belongs to LocalDate tests
+     *
+     * @dataProvider providerGetDayOfWeekFromLocalDate
      *
      * @param string  $localDate The local date to test, as a string.
-     * @param integer $weekday   The day-of-week number that matches the local date.
+     * @param integer $dayOfWeek The day-of-week number that matches the local date.
      */
-    public function testGetWeekdayFromLocalDate($localDate, $weekday)
+    public function testGetDayOfWeekFromLocalDate($localDate, $dayOfWeek)
     {
         $localDate = LocalDate::parse($localDate);
-        $weekday = Weekday::of($weekday);
+        $dayOfWeek = DayOfWeek::of($dayOfWeek);
 
-        $this->assertTrue($localDate->getDayOfWeek()->isEqualTo($weekday));
+        $this->assertTrue($localDate->getDayOfWeek()->isEqualTo($dayOfWeek));
     }
 
     /**
      * @return array
      */
-    public function providerGetWeekdayFromLocalDate()
+    public function providerGetDayOfWeekFromLocalDate()
     {
         return [
-            ['2000-01-01', Weekday::SATURDAY],
-            ['2001-01-01', Weekday::MONDAY],
-            ['2002-01-01', Weekday::TUESDAY],
-            ['2003-01-01', Weekday::WEDNESDAY],
-            ['2004-01-01', Weekday::THURSDAY],
-            ['2005-01-01', Weekday::SATURDAY],
-            ['2006-01-01', Weekday::SUNDAY],
-            ['2007-01-01', Weekday::MONDAY],
-            ['2008-01-01', Weekday::TUESDAY],
-            ['2009-01-01', Weekday::THURSDAY],
-            ['2010-01-01', Weekday::FRIDAY],
-            ['2011-01-01', Weekday::SATURDAY],
-            ['2012-01-01', Weekday::SUNDAY],
+            ['2000-01-01', DayOfWeek::SATURDAY],
+            ['2001-01-01', DayOfWeek::MONDAY],
+            ['2002-01-01', DayOfWeek::TUESDAY],
+            ['2003-01-01', DayOfWeek::WEDNESDAY],
+            ['2004-01-01', DayOfWeek::THURSDAY],
+            ['2005-01-01', DayOfWeek::SATURDAY],
+            ['2006-01-01', DayOfWeek::SUNDAY],
+            ['2007-01-01', DayOfWeek::MONDAY],
+            ['2008-01-01', DayOfWeek::TUESDAY],
+            ['2009-01-01', DayOfWeek::THURSDAY],
+            ['2010-01-01', DayOfWeek::FRIDAY],
+            ['2011-01-01', DayOfWeek::SATURDAY],
+            ['2012-01-01', DayOfWeek::SUNDAY],
         ];
     }
 
     /**
      * @dataProvider providerGetName
      *
-     * @param Weekday $weekday
-     * @param string  $name
+     * @param DayOfWeek $dayOfWeek
+     * @param string    $name
      */
-    public function testGetName(Weekday $weekday, $name)
+    public function testGetName(DayOfWeek $dayOfWeek, $name)
     {
-        $this->assertEquals($weekday->getName(), $name);
+        $this->assertEquals($dayOfWeek->getName(), $name);
     }
 
     /**
@@ -141,22 +143,22 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
     public function providerGetName()
     {
         return [
-            [Weekday::monday(), 'Monday'],
-            [Weekday::tuesday(),'Tuesday'],
-            [Weekday::wednesday(), 'Wednesday'],
-            [Weekday::thursday(), 'Thursday'],
-            [Weekday::friday(), 'Friday'],
-            [Weekday::saturday(), 'Saturday'],
-            [Weekday::sunday(), 'Sunday']
+            [DayOfWeek::monday(), 'Monday'],
+            [DayOfWeek::tuesday(),'Tuesday'],
+            [DayOfWeek::wednesday(), 'Wednesday'],
+            [DayOfWeek::thursday(), 'Thursday'],
+            [DayOfWeek::friday(), 'Friday'],
+            [DayOfWeek::saturday(), 'Saturday'],
+            [DayOfWeek::sunday(), 'Sunday']
         ];
     }
 
     public function testPlusMinusEntireWeeks()
     {
-        foreach (Weekday::getWeekdays() as $weekday) {
+        foreach (DayOfWeek::getAll() as $dayOfWeek) {
             foreach ([-14, -7, 0, 7, 14] as $daysToAdd) {
-                $this->assertTrue($weekday->plus($daysToAdd)->isEqualTo($weekday));
-                $this->assertTrue($weekday->minus($daysToAdd)->isEqualTo($weekday));
+                $this->assertTrue($dayOfWeek->plus($daysToAdd)->isEqualTo($dayOfWeek));
+                $this->assertTrue($dayOfWeek->minus($daysToAdd)->isEqualTo($dayOfWeek));
             }
         }
     }
@@ -170,8 +172,8 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
      */
     public function testPlusDays($base, $amount, $expected)
     {
-        $base = Weekday::of($base);
-        $expected = Weekday::of($expected);
+        $base = DayOfWeek::of($base);
+        $expected = DayOfWeek::of($expected);
 
         $this->assertTrue($base->plus($amount)->isEqualTo($expected));
     }
@@ -227,8 +229,8 @@ class WeekdayTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinusDays($base, $amount, $expected)
     {
-        $base = Weekday::of($base);
-        $expected = Weekday::of($expected);
+        $base = DayOfWeek::of($base);
+        $expected = DayOfWeek::of($expected);
 
         $this->assertTrue($base->minus($amount)->isEqualTo($expected));
     }
