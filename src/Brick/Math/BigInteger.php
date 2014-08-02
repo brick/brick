@@ -349,12 +349,11 @@ class BigInteger
     }
 
     /**
-     * @param BigInteger|integer|string $that      The divisor.
-     * @param BigDecimal                $remainder An optional variable to store the remainder.
+     * @param BigInteger|integer|string $that The divisor.
      *
-     * @return BigInteger
+     * @return BigInteger[] An array containing the quotient and the remainder.
      */
-    public function divideAndRemainder($that, & $remainder = null)
+    public function divideAndRemainder($that)
     {
         $that = BigInteger::of($that);
 
@@ -366,10 +365,12 @@ class BigInteger
         $q = $that->value;
 
         $calculator = Calculator::get();
-        $result = $calculator->div($p, $q, $remainder);
+        $quotient = $calculator->div($p, $q, $remainder);
+
+        $quotient = new BigInteger($quotient);
         $remainder = new BigInteger($remainder);
 
-        return new BigInteger($result);
+        return [$quotient, $remainder];
     }
 
     /**

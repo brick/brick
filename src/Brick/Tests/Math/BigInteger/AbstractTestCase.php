@@ -228,7 +228,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testDivideAndRemainder($dividend, $divisor, $quotient, $remainder)
     {
-        $q = BigInteger::of($dividend)->divideAndRemainder($divisor, $r);
+        list ($q, $r) = BigInteger::of($dividend)->divideAndRemainder($divisor);
 
         $this->assertSame($quotient, (string) $q);
         $this->assertSame($remainder, (string) $r);
