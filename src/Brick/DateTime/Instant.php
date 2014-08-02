@@ -77,23 +77,38 @@ class Instant extends ReadableInstant
     }
 
     /**
-     * @param integer $timestamp    The UNIX timestamp.
-     * @param integer $microseconds The microseconds, in the range [0,999999].
+     * Returns an Instant representing a number of seconds and an adjustment in microseconds.
+     *
+     * This method allows an arbitrary number of microseconds to be passed in.
+     * The factory will alter the values of the second and microsecond in order
+     * to ensure that the stored microsecond is in the range 0 to 999,999.
+     * For example, the following will result in the exactly the same duration:
+     *
+     * * Instant::of(3, 1);
+     * * Duration::of(4, -999999);
+     * * Duration::of(2, 1000001);
+     *
+     * @param integer $timestamp       The number of seconds since the UNIX epoch of 1970-01-01T00:00:00Z.
+     * @param integer $microAdjustment The adjustment to the epoch second in microseconds.
      *
      * @return Instant
      *
      * @throws \InvalidArgumentException If any of the parameters is not valid.
      */
-    public static function of($timestamp, $microseconds = 0)
+    public static function of($timestamp, $microAdjustment = 0)
     {
-        $timestamp    = Cast::toInteger($timestamp);
-        $microseconds = Cast::toInteger($microseconds);
+        $seconds = Cast::toInteger($timestamp);
+        $microAdjustment = Cast::toInteger($microAdjustment);
 
-        if ($microseconds < 0 || $microseconds > 999999) {
-            throw new \InvalidArgumentException('Invalid number of microseconds.');
+        $microseconds = $microAdjustment % 1000000;
+        $seconds += ($microAdjustment - $microseconds) / 1000000;
+
+        if ($microseconds < 0) {
+            $microseconds += 1000000;
+            $seconds--;
         }
 
-        return new Instant($timestamp, $microseconds);
+        return new Instant($seconds, $microseconds);
     }
 
     /**

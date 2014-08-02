@@ -2,7 +2,6 @@
 
 namespace Brick\DateTime;
 
-use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Time;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -110,12 +109,12 @@ class Duration
      * to ensure that the stored microsecond is in the range 0 to 999,999.
      * For example, the following will result in the exactly the same duration:
      *
-     * * Duration.ofSeconds(3, 1);
-     * * Duration.ofSeconds(4, -999999);
-     * * Duration.ofSeconds(2, 1000001);
+     * * Duration::ofSeconds(3, 1);
+     * * Duration::ofSeconds(4, -999999);
+     * * Duration::ofSeconds(2, 1000001);
      *
-     * @param integer $seconds
-     * @param integer $microAdjustment
+     * @param integer $seconds         The number of seconds of the duration.
+     * @param integer $microAdjustment The adjustment to the duration in microseconds.
      *
      * @return \Brick\DateTime\Duration
      */
