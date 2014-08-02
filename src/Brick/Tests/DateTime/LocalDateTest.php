@@ -155,26 +155,36 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
         LocalDate::ofYearDay(PHP_INT_MAX, 1);
     }
 
-    public function testFactoryOfEpochDay()
+    /**
+     * @dataProvider providerOfEpochDay
+     *
+     * @param integer $epochDay     The epoch day.
+     * @param string  $expectedDate The expected date string.
+     */
+    public function testOfEpochDay($epochDay, $expectedDate)
     {
-        $date_0000_01_01 = -678941 - 40587;
+        $this->assertSame($expectedDate, (string) LocalDate::ofEpochDay($epochDay));
+    }
 
-        $this->assertTrue(LocalDate::ofEpochDay(0)->isEqualTo(LocalDate::of(1970, 1, 1)));
-        $this->assertTrue(LocalDate::ofEpochDay($date_0000_01_01)->isEqualTo(LocalDate::of(0, 1, 1)));
-        $this->assertTrue(LocalDate::ofEpochDay($date_0000_01_01 - 1)->isEqualTo(LocalDate::of(-1, 12, 31)));
-        $this->assertTrue(LocalDate::ofEpochDay($this->minValidEpochDay)->isEqualTo(LocalDate::of(LocalDate::MIN_YEAR, 1, 1)));
-        $this->assertTrue(LocalDate::ofEpochDay($this->maxValidEpochDay)->isEqualTo(LocalDate::of(LocalDate::MAX_YEAR, 12, 31)));
-
-        $test = LocalDate::of(0, 1, 1);
-        for ($i = $date_0000_01_01; $i < 700000; $i++) {
-            $this->assertTrue(LocalDate::ofEpochDay($i)->isEqualTo($test));
-            $test = $test->plusDays(1);
-        }
-
-        $test = LocalDate::of(0, 1, 1);
-        for ($i = $date_0000_01_01; $i > -2000000; $i--) {
-            $this->assertTrue(LocalDate::ofEpochDay($i)->isEqualTo($test));
-            $test = $test->minusDays(1);
-        }
+    /**
+     * @return array
+     */
+    public function providerOfEpochDay()
+    {
+        return [
+            [-100000, '1696-03-17'],
+            [-10000, '1942-08-16'],
+            [-1000, '1967-04-07'],
+            [-100, '1969-09-23'],
+            [-10, '1969-12-22'],
+            [-1, '1969-12-31'],
+            [0, '1970-01-01'],
+            [1, '1970-01-02'],
+            [10, '1970-01-11'],
+            [100, '1970-04-11'],
+            [1000, '1972-09-27'],
+            [10000, '1997-05-19'],
+            [100000, '2243-10-17']
+        ];
     }
 }
