@@ -565,6 +565,25 @@ class BigInteger
     }
 
     /**
+     * Converts this BigInteger to an integer.
+     *
+     * @return integer The integer value.
+     *
+     * @throws ArithmeticException If this BigInteger exceeds the capacity of an integer.
+     */
+    public function toInteger()
+    {
+        $min = BigInteger::of(~PHP_INT_MAX);
+        $max = BigInteger::of(PHP_INT_MAX);
+
+        if ($this->isLessThan($min) || $this->isGreaterThan($max)) {
+            throw ArithmeticException::integerOverflow();
+        }
+
+        return (int) $this->value;
+    }
+
+    /**
      * @todo test with negative numbers, probably broken
      *
      * Returns a string representation of this number in the given base.

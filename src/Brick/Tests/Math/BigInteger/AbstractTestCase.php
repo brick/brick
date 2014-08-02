@@ -576,4 +576,46 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     {
         BigInteger::of(1)->shiftedRight(-1);
     }
+
+    /**
+     * @dataProvider providerToInteger
+     *
+     * @param integer $number
+     */
+    public function testToInteger($number)
+    {
+        $this->assertSame($number, BigInteger::of((string) $number)->toInteger());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToInteger()
+    {
+        return [
+            [~PHP_INT_MAX],
+            [-123456789],
+            [-1],
+            [0],
+            [1],
+            [123456789],
+            [PHP_INT_MAX]
+        ];
+    }
+
+    /**
+     * @expectedException \Brick\Math\ArithmeticException
+     */
+    public function testToIntegerNegativeOverflowThrowsException()
+    {
+        BigInteger::of(~PHP_INT_MAX)->minus(1)->toInteger();
+    }
+
+    /**
+     * @expectedException \Brick\Math\ArithmeticException
+     */
+    public function testToIntegerPositiveOverflowThrowsException()
+    {
+        BigInteger::of(PHP_INT_MAX)->plus(1)->toInteger();
+    }
 }
