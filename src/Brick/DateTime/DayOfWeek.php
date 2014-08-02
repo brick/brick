@@ -147,7 +147,7 @@ class DayOfWeek
      *
      * @return DayOfWeek
      */
-    public static function today(TimeZone $timezone)
+    public static function now(TimeZone $timezone)
     {
         return DayOfWeek::fromDateTime(ZonedDateTime::now($timezone));
     }

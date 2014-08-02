@@ -251,25 +251,11 @@ class LocalDate
     /**
      * Returns the current date, in the given time zone.
      *
-     * @todo alias for today(), check which one to keep.
-     *
      * @param TimeZone $timeZone
      *
      * @return LocalDate
      */
     public static function now(TimeZone $timeZone)
-    {
-        return ZonedDateTime::now($timeZone)->getDate();
-    }
-
-    /**
-     * Returns today's Date, in the given timezone.
-     *
-     * @param TimeZone $timeZone
-     *
-     * @return LocalDate
-     */
-    public static function today(TimeZone $timeZone)
     {
         return ZonedDateTime::now($timeZone)->getDate();
     }
