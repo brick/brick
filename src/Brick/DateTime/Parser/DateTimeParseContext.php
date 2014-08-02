@@ -60,6 +60,7 @@ class DateTimeParseContext
     {
         $this->active   = $this;
         $this->text     = $text;
+        $this->length   = strlen($text);
         $this->position = $position;
         $this->parent   = $parent;
     }

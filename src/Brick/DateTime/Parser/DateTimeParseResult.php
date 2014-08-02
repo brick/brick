@@ -24,7 +24,8 @@ class DateTimeParseResult
 
     /**
      * @param string $field
-     * @return bool
+     *
+     * @return boolean
      */
     public function hasField($field)
     {
@@ -33,7 +34,9 @@ class DateTimeParseResult
 
     /**
      * @param string $field One of the DateTimeField constants.
+     *
      * @return mixed The value for this field.
+     *
      * @throws DateTimeParseException If the field is not present in this set.
      */
     public function getField($field)
@@ -47,7 +50,8 @@ class DateTimeParseResult
 
     /**
      * @param string $field
-     * @param mixed $defaultValue
+     * @param mixed  $defaultValue
+     *
      * @return mixed
      */
     public function getOptionalField($field, $defaultValue)

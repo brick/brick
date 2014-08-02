@@ -53,6 +53,7 @@ class DateTimeParserBuilder
      * Appends a date-time parser.
      *
      * @param DateTimeParser $parser
+     *
      * @return DateTimeParserBuilder
      */
     public function append(DateTimeParser $parser)
@@ -65,6 +66,7 @@ class DateTimeParserBuilder
      * Appends a string literal parser.
      *
      * @param string $literal
+     *
      * @return DateTimeParserBuilder
      */
     public function appendLiteral($literal)
@@ -88,6 +90,7 @@ class DateTimeParserBuilder
      * Ends an optional section.
      *
      * @return DateTimeParserBuilder
+     *
      * @throws DateTimeParseException
      */
     public function endOptional()

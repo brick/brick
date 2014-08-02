@@ -55,16 +55,16 @@ class NumberParser extends DateTimeParser
     /**
      * Class constructor.
      *
-     * @param string $field
-     * @param int $minWidth
-     * @param int $maxWidth
-     * @param int $signStyle
+     * @param string  $field
+     * @param integer $minWidth
+     * @param integer $maxWidth
+     * @param integer $signStyle
      */
     public function __construct($field, $minWidth, $maxWidth = 0, $signStyle = NumberParser::SIGN_NOT_NEGATIVE)
     {
-        $this->field = $field;
-        $this->minWidth = $minWidth;
-        $this->maxWidth = $maxWidth;
+        $this->field     = $field;
+        $this->minWidth  = $minWidth;
+        $this->maxWidth  = $maxWidth;
         $this->signStyle = $signStyle;
     }
 

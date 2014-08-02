@@ -9,13 +9,16 @@ abstract class DateTimeParser
 {
     /**
      * @param DateTimeParseContext $context The parsing context.
-     * @return bool Whether the parsing was successful.
+     *
+     * @return boolean Whether the parsing was successful.
      */
     abstract public function parseInto(DateTimeParseContext $context);
 
     /**
      * @param string $text
+     *
      * @return DateTimeParseResult
+     *
      * @throws DateTimeParseException
      */
     public function parse($text)

@@ -6,8 +6,6 @@ use Brick\DateTime\YearMonth;
 
 /**
  * Unit tests for class YearMonth.
- *
- * @todo the parser fails to break on extra chars at the end of the string
  */
 class YearMonthTest extends \PHPUnit_Framework_TestCase
 {

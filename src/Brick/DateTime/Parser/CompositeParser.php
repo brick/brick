@@ -25,7 +25,7 @@ class CompositeParser extends DateTimeParser
      * Class constructor.
      *
      * @param DateTimeParser[] $parsers
-     * @param bool $optional
+     * @param boolean          $optional
      */
     public function __construct(array $parsers, $optional)
     {

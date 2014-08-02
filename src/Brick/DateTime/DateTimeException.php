@@ -10,6 +10,7 @@ class DateTimeException extends \RuntimeException
 {
     /**
      * @param string $timeZone
+     *
      * @return DateTimeException
      */
     public static function unknownTimeZone($timeZone)
