@@ -27,17 +27,6 @@ class Time
         if ($micros > 999999) {
             $micros -= 1000000;
             $seconds++;
-        } elseif ($micros < -999999) {
-            $micros += 1000000;
-            $seconds--;
-        }
-
-        if ($seconds < 0 && $micros > 0) {
-            $micros -= 1000000;
-            $seconds++;
-        } elseif ($seconds > 0 && $micros < 0) {
-            $micros += 1000000;
-            $seconds--;
         }
     }
 }

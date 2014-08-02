@@ -4,6 +4,8 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Time;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Brick\Type\Cast;
 
 /**
@@ -23,12 +25,9 @@ class Duration
     private $seconds;
 
     /**
-     * The microseconds.
+     * The microseconds adjustment to the duration, in the range 0 to 999,999.
      *
-     * Must be in the following ranges:
-     * - [0,999999] when $seconds is positive,
-     * - [-999999,0] when $seconds is negative,
-     * - [-999999, 999999] when $seconds is zero.
+     * A duration of -1 microsecond is stored as -1 seconds plus 999,999 microseconds.
      *
      * @var integer
      */
@@ -37,13 +36,17 @@ class Duration
     /**
      * Private constructor. Use one of the factory methods to obtain a Duration.
      *
-     * @param integer $seconds      The duration in seconds, validated.
-     * @param integer $microseconds The microseconds, validated.
+     * @param integer $seconds      The duration in seconds, validated as an integer.
+     * @param integer $microseconds The microseconds adjustment, validated as an integer in the range 0 to 999,999.
      */
     private function __construct($seconds, $microseconds = 0)
     {
         $this->seconds      = $seconds;
         $this->microseconds = $microseconds;
+
+        assert(is_int($seconds), 'seconds is integer (' . gettype($seconds) . ')');
+        assert(is_int($microseconds), 'microseconds is integer (' . gettype($microseconds) . ')');
+        assert($microseconds >= 0 && $microseconds <= 999999, 'microseconds is in range (' . $microseconds . ')');
     }
 
     /**
@@ -57,12 +60,14 @@ class Duration
     }
 
     /**
-     * @todo microsecond support.
-     *
      * Obtains an instance of `Duration` by parsing a text string.
      *
      * This will parse the string produced by `toString()` which is
      * the ISO-8601 format `PTnS` where `n` is the number of seconds.
+     *
+     * If the duration contains a number of seconds with a decimal point,
+     * and the number of decimal places exceeds the microsecond precision (6 digits),
+     * the duration will be silently truncated to 6 decimal places.
      *
      * @param string $text
      *
@@ -72,42 +77,59 @@ class Duration
      */
     public static function parse($text)
     {
-        if (preg_match('/^PT(\-?[0-9]+)S$/i', $text, $matches) == 0) {
+        if (preg_match('/^PT(\-?)([0-9]+)(?:\.([0-9]+))?S$/i', $text, $matches) === 0) {
             throw Parser\DateTimeParseException::invalidDuration($text);
         }
 
         try {
-            return new Duration(Cast::toInteger($matches[1]));
+            $seconds = Cast::toInteger($matches[1] . $matches[2]);
         } catch (\InvalidArgumentException $e) {
             throw Parser\DateTimeParseException::invalidDuration($text);
         }
+
+        if (isset($matches[3])) {
+            $microseconds = substr($matches[3] . '000000', 0, 6);
+            $microseconds = (int) $microseconds;
+        } else {
+            $microseconds = 0;
+        }
+
+        if ($matches[1] === '-' && $microseconds !== 0) {
+            $microseconds = 1000000 - $microseconds;
+            $seconds--;
+        }
+
+        return new Duration($seconds, $microseconds);
     }
 
     /**
-     * @todo rename of?
+     * Returns a Duration representing a number of seconds and an adjustment in microseconds.
      *
-     * Returns a Duration from a number of seconds and microseconds.
+     * This method allows an arbitrary number of microseconds to be passed in.
+     * The factory will alter the values of the second and microsecond in order
+     * to ensure that the stored microsecond is in the range 0 to 999,999.
+     * For example, the following will result in the exactly the same duration:
+     *
+     * * Duration.ofSeconds(3, 1);
+     * * Duration.ofSeconds(4, -999999);
+     * * Duration.ofSeconds(2, 1000001);
      *
      * @param integer $seconds
-     * @param integer $microseconds
+     * @param integer $microAdjustment
      *
      * @return \Brick\DateTime\Duration
      */
-    public static function ofSeconds($seconds, $microseconds = 0)
+    public static function ofSeconds($seconds, $microAdjustment = 0)
     {
         $seconds = Cast::toInteger($seconds);
-        $microseconds = Cast::toInteger($microseconds);
+        $microAdjustment = Cast::toInteger($microAdjustment);
 
-        $min = ($seconds > 0) ? 0 : -999999;
-        $max = ($seconds < 0) ? 0 : 999999;
+        $microseconds = $microAdjustment % 1000000;
+        $seconds += ($microAdjustment - $microseconds) / 1000000;
 
-        if ($microseconds < $min || $microseconds > $max) {
-            throw new \InvalidArgumentException(sprintf(
-                'Expected microseconds in the range [%d,%d] but got %d.',
-                $min,
-                $max,
-                $microseconds
-            ));
+        if ($microseconds < 0) {
+            $microseconds += 1000000;
+            $seconds--;
         }
 
         return new Duration($seconds, $microseconds);
@@ -150,8 +172,6 @@ class Duration
     }
 
     /**
-     * @todo microsecond support
-     *
      * Returns a Duration representing the time elapsed between two instants.
      *
      * A Duration represents a directed distance between two points on the time-line.
@@ -164,7 +184,13 @@ class Duration
      */
     public static function between(ReadableInstant $startInclusive, ReadableInstant $endExclusive)
     {
-        return new Duration($endExclusive->getInstant()->getTimestamp() - $startInclusive->getInstant()->getTimestamp());
+        $startInclusive = $startInclusive->getInstant();
+        $endExclusive = $endExclusive->getInstant();
+
+        $seconds = $endExclusive->getTimestamp() - $startInclusive->getTimestamp();
+        $microseconds = $endExclusive->getMicroseconds() - $startInclusive->getMicroseconds();
+
+        return Duration::ofSeconds($seconds, $microseconds);
     }
 
     /**
@@ -196,7 +222,7 @@ class Duration
      */
     public function isPositive()
     {
-        return $this->seconds > 0 || $this->microseconds > 0;
+        return $this->seconds > 0 || ($this->seconds === 0 && $this->microseconds > 0);
     }
 
     /**
@@ -206,7 +232,7 @@ class Duration
      */
     public function isPositiveOrZero()
     {
-        return $this->seconds >= 0 && $this->microseconds >= 0;
+        return $this->seconds >= 0;
     }
 
     /**
@@ -216,7 +242,7 @@ class Duration
      */
     public function isNegative()
     {
-        return $this->seconds < 0 || $this->microseconds < 0;
+        return $this->seconds < 0;
     }
 
     /**
@@ -226,7 +252,7 @@ class Duration
      */
     public function isNegativeOrZero()
     {
-        return $this->seconds <= 0 && $this->microseconds <= 0;
+        return $this->seconds < 0 || ($this->seconds === 0 && $this->microseconds === 0);
     }
 
     /**
@@ -269,9 +295,7 @@ class Duration
             return $this;
         }
 
-        Time::add($this->seconds, $this->microseconds, $seconds, 0, $seconds, $microseconds);
-
-        return new Duration($seconds, $microseconds);
+        return new Duration($this->seconds + $seconds, $this->microseconds);
     }
 
     /**
@@ -413,6 +437,21 @@ class Duration
     }
 
     /**
+     * Creates a Duration out of a BigDecimal representing a number of seconds.
+     *
+     * @param BigDecimal $decimal
+     *
+     * @return Duration
+     */
+    private function create(BigDecimal $decimal)
+    {
+        $micros = $decimal->withPointMovedRight(6)->toBigInteger();
+        $divRem = $micros->divideAndRemainder(1000000);
+
+        return Duration::ofSeconds($divRem[0]->toInteger(), $divRem[1]->toInteger());
+    }
+
+    /**
      * Returns a copy of this Duration divided by the given value.
      *
      * If this yields an inexact result, the result will be rounded down.
@@ -429,12 +468,13 @@ class Duration
             throw new \InvalidArgumentException('Cannot divide a Duration by zero.');
         }
 
-        $seconds = Math::div($this->seconds, $divisor, $remainder);
+        if ($divisor === 1) {
+            return $this;
+        }
 
-        $microseconds = $this->microseconds + 1000000 * $remainder;
-        $microseconds = Math::div($microseconds, $divisor);
+        $decimal = $this->toSeconds()->dividedBy($divisor, null, RoundingMode::DOWN);
 
-        return new Duration($seconds, $microseconds);
+        return $this->create($decimal);
     }
 
     /**
@@ -448,7 +488,15 @@ class Duration
             return $this;
         }
 
-        return new Duration(-$this->seconds, -$this->microseconds);
+        $seconds = -$this->seconds;
+        $microseconds = $this->microseconds;
+
+        if ($microseconds !== 0) {
+            $microseconds = 1000000 - $microseconds;
+            $seconds--;
+        }
+
+        return new Duration($seconds, $microseconds);
     }
 
     /**
@@ -556,13 +604,23 @@ class Duration
     }
 
     /**
-     * Returns the microseconds part of this Duration.
+     * Returns the microseconds adjustment of this Duration.
      *
      * @return integer
      */
     public function getMicroseconds()
     {
         return $this->microseconds;
+    }
+
+    /**
+     * Returns the duration as a BigDecimal representing the number of seconds and microseconds.
+     *
+     * @return BigDecimal
+     */
+    public function toSeconds()
+    {
+        return BigDecimal::of($this->seconds)->plus(BigDecimal::ofUnscaledValue($this->microseconds, 6));
     }
 
     /**
@@ -575,13 +633,19 @@ class Duration
      */
     public function toString()
     {
-        $seconds = $this->seconds < 0 ? -$this->seconds : $this->seconds;
-        $microseconds = $this->microseconds < 0 ? -$this->microseconds : $this->microseconds;
+        $seconds = $this->seconds;
+        $microseconds = $this->microseconds;
 
         $string = 'PT';
 
-        if ($this->seconds < 0 || $this->microseconds < 0) {
+        if ($seconds < 0) {
             $string .= '-';
+            $seconds = -$seconds;
+
+            if ($microseconds !== 0) {
+                $microseconds = 1000000 - $microseconds;
+                $seconds--;
+            }
         }
 
         $string .= $seconds;

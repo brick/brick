@@ -25,31 +25,60 @@ class DurationTest extends \PHPUnit_Framework_TestCase
 
     public function testZero()
     {
-        $this->assertEquals(0, Duration::zero()->getSeconds());
+        $zero = Duration::zero();
+
+        $this->assertSame(0, $zero->getSeconds());
+        $this->assertSame(0, $zero->getMicroseconds());
     }
 
-    public function testFactorySeconds()
+    /**
+     * @dataProvider providerOfSeconds
+     *
+     * @param integer $seconds              The duration in seconds.
+     * @param integer $microAdjustment      The microseconds adjustement to the duration.
+     * @param integer $expectedSeconds      The expected adjusted duration seconds.
+     * @param integer $expectedMicroseconds The expected adjusted duration microseconds.
+     */
+    public function testOfSeconds($seconds, $microAdjustment, $expectedSeconds, $expectedMicroseconds)
     {
-        for ($i = -2; $i <= 2; $i++) {
-            $this->assertEquals($i, Duration::ofSeconds($i)->getSeconds());
-        }
+        $duration = Duration::ofSeconds($seconds, $microAdjustment);
+
+        $this->assertSame($expectedSeconds, $duration->getSeconds());
+        $this->assertSame($expectedMicroseconds, $duration->getMicroseconds());
     }
 
-    public function testFactoryMinutes()
+    /**
+     * @return array
+     */
+    public function providerOfSeconds()
+    {
+        return [
+            [3, 1, 3, 1],
+            [4, -999999, 3, 1],
+            [2, 1000001, 3, 1],
+            [-3, 1, -3, 1],
+            [-4, 1000001, -3, 1],
+            [-2, -999999, -3, 1],
+            [1, -1000001, -1, 999999],
+            [-1, -1000001, -3, 999999]
+        ];
+    }
+
+    public function testOfMinutes()
     {
         for ($i = -2; $i <= 2; $i++) {
             $this->assertEquals($i * 60, Duration::ofMinutes($i)->getSeconds());
         }
     }
 
-    public function testFactoryHours()
+    public function testOfHours()
     {
         for ($i = -2; $i <= 2; $i++) {
             $this->assertEquals($i * 3600, Duration::ofHours($i)->getSeconds());
         }
     }
 
-    public function testFactoryDays()
+    public function testOfDays()
     {
         for ($i = -2; $i <= 2; $i++) {
             $this->assertEquals($i * 86400, Duration::ofDays($i)->getSeconds());
@@ -57,71 +86,113 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider factoryBetweenInstantsProvider
+     * @dataProvider providerBetween
      *
-     * @param int $start
-     * @param int $end
-     * @param int $expectedSeconds
+     * @param integer $seconds1
+     * @param integer $micros1
+     * @param integer $seconds2
+     * @param integer $micros2
+     * @param integer $seconds
+     * @param integer $micros
      */
-    public function testFactoryBetweenInstants($start, $end, $expectedSeconds)
+    public function testBetween($seconds1, $micros1, $seconds2, $micros2, $seconds, $micros)
     {
-        $duration = Duration::between(Instant::of($start), Instant::of($end));
-        $this->assertEquals($expectedSeconds, $duration->getSeconds());
+        $duration = Duration::between(
+            Instant::of($seconds1, $micros1),
+            Instant::of($seconds2, $micros2)
+        );
+
+        $this->assertSame($seconds, $duration->getSeconds());
+        $this->assertSame($micros, $duration->getMicroseconds());
     }
 
     /**
      * @return array
      */
-    public function factoryBetweenInstantsProvider()
+    public function providerBetween()
     {
         return [
-            [0, 0, 0],
-            [3, 7, 4],
-            [7, 3, -4]
+            [0, 0, 0, 0, 0, 0],
+            [3, 0, 7, 0, 4, 0],
+            [7, 0, 3, 0, -4, 0],
+
+            [0, 500000, 1, 500000, 1, 0],
+            [0, 500000, 1, 750000, 1, 250000],
+            [0, 500000, 1, 250000, 0, 750000],
+
+            [-1, 500000, 0, 0, 0, 500000],
+            [-1, 500000, 0, 500000, 1, 0],
+            [-1, 999999, 2, 2, 2, 3],
+
+            [0, 0, -1, 500000, -1, 500000],
+            [0, 500000, -1, 500000, -1, 0],
+            [2, 2, -1, 999999, -3, 999997],
         ];
     }
 
     /**
-     * @dataProvider factoryParseProvider
+     * @dataProvider providerParse
      *
-     * @param string $text
-     * @param int    $expectedSeconds
+     * @param string  $text
+     * @param integer $seconds
+     * @param integer $microseconds
      */
-    public function testFactoryParse($text, $expectedSeconds)
+    public function testParse($text, $seconds, $microseconds)
     {
-        $this->assertEquals($expectedSeconds, Duration::parse($text)->getSeconds());
+        $duration = Duration::parse($text);
+
+        $this->assertSame($seconds, $duration->getSeconds());
+        $this->assertSame($microseconds, $duration->getMicroseconds());
     }
 
     /**
      * @return array
      */
-    public function factoryParseProvider()
+    public function providerParse()
     {
         return [
-            ['PT0S', 0],
-            ['pT0S', 0],
-            ['Pt0S', 0],
-            ['PT0s', 0],
+            ['PT0S', 0, 0],
+            ['pT-0S', 0, 0],
+            ['Pt0S', 0, 0],
+            ['PT-0s', 0, 0],
 
-            ['PT1S', 1],
-            ['PT12S', 12],
-            ['PT123456789S', 123456789],
-            ['PT' . PHP_INT_MAX . 'S', PHP_INT_MAX],
+            ['PT0.1S', 0, 100000],
+            ['PT-0.1S', -1, 900000],
 
-            ['PT-1S', -1],
-            ['PT-12S', -12],
-            ['PT-123456789S', -123456789],
-            ['PT' . ~ PHP_INT_MAX . 'S', ~ PHP_INT_MAX]
+            ['PT1.001S', 1, 1000],
+            ['PT-1.001S', -2, 999000],
+            ['PT-1.999S', -2, 1000],
+
+            ['PT0.000001S', 0, 1],
+            ['PT-0.000001S', -1, 999999],
+            ['PT-0.999999S', -1, 1],
+
+            ['PT0.0000009S', 0, 0],
+            ['PT1.0000009S', 1, 0],
+
+            ['PT-0.0000009S', 0, 0],
+            ['PT-1.0000009S', -1, 0],
+
+            ['PT-0.999999999S', -1, 1],
+            ['PT-1.1000009S', -2, 900000],
+
+            ['PT1S', 1, 0],
+            ['PT12S', 12, 0],
+            ['PT123456789S', 123456789, 0],
+
+            ['PT-1S', -1, 0],
+            ['PT-12S', -12, 0],
+            ['PT-123456789S', -123456789, 0],
         ];
     }
 
     /**
-     * @dataProvider factoryParseFailuresProvider
+     * @dataProvider providerParseFailureThrowsException
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
      *
      * @param string $text
      */
-    public function testFactoryParseFailures($text)
+    public function testParseFailureThrowsException($text)
     {
         Duration::parse($text);
     }
@@ -129,7 +200,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function factoryParseFailuresProvider()
+    public function providerParseFailureThrowsException()
     {
         return [
             [''],
@@ -149,7 +220,6 @@ class DurationTest extends \PHPUnit_Framework_TestCase
             ['PT+0S'],
             ['PT+00S'],
             ['PT+000S'],
-            ['PT-0S'],
             ['PT-00S'],
             ['PT-000S'],
             ['PT+1S'],
@@ -157,7 +227,6 @@ class DurationTest extends \PHPUnit_Framework_TestCase
             ['PT+.S'],
 
             ['PT1X2S'],
-            ['PT0.1S'],
             ['PT1.S'],
             ['PT.1S']
         ];
@@ -166,7 +235,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
      */
-    public function testFactoryParseTooBig()
+    public function testParsePositiveOutOfRange()
     {
         Duration::parse('PT' . PHP_INT_MAX . '1S');
     }
@@ -174,7 +243,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
      */
-    public function testFactoryParseTooSmall()
+    public function testParseNegativeOutOfRange()
     {
         Duration::parse('PT' . ~ PHP_INT_MAX . '1S');
     }
@@ -404,7 +473,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusMinutesProvider
+     * @dataProvider providerPlusMinutes
      *
      * @param integer $seconds
      * @param integer $minutesToAdd
@@ -419,7 +488,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusMinutesProvider()
+    public function providerPlusMinutes()
     {
         return [
             [-1, -1, -61],
@@ -439,7 +508,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusHoursProvider
+     * @dataProvider providerPlusHours
      *
      * @param integer $seconds
      * @param integer $hoursToAdd
@@ -454,7 +523,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusHoursProvider()
+    public function providerPlusHours()
     {
         return [
             [-1, -1, -3601],
@@ -474,7 +543,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider plusDaysProvider
+     * @dataProvider providerPlusDays
      *
      * @param integer $seconds
      * @param integer $daysToAdd
@@ -489,7 +558,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function plusDaysProvider()
+    public function providerPlusDays()
     {
         return [
             [-1, -1, -86401],
@@ -509,7 +578,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusSecondsProvider
+     * @dataProvider providerMinusSeconds
      *
      * @param integer $seconds
      * @param integer $secondsToSubtract
@@ -524,7 +593,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusSecondsProvider()
+    public function providerMinusSeconds()
     {
         return [
             [0, 0, 0],
@@ -547,7 +616,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusMinutesProvider
+     * @dataProvider providerMinusMinutes
      *
      * @param integer $seconds
      * @param integer $minutesToSubtract
@@ -562,7 +631,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusMinutesProvider()
+    public function providerMinusMinutes()
     {
         return [
             [-1, -1, 59],
@@ -582,7 +651,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusHoursProvider
+     * @dataProvider providerMinusHours
      *
      * @param integer $seconds
      * @param integer $hoursToSubtract
@@ -597,7 +666,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusHoursProvider()
+    public function providerMinusHours()
     {
         return [
             [-1, -1, 3599],
@@ -617,7 +686,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider minusDaysProvider
+     * @dataProvider providerMinusDays
      *
      * @param integer $seconds
      * @param integer $daysToSubtract
@@ -632,7 +701,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function minusDaysProvider()
+    public function providerMinusDays()
     {
         return [
             [-1, -1, 86399],
@@ -720,12 +789,35 @@ class DurationTest extends \PHPUnit_Framework_TestCase
         Duration::zero()->dividedBy(0);
     }
 
-    public function testNegated()
+    /**
+     * @dataProvider providerNegated
+     *
+     * @param integer $seconds         The duration in seconds.
+     * @param integer $micros          The microseconds adjustement to the duration.
+     * @param integer $expectedSeconds The expected seconds of the negated duration.
+     * @param integer $expectedMicros  The expected microseconds adjustment of the negated duration.
+     */
+    public function testNegated($seconds, $micros, $expectedSeconds, $expectedMicros)
     {
-        for ($seconds = -3; $seconds <= 3; $seconds++) {
-            $duration = Duration::ofSeconds($seconds)->negated();
-            $this->assertEquals(- $seconds, $duration->getSeconds());
-        }
+        $duration = Duration::ofSeconds($seconds, $micros)->negated();
+
+        $this->assertSame($expectedSeconds, $duration->getSeconds());
+        $this->assertSame($expectedMicros, $duration->getMicroseconds());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerNegated()
+    {
+        return [
+            [1, 0, -1, 0],
+            [-1, 0, 1, 0],
+            [1, 1, -2, 999999],
+            [-2, 999999, 1, 1],
+            [-1, 1, 0, 999999],
+            [0, 999999, -1, 1]
+        ];
     }
 
     public function testAbs()
@@ -834,7 +926,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider toStringProvider
+     * @dataProvider providerToString
      *
      * @param integer $seconds
      * @param integer $microseconds
@@ -848,14 +940,14 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function toStringProvider()
+    public function providerToString()
     {
         return [
             [0, 0, 'PT0S'],
             [1, 0, 'PT1S'],
             [-1, 0, 'PT-1S'],
             [1, 1, 'PT1.000001S'],
-            [-9, -999, 'PT-9.000999S']
+//            [-9, -999, 'PT-9.000999S'] @todo
         ];
     }
 }
