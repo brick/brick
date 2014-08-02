@@ -14,6 +14,7 @@ abstract class TimeZone
      * Obtains an instance of `TimeZone` from a string representation.
      *
      * @param string $text
+     *
      * @return TimeZone
      */
     public static function of($text)
@@ -42,13 +43,15 @@ abstract class TimeZone
 
     /**
      * @param ReadableInstant $pointInTime The instant.
-     * @return int The offset from UTC in seconds.
+     *
+     * @return integer The offset from UTC in seconds.
      */
     abstract public function getOffset(ReadableInstant $pointInTime);
 
     /**
      * @param TimeZone $other
-     * @return bool
+     *
+     * @return boolean
      */
     public function isEqualTo(TimeZone $other)
     {
@@ -65,6 +68,7 @@ abstract class TimeZone
 
     /**
      * @param \DateTimeZone $dateTimeZone
+     *
      * @return TimeZone
      */
     public static function fromDateTimeZone(\DateTimeZone $dateTimeZone)

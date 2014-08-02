@@ -51,6 +51,7 @@ class ZonedDateTime extends ReadableInstant
      * @param LocalDateTime       $localDateTime
      * @param TimeZone            $timeZone
      * @param TimeZoneOffset|null $preferredOffset
+     *
      * @return ZonedDateTime
      *
      * @todo preferredOffset
@@ -66,6 +67,7 @@ class ZonedDateTime extends ReadableInstant
      * Creates a DateTime representing the current time, in the given time zone.
      *
      * @param TimeZone $timeZone
+     *
      * @return ZonedDateTime
      */
     public static function now(TimeZone $timeZone)
@@ -79,6 +81,7 @@ class ZonedDateTime extends ReadableInstant
      * This method is only useful to parsers.
      *
      * @param Field\DateTimeFieldSet $fieldSet
+     *
      * @return ZonedDateTime
      */
     public static function from(Field\DateTimeFieldSet $fieldSet)
@@ -93,7 +96,9 @@ class ZonedDateTime extends ReadableInstant
      * Obtains an instance of `ZonedDateTime` from a text string such as `2007-12-03T10:15:30+01:00[Europe/Paris]`.
      *
      * @param string $text The text to parse, such as `2007-12-03T10:15:30+01:00[Europe/Paris]`.
+     *
      * @return ZonedDateTime
+     *
      * @throws DateTimeException
      */
     public static function parse($text)
@@ -120,6 +125,7 @@ class ZonedDateTime extends ReadableInstant
      *
      * @param Instant  $instant  The instant.
      * @param TimeZone $timeZone The time zone.
+     *
      * @return ZonedDateTime
      */
     public static function ofInstant(Instant $instant, TimeZone $timeZone)
@@ -130,8 +136,9 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Creates a ZonedDateTime from a timestamp and a time zone.
      *
-     * @param int $timestamp
+     * @param integer  $timestamp
      * @param TimeZone $timeZone
+     *
      * @return ZonedDateTime
      */
     public static function ofTimestamp($timestamp, TimeZone $timeZone)
@@ -152,8 +159,9 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Creates a ZonedDateTime on the specific date & time zone, at midnight.
      *
-     * @param LocalDate $date    The date.
-     * @param TimeZone $timeZone The time zone.
+     * @param LocalDate $date     The date.
+     * @param TimeZone  $timeZone The time zone.
+     *
      * @return ZonedDateTime
      */
     public static function createFromDate(LocalDate $date, TimeZone $timeZone)
@@ -167,6 +175,7 @@ class ZonedDateTime extends ReadableInstant
      * @param LocalDate $date     The date.
      * @param LocalTime $time     The time.
      * @param TimeZone  $timeZone The time zone.
+     *
      * @return ZonedDateTime
      *
      * @todo fromLocalDateTime() ? fromLocal() ? ofLocal() ? of()?
@@ -207,7 +216,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getYear()
     {
@@ -215,7 +224,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMonth()
     {
@@ -223,7 +232,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getDay()
     {
@@ -239,7 +248,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getHour()
     {
@@ -247,7 +256,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMinute()
     {
@@ -255,7 +264,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getSecond()
     {
@@ -301,6 +310,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with a different date.
      *
      * @param LocalDate $date
+     *
      * @return ZonedDateTime
      */
     public function withDate(LocalDate $date)
@@ -312,6 +322,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with a different time.
      *
      * @param LocalTime $time
+     *
      * @return ZonedDateTime
      */
     public function withTime(LocalTime $time)
@@ -322,7 +333,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the year altered.
      *
-     * @param int $year
+     * @param integer $year
+     *
      * @return ZonedDateTime
      */
     public function withYear($year)
@@ -333,7 +345,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the month-of-year altered.
      *
-     * @param int $month
+     * @param integer $month
+     *
      * @return ZonedDateTime
      */
     public function withMonth($month)
@@ -344,7 +357,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the day-of-month altered.
      *
-     * @param int $day
+     * @param integer $day
+     *
      * @return ZonedDateTime
      */
     public function withDay($day)
@@ -355,7 +369,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the hour-of-day altered.
      *
-     * @param int $hour
+     * @param integer $hour
+     *
      * @return ZonedDateTime
      */
     public function withHour($hour)
@@ -366,7 +381,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the minute-of-hour altered.
      *
-     * @param int $minute
+     * @param integer $minute
+     *
      * @return ZonedDateTime
      */
     public function withMinute($minute)
@@ -377,7 +393,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the second-of-minute altered.
      *
-     * @param int $second
+     * @param integer $second
+     *
      * @return ZonedDateTime
      */
     public function withSecond($second)
@@ -390,6 +407,7 @@ class ZonedDateTime extends ReadableInstant
      * retaining the local date-time if possible.
      *
      * @param TimeZone $timeZone The time-zone to change to.
+     *
      * @return ZonedDateTime
      */
     public function withTimeZoneSameLocal(TimeZone $timeZone)
@@ -398,10 +416,10 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * Returns a copy of this date-time with a different time-zone,
-     * retaining the instant.
+     * Returns a copy of this date-time with a different time-zone, retaining the instant.
      *
      * @param TimeZone $timeZone
+     *
      * @return ZonedDateTime
      */
     public function withTimeZoneSameInstant(TimeZone $timeZone)
@@ -432,6 +450,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with the specified Period added.
      *
      * @param Period $period
+     *
      * @return ZonedDateTime
      */
     public function plusPeriod(Period $period)
@@ -443,6 +462,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with the specified Duration added.
      *
      * @param Duration $duration
+     *
      * @return ZonedDateTime
      */
     public function plusDuration(Duration $duration)
@@ -453,7 +473,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in years added.
      *
-     * @param int $years
+     * @param integer $years
+     *
      * @return ZonedDateTime
      */
     public function plusYears($years)
@@ -464,7 +485,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in months added.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return ZonedDateTime
      */
     public function plusMonths($months)
@@ -475,7 +497,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in weeks added.
      *
-     * @param int $weeks
+     * @param integer $weeks
+     *
      * @return ZonedDateTime
      */
     public function plusWeeks($weeks)
@@ -486,7 +509,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in days added.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return ZonedDateTime
      */
     public function plusDays($days)
@@ -497,7 +521,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in hours added.
      *
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return ZonedDateTime
      */
     public function plusHours($hours)
@@ -508,7 +533,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in minutes added.
      *
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return ZonedDateTime
      */
     public function plusMinutes($minutes)
@@ -519,7 +545,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in seconds added.
      *
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return ZonedDateTime
      */
     public function plusSeconds($seconds)
@@ -531,6 +558,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with the specified Period subtracted.
      *
      * @param Period $period
+     *
      * @return ZonedDateTime
      */
     public function minusPeriod(Period $period)
@@ -542,6 +570,7 @@ class ZonedDateTime extends ReadableInstant
      * Returns a copy of this ZonedDateTime with the specified Duration subtracted.
      *
      * @param Duration $duration
+     *
      * @return ZonedDateTime
      */
     public function minusDuration(Duration $duration)
@@ -552,7 +581,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in years subtracted.
      *
-     * @param int $years
+     * @param integer $years
+     *
      * @return ZonedDateTime
      */
     public function minusYears($years)
@@ -563,7 +593,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in months subtracted.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return ZonedDateTime
      */
     public function minusMonths($months)
@@ -574,7 +605,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in weeks subtracted.
      *
-     * @param int $weeks
+     * @param integer $weeks
+     *
      * @return ZonedDateTime
      */
     public function minusWeeks($weeks)
@@ -585,7 +617,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in days subtracted.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return ZonedDateTime
      */
     public function minusDays($days)
@@ -596,7 +629,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in hours subtracted.
      *
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return ZonedDateTime
      */
     public function minusHours($hours)
@@ -607,7 +641,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in minutes subtracted.
      *
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return ZonedDateTime
      */
     public function minusMinutes($minutes)
@@ -618,7 +653,8 @@ class ZonedDateTime extends ReadableInstant
     /**
      * Returns a copy of this ZonedDateTime with the specified period in seconds subtracted.
      *
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return ZonedDateTime
      */
     public function minusSeconds($seconds)

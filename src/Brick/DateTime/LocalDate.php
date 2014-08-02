@@ -36,30 +36,30 @@ class LocalDate
     /**
      * The year.
      *
-     * @var int
+     * @var integer
      */
     private $year;
 
     /**
      * The month-of-year.
      *
-     * @var int
+     * @var integer
      */
     private $month;
 
     /**
      * The day-of-month.
      *
-     * @var int
+     * @var integer
      */
     private $day;
 
     /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param int $year  The year, validated as an integer from MIN_YEAR to MAX_YEAR.
-     * @param int $month The month-of-year, validated as an integer from 1 to 12.
-     * @param int $day   The day-of-month, validated as an integer from 1 to 31, valid for the year-month.
+     * @param integer $year  The year, validated as an integer from MIN_YEAR to MAX_YEAR.
+     * @param integer $month The month-of-year, validated as an integer from 1 to 12.
+     * @param integer $day   The day-of-month, validated as an integer from 1 to 31, valid for the year-month.
      */
     private function __construct($year, $month, $day)
     {
@@ -71,9 +71,9 @@ class LocalDate
     /**
      * Obtains an instance of `LocalDate` from a year, month and day.
      *
-     * @param int $year  The year, from MIN_YEAR to MAX_YEAR.
-     * @param int $month The month-of-year, from 1 (January) to 12 (December).
-     * @param int $day   The day-of-month, from 1 to 31.
+     * @param integer $year  The year, from MIN_YEAR to MAX_YEAR.
+     * @param integer $month The month-of-year, from 1 (January) to 12 (December).
+     * @param integer $day   The day-of-month, from 1 to 31.
      *
      * @return LocalDate
      *
@@ -104,8 +104,10 @@ class LocalDate
     /**
      * @todo was private (expects a validated integer, but was needed for YearMonth as well) - fix that
      *
-     * @param int $year The year to check, validated as an integer.
+     * @param integer $year The year to check, validated as an integer.
+     *
      * @return void
+     *
      * @throws DateTimeException
      */
     public static function checkYear($year)
@@ -120,9 +122,11 @@ class LocalDate
     }
 
     /**
-     * @param int $year      The year, validated as an integer, and valid.
-     * @param int $dayOfYear The day of year, validated as an integer.
+     * @param integer $year      The year, validated as an integer, and valid year.
+     * @param integer $dayOfYear The day of year, validated as an integer.
+     *
      * @return void
+     *
      * @throws DateTimeException
      */
     private static function checkDayOfYear($year, $dayOfYear)
@@ -137,8 +141,8 @@ class LocalDate
     /**
      * Obtains an instance of `LocalDate` from a year and day-of-year.
      *
-     * @param int $year      The year, from MIN_YEAR to MAX_YEAR.
-     * @param int $dayOfYear The day-of-year, from 1 to 366.
+     * @param integer $year      The year, from MIN_YEAR to MAX_YEAR.
+     * @param integer $dayOfYear The day-of-year, from 1 to 366.
      *
      * @return LocalDate
      */
@@ -166,7 +170,9 @@ class LocalDate
 
     /**
      * @param Parser\DateTimeParseResult $result
+     *
      * @return LocalDate
+     *
      * @throws DateTimeException If the date is not valid.
      */
     public static function from(Parser\DateTimeParseResult $result)
@@ -204,7 +210,8 @@ class LocalDate
      * The Epoch Day count is a simple incrementing count of days
      * where day 0 is 1970-01-01. Negative numbers represent earlier days.
      *
-     * @param int $epochDay
+     * @param integer $epochDay
+     *
      * @return LocalDate
      */
     public static function ofEpochDay($epochDay)
@@ -247,6 +254,7 @@ class LocalDate
      * @todo alias for today(), check which one to keep.
      *
      * @param TimeZone $timeZone
+     *
      * @return LocalDate
      */
     public static function now(TimeZone $timeZone)
@@ -258,6 +266,7 @@ class LocalDate
      * Returns today's Date, in the given timezone.
      *
      * @param TimeZone $timeZone
+     *
      * @return LocalDate
      */
     public static function today(TimeZone $timeZone)
@@ -282,7 +291,7 @@ class LocalDate
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getYear()
     {
@@ -290,7 +299,7 @@ class LocalDate
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMonth()
     {
@@ -298,7 +307,7 @@ class LocalDate
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getDay()
     {
@@ -318,9 +327,10 @@ class LocalDate
      *
      * @todo correct behaviour? or add the extra days to the next month? or throw exception?
      *
-     * @param int $year
-     * @param int $month
-     * @param int $day
+     * @param integer $year
+     * @param integer $month
+     * @param integer $day
+     *
      * @return LocalDate
      */
     private function resolvePreviousValid($year, $month, $day)
@@ -335,7 +345,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the year altered.
      *
-     * @param int $year
+     * @param integer $year
+     *
      * @return LocalDate
      */
     public function withYear($year)
@@ -350,7 +361,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the month-of-year altered.
      *
-     * @param int $month
+     * @param integer $month
+     *
      * @return LocalDate
      */
     public function withMonth($month)
@@ -365,7 +377,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the day-of-month altered.
      *
-     * @param int $day
+     * @param integer $day
+     *
      * @return LocalDate
      */
     public function withDay($day)
@@ -380,7 +393,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in years added.
      *
-     * @param int $yearsToAdd
+     * @param integer $yearsToAdd
+     *
      * @return LocalDate
      */
     public function plusYears($yearsToAdd)
@@ -391,7 +405,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in months added.
      *
-     * @param int $monthsToAdd
+     * @param integer $monthsToAdd
+     *
      * @return LocalDate
      */
     public function plusMonths($monthsToAdd)
@@ -405,7 +420,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in weeks added.
      *
-     * @param int $weeksToAdd
+     * @param integer $weeksToAdd
+     *
      * @return LocalDate
      */
     public function plusWeeks($weeksToAdd)
@@ -416,7 +432,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in days added.
      *
-     * @param int $daysToAdd
+     * @param integer $daysToAdd
+     *
      * @return LocalDate
      */
     public function plusDays($daysToAdd)
@@ -427,7 +444,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in years subtracted.
      *
-     * @param int $yearsToSubtract
+     * @param integer $yearsToSubtract
+     *
      * @return LocalDate
      */
     public function minusYears($yearsToSubtract)
@@ -438,7 +456,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in months subtracted.
      *
-     * @param int $monthsToSubtract
+     * @param integer $monthsToSubtract
+     *
      * @return LocalDate
      */
     public function minusMonths($monthsToSubtract)
@@ -449,7 +468,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in weeks subtracted.
      *
-     * @param int $weeksToSubtract
+     * @param integer $weeksToSubtract
+     *
      * @return LocalDate
      */
     public function minusWeeks($weeksToSubtract)
@@ -460,7 +480,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in days subtracted.
      *
-     * @param int $daysToSubtract
+     * @param integer $daysToSubtract
+     *
      * @return LocalDate
      */
     public function minusDays($daysToSubtract)
@@ -471,27 +492,28 @@ class LocalDate
     /**
      * Returns -1 if this date is before the given date, 1 if after, 0 if the dates are equal.
      *
-     * @param LocalDate $date
-     * @return int
+     * @param LocalDate $that
+     *
+     * @return integer
      */
-    public function compareTo(LocalDate $date)
+    public function compareTo(LocalDate $that)
     {
-        if ($this->year < $date->year) {
+        if ($this->year < $that->year) {
             return -1;
         }
-        if ($this->year > $date->year) {
+        if ($this->year > $that->year) {
             return 1;
         }
-        if ($this->month < $date->month) {
+        if ($this->month < $that->month) {
             return -1;
         }
-        if ($this->month > $date->month) {
+        if ($this->month > $that->month) {
             return 1;
         }
-        if ($this->day < $date->day) {
+        if ($this->day < $that->day) {
             return -1;
         }
-        if ($this->day > $date->day) {
+        if ($this->day > $that->day) {
             return 1;
         }
 
@@ -499,48 +521,53 @@ class LocalDate
     }
 
     /**
-     * @param LocalDate $date
-     * @return bool
+     * @param LocalDate $that
+     *
+     * @return boolean
      */
-    public function isEqualTo(LocalDate $date)
+    public function isEqualTo(LocalDate $that)
     {
-        return $this->compareTo($date) == 0;
+        return $this->compareTo($that) == 0;
     }
 
     /**
-     * @param LocalDate $date
-     * @return bool
+     * @param LocalDate $that
+     *
+     * @return boolean
      */
-    public function isLessThan(LocalDate $date)
+    public function isLessThan(LocalDate $that)
     {
-        return $this->compareTo($date) < 0;
+        return $this->compareTo($that) < 0;
     }
 
     /**
-     * @param LocalDate $date
-     * @return bool
+     * @param LocalDate $that
+     *
+     * @return boolean
      */
-    public function isLessThanOrEqualTo(LocalDate $date)
+    public function isLessThanOrEqualTo(LocalDate $that)
     {
-        return $this->compareTo($date) <= 0;
+        return $this->compareTo($that) <= 0;
     }
 
     /**
-     * @param LocalDate $date
-     * @return bool
+     * @param LocalDate $that
+     *
+     * @return boolean
      */
-    public function isGreaterThan(LocalDate $date)
+    public function isGreaterThan(LocalDate $that)
     {
-        return $this->compareTo($date) > 0;
+        return $this->compareTo($that) > 0;
     }
 
     /**
-     * @param LocalDate $date
-     * @return bool
+     * @param LocalDate $that
+     *
+     * @return boolean
      */
-    public function isGreaterThanOrEqualTo(LocalDate $date)
+    public function isGreaterThanOrEqualTo(LocalDate $that)
     {
-        return $this->compareTo($date) >= 0;
+        return $this->compareTo($that) >= 0;
     }
 
     /**
@@ -548,7 +575,8 @@ class LocalDate
      *
      * @param LocalDate $first The first date.
      * @param LocalDate $last  The last date.
-     * @return bool
+     *
+     * @return boolean
      */
     public function isBetweenInclusive(LocalDate $first, LocalDate $last)
     {
@@ -560,7 +588,8 @@ class LocalDate
      *
      * @param LocalDate $first The first date.
      * @param LocalDate $last  The last date.
-     * @return bool
+     *
+     * @return boolean
      */
     public function isBetweenExclusive(LocalDate $first, LocalDate $last)
     {
@@ -571,6 +600,7 @@ class LocalDate
      * Returns a local date-time formed from this date at the specified time.
      *
      * @param LocalTime $time
+     *
      * @return LocalDateTime
      */
     public function atTime(LocalTime $time)
@@ -580,7 +610,9 @@ class LocalDate
 
     /**
      * @param \DateTime $dateTime
+     *
      * @return void
+     *
      * @deprecated
      */
     public function applyToDateTime(\DateTime $dateTime)
@@ -591,7 +623,7 @@ class LocalDate
     /**
      * Returns the number of days since the 1st January of year zero.
      *
-     * @return int
+     * @return integer
      */
     public function toInteger()
     {
@@ -622,7 +654,7 @@ class LocalDate
     /**
      * Checks if the year is a leap year, according to the ISO proleptic calendar system rules.
      *
-     * @return bool
+     * @return boolean
      */
     public function isLeapYear()
     {
@@ -632,7 +664,7 @@ class LocalDate
     /**
      * Returns the number of days since the UNIX epoch of 1st January 1970.
      *
-     * @return int
+     * @return integer
      */
     public function toEpochDay()
     {
@@ -659,6 +691,7 @@ class LocalDate
 
     /**
      * @param \Brick\Locale\Locale $locale
+     *
      * @return string
      */
     public function format(Locale $locale)

@@ -98,7 +98,7 @@ class LocalDateRange implements \Iterator, \Countable
      *
      * @param LocalDateRange $that
      *
-     * @return bool
+     * @return boolean
      */
     public function isEqualTo(LocalDateRange $that)
     {
@@ -118,8 +118,6 @@ class LocalDateRange implements \Iterator, \Countable
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return LocalDate
      */
     public function current()

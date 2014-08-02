@@ -38,6 +38,7 @@ class LocalDateTime
     /**
      * @param LocalDate $date
      * @param LocalTime $time
+     *
      * @return LocalDateTime
      */
     public static function ofDateTime(LocalDate $date, LocalTime $time)
@@ -46,12 +47,12 @@ class LocalDateTime
     }
 
     /**
-     * @param int $year
-     * @param int $month
-     * @param int $day
-     * @param int $hour
-     * @param int $minute
-     * @param int $second
+     * @param integer $year
+     * @param integer $month
+     * @param integer $day
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
      *
      * @return LocalDateTime
      */
@@ -65,6 +66,7 @@ class LocalDateTime
 
     /**
      * @param TimeZone $timeZone
+     *
      * @return LocalDateTime
      */
     public static function now(TimeZone $timeZone)
@@ -74,7 +76,9 @@ class LocalDateTime
 
     /**
      * @param Parser\DateTimeParseResult $result
+     *
      * @return LocalDateTime
+     *
      * @throws DateTimeException If the date-time is not valid.
      */
     public static function from(Parser\DateTimeParseResult $result)
@@ -122,7 +126,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getYear()
     {
@@ -130,7 +134,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMonth()
     {
@@ -138,7 +142,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getDay()
     {
@@ -154,7 +158,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getHour()
     {
@@ -162,7 +166,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMinute()
     {
@@ -170,7 +174,7 @@ class LocalDateTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getSecond()
     {
@@ -183,6 +187,7 @@ class LocalDateTime
      *
      * @param LocalDate $date
      * @param LocalTime $time
+     *
      * @return LocalDateTime
      */
     private function with(LocalDate $date, LocalTime $time)
@@ -198,6 +203,7 @@ class LocalDateTime
      * Returns a copy of this LocalDateTime with the date altered.
      *
      * @param LocalDate $date
+     *
      * @return LocalDateTime
      */
     public function withDate(LocalDate $date)
@@ -209,6 +215,7 @@ class LocalDateTime
      * Returns a copy of this LocalDateTime with the time altered.
      *
      * @param LocalTime $time
+     *
      * @return LocalDateTime
      */
     public function withTime(LocalTime $time)
@@ -219,7 +226,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the year altered.
      *
-     * @param int $year
+     * @param integer $year
+     *
      * @return LocalDateTime
      */
     public function withYear($year)
@@ -230,7 +238,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the month-of-year altered.
      *
-     * @param int $month
+     * @param integer $month
+     *
      * @return LocalDateTime
      */
     public function withMonth($month)
@@ -241,7 +250,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the day-of-month altered.
      *
-     * @param int $day
+     * @param integer $day
+     *
      * @return LocalDateTime
      */
     public function withDay($day)
@@ -252,7 +262,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the hour-of-day altered.
      *
-     * @param int $hour
+     * @param integer $hour
+     *
      * @return LocalDateTime
      */
     public function withHour($hour)
@@ -263,7 +274,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the minute-of-hour altered.
      *
-     * @param int $minute
+     * @param integer $minute
+     *
      * @return LocalDateTime
      */
     public function withMinute($minute)
@@ -274,7 +286,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the second-of-minute altered.
      *
-     * @param int $second
+     * @param integer $second
+     *
      * @return LocalDateTime
      */
     public function withSecond($second)
@@ -286,6 +299,7 @@ class LocalDateTime
      * Returns a zoned date-time formed from this date-time and the specified time-zone.
      *
      * @param TimeZone $zone The zime-zone to use.
+     *
      * @return ZonedDateTime The zoned date-time formed from this date-time.
      */
     public function atTimeZone(TimeZone $zone)
@@ -296,9 +310,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified Period added.
      *
-     * @todo Optimize for speed.
-     *
      * @param Period $period
+     *
      * @return LocalDateTime
      */
     public function plusPeriod(Period $period)
@@ -330,7 +343,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in years added.
      *
-     * @param int $years
+     * @param integer $years
+     *
      * @return LocalDateTime
      */
     public function plusYears($years)
@@ -341,7 +355,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in months added.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return LocalDateTime
      */
     public function plusMonths($months)
@@ -352,7 +367,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in weeks added.
      *
-     * @param int $weeks
+     * @param integer $weeks
+     *
      * @return LocalDateTime
      */
     public function plusWeeks($weeks)
@@ -363,7 +379,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in days added.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return LocalDateTime
      */
     public function plusDays($days)
@@ -374,7 +391,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in hours added.
      *
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return LocalDateTime
      */
     public function plusHours($hours)
@@ -385,7 +403,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in minutes added.
      *
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return LocalDateTime
      */
     public function plusMinutes($minutes)
@@ -396,7 +415,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in seconds added.
      *
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return LocalDateTime
      */
     public function plusSeconds($seconds)
@@ -408,6 +428,7 @@ class LocalDateTime
      * Returns a copy of this LocalDateTime with the specified Period subtracted.
      *
      * @param Period $period
+     *
      * @return LocalDateTime
      */
     public function minusPeriod(Period $period)
@@ -418,7 +439,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in years subtracted.
      *
-     * @param int $years
+     * @param integer $years
+     *
      * @return LocalDateTime
      */
     public function minusYears($years)
@@ -429,7 +451,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in months subtracted.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return LocalDateTime
      */
     public function minusMonths($months)
@@ -440,7 +463,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in weeks subtracted.
      *
-     * @param int $weeks
+     * @param integer $weeks
+     *
      * @return LocalDateTime
      */
     public function minusWeeks($weeks)
@@ -451,7 +475,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in days subtracted.
      *
-     * @param int $days
+     * @param integer $days
+     *
      * @return LocalDateTime
      */
     public function minusDays($days)
@@ -462,7 +487,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in hours subtracted.
      *
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return LocalDateTime
      */
     public function minusHours($hours)
@@ -473,7 +499,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in minutes subtracted.
      *
-     * @param int $minutes
+     * @param integer $minutes
+     *
      * @return LocalDateTime
      */
     public function minusMinutes($minutes)
@@ -484,7 +511,8 @@ class LocalDateTime
     /**
      * Returns a copy of this LocalDateTime with the specified period in seconds subtracted.
      *
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return LocalDateTime
      */
     public function minusSeconds($seconds)
@@ -495,10 +523,10 @@ class LocalDateTime
     /**
      * Returns a copy of this `LocalDateTime` with the specified period added.
      *
-     * @param int $hours   The hours to add, may be negative.
-     * @param int $minutes The minutes to add, may be negative.
-     * @param int $seconds The seconds to add, may be negative.
-     * @param int $sign    The sign, `1` to add or `-1` to subtract, validated as an integer.
+     * @param integer $hours   The hours to add, may be negative.
+     * @param integer $minutes The minutes to add, may be negative.
+     * @param integer $seconds The seconds to add, may be negative.
+     * @param integer $sign    The sign, `1` to add or `-1` to subtract, validated as an integer.
      *
      * @return LocalDateTime The combined result.
      */
@@ -633,6 +661,7 @@ class LocalDateTime
 
     /**
      * @param \Brick\Locale\Locale $locale
+     *
      * @return string
      */
     public function format(Locale $locale)

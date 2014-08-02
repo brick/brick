@@ -50,14 +50,15 @@ class Month
     /**
      * The month number, 1 (January) to 12 (December).
      *
-     * @var int
+     * @var integer
      */
     private $month;
 
     /**
      * Private constructor. Use of() to get a Month instance.
      *
-     * @param int $month
+     * @param integer $month
+     *
      * @throws \UnexpectedValueException
      */
     private function __construct($month)
@@ -68,8 +69,10 @@ class Month
     /**
      * Returns an instance of Month for the given month value.
      *
-     * @param int $month The day month number, from 1 (January) to 7 (December).
+     * @param integer $month The day month number, from 1 (January) to 12 (December).
+     *
      * @return Month The Month instance.
+     *
      * @throws \UnexpectedValueException
      */
     public static function of($month)
@@ -107,7 +110,6 @@ class Month
 
         return $months;
     }
-
 
     /**
      * Returns a Month representing January.
@@ -233,7 +235,8 @@ class Month
      * Returns whether this Month equals another Month.
      *
      * @param Month $other
-     * @return bool
+     *
+     * @return boolean
      */
     public function isEqualTo(Month $other)
     {
@@ -246,8 +249,9 @@ class Month
      * This returns the day-of-year that this month begins on, using the leap
      * year flag to determine the length of February.
      *
-     * @param bool $leapYear
-     * @return int
+     * @param boolean $leapYear
+     *
+     * @return integer
      */
     public function firstDayOfYear($leapYear)
     {
@@ -291,8 +295,9 @@ class Month
      * April, June, September and November have 30 days.
      * All other months have 31 days.
      *
-     * @param bool $leapYear
-     * @return int
+     * @param boolean $leapYear
+     *
+     * @return integer
      */
     public function getLength($leapYear)
     {
@@ -315,7 +320,8 @@ class Month
      * The calculation rolls around the end of the year from December to January.
      * The specified period may be negative.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return Month
      */
     public function plus($months)
@@ -329,7 +335,8 @@ class Month
      * The calculation rolls around the start of the year from January to December.
      * The specified period may be negative.
      *
-     * @param int $months
+     * @param integer $months
+     *
      * @return Month
      */
     public function minus($months)
@@ -340,7 +347,7 @@ class Month
     /**
      * Returns the ISO-8601 month number.
      *
-     * @return int The month number, from 1 (January) to 12 (December).
+     * @return integer The month number, from 1 (January) to 12 (December).
      */
     public function getValue()
     {

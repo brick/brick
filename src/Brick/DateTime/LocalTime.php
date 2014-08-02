@@ -24,30 +24,30 @@ class LocalTime
     /**
      * The hour.
      *
-     * @var int
+     * @var integer
      */
     private $hour;
 
     /**
      * The minute.
      *
-     * @var int
+     * @var integer
      */
     private $minute;
 
     /**
      * The second.
      *
-     * @var int
+     * @var integer
      */
     private $second;
 
     /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param int $hour   The hour to represent, validated as an integer in the range [0-23].
-     * @param int $minute The minute to represent, validated as an integer in the range [0-59].
-     * @param int $second The second to represent, validated as an integer in the range [0-59].
+     * @param integer $hour   The hour to represent, validated as an integer in the range [0-23].
+     * @param integer $minute The minute to represent, validated as an integer in the range [0-59].
+     * @param integer $second The second to represent, validated as an integer in the range [0-59].
      */
     private function __construct($hour, $minute, $second)
     {
@@ -57,9 +57,9 @@ class LocalTime
     }
 
     /**
-     * @param int $hour
-     * @param int $minute
-     * @param int $second
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
      *
      * @return LocalTime
      *
@@ -89,7 +89,9 @@ class LocalTime
 
     /**
      * @param Parser\DateTimeParseResult $result
+     *
      * @return LocalTime
+     *
      * @throws DateTimeException If the time is not valid.
      */
     public static function from(Parser\DateTimeParseResult $result)
@@ -124,7 +126,8 @@ class LocalTime
     /**
      * Creates a LocalTime instance from a number of seconds since midnight.
      *
-     * @param int $secondOfDay
+     * @param integer $secondOfDay
+     *
      * @return LocalTime
      * @throws DateTimeException
      */
@@ -148,6 +151,7 @@ class LocalTime
      * Returns the current time, in the given time zone.
      *
      * @param TimeZone $timeZone
+     *
      * @return LocalTime
      */
     public static function now(TimeZone $timeZone)
@@ -192,7 +196,7 @@ class LocalTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getHour()
     {
@@ -200,7 +204,7 @@ class LocalTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMinute()
     {
@@ -208,7 +212,7 @@ class LocalTime
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getSecond()
     {
@@ -218,7 +222,8 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the hour-of-day value altered.
      *
-     * @param int $hour
+     * @param integer $hour
+     *
      * @return LocalTime
      */
     public function withHour($hour)
@@ -233,7 +238,8 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the minute-of-hour value altered.
      *
-     * @param int $minute
+     * @param integer $minute
+     *
      * @return LocalTime
      */
     public function withMinute($minute)
@@ -248,7 +254,8 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the second-of-minute value altered.
      *
-     * @param int $second
+     * @param integer $second
+     *
      * @return LocalTime
      */
     public function withSecond($second)
@@ -268,7 +275,8 @@ class LocalTime
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param int $hoursToAdd The hours to add, may be negative.
+     * @param integer $hoursToAdd The hours to add, may be negative.
+     *
      * @return LocalTime A LocalTime based on this time with the hours added.
      */
     public function plusHours($hoursToAdd)
@@ -290,7 +298,8 @@ class LocalTime
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param int $minutesToAdd The minutes to add, may be negative.
+     * @param integer $minutesToAdd The minutes to add, may be negative.
+     *
      * @return LocalTime A LocalTime based on this time with the minutes added.
      */
     public function plusMinutes($minutesToAdd)
@@ -315,7 +324,8 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the specified period in seconds added.
      *
-     * @param int $secondstoAdd The seconds to add, may be negative.
+     * @param integer $secondstoAdd The seconds to add, may be negative.
+     *
      * @return LocalTime A LocalTime based on this time with the seconds added.
      */
     public function plusSeconds($secondstoAdd)
@@ -339,7 +349,8 @@ class LocalTime
     }
 
     /**
-     * @param int $hoursToSubtract
+     * @param integer $hoursToSubtract
+     *
      * @return LocalTime
      */
     public function minusHours($hoursToSubtract)
@@ -348,7 +359,8 @@ class LocalTime
     }
 
     /**
-     * @param int $minutesToSubtract
+     * @param integer $minutesToSubtract
+     *
      * @return LocalTime
      */
     public function minusMinutes($minutesToSubtract)
@@ -357,7 +369,8 @@ class LocalTime
     }
 
     /**
-     * @param $secondsToSubtract
+     * @param integer $secondsToSubtract
+     *
      * @return LocalTime
      */
     public function minusSeconds($secondsToSubtract)
@@ -374,73 +387,80 @@ class LocalTime
      * * negative if this time is before the given time;
      * * zero if the times are equal.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return int The difference in seconds.
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return integer The difference in seconds.
      */
-    public function compareTo(LocalTime $time)
+    public function compareTo(LocalTime $that)
     {
-        return $this->toSecondOfDay() - $time->toSecondOfDay();
+        return $this->toSecondOfDay() - $that->toSecondOfDay();
     }
 
     /**
      * Checks if this LocalTime is equal to the specified time.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return bool
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return boolean
      */
-    public function isEqualTo(LocalTime $time)
+    public function isEqualTo(LocalTime $that)
     {
-        return $this->compareTo($time) == 0;
+        return $this->compareTo($that) == 0;
     }
 
     /**
      * Checks if this LocalTime is greater than the specified time.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return bool
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return boolean
      */
-    public function isGreaterThan(LocalTime $time)
+    public function isGreaterThan(LocalTime $that)
     {
-        return $this->compareTo($time) > 0;
+        return $this->compareTo($that) > 0;
     }
 
     /**
      * Checks if this LocalTime is greater than, or equal to, the specified time.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return bool
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return boolean
      */
-    public function isGreaterThanOrEqualTo(LocalTime $time)
+    public function isGreaterThanOrEqualTo(LocalTime $that)
     {
-        return $this->compareTo($time) >= 0;
+        return $this->compareTo($that) >= 0;
     }
 
     /**
      * Checks if this LocalTime is less than the specified time.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return bool
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return boolean
      */
-    public function isLessThan(LocalTime $time)
+    public function isLessThan(LocalTime $that)
     {
-        return $this->compareTo($time) < 0;
+        return $this->compareTo($that) < 0;
     }
 
     /**
      * Checks if this LocalTime is less than, or equal to, the specified time.
      *
-     * @param LocalTime $time The other time to compare to.
-     * @return bool
+     * @param LocalTime $that The time to compare to.
+     *
+     * @return boolean
      */
-    public function isLessThanOrEqualTo(LocalTime $time)
+    public function isLessThanOrEqualTo(LocalTime $that)
     {
-        return $this->compareTo($time) <= 0;
+        return $this->compareTo($that) <= 0;
     }
 
     /**
      * Returns a local date-time formed from this time at the specified date.
      *
      * @param LocalDate $date
+     *
      * @return LocalDateTime
      */
     public function atDate(LocalDate $date)
@@ -451,7 +471,7 @@ class LocalTime
     /**
      * Returns the number of seconds since midnight.
      *
-     * @return int
+     * @return integer
      */
     public function toSecondOfDay()
     {
@@ -462,7 +482,9 @@ class LocalTime
 
     /**
      * @param \DateTime $dateTime
+     *
      * @return void
+     *
      * @deprecated
      */
     public function applyToDateTime(\DateTime $dateTime)
@@ -471,7 +493,7 @@ class LocalTime
     }
 
     /**
-     * Outputs this time as a string, such as 10:15.
+     * Returns this time as a string, such as 10:15.
      *
      * The output will be one of the following ISO-8601 formats:
      *
@@ -491,9 +513,7 @@ class LocalTime
     }
 
     /**
-     * Outputs this time as a string.
-     *
-     * @see LocalTime::toString()
+     * Returns this time as a string.
      *
      * @return string
      */
@@ -506,6 +526,7 @@ class LocalTime
      * @todo only supports HH:MM right now. Automatically switch between HH:MM & HH:MM:SS depending on SS==00?
      *
      * @param \Brick\Locale\Locale $locale
+     *
      * @return string
      */
     public function format(Locale $locale)

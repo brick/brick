@@ -37,67 +37,73 @@ abstract class ReadableInstant
      * * a positive number if this instant is after the given one;
      * * zero if this instant equals the given one.
      *
-     * @param ReadableInstant $other
-     * @return int
+     * @param ReadableInstant $that
+     *
+     * @return integer
      */
-    public function compareTo(ReadableInstant $other)
+    public function compareTo(ReadableInstant $that)
     {
-        return $this->getInstant()->getTimestamp() - $other->getInstant()->getTimestamp();
+        return $this->getInstant()->getTimestamp() - $that->getInstant()->getTimestamp();
     }
 
     /**
      * Returns whether this instant equals another.
      *
-     * @param ReadableInstant $other
-     * @return bool
+     * @param ReadableInstant $that
+     *
+     * @return boolean
      */
-    public function isEqualTo(ReadableInstant $other)
+    public function isEqualTo(ReadableInstant $that)
     {
-        return $this->compareTo($other) == 0;
+        return $this->compareTo($that) == 0;
     }
 
     /**
      * Returns whether this instant is after another.
      *
-     * @param ReadableInstant $other
-     * @return bool
+     * @param ReadableInstant $that
+     *
+     * @return boolean
      */
-    public function isAfter(ReadableInstant $other)
+    public function isAfter(ReadableInstant $that)
     {
-        return $this->compareTo($other) > 0;
+        return $this->compareTo($that) > 0;
     }
 
     /**
      * Returns whether this instant is after, or equal to, another.
      *
-     * @param ReadableInstant $other
-     * @return bool
+     * @param ReadableInstant $that
+     *
+     * @return boolean
      */
-    public function isAfterOrEqualTo(ReadableInstant $other)
+    public function isAfterOrEqualTo(ReadableInstant $that)
     {
-        return $this->compareTo($other) >= 0;
+        return $this->compareTo($that) >= 0;
     }
 
     /**
      * Returns whether this instant is before another.
      *
-     * @param ReadableInstant $other
-     * @return bool
+     * @param ReadableInstant $that
+     *
+     * @return boolean
      */
-    public function isBefore(ReadableInstant $other)
+    public function isBefore(ReadableInstant $that)
     {
-        return $this->compareTo($other) < 0;
+        return $this->compareTo($that) < 0;
     }
 
     /**
      * Returns whether this instant is before, or equal to, another.
      *
-     * @param ReadableInstant $other
-     * @return bool
+     * @param ReadableInstant $that
+     *
+     * @return boolean
      */
-    public function isBeforeOrEqualTo(ReadableInstant $other)
+    public function isBeforeOrEqualTo(ReadableInstant $that)
     {
-        return $this->compareTo($other) <= 0;
+        return $this->compareTo($that) <= 0;
     }
 
     /**
@@ -105,7 +111,8 @@ abstract class ReadableInstant
      *
      * @param ReadableInstant $first
      * @param ReadableInstant $last
-     * @return bool
+     *
+     * @return boolean
      */
     public function isBetweenInclusive(ReadableInstant $first, ReadableInstant $last)
     {
@@ -117,7 +124,8 @@ abstract class ReadableInstant
      *
      * @param ReadableInstant $first
      * @param ReadableInstant $last
-     * @return bool
+     *
+     * @return boolean
      */
     public function isBetweenExclusive(ReadableInstant $first, ReadableInstant $last)
     {
@@ -127,7 +135,7 @@ abstract class ReadableInstant
     /**
      * Returns whether this instant is in the past.
      *
-     * @return bool
+     * @return boolean
      */
     public function isPast()
     {
@@ -137,7 +145,7 @@ abstract class ReadableInstant
     /**
      * Returns whether this instant is in the past or present.
      *
-     * @return bool
+     * @return boolean
      */
     public function isPastOrPresent()
     {
@@ -147,7 +155,7 @@ abstract class ReadableInstant
     /**
      * Returns whether this instant is in the future.
      *
-     * @return bool
+     * @return boolean
      */
     public function isFuture()
     {
@@ -157,7 +165,7 @@ abstract class ReadableInstant
     /**
      * Returns whether this instant is in the future or present.
      *
-     * @return bool
+     * @return boolean
      */
     public function isFutureOrPresent()
     {

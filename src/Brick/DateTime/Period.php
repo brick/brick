@@ -12,51 +12,51 @@ use Brick\Type\Cast;
 class Period
 {
     /**
-     * @var int
+     * @var integer
      */
     private $years;
 
     /**
-     * @var int
+     * @var integer
      */
     private $months;
 
     /**
-     * @var int
+     * @var integer
      */
     private $days;
 
     /**
-     * @var int
+     * @var integer
      */
     private $hours;
 
     /**
-     * @var int
+     * @var integer
      */
     private $minutes;
 
     /**
-     * @var int
+     * @var integer
      */
     private $seconds;
 
     /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param int $years   The number of years, validated as an integer.
-     * @param int $months  The number of months, validated as an integer.
-     * @param int $days    The number of days, validated as an integer.
-     * @param int $hours   The number of hours, validated as an integer.
-     * @param int $minutes The number of minutes, validated as an integer.
-     * @param int $seconds The number of seconds, validated as an integer.
+     * @param integer $years   The number of years, validated as an integer.
+     * @param integer $months  The number of months, validated as an integer.
+     * @param integer $days    The number of days, validated as an integer.
+     * @param integer $hours   The number of hours, validated as an integer.
+     * @param integer $minutes The number of minutes, validated as an integer.
+     * @param integer $seconds The number of seconds, validated as an integer.
      */
     private function __construct($years, $months, $days, $hours, $minutes, $seconds)
     {
-        $this->years = $years;
-        $this->months = $months;
-        $this->days = $days;
-        $this->hours = $hours;
+        $this->years   = $years;
+        $this->months  = $months;
+        $this->days    = $days;
+        $this->hours   = $hours;
         $this->minutes = $minutes;
         $this->seconds = $seconds;
     }
@@ -64,12 +64,13 @@ class Period
     /**
      * Creates a Period based on years, months, days, hours, minutes and seconds.
      *
-     * @param int $years   The number of years.
-     * @param int $months  The number of months.
-     * @param int $days    The number of days.
-     * @param int $hours   The number of hours.
-     * @param int $minutes The number of minutes.
-     * @param int $seconds The number of seconds.
+     * @param integer $years   The number of years.
+     * @param integer $months  The number of months.
+     * @param integer $days    The number of days.
+     * @param integer $hours   The number of hours.
+     * @param integer $minutes The number of minutes.
+     * @param integer $seconds The number of seconds.
+     *
      * @return Period
      */
     public static function of($years, $months, $days, $hours, $minutes, $seconds)
@@ -97,9 +98,10 @@ class Period
     /**
      * Creates a Period based on hours, minutes and seconds.
      *
-     * @param int $hours   The amount of hours, may be negative.
-     * @param int $minutes The amount of minutes, may be negative.
-     * @param int $seconds The amount of seconds, may be negative.
+     * @param integer $hours   The amount of hours, may be negative.
+     * @param integer $minutes The amount of minutes, may be negative.
+     * @param integer $seconds The amount of seconds, may be negative.
+     *
      * @return Period
      */
     public static function ofTime($hours, $minutes, $seconds)
@@ -113,6 +115,7 @@ class Period
      *
      * @param LocalDateTime $startInclusive
      * @param LocalDateTime $endExclusive
+     *
      * @return Period
      */
     public static function between(LocalDateTime $startInclusive, LocalDateTime $endExclusive)
@@ -121,7 +124,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getYears()
     {
@@ -129,7 +132,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMonths()
     {
@@ -137,7 +140,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getDays()
     {
@@ -145,7 +148,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getHours()
     {
@@ -153,7 +156,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getMinutes()
     {
@@ -161,7 +164,7 @@ class Period
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function getSeconds()
     {
@@ -169,7 +172,8 @@ class Period
     }
 
     /**
-     * @param int $years
+     * @param integer $years
+     *
      * @return Period
      */
     public function withYears($years)
@@ -184,7 +188,8 @@ class Period
     }
 
     /**
-     * @param int $months
+     * @param integer $months
+     *
      * @return Period
      */
     public function withMonths($months)
@@ -199,7 +204,8 @@ class Period
     }
 
     /**
-     * @param int $days
+     * @param integer $days
+     *
      * @return Period
      */
     public function withDays($days)
@@ -214,7 +220,8 @@ class Period
     }
 
     /**
-     * @param int $hours
+     * @param integer $hours
+     *
      * @return Period
      */
     public function withHours($hours)
@@ -229,7 +236,8 @@ class Period
     }
 
     /**
-     * @param $minutes
+     * @param integer $minutes
+     *
      * @return Period
      */
     public function withMinutes($minutes)
@@ -244,7 +252,8 @@ class Period
     }
 
     /**
-     * @param int $seconds
+     * @param integer $seconds
+     *
      * @return Period
      */
     public function withSeconds($seconds)
@@ -278,7 +287,7 @@ class Period
     /**
      * Returns the number of seconds as totalled by hours, minutes and seconds.
      *
-     * @return int
+     * @return integer
      */
     private function getTotalSeconds()
     {
@@ -289,7 +298,8 @@ class Period
 
     /**
      * @param Period $period
-     * @return bool
+     *
+     * @return boolean
      */
     public function isEqualTo(Period $period)
     {

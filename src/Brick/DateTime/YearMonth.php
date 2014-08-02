@@ -22,8 +22,8 @@ class YearMonth
     /**
      * Class constructor.
      *
-     * @param int $year  The year, validated as an integer in the valid range.
-     * @param int $month The month, validated as an integer in the valid range.
+     * @param integer $year  The year, validated as an integer in the valid range.
+     * @param integer $month The month, validated as an integer in the valid range.
      */
     private function __construct($year, $month)
     {
@@ -34,8 +34,8 @@ class YearMonth
     /**
      * Obtains an instance of `YearMonth` from a year and month.
      *
-     * @param int $year  The year, from MIN_YEAR to MAX_YEAR.
-     * @param int $month The month-of-year, from 1 (January) to 12 (December).
+     * @param integer $year  The year, from MIN_YEAR to MAX_YEAR.
+     * @param integer $month The month-of-year, from 1 (January) to 12 (December).
      *
      * @return YearMonth
      *
@@ -90,6 +90,7 @@ class YearMonth
 
     /**
      * @param TimeZone $timezone
+     *
      * @return YearMonth
      */
     public static function now(TimeZone $timezone)

@@ -17,7 +17,7 @@ class CompositeParser extends DateTimeParser
     /**
      * Whether this parser is optional.
      *
-     * @var bool
+     * @var boolean
      */
     private $optional;
 

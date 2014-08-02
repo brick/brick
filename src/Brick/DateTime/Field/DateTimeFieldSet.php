@@ -26,7 +26,8 @@ class DateTimeFieldSet
 
     /**
      * @param string $field
-     * @return bool
+     *
+     * @return boolean
      */
     public function has($field)
     {
@@ -35,7 +36,9 @@ class DateTimeFieldSet
 
     /**
      * @param string $field One of the DateTimeField constants.
+     *
      * @return mixed The value for this field.
+     *
      * @throws DateTimeException If the field is not present in this set.
      */
     public function get($field)

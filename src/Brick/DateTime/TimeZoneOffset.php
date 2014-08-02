@@ -15,7 +15,7 @@ class TimeZoneOffset extends TimeZone
     const MAX_SECONDS = 64800;
 
     /**
-     * @var int
+     * @var integer
      */
     private $totalSeconds;
 
@@ -29,7 +29,7 @@ class TimeZoneOffset extends TimeZone
     /**
      * Private constructor. Use a factory method to obtain an instance.
      *
-     * @param int $totalSeconds The total offset in seconds, validated as an integer from -64800 to +64800.
+     * @param integer $totalSeconds The total offset in seconds, validated as an integer from -64800 to +64800.
      */
     private function __construct($totalSeconds)
     {
@@ -57,7 +57,7 @@ class TimeZoneOffset extends TimeZone
     /**
      * Obtains an instance of `TimeZoneOffset` using an offset in hours.
      *
-     * @param int $hours The time-zone offset in hours, from -18 to +18.
+     * @param integer $hours The time-zone offset in hours, from -18 to +18.
      *
      * @return TimeZoneOffset
      */
@@ -69,8 +69,8 @@ class TimeZoneOffset extends TimeZone
     /**
      * Obtains an instance of `TimeZoneOffset` using an offset in hours and minutes.
      *
-     * @param int $hours   The time-zone offset in hours, from -18 to +18.
-     * @param int $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
+     * @param integer $hours   The time-zone offset in hours, from -18 to +18.
+     * @param integer $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
      *
      * @return TimeZoneOffset
      */
@@ -82,11 +82,12 @@ class TimeZoneOffset extends TimeZone
     /**
      * Obtains an instance of `TimeZoneOffset` using an offset in hours, minutes and seconds.
      *
-     * @param int $hours   The time-zone offset in hours, from -18 to +18.
-     * @param int $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
-     * @param int $seconds The time-zone offset in seconds, from 0 to ±59, sign matching hours and minute.
+     * @param integer $hours   The time-zone offset in hours, from -18 to +18.
+     * @param integer $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
+     * @param integer $seconds The time-zone offset in seconds, from 0 to ±59, sign matching hours and minute.
      *
      * @return TimeZoneOffset
+     *
      * @throws DateTimeException
      */
     public static function ofHoursMinutesSeconds($hours, $minutes, $seconds)
@@ -124,11 +125,11 @@ class TimeZoneOffset extends TimeZone
     /**
      * Checks whether the three integers have different signs.
      *
-     * @param int $a The first integer.
-     * @param int $b The second integer.
-     * @param int $c The third integer.
+     * @param integer $a The first integer.
+     * @param integer $b The second integer.
+     * @param integer $c The third integer.
      *
-     * @return bool
+     * @return boolean
      */
     private static function haveDifferentSigns($a, $b, $c)
     {
@@ -143,8 +144,10 @@ class TimeZoneOffset extends TimeZone
      *
      * The offset must be in the range `-18:00` to `+18:00`, which corresponds to -64800 to +64800.
      *
-     * @param int $totalSeconds The total offset in seconds.
+     * @param integer $totalSeconds The total offset in seconds.
+     *
      * @return TimeZoneOffset
+     *
      * @throws DateTimeException
      */
     public static function ofTotalSeconds($totalSeconds)
@@ -174,7 +177,9 @@ class TimeZoneOffset extends TimeZone
      * Note that ± means either the plus or minus symbol.
      *
      * @param string $text
+     *
      * @return TimeZoneOffset
+     *
      * @throws Parser\DateTimeParseException
      */
     public static function parse($text)
@@ -229,12 +234,12 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
-     * @param string $text            The offset text representation.
-     * @param int    $pos             The position to parse.
-     * @param int    $length          The number of characters to parse.
-     * @param bool   $precededByColon Whether this number should be preceded by a colon.
+     * @param string  $text            The offset text representation.
+     * @param integer $pos             The position to parse.
+     * @param integer $length          The number of characters to parse.
+     * @param boolean $precededByColon Whether this number should be preceded by a colon.
      *
-     * @return int The parsed number, from 0 to 99.
+     * @return integer The parsed number, from 0 to 99.
      *
      * @throws Parser\DateTimeParseException
      */
@@ -260,7 +265,7 @@ class TimeZoneOffset extends TimeZone
      * It returns the total of the hours, minutes and seconds fields as a
      * single offset that can be added to a time.
      *
-     * @return int The total zone offset amount in seconds.
+     * @return integer The total zone offset amount in seconds.
      */
     public function getTotalSeconds()
     {

@@ -13,14 +13,15 @@ class Year
     /**
      * The year being represented.
      *
-     * @var int
+     * @var integer
      */
     private $year;
 
     /**
      * Class constructor.
      *
-     * @param int $year The year to represent.
+     * @param integer $year The year to represent.
+     *
      * @throws \UnexpectedValueException
      *
      * @todo private, checks in of()
@@ -40,7 +41,8 @@ class Year
     }
 
     /**
-     * @param int $year
+     * @param integer $year
+     *
      * @return Year
      */
     public static function of($year)
@@ -59,7 +61,7 @@ class Year
      * The calculation is proleptic - applying the same rules into the far future and far past.
      * This is historically inaccurate, but is correct for the ISO-8601 standard.
      *
-     * @return bool
+     * @return boolean
      */
     public function isLeap()
     {
@@ -69,7 +71,7 @@ class Year
     /**
      * Gets the length of this year in days.
      *
-     * @return int The length of this year in days, 365 or 366.
+     * @return integer The length of this year in days, 365 or 366.
      */
     public function getLength()
     {
@@ -81,7 +83,8 @@ class Year
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param int $yearsToAdd The years to add, may be negative.
+     * @param integer $yearsToAdd The years to add, may be negative.
+     *
      * @return Year A Year based on this year with the period added.
      */
     public function plus($yearsToAdd)
@@ -98,7 +101,8 @@ class Year
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param int $yearsToSubtract The years to subtract, may be negative.
+     * @param integer $yearsToSubtract The years to subtract, may be negative.
+     *
      * @return Year A Year based on this year with the period subtracted.
      */
     public function minus($yearsToSubtract)
@@ -111,7 +115,7 @@ class Year
     }
 
     /**
-     * @return int
+     * @return integer
      */
     public function toInteger()
     {
