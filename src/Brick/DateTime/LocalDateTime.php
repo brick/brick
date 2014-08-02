@@ -536,66 +536,75 @@ class LocalDateTime
     /**
      * Compares this date-time to another date-time.
      *
-     * @param LocalDateTime $other The date-time to compare to.
-     * @return int The comparator value, negative if less, positive if greater, 0 if equal.
+     * @param LocalDateTime $that The date-time to compare to.
+     *
+     * @return integer The comparator value, negative if less, positive if greater, 0 if equal.
      */
-    public function compareTo(LocalDateTime $other)
+    public function compareTo(LocalDateTime $that)
     {
-        $cmp = $this->date->compareTo($other->date);
+        $cmp = $this->date->compareTo($that->date);
+
         if ($cmp == 0) {
-            $cmp = $this->time->compareTo($other->time);
+            $cmp = $this->time->compareTo($that->time);
         }
+
         return $cmp;
     }
 
     /**
-     * @param LocalDateTime $other
-     * @return bool
+     * @param LocalDateTime $that
+     *
+     * @return boolean
      */
-    public function isEqualTo(LocalDateTime $other)
+    public function isEqualTo(LocalDateTime $that)
     {
-        return $this->compareTo($other) == 0;
+        return $this->compareTo($that) == 0;
     }
 
     /**
-     * @param LocalDateTime $other
-     * @return bool
+     * @param LocalDateTime $that
+     *
+     * @return boolean
      */
-    public function isBefore(LocalDateTime $other)
+    public function isBefore(LocalDateTime $that)
     {
-        return $this->compareTo($other) < 0;
+        return $this->compareTo($that) < 0;
     }
 
     /**
-     * @param LocalDateTime $other
-     * @return bool
+     * @param LocalDateTime $that
+     *
+     * @return boolean
      */
-    public function isBeforeOrEqualTo(LocalDateTime $other)
+    public function isBeforeOrEqualTo(LocalDateTime $that)
     {
-        return $this->compareTo($other) <= 0;
+        return $this->compareTo($that) <= 0;
     }
 
     /**
-     * @param LocalDateTime $other
-     * @return bool
+     * @param LocalDateTime $that
+     *
+     * @return boolean
      */
-    public function isAfter(LocalDateTime $other)
+    public function isAfter(LocalDateTime $that)
     {
-        return $this->compareTo($other) > 0;
+        return $this->compareTo($that) > 0;
     }
 
     /**
-     * @param LocalDateTime $other
-     * @return bool
+     * @param LocalDateTime $that
+     *
+     * @return boolean
      */
-    public function isAfterOrEqualTo(LocalDateTime $other)
+    public function isAfterOrEqualTo(LocalDateTime $that)
     {
-        return $this->compareTo($other) >= 0;
+        return $this->compareTo($that) >= 0;
     }
 
     /**
      * @param TimeZoneOffset $offset
-     * @return int
+     *
+     * @return integer
      */
     public function toEpochSecond(TimeZoneOffset $offset)
     {

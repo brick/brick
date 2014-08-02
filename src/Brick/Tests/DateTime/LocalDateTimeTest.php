@@ -173,7 +173,7 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
      */
     public function plusSecondsFromZeroProvider()
     {
-        $tests = array();
+        $tests = [];
 
         $delta = 30;
         $i = -3660;
@@ -437,23 +437,45 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($t->atTimeZone($tz)->isEqualTo(ZonedDateTime::of($t, $tz)));
     }
 
-    public function testToEpochSecondAfterEpoch()
+    /**
+     * @dataProvider providerToEpochSecond
+     *
+     * @param integer $y           The year.
+     * @param integer $m           The month.
+     * @param integer $d           The day.
+     * @param integer $h           The hours.
+     * @param integer $i           The minutes.
+     * @param integer $s           The second.
+     * @param integer $offset      The time-zone offset in hours.
+     * @param integer $epochSecond The expected epoch second.
+     */
+    public function testToEpochSecond($y, $m, $d, $h, $i, $s, $offset, $epochSecond)
     {
-        for ($i = -5; $i < 5; $i++) {
-            $offset = TimeZoneOffset::ofHours($i);
-            for ($j = 0; $j < 100000; $j++) {
-                $a = LocalDateTime::of(1970, 1, 1, 0, 0)->plusSeconds($j);
-                $this->assertEquals($j - $i * 3600, $a->toEpochSecond($offset));
-            }
-        }
+        $datetime = LocalDateTime::of($y, $m, $d, $h, $i, $s);
+        $offset = TimeZoneOffset::ofHours($offset);
+
+        $this->assertSame($epochSecond, $datetime->toEpochSecond($offset));
     }
 
-    public function testToEpochSecondBeforeEpoch()
+    /**
+     * @return array
+     */
+    public function providerToEpochSecond()
     {
-        for ($i = 0; $i < 100000; $i++) {
-            $a = LocalDateTime::of(1970, 1, 1, 0, 0)->minusSeconds($i);
-            $this->assertEquals(- $i, $a->toEpochSecond(TimeZoneOffset::utc()));
-        }
+        return [
+            [1837, 12, 16, 13, 32, 59, 2, -4166857621],
+            [1923, 1, 30, 0, 59, 1, -3, -1480708859],
+            [1969, 12, 31, 23, 59, 59, 0, -1],
+            [1969, 12, 31, 23, 59, 59, -1, 3599],
+            [1969, 12, 31, 23, 59, 59, 1, -3601],
+            [1970, 1, 1, 0, 0, 0, 0, 0],
+            [1970, 1, 1, 0, 0, 0, 1, -3600],
+            [1970, 1, 1, 0, 0, 0, -1, 3600],
+            [1970, 1, 1, 0, 0, 1, 0, 1],
+            [1980, 2, 28, 12, 23, 34, -7, 320613814],
+            [2022, 11, 30, 1, 7, 9, 6, 1669748829],
+            [2236, 3, 15, 20, 0, 0, 1, 8400567600],
+        ];
     }
 
     public function testComparisonsLocalDateTime()
