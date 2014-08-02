@@ -12,15 +12,6 @@ use Brick\DateTime\TimeZone;
  */
 class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFromDateTime()
-    {
-        $dateTimeZone = new \DateTimeZone('UTC');
-        $dateTime = new \DateTime('@1', $dateTimeZone);
-
-        $zonedDateTime = ZonedDateTime::fromDateTime($dateTime);
-        $this->assertSame('1970-01-01T00:00:01Z', $zonedDateTime->toString());
-    }
-
     /**
      * @dataProvider providerOfTimestamp
      *
@@ -29,7 +20,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
      */
     public function testOfTimestamp($formattedDatetime, $timeZone)
     {
-        $timestamp = 1e9;
+        $timestamp = 1000000000;
         $zonedDateTime = ZonedDateTime::ofTimestamp($timestamp, TimeZone::of($timeZone));
 
         $this->assertEquals($timestamp, $zonedDateTime->getInstant()->getTimestamp());

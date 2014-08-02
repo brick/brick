@@ -691,30 +691,6 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * Returns a ZonedDateTime representing the same date, time and time zone as the given native DateTime object.
-     *
-     * @param \DateTime $dateTime
-     * @return ZonedDateTime
-     */
-    public static function fromDateTime(\DateTime $dateTime)
-    {
-        $timeZone = TimeZone::fromDateTimeZone($dateTime->getTimezone());
-        $localDateTime = LocalDateTime::parse($dateTime->format('Y-m-d\TH:i:s'));
-
-        return new ZonedDateTime($localDateTime, $timeZone, clone $dateTime);
-    }
-
-    /**
-     * Returns a native DateTime object representing the same date, time and time zone as this date-time.
-     *
-     * @return \DateTime
-     */
-    public function toDateTime()
-    {
-        return clone $this->dateTime;
-    }
-
-    /**
      * @param \Brick\Locale\Locale $locale
      * @return string
      */
