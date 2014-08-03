@@ -153,33 +153,6 @@ class DayOfWeek
     }
 
     /**
-     * Returns the DayOfWeek of the given ZonedDateTime.
-     *
-     * @param ZonedDateTime $date
-     *
-     * @return DayOfWeek
-     */
-    public static function fromDateTime(ZonedDateTime $date)
-    {
-        return $date->getDayOfWeek();
-    }
-
-    /**
-     * Returns the DayOfWeek of the given LocalDate.
-     *
-     * @param LocalDate $date
-     *
-     * @return DayOfWeek
-     */
-    public static function fromDate(LocalDate $date)
-    {
-        $dateTime = new \DateTime(null, new \DateTimeZone('UTC'));
-        $date->applyToDateTime($dateTime);
-
-        return DayOfWeek::of($dateTime->format('N'));
-    }
-
-    /**
      * Returns the seven days of the week in an array.
      *
      * @param DayOfWeek $first The day to return first. Optional, defaults to Monday.
