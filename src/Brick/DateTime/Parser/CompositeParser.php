@@ -3,7 +3,7 @@
 namespace Brick\DateTime\Parser;
 
 /**
- * Composite parser.
+ * Aggregates a collection of parsers that together match a string.
  */
 class CompositeParser extends DateTimeParser
 {

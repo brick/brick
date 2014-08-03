@@ -10,10 +10,20 @@ use Brick\DateTime\Field\DateTimeField;
 final class DateTimeParsers
 {
     /**
-     * Private constructor since this is a utility class.
+     * Private constructor. This utility class cannot be instantiated.
      */
     private function __construct()
     {
+    }
+
+    /**
+     * @param $string
+     *
+     * @return StringLiteralParser
+     */
+    public static function literal($string)
+    {
+        return new StringLiteralParser($string);
     }
 
     /**
@@ -21,7 +31,7 @@ final class DateTimeParsers
      */
     public static function isoYear()
     {
-        return new NumberParser(DateTimeField::YEAR, 4, 10, NumberParser::SIGN_EXCEEDS_PAD);
+        return new NumberParser(DateTimeField::YEAR, 4, 10, false, NumberParser::SIGN_EXCEEDS_PAD);
     }
 
     /**
@@ -29,7 +39,7 @@ final class DateTimeParsers
      */
     public static function isoMonthOfYear()
     {
-        return new NumberParser(DateTimeField::MONTH_OF_YEAR, 2);
+        return new NumberParser(DateTimeField::MONTH_OF_YEAR, 2, 2);
     }
 
     /**
@@ -37,7 +47,7 @@ final class DateTimeParsers
      */
     public static function isoDayOfMonth()
     {
-        return new NumberParser(DateTimeField::DAY_OF_MONTH, 2);
+        return new NumberParser(DateTimeField::DAY_OF_MONTH, 2, 2);
     }
 
     /**
@@ -45,7 +55,7 @@ final class DateTimeParsers
      */
     public static function isoHourOfDay()
     {
-        return new NumberParser(DateTimeField::HOUR_OF_DAY, 2);
+        return new NumberParser(DateTimeField::HOUR_OF_DAY, 2, 2);
     }
 
     /**
@@ -53,7 +63,7 @@ final class DateTimeParsers
      */
     public static function isoMinuteOfHour()
     {
-        return new NumberParser(DateTimeField::MINUTE_OF_HOUR, 2);
+        return new NumberParser(DateTimeField::MINUTE_OF_HOUR, 2, 2);
     }
 
     /**
@@ -61,7 +71,15 @@ final class DateTimeParsers
      */
     public static function isoSecondOfMinute()
     {
-        return new NumberParser(DateTimeField::SECOND_OF_MINUTE, 2);
+        return new NumberParser(DateTimeField::SECOND_OF_MINUTE, 2, 2);
+    }
+
+    /**
+     * @return DateTimeParser
+     */
+    public static function isoNanoOfSecond()
+    {
+        return new NumberParser(DateTimeField::NANO_OF_SECOND, 1, 9, true);
     }
 
     /**
@@ -89,7 +107,7 @@ final class DateTimeParsers
     {
         return DateTimeParserBuilder::create()
             ->append(self::isoYear())
-            ->appendLiteral('-')
+            ->append(self::literal('-'))
             ->append(self::isoMonthOfYear())
             ->toParser();
     }
@@ -103,15 +121,15 @@ final class DateTimeParsers
     {
         return DateTimeParserBuilder::create()
             ->append(self::isoYear())
-            ->appendLiteral('-')
+            ->append(self::literal('-'))
             ->append(self::isoMonthOfYear())
-            ->appendLiteral('-')
+            ->append(self::literal('-'))
             ->append(self::isoDayOfMonth())
             ->toParser();
     }
 
     /**
-     * Returns a parser for an ISO local time such as `10:15` or `10:15:30`.
+     * Returns a parser for an ISO local time such as `10:15`, `10:15:30` or `10:15:30.123456`.
      *
      * @return DateTimeParser
      */
@@ -119,11 +137,14 @@ final class DateTimeParsers
     {
         return DateTimeParserBuilder::create()
             ->append(self::isoHourOfDay())
-            ->appendLiteral(':')
+            ->append(self::literal(':'))
             ->append(self::isoMinuteOfHour())
-            ->startOptional()
-            ->appendLiteral(':')
+            ->optionalStart()
+            ->append(self::literal(':'))
             ->append(self::isoSecondOfMinute())
+            ->optionalStart()
+            ->append(self::literal('.'))
+            ->append(self::isoNanoOfSecond())
             ->toParser();
     }
 
@@ -136,7 +157,7 @@ final class DateTimeParsers
     {
         return DateTimeParserBuilder::create()
             ->append(self::isoLocalDate())
-            ->appendLiteral('T')
+            ->append(self::literal('T'))
             ->append(self::isoLocalTime())
             ->toParser();
     }
@@ -163,10 +184,10 @@ final class DateTimeParsers
     {
         return DateTimeParserBuilder::create()
             ->append(self::isoOffsetDateTime())
-            ->startOptional()
-            ->appendLiteral('[')
+            ->optionalStart()
+            ->append(self::literal('['))
             ->append(self::isoTimeZoneRegion())
-            ->appendLiteral(']')
+            ->append(self::literal(']'))
             ->toParser();
     }
 }

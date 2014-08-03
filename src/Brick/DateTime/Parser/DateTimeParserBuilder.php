@@ -59,19 +59,7 @@ class DateTimeParserBuilder
     public function append(DateTimeParser $parser)
     {
         $this->active->parsers[] = $parser;
-        return $this;
-    }
 
-    /**
-     * Appends a string literal parser.
-     *
-     * @param string $literal
-     *
-     * @return DateTimeParserBuilder
-     */
-    public function appendLiteral($literal)
-    {
-        $this->append(new StringLiteralParser($literal));
         return $this;
     }
 
@@ -80,9 +68,10 @@ class DateTimeParserBuilder
      *
      * @return DateTimeParserBuilder
      */
-    public function startOptional()
+    public function optionalStart()
     {
         $this->active = new DateTimeParserBuilder($this->active);
+
         return $this;
     }
 
@@ -93,15 +82,15 @@ class DateTimeParserBuilder
      *
      * @throws DateTimeParseException
      */
-    public function endOptional()
+    public function optionalEnd()
     {
         if (! $this->active->parent) {
             throw new DateTimeParseException(
-                'Cannot call endOptional() as there was no previous call to startOptional()'
+                'Cannot call optionalEnd() as there was no previous call to optionalStart()'
             );
         }
 
-        if (count($this->active->parsers) > 0) {
+        if ($this->active->parsers) {
             $parser = new CompositeParser($this->active->parsers, true);
             $this->active = $this->active->parent;
             $this->append($parser);
@@ -120,7 +109,7 @@ class DateTimeParserBuilder
     public function toParser()
     {
         while ($this->active->parent) {
-            $this->endOptional();
+            $this->optionalEnd();
         }
 
         return new CompositeParser($this->parsers, false);

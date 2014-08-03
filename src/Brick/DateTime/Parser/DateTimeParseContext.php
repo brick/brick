@@ -104,7 +104,7 @@ class DateTimeParseContext
      */
     public function startOptional()
     {
-        $this->active = new DateTimeParseContext($this->text, $this->position, $this->active);
+        $this->active = new DateTimeParseContext($this->text, $this->active->position, $this->active);
     }
 
     /**
@@ -125,7 +125,7 @@ class DateTimeParseContext
         }
 
         if ($successful) {
-            $this->active->parent->parsed = array_merge($this->active->parent->parsed, $this->active->parsed);
+            $this->active->parent->parsed = $this->active->parsed + $this->active->parent->parsed;
             $this->active->parent->position = $this->active->position;
         }
 
@@ -150,7 +150,7 @@ class DateTimeParseContext
      */
     public function getNextChars($charCount)
     {
-        $nextChars = substr($this->text, $this->position, $charCount);
+        $nextChars = substr($this->text, $this->active->position, $charCount);
         $this->active->position += strlen($nextChars);
 
         return $nextChars;
@@ -161,13 +161,13 @@ class DateTimeParseContext
      */
     public function getNextDigits()
     {
-        if (preg_match('/[0-9]+/', $this->text, $matches, PREG_OFFSET_CAPTURE, $this->position) == 0) {
+        if (preg_match('/[0-9]+/', $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) === 0) {
             return '';
         }
 
         list ($digits, $position) = $matches[0];
 
-        if ($position != $this->active->position) {
+        if ($position !== $this->active->position) {
             return '';
         }
 

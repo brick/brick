@@ -33,6 +33,8 @@ class DateTimeParseResult
     }
 
     /**
+     * Returns the given required field.
+     *
      * @param string $field One of the DateTimeField constants.
      *
      * @return mixed The value for this field.
@@ -49,6 +51,8 @@ class DateTimeParseResult
     }
 
     /**
+     * Returns the given optional field.
+     *
      * @param string $field
      * @param mixed  $defaultValue
      *

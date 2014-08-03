@@ -63,4 +63,19 @@ class DateTimeParseException extends DateTimeException
     {
         return new self('Duration could not be parsed: ' . $textToParse);
     }
+
+    /**
+     * @param string  $fieldName
+     * @param integer $minLength
+     * @param integer $maxLength
+     * @param integer $actualLength
+     *
+     * @return DateTimeParseException
+     */
+    public static function invalidNumberLength($fieldName, $minLength, $maxLength, $actualLength)
+    {
+        $message = 'Expected %d to %d digits for field %s, got %d.';
+
+        return new self(sprintf($message, $minLength, $maxLength, $fieldName, $actualLength));
+    }
 }

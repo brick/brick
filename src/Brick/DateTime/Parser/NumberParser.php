@@ -3,7 +3,9 @@
 namespace Brick\DateTime\Parser;
 
 /**
- * Parses a numeric date-time field with optional padding.
+ * Parses a numeric string.
+ *
+ * @todo sign support
  */
 class NumberParser extends DateTimeParser
 {
@@ -35,36 +37,45 @@ class NumberParser extends DateTimeParser
     /**
      * @var string
      */
-    private $field;
+    private $fieldName;
 
     /**
-     * @var int
+     * @var integer
      */
-    private $minWidth;
+    private $minLength;
 
     /**
-     * @var int
+     * @var integer
      */
-    private $maxWidth;
+    private $maxLength;
 
     /**
-     * @var int
+     * Whether to pad the string up to the max length with zeros to the right before converting to an integer.
+     *
+     * @var boolean
+     */
+    private $padRight;
+
+    /**
+     * @var integer
      */
     private $signStyle;
 
     /**
      * Class constructor.
      *
-     * @param string  $field
-     * @param integer $minWidth
-     * @param integer $maxWidth
+     * @param string  $fieldName
+     * @param integer $minLength
+     * @param integer $maxLength
+     * @param boolean $padRight
      * @param integer $signStyle
      */
-    public function __construct($field, $minWidth, $maxWidth = 0, $signStyle = NumberParser::SIGN_NOT_NEGATIVE)
+    public function __construct($fieldName, $minLength, $maxLength, $padRight = false, $signStyle = NumberParser::SIGN_NOT_NEGATIVE)
     {
-        $this->field     = $field;
-        $this->minWidth  = $minWidth;
-        $this->maxWidth  = $maxWidth;
+        $this->fieldName = $fieldName;
+        $this->minLength = $minLength;
+        $this->maxLength = $maxLength;
+        $this->padRight  = $padRight;
         $this->signStyle = $signStyle;
     }
 
@@ -75,11 +86,26 @@ class NumberParser extends DateTimeParser
     {
         $digits = $context->getNextDigits();
 
-        if ($digits == '') {
+        if ($digits === '') {
             return false;
         }
 
-        $context->setParsedField($this->field, (int) $digits);
+        $width = strlen($digits);
+
+        if ($width < $this->minLength || $width > $this->maxLength) {
+            throw DateTimeParseException::invalidNumberLength(
+                $this->fieldName,
+                $this->minLength,
+                $this->maxLength,
+                $width
+            );
+        }
+
+        if ($this->padRight) {
+            $digits = str_pad($digits, $this->maxLength, '0', STR_PAD_RIGHT);
+        }
+
+        $context->setParsedField($this->fieldName, (int) $digits);
 
         return true;
     }
