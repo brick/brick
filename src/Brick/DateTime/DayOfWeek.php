@@ -149,7 +149,7 @@ class DayOfWeek
      */
     public static function now(TimeZone $timezone)
     {
-        return DayOfWeek::fromDateTime(ZonedDateTime::now($timezone));
+        return LocalDate::now($timezone)->getDayOfWeek();
     }
 
     /**
