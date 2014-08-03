@@ -509,7 +509,7 @@ class Duration
      *
      * @param \Brick\DateTime\Duration $that The other duration to compare to.
      *
-     * @return integer [-1,0,1] If this number is less than, equal to, or greater than the given number.
+     * @return integer [-1,0,1] If this duration is less than, equal to, or greater than the given duration.
      */
     public function compareTo(Duration $that)
     {
@@ -521,11 +521,11 @@ class Duration
 
         $nanos = $this->nanos - $that->nanos;
 
-        if ($nanos === 0) {
-            return 0;
+        if ($nanos !== 0) {
+            return $nanos > 0 ? 1 : -1;
         }
 
-        return $nanos > 0 ? 1 : -1;
+        return 0;
     }
 
     /**

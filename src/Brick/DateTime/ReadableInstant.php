@@ -31,19 +31,25 @@ abstract class ReadableInstant
     /**
      * Compares this instant with another.
      *
-     * Returns:
-     *
-     * * a negative number if this instant is before the given one;
-     * * a positive number if this instant is after the given one;
-     * * zero if this instant equals the given one.
-     *
      * @param ReadableInstant $that
      *
-     * @return integer
+     * @return integer [-1,0,1] If this instant is before, on, or after the given instant.
      */
     public function compareTo(ReadableInstant $that)
     {
-        return $this->getInstant()->getTimestamp() - $that->getInstant()->getTimestamp();
+        $seconds = $this->getTimestamp() - $that->getTimestamp();
+
+        if ($seconds !== 0) {
+            return $seconds > 0 ? 1 : -1;
+        }
+
+        $nanos = $this->getNanos() - $that->getNanos();
+
+        if ($nanos !== 0) {
+            return $nanos > 0 ? 1 : -1;
+        }
+
+        return 0;
     }
 
     /**
@@ -55,7 +61,7 @@ abstract class ReadableInstant
      */
     public function isEqualTo(ReadableInstant $that)
     {
-        return $this->compareTo($that) == 0;
+        return $this->compareTo($that) === 0;
     }
 
     /**
