@@ -45,6 +45,11 @@ final class DateTimeField
     const SECOND_OF_MINUTE = 'second-of-minute';
 
     /**
+     * The nano-of-second.
+     */
+    const NANO_OF_SECOND = 'nano-of-second';
+
+    /**
      * The offset from UTC/Greenwich.
      */
     const OFFSET_SECONDS = 'offset-seconds';

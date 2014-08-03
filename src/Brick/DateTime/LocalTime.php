@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Utility\Math;
 use Brick\Locale\Locale;
 use Brick\Type\Cast;
@@ -22,69 +23,84 @@ class LocalTime
     const NANOS_PER_SECOND   = 1000000000;
 
     /**
-     * The hour.
+     * The hour, in the range 0 to 23.
      *
      * @var integer
      */
     private $hour;
 
     /**
-     * The minute.
+     * The minute, in the range 0 to 59.
      *
      * @var integer
      */
     private $minute;
 
     /**
-     * The second.
+     * The second, in the range 0 to 59.
      *
      * @var integer
      */
     private $second;
 
     /**
+     * The nanosecond, in the range 0 to 999,999,999.
+     *
+     * @var integer
+     */
+    private $nano;
+
+    /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param integer $hour   The hour to represent, validated as an integer in the range [0-23].
-     * @param integer $minute The minute to represent, validated as an integer in the range [0-59].
-     * @param integer $second The second to represent, validated as an integer in the range [0-59].
+     * @param integer $hour   The hour, validated as an integer in the range 0 to 23.
+     * @param integer $minute The minute, validated as an integer in the range 0 to 59.
+     * @param integer $second The second, validated as an integer in the range 0 to 59.
+     * @param integer $nanos  The nanoseconds, validated as an integer in the range 0 to 999,999,999.
      */
-    private function __construct($hour, $minute, $second)
+    private function __construct($hour, $minute, $second, $nanos)
     {
         $this->hour   = $hour;
         $this->minute = $minute;
         $this->second = $second;
+        $this->nano  = $nanos;
     }
 
     /**
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
+     * @param integer $nanos
      *
      * @return LocalTime
      *
      * @throws \InvalidArgumentException
      * @throws DateTimeException
      */
-    public static function of($hour, $minute, $second = 0)
+    public static function of($hour, $minute, $second = 0, $nanos = 0)
     {
-        $hour = Cast::toInteger($hour);
+        $hour   = Cast::toInteger($hour);
         $minute = Cast::toInteger($minute);
         $second = Cast::toInteger($second);
+        $nanos  = Cast::toInteger($nanos);
 
-        if ($hour < 0 || $hour > 23) {
+        if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
             throw new DateTimeException('Hour must be in the interval [0-23]');
         }
 
-        if ($minute < 0 || $minute > 59) {
+        if ($minute < 0 || $minute >= LocalTime::MINUTES_PER_HOUR) {
             throw new DateTimeException('Minute must be in the interval [0-59]');
         }
 
-        if ($second < 0 || $second > 59) {
+        if ($second < 0 || $second >= LocalTime::SECONDS_PER_MINUTE) {
             throw new DateTimeException('Second must be in the interval [0-59]');
         }
 
-        return new LocalTime($hour, $minute, $second);
+        if ($nanos < 0 || $nanos >= LocalTime::NANOS_PER_SECOND) {
+            throw new DateTimeParseException('Nanoseconds out of range: ' . $nanos);
+        }
+
+        return new LocalTime($hour, $minute, $second, $nanos);
     }
 
     /**
@@ -99,7 +115,8 @@ class LocalTime
         return LocalTime::of(
             $result->getField(Field\DateTimeField::HOUR_OF_DAY),
             $result->getField(Field\DateTimeField::MINUTE_OF_HOUR),
-            $result->getOptionalField(Field\DateTimeField::SECOND_OF_MINUTE, 0)
+            $result->getOptionalField(Field\DateTimeField::SECOND_OF_MINUTE, 0),
+            $result->getOptionalField(Field\DateTimeField::NANO_OF_SECOND, 0)
         );
     }
 
@@ -144,7 +161,7 @@ class LocalTime
         $minutes = Math::div($secondOfDay, self::SECONDS_PER_MINUTE);
         $secondOfDay -= $minutes * self::SECONDS_PER_MINUTE;
 
-        return new LocalTime($hours, $minutes, $secondOfDay);
+        return new LocalTime($hours, $minutes, $secondOfDay, 0);
     }
 
     /**
@@ -164,7 +181,7 @@ class LocalTime
      */
     public static function midnight()
     {
-        return new LocalTime(0, 0, 0);
+        return new LocalTime(0, 0, 0, 0);
     }
 
     /**
@@ -172,7 +189,7 @@ class LocalTime
      */
     public static function noon()
     {
-        return new LocalTime(12, 0, 0);
+        return new LocalTime(12, 0, 0, 0);
     }
 
     /**
@@ -182,7 +199,7 @@ class LocalTime
      */
     public static function min()
     {
-        return LocalTime::midnight();
+        return new LocalTime(0, 0, 0, 0);
     }
 
     /**
@@ -192,7 +209,7 @@ class LocalTime
      */
     public static function max()
     {
-        return new LocalTime(23, 59, 59);
+        return new LocalTime(23, 59, 59, 999999999);
     }
 
     /**
@@ -220,6 +237,14 @@ class LocalTime
     }
 
     /**
+     * @return integer
+     */
+    public function getNano()
+    {
+        return $this->nano;
+    }
+
+    /**
      * Returns a copy of this LocalTime with the hour-of-day value altered.
      *
      * @param integer $hour
@@ -228,11 +253,17 @@ class LocalTime
      */
     public function withHour($hour)
     {
-        if ($hour == $this->hour) {
+        $hour = (int) $hour;
+
+        if ($hour === $this->hour) {
             return $this;
         }
 
-        return new LocalTime($hour, $this->minute, $this->second);
+        if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
+            throw new \InvalidArgumentException('Invalid value for hour-of-day: ' . $hour);
+        }
+
+        return new LocalTime($hour, $this->minute, $this->second, $this->nano);
     }
 
     /**
@@ -244,11 +275,17 @@ class LocalTime
      */
     public function withMinute($minute)
     {
-        if ($minute == $this->minute) {
+        $minute = (int) $minute;
+
+        if ($minute === $this->minute) {
             return $this;
         }
 
-        return new LocalTime($this->hour, $minute, $this->second);
+        if ($minute < 0 || $minute >= LocalTime::MINUTES_PER_HOUR) {
+            throw new \InvalidArgumentException('Invalid value for minute-of-hour: ' . $minute);
+        }
+
+        return new LocalTime($this->hour, $minute, $this->second, $this->nano);
     }
 
     /**
@@ -260,11 +297,41 @@ class LocalTime
      */
     public function withSecond($second)
     {
-        if ($second == $this->second) {
+        $second = (int) $second;
+
+        if ($second === $this->second) {
             return $this;
         }
 
-        return new LocalTime($this->hour, $this->minute, $second);
+        if ($second < 0 || $second >= LocalTime::SECONDS_PER_MINUTE) {
+            throw new \InvalidArgumentException('Invalid value for second-of-minute: ' . $second);
+        }
+
+        return new LocalTime($this->hour, $this->minute, $second, $this->nano);
+    }
+
+    /**
+     * Returns a copy of this LocalTime with the nano-of-second value altered.
+     *
+     * @param integer $nano
+     *
+     * @return LocalTime
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function withNano($nano)
+    {
+        $nano = (int) $nano;
+
+        if ($nano === $this->nano) {
+            return $this;
+        }
+
+        if ($nano < 0 || $nano >= LocalTime::NANOS_PER_SECOND) {
+            throw new \InvalidArgumentException('Invalid value for nano-of-second: ' . $nano);
+        }
+
+        return new LocalTime($this->hour, $this->minute, $this->second, $nano);
     }
 
     /**
@@ -275,19 +342,21 @@ class LocalTime
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param integer $hoursToAdd The hours to add, may be negative.
+     * @param integer $hours The hours to add, may be negative.
      *
      * @return LocalTime A LocalTime based on this time with the hours added.
      */
-    public function plusHours($hoursToAdd)
+    public function plusHours($hours)
     {
-        if ($hoursToAdd == 0) {
+        $hours = (int) $hours;
+
+        if ($hours === 0) {
             return $this;
         }
 
-        $newHour = (($hoursToAdd % self::HOURS_PER_DAY) + $this->hour + self::HOURS_PER_DAY) % self::HOURS_PER_DAY;
+        $hour = (($hours % self::HOURS_PER_DAY) + $this->hour + self::HOURS_PER_DAY) % self::HOURS_PER_DAY;
 
-        return new LocalTime($newHour, $this->minute, $this->second);
+        return new LocalTime($hour, $this->minute, $this->second, $this->nano);
     }
 
     /**
@@ -298,102 +367,154 @@ class LocalTime
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param integer $minutesToAdd The minutes to add, may be negative.
+     * @param integer $minutes The minutes to add, may be negative.
      *
      * @return LocalTime A LocalTime based on this time with the minutes added.
      */
-    public function plusMinutes($minutesToAdd)
+    public function plusMinutes($minutes)
     {
-        if ($minutesToAdd == 0) {
+        $minutes = (int) $minutes;
+
+        if ($minutes === 0) {
             return $this;
         }
 
         $mofd = $this->hour * self::MINUTES_PER_HOUR + $this->minute;
-        $newMofd = (($minutesToAdd % self::MINUTES_PER_DAY) + $mofd + self::MINUTES_PER_DAY) % self::MINUTES_PER_DAY;
+        $newMofd = (($minutes % self::MINUTES_PER_DAY) + $mofd + self::MINUTES_PER_DAY) % self::MINUTES_PER_DAY;
 
-        if ($mofd == $newMofd) {
+        if ($mofd === $newMofd) {
             return $this;
         }
 
-        $newHour = Math::div($newMofd, self::MINUTES_PER_HOUR);
-        $newMinute = $newMofd % self::MINUTES_PER_HOUR;
+        $hour = Math::div($newMofd, self::MINUTES_PER_HOUR);
+        $minute = $newMofd % self::MINUTES_PER_HOUR;
 
-        return new LocalTime($newHour, $newMinute, $this->second);
+        return new LocalTime($hour, $minute, $this->second, $this->nano);
     }
 
     /**
      * Returns a copy of this LocalTime with the specified period in seconds added.
      *
-     * @param integer $secondstoAdd The seconds to add, may be negative.
+     * @param integer $seconds The seconds to add, may be negative.
      *
      * @return LocalTime A LocalTime based on this time with the seconds added.
      */
-    public function plusSeconds($secondstoAdd)
+    public function plusSeconds($seconds)
     {
-        if ($secondstoAdd == 0) {
+        $seconds = (int) $seconds;
+
+        if ($seconds === 0) {
             return $this;
         }
 
         $sofd = $this->hour * self::SECONDS_PER_HOUR + $this->minute * self::SECONDS_PER_MINUTE + $this->second;
-        $newSofd = (($secondstoAdd % self::SECONDS_PER_DAY) + $sofd + self::SECONDS_PER_DAY) % self::SECONDS_PER_DAY;
+        $newSofd = (($seconds % self::SECONDS_PER_DAY) + $sofd + self::SECONDS_PER_DAY) % self::SECONDS_PER_DAY;
 
-        if ($sofd == $newSofd) {
+        if ($sofd === $newSofd) {
             return $this;
         }
 
-        $newHour = Math::div($newSofd, self::SECONDS_PER_HOUR);
-        $newMinute = Math::div($newSofd, self::SECONDS_PER_MINUTE) % self::MINUTES_PER_HOUR;
-        $newSecond = $newSofd % self::SECONDS_PER_MINUTE;
+        $hour = Math::div($newSofd, self::SECONDS_PER_HOUR);
+        $minute = Math::div($newSofd, self::SECONDS_PER_MINUTE) % self::MINUTES_PER_HOUR;
+        $second = $newSofd % self::SECONDS_PER_MINUTE;
 
-        return new LocalTime($newHour, $newMinute, $newSecond);
+        return new LocalTime($hour, $minute, $second, $this->nano);
     }
 
     /**
-     * @param integer $hoursToSubtract
+     * Returns a copy of this LocalTime with the specified period in nanoseconds added.
+     *
+     * @param integer $nanos The seconds to add, may be negative.
+     *
+     * @return LocalTime A LocalTime based on this time with the nanoseconds added.
+     */
+    public function plusNanos($nanos)
+    {
+        $nanos = (int) $nanos;
+
+        if ($nanos === 0) {
+            return $this;
+        }
+
+        $divBase = Math::floorDiv($this->nano, LocalTime::NANOS_PER_SECOND);
+        $modBase = Math::floorMod($this->nano, LocalTime::NANOS_PER_SECOND);
+
+        $divPlus = Math::floorDiv($nanos, LocalTime::NANOS_PER_SECOND);
+        $modPlus = Math::floorMod($nanos, LocalTime::NANOS_PER_SECOND);
+
+        $diffSeconds = $divBase + $divPlus;
+        $nano = $modBase + $modPlus;
+
+        if ($nano >= LocalTime::NANOS_PER_SECOND) {
+            $nano -= LocalTime::NANOS_PER_SECOND;
+            $diffSeconds++;
+        }
+
+        return $this->withNano($nano)->plusSeconds($diffSeconds);
+    }
+
+    /**
+     * @param integer $hours
      *
      * @return LocalTime
      */
-    public function minusHours($hoursToSubtract)
+    public function minusHours($hours)
     {
-        return $this->plusHours(- $hoursToSubtract);
+        return $this->plusHours(- $hours);
     }
 
     /**
-     * @param integer $minutesToSubtract
+     * @param integer $minutes
      *
      * @return LocalTime
      */
-    public function minusMinutes($minutesToSubtract)
+    public function minusMinutes($minutes)
     {
-        return $this->plusMinutes(- $minutesToSubtract);
+        return $this->plusMinutes(- $minutes);
     }
 
     /**
-     * @param integer $secondsToSubtract
+     * @param integer $seconds
      *
      * @return LocalTime
      */
-    public function minusSeconds($secondsToSubtract)
+    public function minusSeconds($seconds)
     {
-        return $this->plusSeconds(- $secondsToSubtract);
+        return $this->plusSeconds(- $seconds);
     }
 
     /**
-     * Returns the difference between this LocalTime and the given time, in seconds.
+     * @param integer$nanos
      *
-     * The result is:
-     *
-     * * positive if this time is after the given time;
-     * * negative if this time is before the given time;
-     * * zero if the times are equal.
+     * @return LocalTime
+     */
+    public function minusNanos($nanos)
+    {
+        return $this->plusNanos(-$nanos);
+    }
+
+    /**
+     * Compares this LocalTime with another.
      *
      * @param LocalTime $that The time to compare to.
      *
-     * @return integer The difference in seconds.
+     * @return integer [-1,0,1] If this time is before, on, or after the given time.
      */
     public function compareTo(LocalTime $that)
     {
-        return $this->toSecondOfDay() - $that->toSecondOfDay();
+        $seconds = $this->toSecondOfDay() - $that->toSecondOfDay();
+
+        if ($seconds !== 0) {
+            return $seconds > 0 ? 1 : -1;
+        }
+
+        $nanos = $this->nano - $that->nano;
+
+        if ($nanos !== 0) {
+            return $nanos > 0 ? 1 : -1;
+        }
+
+        return 0;
     }
 
     /**
@@ -405,7 +526,7 @@ class LocalTime
      */
     public function isEqualTo(LocalTime $that)
     {
-        return $this->compareTo($that) == 0;
+        return $this->compareTo($that) === 0;
     }
 
     /**
@@ -469,7 +590,9 @@ class LocalTime
     }
 
     /**
-     * Returns the number of seconds since midnight.
+     * Returns the time as seconds of day, from 0 to 24 * 60 * 60 - 1.
+     *
+     * This does not include the nanoseconds.
      *
      * @return integer
      */
@@ -499,17 +622,27 @@ class LocalTime
      *
      * * `HH:mm`
      * * `HH:mm:ss`
+     * * `HH:mm:ss.nnn`
      *
      * The format used will be the shortest that outputs the full value of
      * the time where the omitted parts are implied to be zero.
+     * The nanoseconds value, if present, can be 0 to 9 digits.
      *
      * @return string A string representation of this time.
      */
     public function toString()
     {
-        return ($this->second == 0)
-            ? sprintf('%02u:%02u', $this->hour, $this->minute)
-            : sprintf('%02u:%02u:%02u', $this->hour, $this->minute, $this->second);
+        if ($this->nano === 0) {
+            if ($this->second === 0) {
+                return sprintf('%02u:%02u', $this->hour, $this->minute);
+            } else {
+                return sprintf('%02u:%02u:%02u', $this->hour, $this->minute, $this->second);
+            }
+        }
+
+        $nanos = rtrim(sprintf('%09u', $this->nano), '0');
+
+        return sprintf('%02u:%02u:%02u.%s', $this->hour, $this->minute, $this->second, $nanos);
     }
 
     /**
@@ -524,6 +657,7 @@ class LocalTime
 
     /**
      * @todo only supports HH:MM right now. Automatically switch between HH:MM & HH:MM:SS depending on SS==00?
+     * @todo same for nanos?
      *
      * @param \Brick\Locale\Locale $locale
      *

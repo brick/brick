@@ -84,17 +84,20 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerParse
      *
-     * @param string  $string
+     * @param string  $text
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
+     * @param integer $nano
      */
-    public function testParse($string, $hour, $minute, $second)
+    public function testParse($text, $hour, $minute, $second, $nano)
     {
-        $actual = LocalTime::parse($string);
-        $expected = LocalTime::of($hour, $minute, $second);
+        $time = LocalTime::parse($text);
 
-        $this->assertTrue($actual->isEqualTo($expected));
+        $this->assertSame($hour, $time->getHour());
+        $this->assertSame($minute, $time->getMinute());
+        $this->assertSame($second, $time->getSecond());
+        $this->assertSame($nano, $time->getNano());
     }
 
     /**
@@ -103,8 +106,10 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     public function providerParse()
     {
         return [
-            ['12:34', 12, 34, 0],
-            ['12:34:56', 12, 34, 56]
+            ['01:02', 1, 2, 0, 0],
+            ['12:34:56', 12, 34, 56, 0],
+            ['12:34:56.78', 12, 34, 56, 780000000],
+            ['12:34:56.789123456', 12, 34, 56, 789123456]
         ];
     }
 
@@ -112,11 +117,11 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
      * @dataProvider providerParseInvalidStringThrowsException
      *
-     * @param string $string
+     * @param string $text
      */
-    public function testParseInvalidStringThrowsException($string)
+    public function testParseInvalidStringThrowsException($text)
     {
-        LocalTime::parse('12');
+        LocalTime::parse($text);
     }
 
     /**
@@ -126,9 +131,17 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['12'],
+            ['12:'],
             ['12.34'],
+            ['1:23'],
+            ['12:2'],
+            ['12:34:'],
+            ['12:23:4'],
+            ['12:34:56.'],
+            ['12:34.567'],
             [' 12:34'],
             ['12:34:56 '],
+            ['12:34:56.7 ']
         ];
     }
 
@@ -181,23 +194,25 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider providerToInteger
+     * @dataProvider providerToSecondOfDay
      *
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
      * @param integer $result
      */
-    public function testToInteger($hour, $minute, $second, $result)
+    public function testToSecondOfDay($hour, $minute, $second, $result)
     {
         $time = LocalTime::of($hour, $minute, $second);
-        $this->assertEquals($result, $time->toSecondOfDay());
+
+        $this->assertSame($result, $time->toSecondOfDay());
+        $this->assertSame($result, $time->withNano(123)->toSecondOfDay());
     }
 
     /**
      * @return array
      */
-    public function providerToInteger()
+    public function providerToSecondOfDay()
     {
         return [
             [0, 0, 0, 0],
@@ -209,10 +224,33 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testCastToString()
+    /**
+     * @dataProvider providerToString
+     *
+     * @param integer $h The hour.
+     * @param integer $m The minute.
+     * @param integer $s The second.
+     * @param integer $n The nanosecond.
+     * @param integer $r The expected result.
+     */
+    public function testToString($h, $m, $s, $n, $r)
     {
-        $time = LocalTime::of(12, 34, 56);
-        $this->assertEquals('12:34:56', (string) $time);
+        $this->assertSame($r, LocalTime::of($h, $m, $s, $n)->toString());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToString()
+    {
+        return [
+            [1, 2, 0, 0, '01:02'],
+            [1, 2, 3, 0, '01:02:03'],
+            [1, 2, 3, 4, '01:02:03.000000004'],
+            [1, 2, 0, 3, '01:02:00.000000003'],
+            [12, 34, 56, 789000000, '12:34:56.789'],
+            [12, 34, 56, 78900000, '12:34:56.0789'],
+        ];
     }
 
     /**
@@ -339,6 +377,59 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerPlusNanos
+     *
+     * @param integer $h  The base hour.
+     * @param integer $m  The base minute.
+     * @param integer $s  The base second.
+     * @param integer $n  The base nanosecond.
+     * @param integer $d  The nanoseconds to add.
+     * @param integer $eh The expected hour.
+     * @param integer $em The expected minute.
+     * @param integer $es The expected second.
+     * @param integer $en The expected nanosecond.
+     */
+    public function testPlusNanos($h, $m, $s, $n, $d, $eh, $em, $es, $en)
+    {
+        $time = LocalTime::of($h, $m, $s, $n)->plusNanos($d);
+
+        $this->assertSame($eh, $time->getHour());
+        $this->assertSame($em, $time->getMinute());
+        $this->assertSame($es, $time->getSecond());
+        $this->assertSame($en, $time->getNano());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusNanos()
+    {
+        return [
+            [0, 0, 1, 123, -2100000123, 23, 59, 58, 900000000],
+            [0, 0, 1, 123, -1000000124, 23, 59, 59, 999999999],
+            [0, 0, 1, 123, -1000000123, 0, 0, 0, 0],
+            [0, 0, 1, 123, -124, 0, 0, 0, 999999999],
+            [0, 0, 1, 123, -123, 0, 0, 1, 0],
+            [0, 0, 1, 123, -1, 0, 0, 1, 122],
+            [0, 0, 1, 123, 0, 0, 0, 1, 123],
+            [0, 0, 1, 123, 1, 0, 0, 1, 124],
+            [0, 0, 1, 123, 123, 0, 0, 1, 246],
+            [0, 0, 1, 123, 999999877, 0, 0, 2, 0],
+            [0, 0, 1, 123, 1999999878, 0, 0, 3, 1],
+            [23, 59, 58, 987654321, -1987654321, 23, 59, 57, 0],
+            [23, 59, 58, 987654321, -987654322, 23, 59, 57, 999999999],
+            [23, 59, 58, 987654321, -987654321, 23, 59, 58, 0],
+            [23, 59, 58, 987654321, -987654320, 23, 59, 58, 1],
+            [23, 59, 58, 987654321, -1, 23, 59, 58, 987654320],
+            [23, 59, 58, 987654321, 0, 23, 59, 58, 987654321],
+            [23, 59, 58, 987654321, 1, 23, 59, 58, 987654322],
+            [23, 59, 58, 987654321, 123456789, 23, 59, 59, 111111110],
+            [23, 59, 58, 987654321, 1987654321, 0, 0, 0, 975308642],
+            [23, 59, 58, 987654321, 2123456789, 0, 0, 1, 111111110]
+        ];
+    }
+
+    /**
      * @dataProvider providerMinusHours
      *
      * @param integer $hoursToSubtract
@@ -458,6 +549,52 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
             [86399, 15, 30, 46],
             [86400, 15, 30, 45],
             [86401, 15, 30, 44]
+        ];
+    }
+
+    /**
+     * @dataProvider providerMinusNanos
+     *
+     * @param integer $h  The base hour.
+     * @param integer $m  The base minute.
+     * @param integer $s  The base second.
+     * @param integer $n  The base nanosecond.
+     * @param integer $d  The nanoseconds to add.
+     * @param integer $eh The expected hour.
+     * @param integer $em The expected minute.
+     * @param integer $es The expected second.
+     * @param integer $en The expected nanosecond.
+     */
+    public function testMinusNanos($h, $m, $s, $n, $d, $eh, $em, $es, $en)
+    {
+        $time = LocalTime::of($h, $m, $s, $n)->minusNanos($d);
+
+        $this->assertSame($eh, $time->getHour());
+        $this->assertSame($em, $time->getMinute());
+        $this->assertSame($es, $time->getSecond());
+        $this->assertSame($en, $time->getNano());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMinusNanos()
+    {
+        return [
+            [0, 0, 0, 1, 1999999999, 23, 59, 58, 2],
+            [0, 0, 0, 1, 999999999, 23, 59, 59, 2],
+            [0, 0, 0, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 1, -1, 0, 0, 0, 2],
+            [0, 0, 0, 1, 999999999, 23, 59, 59, 2],
+            [0, 0, 0, 1, 1999999999, 23, 59, 58, 2],
+            [23, 59, 59, 999999999, 1999999999, 23, 59, 58, 0],
+            [23, 59, 59, 999999999, 999999999, 23, 59, 59, 0],
+            [23, 59, 59, 999999999, 1, 23, 59, 59, 999999998],
+            [23, 59, 59, 999999999, 0, 23, 59, 59, 999999999],
+            [23, 59, 59, 999999999, -1, 0, 0, 0, 0],
+            [23, 59, 59, 999999999, -999999999, 0, 0, 0, 999999998],
+            [23, 59, 59, 999999999, -1999999999, 0, 0, 1, 999999998]
         ];
     }
 
