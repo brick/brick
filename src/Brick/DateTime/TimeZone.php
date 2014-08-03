@@ -55,7 +55,7 @@ abstract class TimeZone
      */
     public function isEqualTo(TimeZone $other)
     {
-        return $this->getId() == $other->getId();
+        return $this->getId() === $other->getId();
     }
 
     /**

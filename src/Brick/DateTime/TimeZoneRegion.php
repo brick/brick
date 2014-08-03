@@ -16,6 +16,7 @@ class TimeZoneRegion extends TimeZone
      * Private constructor. Use a factory method to obtain an instance.
      *
      * @param string $timezone
+     *
      * @throws DateTimeException
      */
     private function __construct($timezone)
@@ -29,6 +30,7 @@ class TimeZoneRegion extends TimeZone
 
     /**
      * @param string $text
+     *
      * @return TimeZoneRegion
      */
     public static function of($text)
@@ -60,6 +62,6 @@ class TimeZoneRegion extends TimeZone
      */
     public function toDateTimeZone()
     {
-        return new \DateTimeZone($this->getId());
+        return clone $this->zone;
     }
 }

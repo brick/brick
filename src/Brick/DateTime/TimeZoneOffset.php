@@ -10,9 +10,14 @@ use Brick\Type\Cast;
 class TimeZoneOffset extends TimeZone
 {
     /**
-     * The abs maximum seconds.
+     * The absolute maximum seconds.
      */
     const MAX_SECONDS = 64800;
+
+    /**
+     * The absolute maximum hours.
+     */
+    const MAX_HOURS = 18;
 
     /**
      * @var integer
@@ -34,24 +39,14 @@ class TimeZoneOffset extends TimeZone
     private function __construct($totalSeconds)
     {
         $this->totalSeconds = $totalSeconds;
-        $this->id = $this->buildId();
-    }
 
-    /**
-     * Returns the string representation of this time-zone offset.
-     *
-     * @return string
-     */
-    private function buildId()
-    {
-        if ($this->totalSeconds == 0) {
-            return 'Z';
+        if ($totalSeconds === 0) {
+            $this->id = 'Z';
+        } elseif ($totalSeconds < 0) {
+            $this->id = '-' . LocalTime::ofSecondOfDay(-$totalSeconds);
+        } else {
+            $this->id = '+' . LocalTime::ofSecondOfDay($totalSeconds);
         }
-
-        // The format follows the conventions of LocalTime.
-        $result = LocalTime::ofSecondOfDay(abs($this->totalSeconds))->toString();
-
-        return ($this->totalSeconds >= 0 ? '+' : '-') . $result;
     }
 
     /**
@@ -99,17 +94,21 @@ class TimeZoneOffset extends TimeZone
         if (self::haveDifferentSigns($hours, $minutes, $seconds)) {
             throw new DateTimeException('Time zone offset hours, minutes and seconds must have the same sign');
         }
-        if (abs($hours) > 18) {
+        if ($hours < -TimeZoneOffset::MAX_HOURS || $hours > TimeZoneOffset::MAX_HOURS) {
             throw new DateTimeException('Time zone offset hours must be in the range -18 to 18');
         }
-        if (abs($minutes) > 59) {
+        if ($minutes < -LocalTime::MINUTES_PER_HOUR || $minutes > LocalTime::MINUTES_PER_HOUR) {
             throw new DateTimeException('Time zone offset minutes must be in the range -59 to 59');
         }
-        if (abs($seconds) > 59) {
+        if ($seconds < -LocalTime::SECONDS_PER_MINUTE || $seconds > LocalTime::SECONDS_PER_MINUTE) {
             throw new DateTimeException('Time zone offset seconds must be in the range -59 to 59');
         }
 
-        $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $totalSeconds = $hours * LocalTime::SECONDS_PER_HOUR + $minutes * LocalTime::SECONDS_PER_MINUTE + $seconds;
+
+        if ($totalSeconds < -TimeZoneOffset::MAX_SECONDS || $totalSeconds > TimeZoneOffset::MAX_SECONDS) {
+            throw new DateTimeException('Time zone offset not in valid range: -18:00 to +18:00');
+        }
 
         return TimeZoneOffset::ofTotalSeconds($totalSeconds);
     }
@@ -154,7 +153,7 @@ class TimeZoneOffset extends TimeZone
     {
         $totalSeconds = Cast::toInteger($totalSeconds);
 
-        if (abs($totalSeconds) > TimeZoneOffset::MAX_SECONDS) {
+        if ($totalSeconds < -TimeZoneOffset::MAX_SECONDS || $totalSeconds > TimeZoneOffset::MAX_SECONDS) {
             throw new DateTimeException('Time zone offset not in valid range: -18:00 to +18:00');
         }
 
