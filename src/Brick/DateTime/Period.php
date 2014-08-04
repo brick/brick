@@ -208,7 +208,7 @@ class Period
      */
     public function negated()
     {
-        if ($this->years === 0 && $this->months === 0 && $this->days === 0) {
+        if ($this->isZero()) {
             return $this;
         }
 
@@ -217,6 +217,14 @@ class Period
             - $this->months,
             - $this->days
         );
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isZero()
+    {
+        return $this->years === 0 && $this->months === 0 && $this->days === 0;
     }
 
     /**

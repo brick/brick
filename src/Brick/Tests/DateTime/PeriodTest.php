@@ -10,10 +10,10 @@ use Brick\DateTime\Period;
 class PeriodTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param integer $years
-     * @param integer $months
-     * @param integer $days
-     * @param Period  $period
+     * @param integer $years  The expected number of years in the period.
+     * @param integer $months The expected number of months in the period.
+     * @param integer $days   The expected number of days in the period.
+     * @param Period  $period The period to test.
      */
     private function assertPeriodEquals($years, $months, $days, Period $period)
     {
@@ -60,6 +60,32 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     public function testWithDays()
     {
         $this->assertPeriodEquals(1, 2, 9, Period::of(1, 2, 3)->withDays(9));
+    }
+
+    /**
+     * @dataProvider providerIsZero
+     *
+     * @param integer $years  The number of years in the period.
+     * @param integer $months The number of months in the period.
+     * @param integer $days   The number of days in the period.
+     * @param boolean $isZero The expected return value.
+     */
+    public function testIsZero($years, $months, $days, $isZero)
+    {
+        $this->assertSame($isZero, Period::of($years, $months, $days)->isZero());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsZero()
+    {
+        return [
+            [0, 0, 0, true],
+            [1, 0, 0, false],
+            [0, 1, 0, false],
+            [0, 0, 1, false]
+        ];
     }
 
     /**
