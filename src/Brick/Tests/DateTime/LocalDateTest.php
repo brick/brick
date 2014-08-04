@@ -298,4 +298,28 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
             [2012, 1, 1, -1, 2011, 12, 31]
         ];
     }
+
+    /**
+     * @dataProvider providerToString
+     *
+     * @param integer $year     The year.
+     * @param integer $month    The month.
+     * @param integer $day      The day-of-month.
+     * @param string  $expected The expected result string.
+     */
+    public function testToString($year, $month, $day, $expected)
+    {
+        $this->assertSame($expected, LocalDate::of($year, $month, $day)->toString());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToString()
+    {
+        return [
+            [999, 1, 2, '0999-01-02'],
+            [-2, 1, 1, '-0002-01-01']
+        ];
+    }
 }
