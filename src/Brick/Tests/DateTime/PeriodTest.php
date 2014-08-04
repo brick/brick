@@ -9,46 +9,57 @@ use Brick\DateTime\Period;
  */
 class PeriodTest extends \PHPUnit_Framework_TestCase
 {
-    public function testZeroPeriod()
+    /**
+     * @param integer $years
+     * @param integer $months
+     * @param integer $days
+     * @param Period  $period
+     */
+    private function assertPeriodEquals($years, $months, $days, Period $period)
     {
-        $period = Period::zero();
-
-        $this->assertSame(0, $period->getYears());
-        $this->assertSame(0, $period->getMonths());
-        $this->assertSame(0, $period->getDays());
+        $this->assertSame($years, $period->getYears());
+        $this->assertSame($months, $period->getMonths());
+        $this->assertSame($days, $period->getDays());
     }
 
-    public function testGetters()
+    public function testZero()
     {
-        $period = Period::of(6, 5, 4, 3, 2, 1);
+        $this->assertPeriodEquals(0, 0, 0, Period::zero());
+    }
 
-        $this->assertSame(6, $period->getYears());
-        $this->assertSame(5, $period->getMonths());
-        $this->assertSame(4, $period->getDays());
+    public function testOf()
+    {
+        $this->assertPeriodEquals(6, 5, 4, Period::of(6, 5, 4));
+    }
+
+    public function testPlusYears()
+    {
+        $this->assertPeriodEquals(11, 2, 3, Period::of(1, 2, 3)->plusYears(10));
+    }
+
+    public function testPlusMonths()
+    {
+        $this->assertPeriodEquals(1, 12, 3, Period::of(1, 2, 3)->plusMonths(10));
+    }
+
+    public function testPlusDays()
+    {
+        $this->assertPeriodEquals(1, 2, 13, Period::of(1, 2, 3)->plusDays(10));
     }
 
     public function testWithYears()
     {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(9, 2, 3, 4, 5, 6);
-
-        $this->assertTrue($period->withYears(9)->isEqualTo($expected));
+        $this->assertPeriodEquals(9, 2, 3, Period::of(1, 2, 3)->withYears(9));
     }
 
     public function testWithMonths()
     {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(1, 9, 3, 4, 5, 6);
-
-        $this->assertTrue($period->withMonths(9)->isEqualTo($expected));
+        $this->assertPeriodEquals(1, 9, 3, Period::of(1, 2, 3)->withMonths(9));
     }
 
     public function testWithDays()
     {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(1, 2, 9, 4, 5, 6);
-
-        $this->assertTrue($period->withDays(9)->isEqualTo($expected));
+        $this->assertPeriodEquals(1, 2, 9, Period::of(1, 2, 3)->withDays(9));
     }
 
     /**

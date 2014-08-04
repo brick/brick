@@ -110,6 +110,54 @@ class Period
      *
      * @return Period
      */
+    public function plusYears($years)
+    {
+        $years = Cast::toInteger($years);
+
+        if ($years === 0) {
+            return $this;
+        }
+
+        return new Period($this->years + $years, $this->months, $this->days);
+    }
+
+    /**
+     * @param integer $months
+     *
+     * @return Period
+     */
+    public function plusMonths($months)
+    {
+        $months = Cast::toInteger($months);
+
+        if ($months === 0) {
+            return $this;
+        }
+
+        return new Period($this->years, $this->months + $months, $this->days);
+    }
+
+    /**
+     * @param integer $days
+     *
+     * @return Period
+     */
+    public function plusDays($days)
+    {
+        $days = Cast::toInteger($days);
+
+        if ($days === 0) {
+            return $this;
+        }
+
+        return new Period($this->years, $this->months, $this->days + $days);
+    }
+
+    /**
+     * @param integer $years
+     *
+     * @return Period
+     */
     public function withYears($years)
     {
         $years = Cast::toInteger($years);
