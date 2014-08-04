@@ -506,7 +506,7 @@ class LocalDate
      *
      * @param LocalDate $that
      *
-     * @return integer
+     * @return integer [-1,0,1] If this date is before, on, or after the given date.
      */
     public function compareTo(LocalDate $that)
     {

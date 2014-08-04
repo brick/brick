@@ -15,6 +15,126 @@ use Brick\DateTime\Year;
  */
 class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param integer       $y  The expected year.
+     * @param integer       $m  The expected month.
+     * @param integer       $d  The expected day.
+     * @param integer       $h  The expected hour.
+     * @param integer       $i  The expected minute.
+     * @param integer       $s  The expected second.
+     * @param integer       $n  The expected nano.
+     * @param LocalDateTime $dt The date-time to test.
+     */
+    private function assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime $dt)
+    {
+        $this->assertSame($y, $dt->getYear());
+        $this->assertSame($m, $dt->getMonth());
+        $this->assertSame($d, $dt->getDay());
+        $this->assertSame($h, $dt->getHour());
+        $this->assertSame($i, $dt->getMinute());
+        $this->assertSame($s, $dt->getSecond());
+        $this->assertSame($n, $dt->getNano());
+    }
+
+    /**
+     * @dataProvider providerParse
+     *
+     * @param string  $t The text to parse.
+     * @param integer $y The expected year.
+     * @param integer $m The expected month.
+     * @param integer $d The expected day.
+     * @param integer $h The expected hour.
+     * @param integer $i The expected minute.
+     * @param integer $s The expected second.
+     * @param integer $n The expected nano.
+     */
+    public function testParse($t, $y, $m, $d, $h, $i, $s, $n)
+    {
+        $this->assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime::parse($t));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParse()
+    {
+        return [
+            ['0999-02-28T12:34', 999, 2, 28, 12, 34, 0, 0],
+            ['2014-02-28T12:34', 2014, 2, 28, 12, 34, 0, 0],
+            ['1999-12-31T01:02:03', 1999, 12, 31, 1, 2, 3, 0],
+            ['2012-02-29T23:43:10.1234', 2012, 2, 29, 23, 43, 10, 123400000]
+        ];
+    }
+
+    /**
+     * @dataProvider providerParseInvalidStringThrowsException
+     * @expectedException \Brick\DateTime\Parser\DateTimeParseException
+     *
+     * @param string $text
+     */
+    public function testParseInvalidStringThrowsException($text)
+    {
+        LocalDateTime::parse($text);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidStringThrowsException()
+    {
+        return [
+            [' 2014-02-28T12:34'],
+            ['2014-02-28T12:34 '],
+            ['2014-2-27T12:34'],
+            ['2014-222-27T12:34'],
+            ['2014-02-2T12:34'],
+            ['2014-02-222T12:34'],
+            ['2014-02-28T1:34'],
+            ['2014-02-28T111:34'],
+            ['2014-02-28T12:3'],
+            ['2014-02-28T12:345'],
+            ['2014-02-28T12:34:5'],
+            ['2014-02-28T12:34:567'],
+            ['2014-02-28T12:34:56.'],
+            ['2014-02-28T12:34:56.1234567890'],
+            ['201X-02-27T12:34:56.123'],
+            ['2014-0X-27T12:34:56.123'],
+            ['2014-02-2XT12:34:56.123'],
+            ['2014-02-27T1X:34:56.123'],
+            ['2014-02-27T12:3X:56.123'],
+            ['2014-02-27T12:34:5X.123'],
+            ['2014-02-27T12:34:56.12X'],
+        ];
+    }
+
+    /**
+     * @dataProvider providerParseInvalidDateTimeThrowsException
+     * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param string $text
+     */
+    public function testParseInvalidDateTimeThrowsException($text)
+    {
+        LocalDateTime::parse($text);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidDateTimeThrowsException()
+    {
+        return [
+            ['2014-00-15T12:34'],
+            ['2014-13-15T12:34'],
+            ['2014-02-00T12:34'],
+            ['2014-02-29T12:34'],
+            ['2014-03-32T12:34'],
+            ['2014-01-01T60:00:00'],
+            ['2014-01-01T00:60:00'],
+            ['2014-01-01T00:00:60'],
+        ];
+    }
+
     public function testPlusHoursOne()
     {
         $d = LocalDate::of(2007, 7, 15);
@@ -210,11 +330,36 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         return $tests;
     }
 
-    public function plusSecondsNoChangeOneDay()
+    public function testPlusSecondsNoChangeOneDay()
     {
         $base = LocalDate::of(2007, 7, 15);
         $t = $base->atTime(LocalTime::of(12, 30, 40))->plusSeconds(24 * 60 * 60);
         $this->assertTrue($t->getDate()->isEqualTo($base->plusDays(1)));
+    }
+
+    /**
+     * @dataProvider providerPlusNanos
+     *
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $nanosToAdd       The nanoseconds to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusNanos($dateTime, $nanosToAdd, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusNanos($nanosToAdd);
+        $this->assertSame($expectedDateTime, (string) $actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusNanos()
+    {
+        return [
+            ['2014-12-31T23:59:58.5', 1500000000, '2015-01-01T00:00'],
+            ['2000-03-01T00:00', -1, '2000-02-29T23:59:59.999999999'],
+            ['2000-01-01T00:00:01', -1999999999, '1999-12-31T23:59:59.000000001']
+        ];
     }
 
     public function testMinusHoursOne()
@@ -421,6 +566,31 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         return $tests;
     }
 
+    /**
+     * @dataProvider providerMinusNanos
+     *
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $nanosToSubtract  The nanoseconds to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusNanos($dateTime, $nanosToSubtract, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusNanos($nanosToSubtract);
+        $this->assertSame($expectedDateTime, (string) $actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMinusNanos()
+    {
+        return [
+            ['2016-01-01T00:00', 50000000, '2015-12-31T23:59:59.95'],
+            ['2000-02-29T23:59:59.999999999', -1, '2000-03-01T00:00'],
+            ['1999-12-31T23:59:59.000000001', -2199999999, '2000-01-01T00:00:01.2']
+        ];
+    }
+
     public function testAtTimeZone()
     {
         $t = LocalDateTime::of(2008, 6, 30, 11, 30);
@@ -435,26 +605,6 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         $tz = TimeZoneOffset::ofHours(2);
 
         $this->assertTrue($t->atTimeZone($tz)->isEqualTo(ZonedDateTime::of($t, $tz)));
-    }
-
-    /**
-     * @dataProvider providerToEpochSecond
-     *
-     * @param integer $y           The year.
-     * @param integer $m           The month.
-     * @param integer $d           The day.
-     * @param integer $h           The hours.
-     * @param integer $i           The minutes.
-     * @param integer $s           The second.
-     * @param integer $offset      The time-zone offset in hours.
-     * @param integer $epochSecond The expected epoch second.
-     */
-    public function testToEpochSecond($y, $m, $d, $h, $i, $s, $offset, $epochSecond)
-    {
-        $datetime = LocalDateTime::of($y, $m, $d, $h, $i, $s);
-        $offset = TimeZoneOffset::ofHours($offset);
-
-        $this->assertSame($epochSecond, $datetime->toEpochSecond($offset));
     }
 
     /**

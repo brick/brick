@@ -24,7 +24,7 @@ class LocalDateTime
     private $time;
 
     /**
-     * Private constructor. Use of() to obtain an instance.
+     * Private constructor. Use a factory method to obtain an instance.
      *
      * @param LocalDate $date
      * @param LocalTime $time
@@ -53,14 +53,15 @@ class LocalDateTime
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
+     * @param integer $nano
      *
      * @return LocalDateTime
      */
-    public static function of($year, $month, $day, $hour, $minute, $second = 0)
+    public static function of($year, $month, $day, $hour, $minute, $second = 0, $nano = 0)
     {
         return new LocalDateTime(
             LocalDate::of($year, $month, $day),
-            LocalTime::of($hour, $minute, $second)
+            LocalTime::of($hour, $minute, $second, $nano)
         );
     }
 
@@ -182,6 +183,14 @@ class LocalDateTime
     }
 
     /**
+     * @return integer
+     */
+    public function getNano()
+    {
+        return $this->time->getNano();
+    }
+
+    /**
      * Returns a copy of this date-time with the new date and time, checking
      * to see if a new object is in fact required.
      *
@@ -296,6 +305,18 @@ class LocalDateTime
     }
 
     /**
+     * Returns a copy of this LocalDateTime with the nano-of-second altered.
+     *
+     * @param integer $nano
+     *
+     * @return LocalDateTime
+     */
+    public function withNano($nano)
+    {
+        return $this->with($this->date, $this->time->withNano($nano));
+    }
+
+    /**
      * Returns a zoned date-time formed from this date-time and the specified time-zone.
      *
      * @param TimeZone $zone The zime-zone to use.
@@ -316,28 +337,10 @@ class LocalDateTime
      */
     public function plusPeriod(Period $period)
     {
-        $result = $this;
-
-        if ($period->getYears() != 0) {
-            $result = $result->plusYears($period->getYears());
-        }
-        if ($period->getMonths() != 0) {
-            $result = $result->plusMonths($period->getMonths());
-        }
-        if ($period->getDays() != 0) {
-            $result = $result->plusDays($period->getDays());
-        }
-        if ($period->getHours() != 0) {
-            $result = $result->plusHours($period->getHours());
-        }
-        if ($period->getMinutes() != 0) {
-            $result = $result->plusMinutes($period->getMinutes());
-        }
-        if ($period->getSeconds() != 0) {
-            $result = $result->plusSeconds($period->getSeconds());
-        }
-
-        return $result;
+        return $this
+            ->plusYears($period->getYears())
+            ->plusMonths($period->getMonths())
+            ->plusDays($period->getDays());
     }
 
     /**
@@ -397,7 +400,13 @@ class LocalDateTime
      */
     public function plusHours($hours)
     {
-        return $this->plusWithOverflow($hours, 0, 0, 1);
+        $hours = Cast::toInteger($hours);
+
+        if ($hours === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow($hours, 0, 0, 0, 1);
     }
 
     /**
@@ -409,7 +418,13 @@ class LocalDateTime
      */
     public function plusMinutes($minutes)
     {
-        return $this->plusWithOverflow(0, $minutes, 0, 1);
+        $minutes = Cast::toInteger($minutes);
+
+        if ($minutes === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, $minutes, 0, 0, 1);
     }
 
     /**
@@ -421,7 +436,31 @@ class LocalDateTime
      */
     public function plusSeconds($seconds)
     {
-        return $this->plusWithOverflow(0, 0, $seconds, 1);
+        $seconds = Cast::toInteger($seconds);
+
+        if ($seconds === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, 0, $seconds, 0, 1);
+    }
+
+    /**
+     * Returns a copy of this LocalDateTime with the specified period in nanoseconds added.
+     *
+     * @param integer $nanos
+     *
+     * @return LocalDateTime
+     */
+    public function plusNanos($nanos)
+    {
+        $nanos = Cast::toInteger($nanos);
+
+        if ($nanos === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, 0, 0, $nanos, 1);
     }
 
     /**
@@ -445,7 +484,7 @@ class LocalDateTime
      */
     public function minusYears($years)
     {
-        return $this->plusYears(- $years);
+        return $this->with($this->date->minusYears($years), $this->time);
     }
 
     /**
@@ -457,7 +496,7 @@ class LocalDateTime
      */
     public function minusMonths($months)
     {
-        return $this->plusMonths(- $months);
+        return $this->with($this->date->minusMonths($months), $this->time);
     }
 
     /**
@@ -469,7 +508,7 @@ class LocalDateTime
      */
     public function minusWeeks($weeks)
     {
-        return $this->plusWeeks(- $weeks);
+        return $this->with($this->date->minusWeeks($weeks), $this->time);
     }
 
     /**
@@ -481,7 +520,7 @@ class LocalDateTime
      */
     public function minusDays($days)
     {
-        return $this->plusDays(- $days);
+        return $this->with($this->date->minusDays($days), $this->time);
     }
 
     /**
@@ -493,7 +532,13 @@ class LocalDateTime
      */
     public function minusHours($hours)
     {
-        return $this->plusWithOverflow($hours, 0, 0, -1);
+        $hours = Cast::toInteger($hours);
+
+        if ($hours === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow($hours, 0, 0, 0, -1);
     }
 
     /**
@@ -505,7 +550,13 @@ class LocalDateTime
      */
     public function minusMinutes($minutes)
     {
-        return $this->plusWithOverflow(0, $minutes, 0, -1);
+        $minutes = Cast::toInteger($minutes);
+
+        if ($minutes === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, $minutes, 0, 0, -1);
     }
 
     /**
@@ -517,29 +568,46 @@ class LocalDateTime
      */
     public function minusSeconds($seconds)
     {
-        return $this->plusWithOverflow(0, 0, $seconds, -1);
+        $seconds = Cast::toInteger($seconds);
+
+        if ($seconds === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, 0, $seconds, 0, -1);
+    }
+
+    /**
+     * Returns a copy of this LocalDateTime with the specified period in nanoseconds subtracted.
+     *
+     * @param integer $nanos
+     *
+     * @return LocalDateTime
+     */
+    public function minusNanos($nanos)
+    {
+        $nanos = Cast::toInteger($nanos);
+
+        if ($nanos === 0) {
+            return $this;
+        }
+
+        return $this->plusWithOverflow(0, 0, 0, $nanos, -1);
     }
 
     /**
      * Returns a copy of this `LocalDateTime` with the specified period added.
      *
-     * @param integer $hours   The hours to add, may be negative.
-     * @param integer $minutes The minutes to add, may be negative.
-     * @param integer $seconds The seconds to add, may be negative.
-     * @param integer $sign    The sign, `1` to add or `-1` to subtract, validated as an integer.
+     * @param integer $hours   The hours to add, validated as an integer. May be negative.
+     * @param integer $minutes The minutes to add, validated as an integer. May be negative.
+     * @param integer $seconds The seconds to add, validated as an integer. May be negative.
+     * @param integer $nanos   The nanos to add, validated as an integer. May be negative.
+     * @param integer $sign    The sign, validated as an integer of value `1` to add or `-1` to subtract.
      *
      * @return LocalDateTime The combined result.
      */
-    private function plusWithOverflow($hours, $minutes, $seconds, $sign)
+    private function plusWithOverflow($hours, $minutes, $seconds, $nanos, $sign)
     {
-        $hours = Cast::toInteger($hours);
-        $minutes = Cast::toInteger($minutes);
-        $seconds = Cast::toInteger($seconds);
-
-        if (($hours | $minutes | $seconds) == 0) {
-            return $this;
-        }
-
         $totDays =
             Math::div($hours, LocalTime::HOURS_PER_DAY) +
             Math::div($minutes, LocalTime::MINUTES_PER_DAY) +
@@ -553,10 +621,15 @@ class LocalDateTime
 
         $curSoD = $this->time->toSecondOfDay();
         $totSeconds = $totSeconds * $sign + $curSoD;
+
+        $totNanos = $nanos * $sign + $this->time->getNano();
+        $totSeconds += Math::floorDiv($totNanos, LocalTime::NANOS_PER_SECOND);
+        $newNano = Math::floorMod($totNanos, LocalTime::NANOS_PER_SECOND);
+
         $totDays += Math::floorDiv($totSeconds, LocalTime::SECONDS_PER_DAY);
         $newSoD = Math::floorMod($totSeconds, LocalTime::SECONDS_PER_DAY);
 
-        $newTime = ($newSoD == $curSoD ? $this->time : LocalTime::ofSecondOfDay($newSoD));
+        $newTime = ($newSoD === $curSoD ? $this->time : LocalTime::ofSecondOfDay($newSoD, $newNano));
 
         return $this->with($this->date->plusDays($totDays), $newTime);
     }
@@ -566,17 +639,11 @@ class LocalDateTime
      *
      * @param LocalDateTime $that The date-time to compare to.
      *
-     * @return integer The comparator value, negative if less, positive if greater, 0 if equal.
+     * @return integer [-1,0,1] If this date-time is before, on, or after the given date-time.
      */
     public function compareTo(LocalDateTime $that)
     {
-        $cmp = $this->date->compareTo($that->date);
-
-        if ($cmp == 0) {
-            $cmp = $this->time->compareTo($that->time);
-        }
-
-        return $cmp;
+        return $this->date->compareTo($that->date) ?: $this->time->compareTo($that->time);
     }
 
     /**
@@ -586,7 +653,7 @@ class LocalDateTime
      */
     public function isEqualTo(LocalDateTime $that)
     {
-        return $this->compareTo($that) == 0;
+        return $this->compareTo($that) === 0;
     }
 
     /**
@@ -627,20 +694,6 @@ class LocalDateTime
     public function isAfterOrEqualTo(LocalDateTime $that)
     {
         return $this->compareTo($that) >= 0;
-    }
-
-    /**
-     * @param TimeZoneOffset $offset
-     *
-     * @return integer
-     */
-    public function toEpochSecond(TimeZoneOffset $offset)
-    {
-        $epochDay = $this->getDate()->toEpochDay();
-        $secs = $epochDay * 86400 + $this->getTime()->toSecondOfDay();
-        $secs -= $offset->getTotalSeconds();
-
-        return $secs;
     }
 
     /**
