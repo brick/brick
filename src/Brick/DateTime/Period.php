@@ -5,7 +5,7 @@ namespace Brick\DateTime;
 use Brick\Type\Cast;
 
 /**
- * A period consisting of the most common units, such as 3 Months, 4 Days and 7 Hours.
+ * A date-based amount of time in the ISO-8601 calendar system, such as '2 years, 3 months and 4 days'.
  *
  * This class is immutable.
  */
@@ -27,38 +27,17 @@ class Period
     private $days;
 
     /**
-     * @var integer
-     */
-    private $hours;
-
-    /**
-     * @var integer
-     */
-    private $minutes;
-
-    /**
-     * @var integer
-     */
-    private $seconds;
-
-    /**
      * Private constructor. Use of() to obtain an instance.
      *
      * @param integer $years   The number of years, validated as an integer.
      * @param integer $months  The number of months, validated as an integer.
      * @param integer $days    The number of days, validated as an integer.
-     * @param integer $hours   The number of hours, validated as an integer.
-     * @param integer $minutes The number of minutes, validated as an integer.
-     * @param integer $seconds The number of seconds, validated as an integer.
      */
-    private function __construct($years, $months, $days, $hours, $minutes, $seconds)
+    private function __construct($years, $months, $days)
     {
         $this->years   = $years;
         $this->months  = $months;
         $this->days    = $days;
-        $this->hours   = $hours;
-        $this->minutes = $minutes;
-        $this->seconds = $seconds;
     }
 
     /**
@@ -67,21 +46,15 @@ class Period
      * @param integer $years   The number of years.
      * @param integer $months  The number of months.
      * @param integer $days    The number of days.
-     * @param integer $hours   The number of hours.
-     * @param integer $minutes The number of minutes.
-     * @param integer $seconds The number of seconds.
      *
      * @return Period
      */
-    public static function of($years, $months, $days, $hours, $minutes, $seconds)
+    public static function of($years, $months, $days)
     {
         return new Period(
             Cast::toInteger($years),
             Cast::toInteger($months),
-            Cast::toInteger($days),
-            Cast::toInteger($hours),
-            Cast::toInteger($minutes),
-            Cast::toInteger($seconds)
+            Cast::toInteger($days)
         );
     }
 
@@ -92,26 +65,11 @@ class Period
      */
     public static function zero()
     {
-        return new Period(0, 0, 0, 0, 0, 0);
+        return new Period(0, 0, 0);
     }
 
     /**
-     * Creates a Period based on hours, minutes and seconds.
-     *
-     * @param integer $hours   The amount of hours, may be negative.
-     * @param integer $minutes The amount of minutes, may be negative.
-     * @param integer $seconds The amount of seconds, may be negative.
-     *
-     * @return Period
-     */
-    public static function ofTime($hours, $minutes, $seconds)
-    {
-        return Period::of(0, 0, 0, $hours, $minutes, $seconds);
-    }
-
-    /**
-     * Returns a Period consisting of the number of years, months, days,
-     * hours, minutes, and seconds between two LocalDateTime instances.
+     * Returns a Period consisting of the number of years, months and days between two LocalDateTime instances.
      *
      * @param LocalDateTime $startInclusive
      * @param LocalDateTime $endExclusive
@@ -148,30 +106,6 @@ class Period
     }
 
     /**
-     * @return integer
-     */
-    public function getHours()
-    {
-        return $this->hours;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getMinutes()
-    {
-        return $this->minutes;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getSeconds()
-    {
-        return $this->seconds;
-    }
-
-    /**
      * @param integer $years
      *
      * @return Period
@@ -180,11 +114,11 @@ class Period
     {
         $years = Cast::toInteger($years);
 
-        if ($years == $this->years) {
+        if ($years === $this->years) {
             return $this;
         }
 
-        return new Period($years, $this->months, $this->days, $this->hours, $this->minutes, $this->seconds);
+        return new Period($years, $this->months, $this->days);
     }
 
     /**
@@ -196,11 +130,11 @@ class Period
     {
         $months = Cast::toInteger($months);
 
-        if ($months == $this->months) {
+        if ($months === $this->months) {
             return $this;
         }
 
-        return new Period($this->years, $months, $this->days, $this->hours, $this->minutes, $this->seconds);
+        return new Period($this->years, $months, $this->days);
     }
 
     /**
@@ -212,59 +146,11 @@ class Period
     {
         $days = Cast::toInteger($days);
 
-        if ($days == $this->days) {
+        if ($days === $this->days) {
             return $this;
         }
 
-        return new Period($this->years, $this->months, $days, $this->hours, $this->minutes, $this->seconds);
-    }
-
-    /**
-     * @param integer $hours
-     *
-     * @return Period
-     */
-    public function withHours($hours)
-    {
-        $hours = Cast::toInteger($hours);
-
-        if ($hours == $this->hours) {
-            return $this;
-        }
-
-        return new Period($this->years, $this->months, $this->days, $hours, $this->minutes, $this->seconds);
-    }
-
-    /**
-     * @param integer $minutes
-     *
-     * @return Period
-     */
-    public function withMinutes($minutes)
-    {
-        $minutes = Cast::toInteger($minutes);
-
-        if ($minutes == $this->minutes) {
-            return $this;
-        }
-
-        return new Period($this->years, $this->months, $this->days, $this->hours, $minutes, $this->seconds);
-    }
-
-    /**
-     * @param integer $seconds
-     *
-     * @return Period
-     */
-    public function withSeconds($seconds)
-    {
-        $seconds = Cast::toInteger($seconds);
-
-        if ($seconds == $this->seconds) {
-            return $this;
-        }
-
-        return new Period($this->years, $this->months, $this->days, $this->hours, $this->minutes, $seconds);
+        return new Period($this->years, $this->months, $days);
     }
 
     /**
@@ -274,39 +160,27 @@ class Period
      */
     public function negated()
     {
+        if ($this->years === 0 && $this->months === 0 && $this->days === 0) {
+            return $this;
+        }
+
         return new Period(
             - $this->years,
             - $this->months,
-            - $this->days,
-            - $this->hours,
-            - $this->minutes,
-            - $this->seconds
+            - $this->days
         );
     }
 
     /**
-     * Returns the number of seconds as totalled by hours, minutes and seconds.
-     *
-     * @return integer
-     */
-    private function getTotalSeconds()
-    {
-        return LocalTime::SECONDS_PER_HOUR * $this->hours
-            + LocalTime::MINUTES_PER_HOUR * $this->minutes
-            + $this->seconds;
-    }
-
-    /**
-     * @param Period $period
+     * @param Period $that
      *
      * @return boolean
      */
-    public function isEqualTo(Period $period)
+    public function isEqualTo(Period $that)
     {
-        return $this->years == $period->years
-            && $this->months == $period->months
-            && $this->days == $period->days
-            && $this->getTotalSeconds() == $period->getTotalSeconds();
+        return $this->years === $that->years
+            && $this->months === $that->months
+            && $this->days === $that->days;
     }
 
     /**
@@ -317,13 +191,10 @@ class Period
     public function toDateInterval()
     {
         return \DateInterval::createFromDateString(sprintf(
-            '%d years %d months %d days %d hours %d minutes %d seconds',
+            '%d years %d months %d days',
             $this->years,
             $this->months,
-            $this->days,
-            $this->hours,
-            $this->minutes,
-            $this->seconds
+            $this->days
         ));
     }
 }

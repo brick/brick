@@ -13,24 +13,18 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     {
         $period = Period::zero();
 
-        $this->assertEquals(0, $period->getYears());
-        $this->assertEquals(0, $period->getMonths());
-        $this->assertEquals(0, $period->getDays());
-        $this->assertEquals(0, $period->getHours());
-        $this->assertEquals(0, $period->getMinutes());
-        $this->assertEquals(0, $period->getSeconds());
+        $this->assertSame(0, $period->getYears());
+        $this->assertSame(0, $period->getMonths());
+        $this->assertSame(0, $period->getDays());
     }
 
     public function testGetters()
     {
         $period = Period::of(6, 5, 4, 3, 2, 1);
 
-        $this->assertEquals(6, $period->getYears());
-        $this->assertEquals(5, $period->getMonths());
-        $this->assertEquals(4, $period->getDays());
-        $this->assertEquals(3, $period->getHours());
-        $this->assertEquals(2, $period->getMinutes());
-        $this->assertEquals(1, $period->getSeconds());
+        $this->assertSame(6, $period->getYears());
+        $this->assertSame(5, $period->getMonths());
+        $this->assertSame(4, $period->getDays());
     }
 
     public function testWithYears()
@@ -57,43 +51,24 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($period->withDays(9)->isEqualTo($expected));
     }
 
-    public function testWithHours()
-    {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(1, 2, 3, 9, 5, 6);
-
-        $this->assertTrue($period->withHours(9)->isEqualTo($expected));
-    }
-
-    public function testWithMinutes()
-    {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(1, 2, 3, 4, 9, 6);
-
-        $this->assertTrue($period->withMinutes(9)->isEqualTo($expected));
-    }
-
-    public function testWithSeconds()
-    {
-        $period = Period::of(1, 2, 3, 4, 5, 6);
-        $expected = Period::of(1, 2, 3, 4, 5, 9);
-
-        $this->assertTrue($period->withSeconds(9)->isEqualTo($expected));
-    }
-
     /**
      * @dataProvider providerIsEqualTo
      *
-     * @param integer $hours   The hours of the period to compare.
-     * @param integer $minutes The minutes of the period to compare.
-     * @param integer $seconds The seconds of the period to compare.
+     * @param integer $y1      The number of years in the 1st period.
+     * @param integer $m1      The number of months in the 1st period.
+     * @param integer $d1      The number of days in the 1st period.
+     * @param integer $y2      The number of years in the 2nd period.
+     * @param integer $m2      The number of months in the 2nd period.
+     * @param integer $d2      The number of days in the 2nd period.
+     * @param boolean $isEqual The expected return value.
      */
-    public function testIsEqualTo($hours, $minutes, $seconds)
+    public function testIsEqualTo($y1, $m1, $d1, $y2, $m2, $d2, $isEqual)
     {
-        $oneHourPeriod = Period::ofTime(1, 0, 0);
-        $period = Period::ofTime($hours, $minutes, $seconds);
+        $p1 = Period::of($y1, $m1, $d1);
+        $p2 = Period::of($y2, $m2, $d2);
 
-        $this->assertTrue($period->isEqualTo($oneHourPeriod));
+        $this->assertSame($isEqual, $p1->isEqualTo($p2));
+        $this->assertSame($isEqual, $p2->isEqualTo($p1));
     }
 
     /**
@@ -102,18 +77,17 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     public function providerIsEqualTo()
     {
         return [
-            [0, 60, 0],
-            [0, 0, 3600],
-            [0, 59, 60],
-            [2, -60, 0],
-            [3, -60, -3600],
-            [1, -60, 3600],
-            [1, 1, -60],
-            [2, 0, -3600],
-            [-1, 60, 3600],
-            [-1, 30, 5400],
-            [-1, -1, 7260],
-            [-2, 182, -120]
+            [0, 0, 0, 0, 0, 0, true],
+            [0, 0, 0, 0, 0, 1, false],
+            [0, 0, 0, 0, 0, -1, false],
+            [1, 1, 1, 1, 1, 1, true],
+            [1, 1, 1, 1, 2, 1, false],
+            [-1, -1, -1, -1, -1, -1, true],
+            [-1, -1, -1, -1, -2, -1, false],
+            [2, 2, 2, 2, 2, 2, true],
+            [2, 2, 2, 3, 2, 2, false],
+            [-2, -2, -2, -2, -2, -2, true],
+            [-2, -2, -2, -3, -2, -2, false],
         ];
     }
 
@@ -123,21 +97,15 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
      * @param integer $years
      * @param integer $months
      * @param integer $days
-     * @param integer $hours
-     * @param integer $minutes
-     * @param integer $seconds
      */
-    public function testToDateInterval($years, $months, $days, $hours, $minutes, $seconds)
+    public function testToDateInterval($years, $months, $days)
     {
-        $period = Period::of($years, $months, $days, $hours, $minutes, $seconds);
+        $period = Period::of($years, $months, $days);
         $dateInterval = $period->toDateInterval();
 
         $this->assertEquals($years, $dateInterval->y);
         $this->assertEquals($months, $dateInterval->m);
         $this->assertEquals($days, $dateInterval->d);
-        $this->assertEquals($hours, $dateInterval->h);
-        $this->assertEquals($minutes, $dateInterval->i);
-        $this->assertEquals($seconds, $dateInterval->s);
     }
 
     /**
@@ -146,8 +114,8 @@ class PeriodTest extends \PHPUnit_Framework_TestCase
     public function providerToDateInterval()
     {
         return [
-            [1, -2, 3, -4, 5, -6],
-            [-1, 2, -3, 4, -5, 6]
+            [1, -2, 3],
+            [-1, 2, -3]
         ];
     }
 }
