@@ -9,52 +9,53 @@ use Brick\DateTime\LocalTime;
  */
 class LocalTimeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param integer   $hour   The expected hour.
+     * @param integer   $minute The expected minute.
+     * @param integer   $second The expected second.
+     * @param integer   $nano   The expected nano-of-second.
+     * @param LocalTime $time   The time to test.
+     */
+    private function assertLocalTimeEquals($hour, $minute, $second, $nano, LocalTime $time)
+    {
+        $this->assertSame($hour, $time->getHour());
+        $this->assertSame($minute, $time->getMinute());
+        $this->assertSame($second, $time->getSecond());
+        $this->assertSame($nano, $time->getNano());
+    }
+
     public function testMidnight()
     {
-        $time = LocalTime::midnight();
-
-        $this->assertSame(0, $time->getHour());
-        $this->assertSame(0, $time->getMinute());
-        $this->assertSame(0, $time->getSecond());
+        $this->assertLocalTimeEquals(0, 0, 0, 0, LocalTime::midnight());
     }
 
-    /**
-     * @dataProvider providerOfInvalidSecondOfDayThrowsException
-     * @expectedException \Brick\DateTime\DateTimeException
-     *
-     * @param integer $secondOfDay
-     */
-    public function testOfInvalidSecondOfDayThrowsException($secondOfDay)
+    public function testNoon()
     {
-        LocalTime::ofSecondOfDay($secondOfDay);
+        $this->assertLocalTimeEquals(12, 0, 0, 0, LocalTime::noon());
     }
 
-    /**
-     * @return array
-     */
-    public function providerOfInvalidSecondOfDayThrowsException()
+    public function testMin()
     {
-        return [
-            [-1],
-            [86400]
-        ];
+        $this->assertLocalTimeEquals(0, 0, 0, 0, LocalTime::min());
+    }
+
+    public function testMax()
+    {
+        $this->assertLocalTimeEquals(23, 59, 59, 999999999, LocalTime::max());
     }
 
     /**
      * @dataProvider providerOfSecondOfDay
      *
-     * @param integer $secondOfDay
-     * @param integer $expectedHour
-     * @param integer $expectedMinute
-     * @param integer $expectedSecond
+     * @param integer $secondOfDay  The second-of-day to test.
+     * @param integer $hour         The expected resulting hour.
+     * @param integer $minute       The expected resulting minute.
+     * @param integer $second       The expected resulting second.
      */
-    public function testOfSecondOfDay($secondOfDay, $expectedHour, $expectedMinute, $expectedSecond)
+    public function testOfSecondOfDay($secondOfDay, $hour, $minute, $second)
     {
-        $localTime = LocalTime::ofSecondOfDay($secondOfDay);
-
-        $this->assertSame($expectedHour, $localTime->getHour());
-        $this->assertSame($expectedMinute, $localTime->getMinute());
-        $this->assertSame($expectedSecond, $localTime->getSecond());
+        $localTime = LocalTime::ofSecondOfDay($secondOfDay, 123456789);
+        $this->assertLocalTimeEquals($hour, $minute, $second, 123456789, $localTime);
     }
 
     /**
@@ -78,6 +79,31 @@ class LocalTimeTest extends \PHPUnit_Framework_TestCase
             [43200, 12, 0, 0],
             [43201, 12, 0, 1],
             [86399, 23, 59, 59]
+        ];
+    }
+
+    /**
+     * @dataProvider providerOfInvalidSecondOfDayThrowsException
+     * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param integer $secondOfDay
+     * @param integer $nanoOfSecond
+     */
+    public function testOfInvalidSecondOfDayThrowsException($secondOfDay, $nanoOfSecond)
+    {
+        LocalTime::ofSecondOfDay($secondOfDay, $nanoOfSecond);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerOfInvalidSecondOfDayThrowsException()
+    {
+        return [
+            [-1, 0],
+            [86400, 0],
+            [0, -1],
+            [0, 1000000000]
         ];
     }
 

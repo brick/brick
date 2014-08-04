@@ -70,19 +70,19 @@ class LocalTime
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
-     * @param integer $nanos
+     * @param integer $nano
      *
      * @return LocalTime
      *
      * @throws \InvalidArgumentException
      * @throws DateTimeException
      */
-    public static function of($hour, $minute, $second = 0, $nanos = 0)
+    public static function of($hour, $minute, $second = 0, $nano = 0)
     {
         $hour   = Cast::toInteger($hour);
         $minute = Cast::toInteger($minute);
         $second = Cast::toInteger($second);
-        $nanos  = Cast::toInteger($nanos);
+        $nano  = Cast::toInteger($nano);
 
         if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
             throw new DateTimeException('Hour must be in the interval [0-23]');
@@ -96,11 +96,11 @@ class LocalTime
             throw new DateTimeException('Second must be in the interval [0-59]');
         }
 
-        if ($nanos < 0 || $nanos >= LocalTime::NANOS_PER_SECOND) {
-            throw new DateTimeParseException('Nanoseconds out of range: ' . $nanos);
+        if ($nano < 0 || $nano >= LocalTime::NANOS_PER_SECOND) {
+            throw new DateTimeParseException('Nanoseconds out of range: ' . $nano);
         }
 
-        return new LocalTime($hour, $minute, $second, $nanos);
+        return new LocalTime($hour, $minute, $second, $nano);
     }
 
     /**
@@ -144,16 +144,22 @@ class LocalTime
      * Creates a LocalTime instance from a number of seconds since midnight.
      *
      * @param integer $secondOfDay
+     * @param integer $nanoOfSecond
      *
      * @return LocalTime
      * @throws DateTimeException
      */
-    public static function ofSecondOfDay($secondOfDay)
+    public static function ofSecondOfDay($secondOfDay, $nanoOfSecond = 0)
     {
         $secondOfDay = (int) $secondOfDay;
+        $nanoOfSecond = (int) $nanoOfSecond;
 
         if ($secondOfDay < 0 || $secondOfDay >= self::SECONDS_PER_DAY) {
-            throw new DateTimeException('Second of day must be in the interval [0-86399]');
+            throw new DateTimeException('Second of day must be in the interval 0 to 86,399.');
+        }
+
+        if ($nanoOfSecond < 0 || $nanoOfSecond >= self::NANOS_PER_SECOND) {
+            throw new DateTimeParseException('Nano of second must be in the interval 0 to 999,999,999.');
         }
 
         $hours = Math::div($secondOfDay, self::SECONDS_PER_HOUR);
@@ -161,7 +167,7 @@ class LocalTime
         $minutes = Math::div($secondOfDay, self::SECONDS_PER_MINUTE);
         $secondOfDay -= $minutes * self::SECONDS_PER_MINUTE;
 
-        return new LocalTime($hours, $minutes, $secondOfDay, 0);
+        return new LocalTime($hours, $minutes, $secondOfDay, $nanoOfSecond);
     }
 
     /**
