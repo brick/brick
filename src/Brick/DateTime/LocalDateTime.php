@@ -663,17 +663,7 @@ class LocalDateTime
      */
     public function isBefore(LocalDateTime $that)
     {
-        return $this->compareTo($that) < 0;
-    }
-
-    /**
-     * @param LocalDateTime $that
-     *
-     * @return boolean
-     */
-    public function isBeforeOrEqualTo(LocalDateTime $that)
-    {
-        return $this->compareTo($that) <= 0;
+        return $this->compareTo($that) === -1;
     }
 
     /**
@@ -683,17 +673,7 @@ class LocalDateTime
      */
     public function isAfter(LocalDateTime $that)
     {
-        return $this->compareTo($that) > 0;
-    }
-
-    /**
-     * @param LocalDateTime $that
-     *
-     * @return boolean
-     */
-    public function isAfterOrEqualTo(LocalDateTime $that)
-    {
-        return $this->compareTo($that) >= 0;
+        return $this->compareTo($that) === 1;
     }
 
     /**

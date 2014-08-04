@@ -16,13 +16,13 @@ use Brick\DateTime\Year;
 class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param integer       $y  The expected year.
-     * @param integer       $m  The expected month.
-     * @param integer       $d  The expected day.
-     * @param integer       $h  The expected hour.
-     * @param integer       $i  The expected minute.
-     * @param integer       $s  The expected second.
-     * @param integer       $n  The expected nano.
+     * @param integer $y The expected year.
+     * @param integer $m The expected month.
+     * @param integer $d The expected day.
+     * @param integer $h The expected hour.
+     * @param integer $i The expected minute.
+     * @param integer $s The expected second.
+     * @param integer $n The expected nano-of-second.
      * @param LocalDateTime $dt The date-time to test.
      */
     private function assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime $dt)
@@ -36,17 +36,23 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($n, $dt->getNano());
     }
 
+    public function testOf()
+    {
+        $dateTime = LocalDateTime::of(2001, 12, 23, 12, 34, 56, 987654321);
+        $this->assertLocalDateTimeEquals(2001, 12, 23, 12, 34, 56, 987654321, $dateTime);
+    }
+
     /**
      * @dataProvider providerParse
      *
-     * @param string  $t The text to parse.
+     * @param string $t The text to parse.
      * @param integer $y The expected year.
      * @param integer $m The expected month.
      * @param integer $d The expected day.
      * @param integer $h The expected hour.
      * @param integer $i The expected minute.
      * @param integer $s The expected second.
-     * @param integer $n The expected nano.
+     * @param integer $n The expected nano-of-second.
      */
     public function testParse($t, $y, $m, $d, $h, $i, $s, $n)
     {
@@ -135,219 +141,167 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testPlusHoursOne()
-    {
-        $d = LocalDate::of(2007, 7, 15);
-        $t = $d->atTime(LocalTime::midnight());
-
-        for ($i = 0; $i < 50; $i++) {
-            $t = $t->plusHours(1);
-
-            if (($i + 1) % 24 == 0) {
-                $d = $d->plusDays(1);
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals(($i + 1) % 24, $t->getHour());
-        }
-    }
-
-    public function testPlusHoursFromZero()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $base->getDate()->minusDays(3);
-        $t = LocalTime::of(21, 0);
-
-        for ($i = -50; $i < 50; $i++) {
-            $dt = $base->plusHours($i);
-            $t = $t->plusHours(1);
-
-            if ($t->getHour() == 0) {
-                $d = $d->plusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testPlusHoursFromOne()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::of(1, 0));
-        $d = $base->getDate()->minusDays(3);
-        $t = LocalTime::of(22, 0);
-
-        for ($i = -50; $i < 50; $i++) {
-            $dt = $base->plusHours($i);
-            $t = $t->plusHours(1);
-
-            if ($t->getHour() == 0) {
-                $d = $d->plusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testPlusMinutesOne()
-    {
-        $t = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $t->getDate();
-
-        $hour = 0;
-        $min = 0;
-
-        for ($i = 0; $i < 70; $i++) {
-            $t = $t->plusMinutes(1);
-            $min++;
-
-            if ($min == 60) {
-                $hour++;
-                $min = 0;
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals($hour, $t->getHour());
-            $this->assertEquals($min, $t->getMinute());
-        }
-    }
-
-    public function testPlusMinutesFromZero()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $base->getDate()->minusDays(1);
-        $t = LocalTime::of(22, 49);
-
-        for ($i = -70; $i < 70; $i++) {
-            $dt = $base->plusMinutes($i);
-            $t = $t->plusMinutes(1);
-
-            if ($t->isEqualTo(LocalTime::midnight())) {
-                $d = $d->plusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testPlusMinutesNoChangeOneDay()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::of(12, 30, 40));
-        $t = $base->plusMinutes(24 * 60);
-        $this->assertTrue($t->getDate()->isEqualTo($base->getDate()->plusDays(1)));
-    }
-
-    public function testPlusSecondsOne()
-    {
-        $t = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $t->getDate();
-
-        $hour = 0;
-        $min = 0;
-        $sec = 0;
-
-        for ($i = 0; $i < 3700; $i++) {
-            $t = $t->plusSeconds(1);
-            $sec++;
-
-            if ($sec == 60) {
-                $min++;
-                $sec = 0;
-            }
-            if ($min == 60) {
-                $hour++;
-                $min = 0;
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals($hour, $t->getHour());
-            $this->assertEquals($min, $t->getMinute());
-            $this->assertEquals($sec, $t->getSecond());
-        }
-    }
-
     /**
-     * @dataProvider providerPlusSecondsFromZero
+     * @dataProvider providerPlusYears
      *
-     * @param integer   $seconds
-     * @param LocalDate $date
-     * @param integer   $hour
-     * @param integer   $min
-     * @param integer   $sec
+     * @param string $dateTime The base date-time string.
+     * @param integer $years The number of years to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
      */
-    public function testPlusSecondsFromZero($seconds, LocalDate $date, $hour, $min, $sec)
+    public function testPlusYears($dateTime, $years, $expectedDateTime)
     {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $t = $base->plusSeconds($seconds);
-
-        $this->assertTrue($t->getDate()->isEqualTo($date));
-        $this->assertEquals($hour, $t->getHour());
-        $this->assertEquals($min, $t->getMinute());
-        $this->assertEquals($sec, $t->getSecond());
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusYears($years);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
     }
 
     /**
      * @return array
      */
-    public function providerPlusSecondsFromZero()
+    public function providerPlusYears()
     {
-        $tests = [];
-
-        $delta = 30;
-        $i = -3660;
-        $date = LocalDate::of(2007, 7, 14);
-        $hour = 22;
-        $min = 59;
-        $sec = 0;
-
-        while ($i <= 3660) {
-            $tests[] = [$i, $date, $hour, $min, $sec];
-
-            $i+= $delta;
-            $sec += $delta;
-
-            if ($sec >= 60) {
-                $min++;
-                $sec -= 60;
-
-                if ($min == 60) {
-                    $hour++;
-                    $min = 0;
-
-                    if ($hour == 24) {
-                        $hour = 0;
-                    }
-                }
-
-                if ($i == 0) {
-                    $date = $date->plusDays(1);
-                }
-            }
-        }
-
-        return $tests;
+        return [
+            ['2000-02-29T12:34', 0, '2000-02-29T12:34'],
+            ['2001-02-23T12:34:56.123456789', 1, '2002-02-23T12:34:56.123456789'],
+            ['2000-02-29T12:34', -1, '1999-02-28T12:34']
+        ];
     }
 
-    public function testPlusSecondsNoChangeOneDay()
+    /**
+     * @dataProvider providerPlusMonths
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $months The number of months to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusMonths($dateTime, $months, $expectedDateTime)
     {
-        $base = LocalDate::of(2007, 7, 15);
-        $t = $base->atTime(LocalTime::of(12, 30, 40))->plusSeconds(24 * 60 * 60);
-        $this->assertTrue($t->getDate()->isEqualTo($base->plusDays(1)));
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusMonths($months);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusMonths()
+    {
+        return [
+            ['2001-01-31T12:34:56', 0, '2001-01-31T12:34:56'],
+            ['2001-01-31T12:34:56', 1, '2001-02-28T12:34:56'],
+            ['2001-04-30T12:34:56.123456789', -14, '2000-02-29T12:34:56.123456789']
+        ];
+    }
+
+    /**
+     * @dataProvider providerPlusDays
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $days The number of days to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusDays($dateTime, $days, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusDays($days);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusDays()
+    {
+        return [
+            ['1999-11-30T12:34', 0, '1999-11-30T12:34'],
+            ['1999-11-30T12:34', 5000, '2013-08-08T12:34'],
+            ['2000-11-30T12:34:56.123456789', -500, '1999-07-19T12:34:56.123456789']
+        ];
+    }
+
+    /**
+     * @dataProvider providerPlusHours
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $hours The number of hours to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusHours($dateTime, $hours, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusHours($hours);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusHours()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['1999-11-30T12:34:56', 123456, '2013-12-30T12:34:56'],
+            ['2000-11-30T12:34:56.123456789', -654321, '1926-04-10T03:34:56.123456789']
+        ];
+    }
+
+    /**
+     * @dataProvider providerPlusMinutes
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $minutes The number of minutes to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusMinutes($dateTime, $minutes, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusMinutes($minutes);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusMinutes()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['1999-11-30T12:34:56', 123456789, '2234-08-24T09:43:56'],
+            ['2000-11-30T12:34:56.123456789', -987654321, '0123-01-24T11:13:56.123456789']
+        ];
+    }
+
+    /**
+     * @dataProvider providerPlusSeconds
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $seconds The number of seconds to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testPlusSeconds($dateTime, $seconds, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->plusSeconds($seconds);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerPlusSeconds()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['1999-11-30T12:34:56', 123456789, '2003-10-29T10:08:05'],
+            ['2000-11-30T12:34:56.123456789', -987654321, '1969-08-14T08:09:35.123456789']
+        ];
     }
 
     /**
      * @dataProvider providerPlusNanos
      *
-     * @param string  $dateTime         The base date-time string.
-     * @param integer $nanosToAdd       The nanoseconds to add.
-     * @param string  $expectedDateTime The expected resulting date-time string.
+     * @param string $dateTime The base date-time string.
+     * @param integer $nanosToAdd The nanoseconds to add.
+     * @param string $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusNanos($dateTime, $nanosToAdd, $expectedDateTime)
     {
         $actualDateTime = LocalDateTime::parse($dateTime)->plusNanos($nanosToAdd);
-        $this->assertSame($expectedDateTime, (string) $actualDateTime);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
     }
 
     /**
@@ -356,227 +310,174 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     public function providerPlusNanos()
     {
         return [
+            ['2000-03-01T00:00', 0, '2000-03-01T00:00'],
             ['2014-12-31T23:59:58.5', 1500000000, '2015-01-01T00:00'],
             ['2000-03-01T00:00', -1, '2000-02-29T23:59:59.999999999'],
             ['2000-01-01T00:00:01', -1999999999, '1999-12-31T23:59:59.000000001']
         ];
     }
 
-    public function testMinusHoursOne()
-    {
-        $d = LocalDate::of(2007, 7, 15);
-        $t = $d->atTime(LocalTime::midnight());
-
-        for ($i = 0; $i < 50; $i++) {
-            $t = $t->minusHours(1);
-
-            if ($i % 24 == 0) {
-                $d = $d->minusDays(1);
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals((((-$i + 23) % 24) + 24) % 24, $t->getHour());
-        }
-    }
-
-    public function testMinusHoursFromZero()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $base->getDate()->plusDays(2);
-        $t = LocalTime::of(3, 0);
-
-        for ($i = -50; $i < 50; $i++) {
-            $dt = $base->minusHours($i);
-            $t = $t->minusHours(1);
-
-            if ($t->getHour() == 23) {
-                $d = $d->minusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testMinusHoursFromOne()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::of(1, 0));
-        $d = $base->getDate()->plusDays(2);
-        $t = LocalTime::of(4, 0);
-
-        for ($i = -50; $i < 50; $i++) {
-            $dt = $base->minusHours($i);
-            $t = $t->minusHours(1);
-
-            if ($t->getHour() == 23) {
-                $d = $d->minusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testMinusMinutesOne()
-    {
-        $t = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $t->getDate()->minusDays(1);
-
-        $hour = 0;
-        $min = 0;
-
-        for ($i = 0; $i < 70; $i++) {
-            $t = $t->minusMinutes(1);
-            $min--;
-
-            if ($min == -1) {
-                $hour--;
-                $min = 59;
-
-                if ($hour == -1) {
-                    $hour = 23;
-                }
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals($hour, $t->getHour());
-            $this->assertEquals($min, $t->getMinute());
-        }
-    }
-
-    public function testMinusMinutesFromZero()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $base->getDate()->minusDays(1);
-        $t = LocalTime::of(22, 49);
-
-        for ($i = 70; $i > -70; $i--) {
-            $dt = $base->minusMinutes($i);
-            $t = $t->plusMinutes(1);
-
-            if ($t->isEqualTo(LocalTime::midnight())) {
-                $d = $d->plusDays(1);
-            }
-
-            $this->assertTrue($dt->getDate()->isEqualTo($d));
-            $this->assertTrue($dt->getTime()->isEqualTo($t));
-        }
-    }
-
-    public function testMinusMinutesNoChangeOneDay()
-    {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::of(12, 30, 40));
-        $t = $base->minusMinutes(24 * 60);
-        $this->assertTrue($t->getDate()->isEqualTo($base->getDate()->minusDays(1)));
-    }
-
-    public function testMinusSecondsOne()
-    {
-        $t = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $d = $t->getDate()->minusDays(1);
-
-        $hour = 0;
-        $min = 0;
-        $sec = 0;
-
-        for ($i = 0; $i < 3700; $i++) {
-            $t = $t->minusSeconds(1);
-            $sec--;
-
-            if ($sec == -1) {
-                $min--;
-                $sec = 59;
-
-                if ($min == -1) {
-                    $hour--;
-                    $min = 59;
-
-                    if ($hour == -1) {
-                        $hour = 23;
-                    }
-                }
-            }
-
-            $this->assertTrue($t->getDate()->isEqualTo($d));
-            $this->assertEquals($hour, $t->getHour());
-            $this->assertEquals($min, $t->getMinute());
-            $this->assertEquals($sec, $t->getSecond());
-        }
-    }
-
     /**
-     * @dataProvider providerMinusSecondsFromZero
+     * @dataProvider providerMinusYears
      *
-     * @param integer   $seconds
-     * @param LocalDate $date
-     * @param integer   $hour
-     * @param integer   $min
-     * @param integer   $sec
+     * @param string $dateTime The base date-time string.
+     * @param integer $years The number of years to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
      */
-    public function testMinusSecondsFromZero($seconds, LocalDate $date, $hour, $min, $sec)
+    public function testMinusYears($dateTime, $years, $expectedDateTime)
     {
-        $base = LocalDate::of(2007, 7, 15)->atTime(LocalTime::midnight());
-        $t = $base->minusSeconds($seconds);
-
-        $this->assertTrue($t->getDate()->isEqualTo($date));
-        $this->assertEquals($hour, $t->getHour());
-        $this->assertEquals($min, $t->getMinute());
-        $this->assertEquals($sec, $t->getSecond());
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusYears($years);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
     }
 
     /**
      * @return array
      */
-    public function providerMinusSecondsFromZero()
+    public function providerMinusYears()
     {
-        $tests = [];
+        return [
+            ['2000-02-29T12:34', 0, '2000-02-29T12:34'],
+            ['2000-02-29T12:34', 1, '1999-02-28T12:34'],
+            ['2000-02-29T12:34:56.123456789', -1, '2001-02-28T12:34:56.123456789']
+        ];
+    }
 
-        $delta = 30;
-        $i = 3660;
-        $date = LocalDate::of(2007, 7, 14);
-        $hour = 22;
-        $min = 59;
-        $sec = 0;
+    /**
+     * @dataProvider providerMinusMonths
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $months The number of months to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusMonths($dateTime, $months, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusMonths($months);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
 
-        while ($i >= -3660) {
-            $tests[] = [$i, $date, $hour, $min, $sec];
+    /**
+     * @return array
+     */
+    public function providerMinusMonths()
+    {
+        return [
+            ['2001-01-31T12:34:56', 0, '2001-01-31T12:34:56'],
+            ['2001-04-30T12:34:56.123456789', 14, '2000-02-29T12:34:56.123456789'],
+            ['2001-01-31T12:34:56', -1, '2001-02-28T12:34:56']
+        ];
+    }
 
-            $i-= $delta;
-            $sec += $delta;
+    /**
+     * @dataProvider providerMinusDays
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $days The number of days to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusDays($dateTime, $days, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusDays($days);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
 
-            if ($sec >= 60) {
-                $min++;
-                $sec -= 60;
+    /**
+     * @return array
+     */
+    public function providerMinusDays()
+    {
+        return [
+            ['1999-11-30T12:34', 0, '1999-11-30T12:34'],
+            ['2000-11-30T12:34:56.123456789', 123456, '1662-11-26T12:34:56.123456789'],
+            ['1999-11-30T12:34', -654321, '3791-05-20T12:34']
+        ];
+    }
 
-                if ($min == 60) {
-                    $hour++;
-                    $min = 0;
+    /**
+     * @dataProvider providerMinusHours
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $hours The number of hours to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusHours($dateTime, $hours, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusHours($hours);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
 
-                    if ($hour == 24) {
-                        $hour = 0;
-                    }
-                }
+    /**
+     * @return array
+     */
+    public function providerMinusHours()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['2000-11-30T12:34:56.123456789', 123456, '1986-10-31T12:34:56.123456789'],
+            ['1999-11-30T12:34:56', -654321, '2074-07-22T21:34:56']
+        ];
+    }
 
-                if ($i == 0) {
-                    $date = $date->plusDays(1);
-                }
-            }
-        }
+    /**
+     * @dataProvider providerMinusMinutes
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $minutes The number of minutes to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusMinutes($dateTime, $minutes, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusMinutes($minutes);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
 
-        return $tests;
+    /**
+     * @return array
+     */
+    public function providerMinusMinutes()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['2000-11-30T12:34:56.123456789', 123456789, '1766-03-08T15:25:56.123456789'],
+            ['1999-11-30T12:34:56', -987654321, '3877-10-06T13:55:56'],
+        ];
+    }
+
+    /**
+     * @dataProvider providerMinusSeconds
+     *
+     * @param string $dateTime The base date-time string.
+     * @param integer $seconds The number of seconds to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
+     */
+    public function testMinusSeconds($dateTime, $seconds, $expectedDateTime)
+    {
+        $actualDateTime = LocalDateTime::parse($dateTime)->minusSeconds($seconds);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMinusSeconds()
+    {
+        return [
+            ['1999-11-30T12:34:56', 0, '1999-11-30T12:34:56'],
+            ['2000-11-30T12:34:56.123456789', 123456789, '1997-01-01T15:01:47.123456789'],
+            ['1999-11-30T12:34:56', -987654321, '2031-03-18T17:00:17'],
+        ];
     }
 
     /**
      * @dataProvider providerMinusNanos
      *
-     * @param string  $dateTime         The base date-time string.
-     * @param integer $nanosToSubtract  The nanoseconds to subtract.
-     * @param string  $expectedDateTime The expected resulting date-time string.
+     * @param string $dateTime The base date-time string.
+     * @param integer $nanosToSubtract The nanoseconds to subtract.
+     * @param string $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusNanos($dateTime, $nanosToSubtract, $expectedDateTime)
     {
         $actualDateTime = LocalDateTime::parse($dateTime)->minusNanos($nanosToSubtract);
-        $this->assertSame($expectedDateTime, (string) $actualDateTime);
+        $this->assertSame($expectedDateTime, (string)$actualDateTime);
     }
 
     /**
@@ -585,120 +486,163 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     public function providerMinusNanos()
     {
         return [
-            ['2016-01-01T00:00', 50000000, '2015-12-31T23:59:59.95'],
-            ['2000-02-29T23:59:59.999999999', -1, '2000-03-01T00:00'],
-            ['1999-12-31T23:59:59.000000001', -2199999999, '2000-01-01T00:00:01.2']
+            ['2000-03-01T00:00', 0, '2000-03-01T00:00'],
+            ['2014-12-31T23:59:59.5', -500000000, '2015-01-01T00:00'],
+            ['2001-03-01T00:00', 1, '2001-02-28T23:59:59.999999999'],
+            ['2000-01-01T00:00:00', 999999999, '1999-12-31T23:59:59.000000001']
         ];
     }
 
-    public function testAtTimeZone()
+    /**
+     * @dataProvider providerAtTimeZone
+     *
+     * @param string $dateTime The date-time.
+     * @param string $timeZone The time-zone.
+     * @param integer $epochSecond The expected epoch second of the result instant.
+     */
+    public function testAtTimeZone($dateTime, $timeZone, $epochSecond)
     {
-        $t = LocalDateTime::of(2008, 6, 30, 11, 30);
-        $tz = TimeZone::of('Europe/Paris');
-
-        $this->assertTrue($t->atTimeZone($tz)->isEqualTo(ZonedDateTime::of($t, $tz)));
-    }
-
-    public function testAtTimeZoneOffset()
-    {
-        $t = LocalDateTime::of(2008, 6, 30, 11, 30);
-        $tz = TimeZoneOffset::ofHours(2);
-
-        $this->assertTrue($t->atTimeZone($tz)->isEqualTo(ZonedDateTime::of($t, $tz)));
+        $zonedDateTime = LocalDateTime::parse($dateTime)->atTimeZone(TimeZone::of($timeZone));
+        $this->assertSame($epochSecond, $zonedDateTime->getTimestamp());
     }
 
     /**
      * @return array
      */
-    public function providerToEpochSecond()
+    public function providerAtTimeZone()
     {
         return [
-            [1837, 12, 16, 13, 32, 59, 2, -4166857621],
-            [1923, 1, 30, 0, 59, 1, -3, -1480708859],
-            [1969, 12, 31, 23, 59, 59, 0, -1],
-            [1969, 12, 31, 23, 59, 59, -1, 3599],
-            [1969, 12, 31, 23, 59, 59, 1, -3601],
-            [1970, 1, 1, 0, 0, 0, 0, 0],
-            [1970, 1, 1, 0, 0, 0, 1, -3600],
-            [1970, 1, 1, 0, 0, 0, -1, 3600],
-            [1970, 1, 1, 0, 0, 1, 0, 1],
-            [1980, 2, 28, 12, 23, 34, -7, 320613814],
-            [2022, 11, 30, 1, 7, 9, 6, 1669748829],
-            [2236, 3, 15, 20, 0, 0, 1, 8400567600],
+            ['2008-01-02T12:34:56', 'Europe/Paris', 1199273696],
+            ['2008-01-02T12:34:56', 'America/Los_Angeles', 1199306096]
         ];
-    }
-
-    public function testComparisonsLocalDateTime()
-    {
-        $dates = [
-            LocalDate::of(Year::MIN_YEAR, 1, 1),
-            LocalDate::of(Year::MIN_YEAR, 12, 31),
-            LocalDate::of(-1, 1, 1),
-            LocalDate::of(-1, 12, 31),
-            LocalDate::of(0, 1, 1),
-            LocalDate::of(0, 12, 31),
-            LocalDate::of(1, 1, 1),
-            LocalDate::of(1, 12, 31),
-            LocalDate::of(2008, 1, 1),
-            LocalDate::of(2008, 2, 29),
-            LocalDate::of(2008, 12, 31),
-            LocalDate::of(Year::MAX_YEAR, 1, 1),
-            LocalDate::of(Year::MAX_YEAR, 12, 31)
-        ];
-
-        $times = [
-            LocalTime::of(0, 0, 0),
-            LocalTime::of(0, 0, 59),
-            LocalTime::of(0, 59, 0),
-            LocalTime::of(0, 59, 59),
-            LocalTime::of(12, 0, 0),
-            LocalTime::of(12, 0, 59),
-            LocalTime::of(12, 59, 0),
-            LocalTime::of(12, 59, 59),
-            LocalTime::of(23, 0, 0),
-            LocalTime::of(23, 0, 59),
-            LocalTime::of(23, 59, 0),
-            LocalTime::of(23, 59, 59)
-        ];
-
-        $localDateTimes = [];
-
-        foreach ($dates as $date) {
-            foreach ($times as $time) {
-                $localDateTimes[] = LocalDateTime::ofDateTime($date, $time);
-            }
-        }
-
-        $this->doTestComparisonsLocalDateTime($localDateTimes);
     }
 
     /**
-     * @param LocalDateTime[] $localDateTimes
+     * @dataProvider providerIsEqualTo
+     *
+     * @param string  $dateTime1 The base date-time.
+     * @param string  $dateTime2 The date-time to compare to.
+     * @param boolean $isEqual   Whether the date-times are equal.
      */
-    public function doTestComparisonsLocalDateTime(array $localDateTimes)
+    public function testIsEqualTo($dateTime1, $dateTime2, $isEqual)
     {
-        for ($i = 0; $i < count($localDateTimes); $i++) {
-            $a = $localDateTimes[$i];
-            for ($j = 0; $j < count($localDateTimes); $j++) {
-                $b = $localDateTimes[$j];
-                $message = $a . ' <=> ' . $b;
-                if ($i < $j) {
-                    $this->assertLessThan(0, $a->compareTo($b), $message);
-                    $this->assertTrue($a->isBefore($b), $message);
-                    $this->assertFalse($a->isAfter($b), $message);
-                    $this->assertFalse($a->isEqualTo($b), $message);
-                } else if ($i > $j) {
-                    $this->assertGreaterThan(0, $a->compareTo($b), $message);
-                    $this->assertFalse($a->isBefore($b), $message);
-                    $this->assertTrue($a->isAfter($b), $message);
-                    $this->assertFalse($a->isEqualTo($b), $message);
-                } else {
-                    $this->assertEquals(0, $a->compareTo($b), $message);
-                    $this->assertFalse($a->isBefore($b), $message);
-                    $this->assertFalse($a->isAfter($b), $message);
-                    $this->assertTrue($a->isEqualTo($b), $message);
-                }
-            }
+        $dateTime1 = LocalDateTime::parse($dateTime1);
+        $dateTime2 = LocalDateTime::parse($dateTime2);
+
+        $this->assertSame($isEqual, $dateTime1->isEqualTo($dateTime2));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsEqualTo()
+    {
+        return [
+            ['2001-01-01T11:11:11.1', '2001-01-01T11:11:11.1', true],
+            ['2001-01-01T01:01:01.1', '2009-01-01T01:01:01.1', false],
+            ['2001-01-01T01:01:01.1', '2001-09-01T01:01:01.1', false],
+            ['2001-01-01T01:01:01.1', '2001-01-09T01:01:01.1', false],
+            ['2001-01-01T01:01:01.1', '2001-01-01T09:01:01.1', false],
+            ['2001-01-01T01:01:01.1', '2001-01-01T01:09:01.1', false],
+            ['2001-01-01T01:01:01.1', '2001-01-01T01:01:09.1', false],
+            ['2001-01-01T01:01:01.1', '2001-01-01T01:01:01.9', false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param string  $dateTime1 The base date-time.
+     * @param string  $dateTime2 The date-time to compare to.
+     * @param integer $result    The expected result.
+     */
+    public function testCompareTo($dateTime1, $dateTime2, $result)
+    {
+        $dateTime1 = LocalDateTime::parse($dateTime1);
+        $dateTime2 = LocalDateTime::parse($dateTime2);
+
+        $this->assertSame($result, $dateTime1->compareTo($dateTime2));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerCompareTo()
+    {
+        return [
+            ['2000-01-01T11:11:11.1', '2000-01-01T11:11:11.1',  0],
+            ['2000-01-01T00:00:00.0', '1999-12-31T23:59:59.9',  1],
+            ['1999-12-31T23:59:59.9', '2000-01-01T00:00:00.0', -1],
+            ['9999-01-31T23:59:59.9', '0000-12-01T00:00:00.0',  1],
+            ['0000-12-01T00:00:00.0', '9999-01-31T23:59:59.9', -1],
+            ['9999-12-01T23:59:59.9', '0000-01-31T00:00:00.0',  1],
+            ['0000-01-31T00:00:00.0', '9999-12-01T23:59:59.9', -1],
+            ['9999-12-31T00:59:59.9', '0000-01-01T23:00:00.0',  1],
+            ['0000-01-01T23:00:00.0', '9999-12-31T00:59:59.9', -1],
+            ['9999-12-31T23:00:59.9', '0000-01-01T00:59:00.0',  1],
+            ['0000-01-01T00:59:00.0', '9999-12-31T23:00:59.9', -1],
+            ['9999-12-31T23:59:00.9', '0000-01-01T00:00:59.0',  1],
+            ['0000-01-01T00:00:59.0', '9999-12-31T23:59:00.9', -1],
+            ['9999-12-31T23:59:59.0', '0000-01-01T00:00:00.9',  1],
+            ['0000-01-01T00:00:00.9', '9999-12-31T23:59:59.0', -1],
+        ];
+    }
+
+    /**
+     * @dataProvider providerIsBefore
+     *
+     * @param string  $dateTime1 The base date-time.
+     * @param string  $dateTime2 The date-time to compare to.
+     * @param boolean $isBefore  The expected result.
+     */
+    public function testIsBefore($dateTime1, $dateTime2, $isBefore)
+    {
+        $dateTime1 = LocalDateTime::parse($dateTime1);
+        $dateTime2 = LocalDateTime::parse($dateTime2);
+
+        $this->assertSame($isBefore, $dateTime1->isBefore($dateTime2));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsBefore()
+    {
+        $data = $this->providerCompareTo();
+
+        foreach ($data as & $values) {
+            $values[2] = ($values[2] == -1);
         }
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider providerIsAfter
+     *
+     * @param string  $dateTime1 The base date-time.
+     * @param string  $dateTime2 The date-time to compare to.
+     * @param boolean $isAfter   The expected result.
+     */
+    public function testIsAfter($dateTime1, $dateTime2, $isAfter)
+    {
+        $dateTime1 = LocalDateTime::parse($dateTime1);
+        $dateTime2 = LocalDateTime::parse($dateTime2);
+
+        $this->assertSame($isAfter, $dateTime1->isAfter($dateTime2));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsAfter()
+    {
+        $data = $this->providerCompareTo();
+
+        foreach ($data as & $values) {
+            $values[2] = ($values[2] == 1);
+        }
+
+        return $data;
     }
 }
