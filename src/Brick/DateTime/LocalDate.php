@@ -311,19 +311,17 @@ class LocalDate
     /**
      * Resolves the date, resolving days past the end of month.
      *
-     * @todo correct behaviour? or add the extra days to the next month? or throw exception?
-     *
-     * @param integer $year
-     * @param integer $month
-     * @param integer $day
+     * @param integer $year  The year to represent, validated as an integer from MIN_YEAR to MAX_YEAR.
+     * @param integer $month The month-of-year to represent, validated as an integer from 1 to 12.
+     * @param integer $day   The day-of-month to represent, validated as an integer from 1 to 31.
      *
      * @return LocalDate
      */
     private function resolvePreviousValid($year, $month, $day)
     {
-        $daysInMonth = 31; // @todo
-
-        $day = min($day, $daysInMonth);
+        if ($day > 28) {
+            $day = min($day, YearMonth::of($year, $month)->getNumberOfDays());
+        }
 
         return new LocalDate($year, $month, $day);
     }
@@ -337,7 +335,9 @@ class LocalDate
      */
     public function withYear($year)
     {
-        if ($year == $this->year) {
+        $year = Cast::toInteger($year);
+
+        if ($year === $this->year) {
             return $this;
         }
 
@@ -353,7 +353,9 @@ class LocalDate
      */
     public function withMonth($month)
     {
-        if ($month == $this->month) {
+        $month = Cast::toInteger($month);
+
+        if ($month === $this->month) {
             return $this;
         }
 
@@ -369,7 +371,9 @@ class LocalDate
      */
     public function withDay($day)
     {
-        if ($day == $this->day) {
+        $day = Cast::toInteger($day);
+
+        if ($day === $this->day) {
             return $this;
         }
 
@@ -379,100 +383,122 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the specified period in years added.
      *
-     * @param integer $yearsToAdd
+     * @param integer $years
      *
      * @return LocalDate
      */
-    public function plusYears($yearsToAdd)
+    public function plusYears($years)
     {
-        return $this->withYear($this->year + Cast::toInteger($yearsToAdd));
+        $years = Cast::toInteger($years);
+
+        if ($years === 0) {
+            return $this;
+        }
+
+        return $this->withYear($this->year + $years);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in months added.
      *
-     * @param integer $monthsToAdd
+     * @param integer $months
      *
      * @return LocalDate
      */
-    public function plusMonths($monthsToAdd)
+    public function plusMonths($months)
     {
-        $monthCount = $this->year * 12 + ($this->month - 1);
-        $calcMonths = $monthCount + $monthsToAdd;
+        $month = $this->month + $months - 1;
 
-        // @todo
+        $yearDiff = Math::floorDiv($month, 12);
+        $month = Math::floorMod($month, 12) + 1;
+
+        $year = $this->year + $yearDiff;
+
+        return $this->resolvePreviousValid($year, $month, $this->day);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in weeks added.
      *
-     * @param integer $weeksToAdd
+     * @param integer $weeks
      *
      * @return LocalDate
      */
-    public function plusWeeks($weeksToAdd)
+    public function plusWeeks($weeks)
     {
-        return $this->plusDays($weeksToAdd * 7);
+        $weeks = Cast::toInteger($weeks);
+
+        if ($weeks === 0) {
+            return $this;
+        }
+
+        return $this->plusDays($weeks * 7);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in days added.
      *
-     * @param integer $daysToAdd
+     * @param integer $days
      *
      * @return LocalDate
      */
-    public function plusDays($daysToAdd)
+    public function plusDays($days)
     {
-        return LocalDate::ofEpochDay($this->toEpochDay() + Cast::toInteger($daysToAdd));
+        $days = Cast::toInteger($days);
+
+        if ($days === 0) {
+            return $this;
+        }
+
+        return LocalDate::ofEpochDay($this->toEpochDay() + $days);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in years subtracted.
      *
-     * @param integer $yearsToSubtract
+     * @param integer $years
      *
      * @return LocalDate
      */
-    public function minusYears($yearsToSubtract)
+    public function minusYears($years)
     {
-        return $this->plusYears(- $yearsToSubtract);
+        return $this->plusYears(- $years);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in months subtracted.
      *
-     * @param integer $monthsToSubtract
+     * @param integer $months
      *
      * @return LocalDate
      */
-    public function minusMonths($monthsToSubtract)
+    public function minusMonths($months)
     {
-        return $this->plusMonths(- $monthsToSubtract);
+        return $this->plusMonths(- $months);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in weeks subtracted.
      *
-     * @param integer $weeksToSubtract
+     * @param integer $eeks
      *
      * @return LocalDate
      */
-    public function minusWeeks($weeksToSubtract)
+    public function minusWeeks($eeks)
     {
-        return $this->plusWeeks(- $weeksToSubtract);
+        return $this->plusWeeks(- $eeks);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in days subtracted.
      *
-     * @param integer $daysToSubtract
+     * @param integer $days
      *
      * @return LocalDate
      */
-    public function minusDays($daysToSubtract)
+    public function minusDays($days)
     {
-        return $this->plusDays(- $daysToSubtract);
+        return $this->plusDays(- $days);
     }
 
     /**
@@ -513,7 +539,7 @@ class LocalDate
      */
     public function isEqualTo(LocalDate $that)
     {
-        return $this->compareTo($that) == 0;
+        return $this->compareTo($that) === 0;
     }
 
     /**
