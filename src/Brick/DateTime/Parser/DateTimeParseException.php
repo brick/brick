@@ -10,30 +10,38 @@ use Brick\DateTime\DateTimeException;
 class DateTimeParseException extends DateTimeException
 {
     /**
-     * @param DateTimeParseContext $context
+     * @param DateTimeParseContext $context The parse context.
      *
      * @return DateTimeParseException
      */
     public static function parseError(DateTimeParseContext $context)
     {
+        $text = $context->getText();
+        $position = $context->getPosition();
+
         return new self(sprintf(
-            'Parse error for string "%s" at position %d',
-            $context->getText(),
-            $context->getPosition()
+            'Parse error in string "%s" before position %d.',
+            $text,
+            $position
         ));
     }
 
     /**
-     * @param DateTimeParseContext $context
+     * @param DateTimeParseContext $context The parse context.
      *
      * @return DateTimeParseException
      */
     public static function unexpectedContent(DateTimeParseContext $context)
     {
+        $text = $context->getText();
+        $position = $context->getPosition();
+        $extra = substr($text, $position);
+
         return new self(sprintf(
-            'Unexpected content at end of string "%" at position %d',
-            $context->getText(),
-            $context->getPosition()
+            'Unexpected content "%s" at end of string "%s" at position %d.',
+            $extra,
+            $text,
+            $position
         ));
     }
 

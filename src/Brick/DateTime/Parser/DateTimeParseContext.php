@@ -150,10 +150,38 @@ class DateTimeParseContext
      */
     public function getNextChars($charCount)
     {
+        if ($this->active->position === $this->active->length) {
+            return '';
+        }
+
         $nextChars = substr($this->text, $this->active->position, $charCount);
         $this->active->position += strlen($nextChars);
 
         return $nextChars;
+    }
+
+    /**
+     * @param string $pattern A valid regular expression.
+     *
+     * @return string
+     */
+    public function getNextCharsMatching($pattern)
+    {
+        $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+
+        if (preg_match($pattern, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) === 0) {
+            return '';
+        }
+
+        list ($string, $position) = $matches[0];
+
+        if ($position !== $this->active->position) {
+            return '';
+        }
+
+        $this->active->position += strlen($string);
+
+        return $string;
     }
 
     /**

@@ -31,7 +31,7 @@ final class DateTimeParsers
      */
     public static function isoYear()
     {
-        return new NumberParser(DateTimeField::YEAR, 4, 10, false, NumberParser::SIGN_EXCEEDS_PAD);
+        return new NumberParser(DateTimeField::YEAR, 4, 9, false, NumberParser::SIGN_EXCEEDS_PAD);
     }
 
     /**
@@ -80,22 +80,6 @@ final class DateTimeParsers
     public static function isoNanoOfSecond()
     {
         return new NumberParser(DateTimeField::NANO_OF_SECOND, 1, 9, true);
-    }
-
-    /**
-     * @return DateTimeParser
-     */
-    public static function isoTimeZoneOffset()
-    {
-        return new TimeZoneOffsetParser();
-    }
-
-    /**
-     * @return DateTimeParser
-     */
-    public static function isoTimeZoneRegion()
-    {
-        return new TimeZoneRegionParser();
     }
 
     /**
@@ -170,8 +154,8 @@ final class DateTimeParsers
     public static function isoOffsetDateTime()
     {
         return DateTimeParserBuilder::create()
-            ->append(self::isoLocalDate())
-            ->append(self::isoTimeZoneOffset())
+            ->append(self::isoLocalDateTime())
+            ->append(new TimeZoneOffsetParser())
             ->toParser();
     }
 
@@ -186,7 +170,7 @@ final class DateTimeParsers
             ->append(self::isoOffsetDateTime())
             ->optionalStart()
             ->append(self::literal('['))
-            ->append(self::isoTimeZoneRegion())
+            ->append(new TimeZoneRegionParser())
             ->append(self::literal(']'))
             ->toParser();
     }

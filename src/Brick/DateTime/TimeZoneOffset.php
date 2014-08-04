@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\DateTimeField;
 use Brick\Type\Cast;
 
 /**
@@ -47,6 +48,26 @@ class TimeZoneOffset extends TimeZone
         } else {
             $this->id = '+' . LocalTime::ofSecondOfDay($totalSeconds);
         }
+    }
+
+    /**
+     * @param Parser\DateTimeParseResult $result
+     *
+     * @return TimeZoneOffset
+     */
+    public static function from(Parser\DateTimeParseResult $result)
+    {
+        $hour = $result->getField(DateTimeField::TIME_ZONE_OFFSET_HOUR);
+        $minute = $result->getField(DateTimeField::TIME_ZONE_OFFSET_MINUTE);
+        $second = $result->getOptionalField(DateTimeField::TIME_ZONE_OFFSET_SECOND, 0);
+
+        if ($result->getField(DateTimeField::TIME_ZONE_OFFSET_SIGN) === '-') {
+            $hour = -$hour;
+            $minute = -$minute;
+            $second = -$second;
+        }
+
+        return self::ofHoursMinutesSeconds($hour, $minute, $second);
     }
 
     /**

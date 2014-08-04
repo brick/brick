@@ -80,15 +80,16 @@ class ZonedDateTime extends ReadableInstant
      *
      * This method is only useful to parsers.
      *
-     * @param Field\DateTimeFieldSet $fieldSet
+     * @param Parser\DateTimeParseResult $result
      *
      * @return ZonedDateTime
      */
-    public static function from(Field\DateTimeFieldSet $fieldSet)
+    public static function from(Parser\DateTimeParseResult $result)
     {
         return ZonedDateTime::of(
-            LocalDateTime::from($fieldSet),
-            TimeZone::from($fieldSet)
+            LocalDateTime::from($result),
+            TimeZone::from($result),
+            TimeZoneOffset::from($result)
         );
     }
 
@@ -103,18 +104,6 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function parse($text)
     {
-        // @todo temporary fix for UTC only
-        if (substr($text, -1) == 'Z') {
-            return LocalDateTime::parse(substr($text, 0, -1))->atTimeZone(TimeZone::utc());
-        }
-
-        $localDateTime = LocalDateTime::parse(substr($text, 0, -6));
-        $timeZone = TimeZone::of(substr($text, -6));
-
-        return self::of($localDateTime, $timeZone);
-
-        // @todo
-
         $parser = Parser\DateTimeParsers::isoZonedDateTime();
 
         return ZonedDateTime::from($parser->parse($text));
@@ -272,7 +261,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * Returns the time-zone, such as `Europe/Paris`.
+     * Returns the time-zone, region or offset.
      *
      * @return TimeZone
      */
@@ -282,7 +271,7 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * Returns the time zone offset, such as `+01:00`.
+     * Returns the time-zone offset.
      *
      * @return TimeZoneOffset
      */

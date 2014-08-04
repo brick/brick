@@ -38,6 +38,43 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @dataProvider providerParse
+     *
+     * @param string $text   The string to parse.
+     * @param string $date   The expected date string.
+     * @param string $time   The expected time string.
+     * @param string $offset The expected time-zone offset.
+     * @param string $zone   The expected time-zone, should be the same as offset when no region is specified.
+     */
+    public function testParse($text, $date, $time, $offset, $zone)
+    {
+        $zonedDateTime = ZonedDateTime::parse($text);
+
+        $this->assertSame($date, (string) $zonedDateTime->getDate());
+        $this->assertSame($time, (string) $zonedDateTime->getTime());
+        $this->assertSame($offset, (string) $zonedDateTime->getOffset());
+        $this->assertSame($zone, (string) $zonedDateTime->getTimeZone());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParse()
+    {
+        return [
+            ['2001-02-03T01:02Z', '2001-02-03', '01:02', 'Z', 'Z'],
+            ['2001-02-03T01:02:03Z', '2001-02-03', '01:02:03', 'Z', 'Z'],
+            ['2001-02-03T01:02:03.456Z', '2001-02-03', '01:02:03.456', 'Z', 'Z'],
+            ['2001-02-03T01:02-03:00', '2001-02-03', '01:02', '-03:00', '-03:00'],
+            ['2001-02-03T01:02:03+04:00', '2001-02-03', '01:02:03', '+04:00', '+04:00'],
+            ['2001-02-03T01:02:03.456+12:34:56', '2001-02-03', '01:02:03.456', '+12:34:56', '+12:34:56'],
+            ['2001-02-03T01:02+00:00[Europe/London]', '2001-02-03', '01:02', 'Z', 'Europe/London'],
+            ['2001-02-03T01:02:03+00:00[Europe/London]', '2001-02-03', '01:02:03', 'Z', 'Europe/London'],
+            ['2001-02-03T01:02:03.456+00:00[Europe/London]', '2001-02-03', '01:02:03.456', 'Z', 'Europe/London']
+        ];
+    }
+
     public function testCreateFromLocalDate()
     {
         $date = LocalDate::of(2012, 6, 30);

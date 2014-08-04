@@ -27,6 +27,16 @@ abstract class TimeZone
     }
 
     /**
+     * @param Parser\DateTimeParseResult $result
+     *
+     * @return TimeZone
+     */
+    public static function from(Parser\DateTimeParseResult $result)
+    {
+        return TimeZoneRegion::from($result) ?: TimeZoneOffset::from($result);
+    }
+
+    /**
      * @return TimeZone
      */
     public static function utc()

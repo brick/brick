@@ -2,6 +2,8 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\DateTimeField;
+
 /**
  * A geographical region where the same time-zone rules apply, such as `Europe/London`.
  */
@@ -24,7 +26,7 @@ class TimeZoneRegion extends TimeZone
         try {
             $this->zone = new \DateTimeZone($timezone);
         } catch (\Exception $e) {
-            throw new DateTimeException(sprintf('Unknown or bad timezone (%s)', $timezone));
+            throw new DateTimeException(sprintf('Unknown or bad timezone "%s".', $timezone));
         }
     }
 
@@ -36,6 +38,20 @@ class TimeZoneRegion extends TimeZone
     public static function of($text)
     {
         return new TimeZoneRegion($text);
+    }
+
+    /**
+     * @param Parser\DateTimeParseResult $result
+     *
+     * @return TimeZoneRegion|null
+     */
+    public static function from(Parser\DateTimeParseResult $result)
+    {
+        if (! $result->hasField(DateTimeField::TIME_ZONE_REGION)) {
+            return null;
+        }
+
+        return self::of($result->getField(DateTimeField::TIME_ZONE_REGION));
     }
 
     /**

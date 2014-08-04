@@ -15,45 +15,62 @@ final class DateTimeField
     }
 
     /**
-     * The proleptic year, such as 2012.
+     * The proleptic year: integer from MIN_YEAR to MAX_YEAR.
      */
     const YEAR = 'year';
 
     /**
-     * The month-of-year, such as March.
+     * The month-of-year: integer from 1 to 12.
      */
     const MONTH_OF_YEAR = 'month-of-year';
 
     /**
-     * The day-of-month.
+     * The day-of-month: integer from 1 to 31.
      */
     const DAY_OF_MONTH = 'day-of-month';
 
     /**
-     * The clock-hour-of-day.
+     * The hour-of-day: integer from 0 to 23.
      */
     const HOUR_OF_DAY = 'hour-of-day';
 
     /**
-     * The minute-of-hour.
+     * The minute-of-hour: integer from 0 to 59.
      */
     const MINUTE_OF_HOUR = 'minute-of-hour';
 
     /**
-     * The second-of-minute.
+     * The second-of-minute: integer from 0 to 59.
      */
     const SECOND_OF_MINUTE = 'second-of-minute';
 
     /**
-     * The nano-of-second.
+     * The nano-of-second: integer from 0 to 999,999,999.
      */
     const NANO_OF_SECOND = 'nano-of-second';
 
     /**
-     * The offset from UTC/Greenwich.
+     * The sign of the time-zone offset: string '+' or '-'.
      */
-    const OFFSET_SECONDS = 'offset-seconds';
+    const TIME_ZONE_OFFSET_SIGN = 'offset-sign';
 
-    const TIME_ZONE_OFFSET = 'time-zone-offset';
+    /**
+     * The absolute time-zone offset hour: integer from 0 to 23.
+     */
+    const TIME_ZONE_OFFSET_HOUR = 'offset-hour';
+
+    /**
+     * The absolute time-zone offset minute: integer from 0 to 59.
+     */
+    const TIME_ZONE_OFFSET_MINUTE = 'offset-minute';
+
+    /**
+     * The absolute time-zone offset second: integer from 0 to 59.
+     */
+    const TIME_ZONE_OFFSET_SECOND = 'offset-second';
+
+    /**
+     * The time-zone region: string such as 'Europe/London'.
+     */
     const TIME_ZONE_REGION = 'time-zone-region';
 }
