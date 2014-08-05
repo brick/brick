@@ -53,7 +53,7 @@ class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($date, (string) $zonedDateTime->getDate());
         $this->assertSame($time, (string) $zonedDateTime->getTime());
-        $this->assertSame($offset, (string) $zonedDateTime->getOffset());
+        $this->assertSame($offset, (string) $zonedDateTime->getTimeZoneOffset());
         $this->assertSame($zone, (string) $zonedDateTime->getTimeZone());
     }
 

@@ -16,13 +16,13 @@ use Brick\DateTime\Year;
 class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param integer $y The expected year.
-     * @param integer $m The expected month.
-     * @param integer $d The expected day.
-     * @param integer $h The expected hour.
-     * @param integer $i The expected minute.
-     * @param integer $s The expected second.
-     * @param integer $n The expected nano-of-second.
+     * @param integer       $y  The expected year.
+     * @param integer       $m  The expected month.
+     * @param integer       $d  The expected day.
+     * @param integer       $h  The expected hour.
+     * @param integer       $i  The expected minute.
+     * @param integer       $s  The expected second.
+     * @param integer       $n  The expected nano-of-second.
      * @param LocalDateTime $dt The date-time to test.
      */
     private function assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime $dt)
@@ -45,7 +45,7 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerParse
      *
-     * @param string $t The text to parse.
+     * @param string  $t The text to parse.
      * @param integer $y The expected year.
      * @param integer $m The expected month.
      * @param integer $d The expected day.
@@ -144,9 +144,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusYears
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $years The number of years to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $years            The number of years to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusYears($dateTime, $years, $expectedDateTime)
     {
@@ -169,9 +169,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusMonths
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $months The number of months to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $months           The number of months to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusMonths($dateTime, $months, $expectedDateTime)
     {
@@ -194,9 +194,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusDays
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $days The number of days to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $days             The number of days to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusDays($dateTime, $days, $expectedDateTime)
     {
@@ -219,9 +219,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusHours
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $hours The number of hours to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $hours            The number of hours to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusHours($dateTime, $hours, $expectedDateTime)
     {
@@ -244,9 +244,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusMinutes
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $minutes The number of minutes to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $minutes          The number of minutes to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusMinutes($dateTime, $minutes, $expectedDateTime)
     {
@@ -269,9 +269,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusSeconds
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $seconds The number of seconds to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $seconds          The number of seconds to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusSeconds($dateTime, $seconds, $expectedDateTime)
     {
@@ -294,9 +294,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlusNanos
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $nanosToAdd The nanoseconds to add.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $nanosToAdd       The nanoseconds to add.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testPlusNanos($dateTime, $nanosToAdd, $expectedDateTime)
     {
@@ -320,9 +320,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusYears
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $years The number of years to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $years            The number of years to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusYears($dateTime, $years, $expectedDateTime)
     {
@@ -345,9 +345,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusMonths
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $months The number of months to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $months           The number of months to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusMonths($dateTime, $months, $expectedDateTime)
     {
@@ -370,9 +370,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusDays
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $days The number of days to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $days             The number of days to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusDays($dateTime, $days, $expectedDateTime)
     {
@@ -395,9 +395,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusHours
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $hours The number of hours to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $hours            The number of hours to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusHours($dateTime, $hours, $expectedDateTime)
     {
@@ -420,9 +420,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusMinutes
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $minutes The number of minutes to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $minutes          The number of minutes to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusMinutes($dateTime, $minutes, $expectedDateTime)
     {
@@ -445,9 +445,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusSeconds
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $seconds The number of seconds to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $seconds          The number of seconds to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusSeconds($dateTime, $seconds, $expectedDateTime)
     {
@@ -470,9 +470,9 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerMinusNanos
      *
-     * @param string $dateTime The base date-time string.
-     * @param integer $nanosToSubtract The nanoseconds to subtract.
-     * @param string $expectedDateTime The expected resulting date-time string.
+     * @param string  $dateTime         The base date-time string.
+     * @param integer $nanosToSubtract  The nanoseconds to subtract.
+     * @param string  $expectedDateTime The expected resulting date-time string.
      */
     public function testMinusNanos($dateTime, $nanosToSubtract, $expectedDateTime)
     {
@@ -496,14 +496,17 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerAtTimeZone
      *
-     * @param string $dateTime The date-time.
-     * @param string $timeZone The time-zone.
-     * @param integer $epochSecond The expected epoch second of the result instant.
+     * @param string  $dateTime     The date-time.
+     * @param string  $timeZone     The time-zone.
+     * @param integer $epochSecond  The expected epoch second of the resulting instant.
+     * @param integer $nanoOfSecond The expected nano-of-second of the resulting instant.
      */
-    public function testAtTimeZone($dateTime, $timeZone, $epochSecond)
+    public function testAtTimeZone($dateTime, $timeZone, $epochSecond, $nanoOfSecond)
     {
         $zonedDateTime = LocalDateTime::parse($dateTime)->atTimeZone(TimeZone::of($timeZone));
+
         $this->assertSame($epochSecond, $zonedDateTime->getTimestamp());
+        $this->assertSame($nanoOfSecond, $zonedDateTime->getNanos());
     }
 
     /**
@@ -512,8 +515,10 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
     public function providerAtTimeZone()
     {
         return [
-            ['2008-01-02T12:34:56', 'Europe/Paris', 1199273696],
-            ['2008-01-02T12:34:56', 'America/Los_Angeles', 1199306096]
+            ['2001-03-28T23:23:23', '-06:00', 985843403, 0],
+            ['1960-04-30T06:00:00.123456', '+02:00', -305236800, 123456000],
+            ['2008-01-02T12:34:56', 'Europe/Paris', 1199273696, 0],
+            ['2008-01-02T12:34:56.123', 'America/Los_Angeles', 1199306096, 123000000]
         ];
     }
 
@@ -522,7 +527,7 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
      *
      * @param string  $dateTime1 The base date-time.
      * @param string  $dateTime2 The date-time to compare to.
-     * @param boolean $isEqual   Whether the date-times are equal.
+     * @param boolean $isEqual   The expected result.
      */
     public function testIsEqualTo($dateTime1, $dateTime2, $isEqual)
     {

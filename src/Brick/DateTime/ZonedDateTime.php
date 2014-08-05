@@ -20,7 +20,17 @@ class ZonedDateTime extends ReadableInstant
     private $localDateTime;
 
     /**
+     * The time-zone offset from UTC/Greenwich.
+     *
+     * @var TimeZoneOffset
+     */
+    private $timeZoneOffset;
+
+    /**
      * The time-zone.
+     *
+     * It is either a TimeZoneRegion if this ZonedDateTime is region-based,
+     * or the same instance as the offset if this ZonedDateTime is offset-based.
      *
      * @var TimeZone
      */
@@ -29,26 +39,31 @@ class ZonedDateTime extends ReadableInstant
     /**
      * A native DateTime object to perform some of the calculations.
      *
+     * DateTime does not support fractions of seconds, so this object is the equivalent
+     * of this ZonedDateTime with the fraction truncated.
+     *
      * @var \DateTime
      */
     private $dateTime;
 
     /**
-     * Private constructor. Use of one the factory methods to obtain a ZonedDateTime.
+     * Private constructor. Use a factory method to obtain an instance.
      *
-     * @param LocalDateTime $localDateTime
-     * @param TimeZone      $timeZone
-     * @param \DateTime     $dateTime
+     * @param LocalDateTime  $localDateTime
+     * @param TimeZoneOffset $offset
+     * @param TimeZone       $zone
+     * @param \DateTime      $dt
      */
-    private function __construct(LocalDateTime $localDateTime, TimeZone $timeZone, \DateTime $dateTime)
+    private function __construct(LocalDateTime $localDateTime, TimeZoneOffset $offset, TimeZone $zone, \DateTime $dt)
     {
-        $this->localDateTime = $localDateTime;
-        $this->timeZone = $timeZone;
-        $this->dateTime = $dateTime;
+        $this->localDateTime  = $localDateTime;
+        $this->timeZone       = $zone;
+        $this->timeZoneOffset = $offset;
+        $this->dateTime       = $dt;
     }
 
     /**
-     * @param LocalDateTime       $localDateTime
+     * @param LocalDateTime       $dateTime
      * @param TimeZone            $timeZone
      * @param TimeZoneOffset|null $preferredOffset
      *
@@ -56,11 +71,18 @@ class ZonedDateTime extends ReadableInstant
      *
      * @todo preferredOffset
      */
-    public static function of(LocalDateTime $localDateTime, TimeZone $timeZone, TimeZoneOffset $preferredOffset = null)
+    public static function of(LocalDateTime $dateTime, TimeZone $timeZone, TimeZoneOffset $preferredOffset = null)
     {
-        $dateTime = new \DateTime($localDateTime->toString(), $timeZone->toDateTimeZone());
+        $dtz = $timeZone->toDateTimeZone();
+        $dt = new \DateTime($dateTime->toString(), $dtz);
 
-        return new ZonedDateTime($localDateTime, $timeZone, $dateTime);
+        if ($timeZone instanceof TimeZoneOffset) {
+            $timeZoneOffset = $timeZone;
+        } else {
+            $timeZoneOffset = TimeZoneOffset::ofTotalSeconds($dtz->getOffset($dt));
+        }
+
+        return new ZonedDateTime($dateTime, $timeZoneOffset, $timeZone, $dt);
     }
 
     /**
@@ -142,7 +164,13 @@ class ZonedDateTime extends ReadableInstant
 
         $localDateTime = LocalDateTime::parse($dateTime->format('Y-m-d\TH:i:s'));
 
-        return new ZonedDateTime($localDateTime, $timeZone, $dateTime);
+        if ($timeZone instanceof TimeZoneOffset) {
+            $timeZoneOffset = $timeZone;
+        } else {
+            $timeZoneOffset = TimeZoneOffset::ofTotalSeconds($dateTimeZone->getOffset($dateTime));
+        }
+
+        return new ZonedDateTime($localDateTime, $timeZoneOffset, $timeZone, $dateTime);
     }
 
     /**
@@ -275,16 +303,9 @@ class ZonedDateTime extends ReadableInstant
      *
      * @return TimeZoneOffset
      */
-    public function getOffset()
+    public function getTimeZoneOffset()
     {
-        if ($this->timeZone instanceof TimeZoneOffset) {
-            return $this->timeZone;
-        }
-
-        $dateTimeZone = $this->timeZone->toDateTimeZone();
-        $offset = $dateTimeZone->getOffset($this->dateTime);
-
-        return TimeZoneOffset::ofTotalSeconds($offset);
+        return $this->timeZoneOffset;
     }
 
     /**
@@ -292,7 +313,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public function getInstant()
     {
-        return Instant::of($this->dateTime->getTimestamp());
+        return Instant::of($this->dateTime->getTimestamp(), $this->localDateTime->getNano());
     }
 
     /**
@@ -432,7 +453,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public function withFixedOffsetTimeZone()
     {
-        return ZonedDateTime::of($this->localDateTime, $this->getOffset());
+        return ZonedDateTime::of($this->localDateTime, $this->timeZoneOffset);
     }
 
     /**
@@ -668,7 +689,13 @@ class ZonedDateTime extends ReadableInstant
      */
     public function toString()
     {
-        return $this->localDateTime->toString() . $this->getOffset()->getId();
+        $string = $this->localDateTime->toString() . $this->timeZoneOffset->getId();
+
+        if ($this->timeZone instanceof TimeZoneRegion) {
+            $string .= '[' . $this->timeZone->getId() . ']';
+        }
+
+        return $string;
     }
 
     /**
