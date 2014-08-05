@@ -1,6 +1,9 @@
 <?php
 
 namespace Brick\DateTime;
+use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\DateTimeParsers;
 
 /**
  * Represents an inclusive range of local dates.
@@ -34,47 +37,66 @@ class LocalDateRange implements \Iterator, \Countable
     /**
      * Class constructor.
      *
-     * @param LocalDate $from
-     * @param LocalDate $to
-     *
-     * @throws \DomainException If the to date is before the from date.
+     * @param LocalDate $from The start date.
+     * @param LocalDate $to   The end date, validated as not before the start date.
      */
-    public function __construct(LocalDate $from, LocalDate $to)
+    private function __construct(LocalDate $from, LocalDate $to)
     {
-        if ($to->isLessThan($from)) {
-            throw new \DomainException('To date must be after from date');
-        }
-
         $this->current = $from;
         $this->from    = $from;
         $this->to      = $to;
     }
 
     /**
+     * @param LocalDate $from
+     * @param LocalDate $to
+     *
+     * @return LocalDateRange
+     *
+     * @throws DateTimeException If the end date is before the start date.
+     */
+    public static function of(LocalDate $from, LocalDate $to)
+    {
+        if ($to->isLessThan($from)) {
+            throw new DateTimeException('The end date must not be before the start date.');
+        }
+
+        return new LocalDateRange($from, $to);
+    }
+
+    /**
+     * @param DateTimeParseResult $result
+     *
+     * @return LocalDateRange
+     */
+    public static function from(DateTimeParseResult $result)
+    {
+        return LocalDateRange::of(
+            LocalDate::from($result, false),
+            LocalDate::from($result, true)
+        );
+    }
+
+    /**
      * Obtains an instance of `LocalDateRange` from a text string.
      *
      * @todo support partial ends such as `2008-02-15/03-14`
-     * @todo integrate with DateTimeParser
      *
-     * @param string $text The text to parse, such as `2014-01-01/2014-12-31`.
+     * @param string              $text   The text to parse, such as `2014-01-01/2014-12-31`.
+     * @param DateTimeParser|null $parser An alternative parser.
      *
      * @return LocalDateRange
      *
      * @throws DateTimeException             If either of the dates is not valid.
      * @throws Parser\DateTimeParseException If the text string does not follow the expected format.
      */
-    public static function parse($text)
+    public static function parse($text, DateTimeParser $parser = null)
     {
-        $dates = explode('/', $text);
-
-        if (count($dates) !== 2) {
-            throw new Parser\DateTimeParseException('Invalid LocalDateRange: ' . $text);
+        if ($parser === null) {
+            $parser = DateTimeParsers::isoLocalDateRange();
         }
 
-        return new LocalDateRange(
-            LocalDate::parse($dates[0]),
-            LocalDate::parse($dates[1])
-        );
+        return LocalDateRange::from($parser->parse($text));
     }
 
     /**

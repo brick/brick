@@ -15,7 +15,7 @@ class LocalDateRangeTest extends AbstractTestCase
         $from = LocalDate::of(2010, 1, 1);
         $to = LocalDate::of(2011, 1, 1);
 
-        $range = new LocalDateRange($from, $to);
+        $range = LocalDateRange::of($from, $to);
 
         $this->assertSame($from, $range->getFrom());
         $this->assertSame($to, $range->getTo());
@@ -39,7 +39,7 @@ class LocalDateRangeTest extends AbstractTestCase
 
     public function testToString()
     {
-        $range = new LocalDateRange(
+        $range = LocalDateRange::of(
             LocalDate::of(2008, 12, 31),
             LocalDate::of(2011, 1, 1)
         );
@@ -52,7 +52,7 @@ class LocalDateRangeTest extends AbstractTestCase
         $from = LocalDate::of(2013, 12, 30);
         $to   = LocalDate::of(2014, 1, 2);
 
-        $range = new LocalDateRange($from, $to);
+        $range = LocalDateRange::of($from, $to);
 
         for ($i = 0; $i < 2; $i++) { // Test twice to test iterator rewind
             $expected = $from;

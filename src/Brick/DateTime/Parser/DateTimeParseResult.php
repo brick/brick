@@ -47,7 +47,7 @@ class DateTimeParseResult
             return $this->fields[$field];
         }
 
-        throw new DateTimeParseException(sprintf('Field %s is not present in this set', $field));
+        throw new DateTimeParseException(sprintf('Field %s is not present in the parsed result.', $field));
     }
 
     /**

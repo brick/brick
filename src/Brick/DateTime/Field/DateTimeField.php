@@ -73,4 +73,19 @@ final class DateTimeField
      * The time-zone region: string such as 'Europe/London'.
      */
     const TIME_ZONE_REGION = 'time-zone-region';
+
+    /**
+     * The proleptic year of an interval end.
+     */
+    const END_YEAR = 'end-year';
+
+    /**
+     * The month-of-year of an interval end.
+     */
+    const END_MONTH_OF_YEAR = 'end-month-of-year';
+
+    /**
+     * The day-of-month of an interval end.
+     */
+    const END_DAY_OF_MONTH = 'end-day-of-month';
 }

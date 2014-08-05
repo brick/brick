@@ -27,27 +27,33 @@ final class DateTimeParsers
     }
 
     /**
+     * @param string $field
+     *
      * @return DateTimeParser
      */
-    public static function isoYear()
+    public static function isoYear($field)
     {
-        return new NumberParser(DateTimeField::YEAR, 4, 9, true);
+        return new NumberParser($field, 4, 9, true);
     }
 
     /**
+     * @param string $field
+     *
      * @return DateTimeParser
      */
-    public static function isoMonthOfYear()
+    public static function isoMonthOfYear($field)
     {
-        return new NumberParser(DateTimeField::MONTH_OF_YEAR, 2, 2);
+        return new NumberParser($field, 2, 2);
     }
 
     /**
+     * @param string $field
+     *
      * @return DateTimeParser
      */
-    public static function isoDayOfMonth()
+    public static function isoDayOfMonth($field)
     {
-        return new NumberParser(DateTimeField::DAY_OF_MONTH, 2, 2);
+        return new NumberParser($field, 2, 2);
     }
 
     /**
@@ -90,25 +96,31 @@ final class DateTimeParsers
     public static function isoYearMonth()
     {
         return DateTimeParserBuilder::create()
-            ->append(self::isoYear())
+            ->append(self::isoYear(DateTimeField::YEAR))
             ->append(self::literal('-'))
-            ->append(self::isoMonthOfYear())
+            ->append(self::isoMonthOfYear(DateTimeField::MONTH_OF_YEAR))
             ->toParser();
     }
 
     /**
      * Returns a parser for an ISO local date such as `2011-12-03`.
      *
+     * @param boolean $intervalEnd
+     *
      * @return DateTimeParser
      */
-    public static function isoLocalDate()
+    public static function isoLocalDate($intervalEnd = false)
     {
+        $yearField  = $intervalEnd ? DateTimeField::END_YEAR : DateTimeField::YEAR;
+        $monthField = $intervalEnd ? DateTimeField::END_MONTH_OF_YEAR : DateTimeField::MONTH_OF_YEAR;
+        $dayField   = $intervalEnd ? DateTimeField::END_DAY_OF_MONTH : DateTimeField::DAY_OF_MONTH;
+
         return DateTimeParserBuilder::create()
-            ->append(self::isoYear())
+            ->append(self::isoYear($yearField))
             ->append(self::literal('-'))
-            ->append(self::isoMonthOfYear())
+            ->append(self::isoMonthOfYear($monthField))
             ->append(self::literal('-'))
-            ->append(self::isoDayOfMonth())
+            ->append(self::isoDayOfMonth($dayField))
             ->toParser();
     }
 
@@ -143,6 +155,20 @@ final class DateTimeParsers
             ->append(self::isoLocalDate())
             ->append(self::literal('T'))
             ->append(self::isoLocalTime())
+            ->toParser();
+    }
+
+    /**
+     * Returns a parser for an ISO local date range, such as `2011-12-03/2011-12-04`.
+     *
+     * @return DateTimeParser
+     */
+    public static function isoLocalDateRange()
+    {
+        return DateTimeParserBuilder::create()
+            ->append(self::isoLocalDate(false))
+            ->append(self::literal('/'))
+            ->append(self::isoLocalDate(true))
             ->toParser();
     }
 

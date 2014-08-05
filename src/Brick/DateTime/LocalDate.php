@@ -2,6 +2,11 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\DateTimeField;
+use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Utility\Math;
 use Brick\Type\Cast;
 use Brick\Locale\Locale;
@@ -169,36 +174,37 @@ class LocalDate
     }
 
     /**
-     * @param Parser\DateTimeParseResult $result
+     * @param DateTimeParseResult $result
+     * @param boolean             $end
      *
      * @return LocalDate
      *
      * @throws DateTimeException If the date is not valid.
      */
-    public static function from(Parser\DateTimeParseResult $result)
+    public static function from(DateTimeParseResult $result, $end = false)
     {
         return LocalDate::of(
-            $result->getField(Field\DateTimeField::YEAR),
-            $result->getField(Field\DateTimeField::MONTH_OF_YEAR),
-            $result->getField(Field\DateTimeField::DAY_OF_MONTH)
+            $result->getField($end ? DateTimeField::END_YEAR : DateTimeField::YEAR),
+            $result->getField($end ? DateTimeField::END_MONTH_OF_YEAR : DateTimeField::MONTH_OF_YEAR),
+            $result->getField($end ? DateTimeField::END_DAY_OF_MONTH : DateTimeField::DAY_OF_MONTH)
         );
     }
 
     /**
      * Obtains an instance of `LocalDate` from a text string.
      *
-     * @param string                     $text   The text to parse, such as `2007-12-03`.
-     * @param Parser\DateTimeParser|null $parser The parser to use. Defaults to the ISO 8601 parser.
+     * @param string               $text   The text to parse, such as `2007-12-03`.
+     * @param DateTimeParser|null $parser The parser to use, defaults to the ISO 8601 parser.
      *
      * @return LocalDate
      *
-     * @throws DateTimeException             If the date is not valid.
-     * @throws Parser\DateTimeParseException If the text string does not follow the expected format.
+     * @throws DateTimeException      If the date is not valid.
+     * @throws DateTimeParseException If the text string does not follow the expected format.
      */
-    public static function parse($text, Parser\DateTimeParser $parser = null)
+    public static function parse($text, DateTimeParser $parser = null)
     {
-        if (! $parser) {
-            $parser = Parser\DateTimeParsers::isoLocalDate();
+        if ($parser === null) {
+            $parser = DateTimeParsers::isoLocalDate();
         }
 
         return LocalDate::from($parser->parse($text));
