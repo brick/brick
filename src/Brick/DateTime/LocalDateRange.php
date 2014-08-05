@@ -151,7 +151,7 @@ class LocalDateRange implements \IteratorAggregate, \Countable
      */
     public function count()
     {
-        return $this->to->toInteger() - $this->from->toInteger() + 1;
+        return $this->to->toEpochDay() - $this->from->toEpochDay() + 1;
     }
 
     /**
