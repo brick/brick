@@ -477,7 +477,7 @@ class LocalDateTimeTest extends AbstractTestCase
      */
     public function testAtTimeZone($dateTime, $timeZone, $epochSeconds, $nanos)
     {
-        $zonedDateTime = LocalDateTime::parse($dateTime)->atTimeZone(TimeZone::of($timeZone));
+        $zonedDateTime = LocalDateTime::parse($dateTime)->atTimeZone(TimeZone::parse($timeZone));
         $this->assertReadableInstantEquals($epochSeconds, $nanos, $zonedDateTime);
     }
 

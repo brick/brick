@@ -67,32 +67,7 @@ class TimeZoneOffset extends TimeZone
             $second = -$second;
         }
 
-        return self::ofHoursMinutesSeconds($hour, $minute, $second);
-    }
-
-    /**
-     * Obtains an instance of `TimeZoneOffset` using an offset in hours.
-     *
-     * @param integer $hours The time-zone offset in hours, from -18 to +18.
-     *
-     * @return TimeZoneOffset
-     */
-    public static function ofHours($hours)
-    {
-        return TimeZoneOffset::ofHoursMinutesSeconds($hours, 0, 0);
-    }
-
-    /**
-     * Obtains an instance of `TimeZoneOffset` using an offset in hours and minutes.
-     *
-     * @param integer $hours   The time-zone offset in hours, from -18 to +18.
-     * @param integer $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
-     *
-     * @return TimeZoneOffset
-     */
-    public static function ofHoursMinutes($hours, $minutes)
-    {
-        return TimeZoneOffset::ofHoursMinutesSeconds($hours, $minutes, 0);
+        return self::of($hour, $minute, $second);
     }
 
     /**
@@ -106,7 +81,7 @@ class TimeZoneOffset extends TimeZone
      *
      * @throws DateTimeException
      */
-    public static function ofHoursMinutesSeconds($hours, $minutes, $seconds)
+    public static function of($hours, $minutes = 0, $seconds = 0)
     {
         $hours = Cast::toInteger($hours);
         $minutes = Cast::toInteger($minutes);
@@ -182,17 +157,13 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
-     * Obtains an instance of `TimeZoneOffset` from a text string.
+     * Parses a time-zone offset.
      *
-     * The following formats are accepted:
+     * The following ISO 8601 formats are accepted:
      * 
      * * `Z` - for UTC
-     * * `±h`
-     * * `±hh`
      * * `±hh:mm`
-     * * `±hhmm`
      * * `±hh:mm:ss`
-     * * `±hhmmss`
      *
      * Note that ± means either the plus or minus symbol.
      *
@@ -204,7 +175,7 @@ class TimeZoneOffset extends TimeZone
      */
     public static function parse($text)
     {
-        if ($text == 'Z') {
+        if ($text === 'Z' || $text === 'z') {
             return self::utc();
         }
 
@@ -245,9 +216,9 @@ class TimeZoneOffset extends TimeZone
 
         switch ($text[0]) {
             case '+':
-                return self::ofHoursMinutesSeconds($hours, $minutes, $seconds);
+                return self::of($hours, $minutes, $seconds);
             case '-':
-                return self::ofHoursMinutesSeconds(- $hours, - $minutes, - $seconds);
+                return self::of(- $hours, - $minutes, - $seconds);
             default:
                 throw Parser\DateTimeParseException::invalidTimeZoneOffset($text, 'Plus/minus not found when expected');
         }

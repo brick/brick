@@ -31,11 +31,15 @@ class TimeZoneRegion extends TimeZone
     }
 
     /**
+     * Parses a region id, such as 'Europe/London'.
+     *
      * @param string $text
      *
      * @return TimeZoneRegion
+     *
+     * @throws \Brick\DateTime\Parser\DateTimeParseException
      */
-    public static function of($text)
+    public static function parse($text)
     {
         return new TimeZoneRegion($text);
     }
@@ -51,7 +55,7 @@ class TimeZoneRegion extends TimeZone
             return null;
         }
 
-        return self::of($result->getField(DateTimeField::TIME_ZONE_REGION));
+        return self::parse($result->getField(DateTimeField::TIME_ZONE_REGION));
     }
 
     /**

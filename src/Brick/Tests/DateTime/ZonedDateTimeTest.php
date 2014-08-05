@@ -21,7 +21,7 @@ class ZonedDateTimeTest extends AbstractTestCase
     public function testOfTimestamp($formattedDatetime, $timeZone)
     {
         $timestamp = 1000000000;
-        $zonedDateTime = ZonedDateTime::ofEpochSecond($timestamp, TimeZone::of($timeZone));
+        $zonedDateTime = ZonedDateTime::ofEpochSecond($timestamp, TimeZone::parse($timeZone));
 
         $this->assertEquals($timestamp, $zonedDateTime->getInstant()->getEpochSecond());
         $this->assertEquals($formattedDatetime, (string) $zonedDateTime->getDateTime());
@@ -78,7 +78,7 @@ class ZonedDateTimeTest extends AbstractTestCase
     public function testCreateFromLocalDate()
     {
         $date = LocalDate::of(2012, 6, 30);
-        $datetime = ZonedDateTime::createFromDate($date, TimeZone::of('America/Los_Angeles'));
+        $datetime = ZonedDateTime::createFromDate($date, TimeZone::parse('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
         $this->assertEquals(1341039600, $datetime->getInstant()->getEpochSecond());
     }
@@ -87,7 +87,7 @@ class ZonedDateTimeTest extends AbstractTestCase
     {
         $date = LocalDate::of(2012, 6, 30);
         $time = LocalTime::of(12, 34, 56);
-        $datetime = ZonedDateTime::createFromDateAndTime($date, $time, TimeZone::of('America/Los_Angeles'));
+        $datetime = ZonedDateTime::createFromDateAndTime($date, $time, TimeZone::parse('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
         $this->assertTrue($datetime->getTime()->isEqualTo($time));
         $this->assertEquals(1341084896, $datetime->getInstant()->getEpochSecond());
@@ -95,8 +95,8 @@ class ZonedDateTimeTest extends AbstractTestCase
 
     public function testChangeTimeZone()
     {
-        $timezone1 = TimeZone::of('UTC');
-        $timezone2 = TimeZone::of('America/Los_Angeles');
+        $timezone1 = TimeZone::parse('UTC');
+        $timezone2 = TimeZone::parse('America/Los_Angeles');
 
         $datetime1 = ZonedDateTime::ofEpochSecond(1e9, $timezone1);
         $datetime2 = $datetime1->withTimeZoneSameInstant($timezone2);

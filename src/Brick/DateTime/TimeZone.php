@@ -1,6 +1,7 @@
 <?php
 
 namespace Brick\DateTime;
+use Brick\DateTime\Parser\DateTimeParseException;
 
 /**
  * A time-zone. This is the parent class for `TimeZoneOffset` and `TimeZoneRegion`.
@@ -16,14 +17,24 @@ abstract class TimeZone
      * @param string $text
      *
      * @return TimeZone
+     *
+     * @throws \Brick\DateTime\Parser\DateTimeParseException
      */
-    public static function of($text)
+    public static function parse($text)
     {
-        if (strlen($text) <= 1 || $text[0] == '+' || $text[0] == '-') {
+        $text = (string) $text;
+
+        if ($text === '') {
+            throw new DateTimeParseException('The string is empty.');
+        }
+
+        $char = $text[0];
+
+        if ($char === 'Z' || $char === 'z' || $char === '+' || $char === '-') {
             return TimeZoneOffset::parse($text);
         }
 
-        return TimeZoneRegion::of($text);
+        return TimeZoneRegion::parse($text);
     }
 
     /**
@@ -41,7 +52,7 @@ abstract class TimeZone
      */
     public static function utc()
     {
-        return Timezone::of('UTC');
+        return TimeZoneOffset::utc();
     }
 
     /**

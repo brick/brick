@@ -102,7 +102,7 @@ class YearMonthTest extends AbstractTestCase
     {
         Clock::setDefault(new FixedClock(Instant::of($epochSecond)));
 
-        $this->assertYearMonthEquals($year, $month, YearMonth::now(TimeZone::of($timeZone)));
+        $this->assertYearMonthEquals($year, $month, YearMonth::now(TimeZone::parse($timeZone)));
     }
 
     /**
