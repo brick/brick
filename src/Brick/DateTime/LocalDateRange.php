@@ -1,6 +1,8 @@
 <?php
 
 namespace Brick\DateTime;
+
+use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
 use Brick\DateTime\Parser\DateTimeParsers;
@@ -83,16 +85,16 @@ class LocalDateRange implements \Iterator, \Countable
      * @todo support partial ends such as `2008-02-15/03-14`
      *
      * @param string              $text   The text to parse, such as `2014-01-01/2014-12-31`.
-     * @param DateTimeParser|null $parser An alternative parser.
+     * @param DateTimeParser|null $parser The parser to use, defaults to the ISO 8601 parser.
      *
      * @return LocalDateRange
      *
-     * @throws DateTimeException             If either of the dates is not valid.
-     * @throws Parser\DateTimeParseException If the text string does not follow the expected format.
+     * @throws DateTimeException      If either of the dates is not valid.
+     * @throws DateTimeParseException If the text string does not follow the expected format.
      */
     public static function parse($text, DateTimeParser $parser = null)
     {
-        if ($parser === null) {
+        if (! $parser) {
             $parser = DateTimeParsers::isoLocalDateRange();
         }
 

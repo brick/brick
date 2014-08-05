@@ -193,7 +193,7 @@ class LocalDate
     /**
      * Obtains an instance of `LocalDate` from a text string.
      *
-     * @param string               $text   The text to parse, such as `2007-12-03`.
+     * @param string              $text   The text to parse, such as `2007-12-03`.
      * @param DateTimeParser|null $parser The parser to use, defaults to the ISO 8601 parser.
      *
      * @return LocalDate
@@ -203,7 +203,7 @@ class LocalDate
      */
     public static function parse($text, DateTimeParser $parser = null)
     {
-        if ($parser === null) {
+        if (! $parser) {
             $parser = DateTimeParsers::isoLocalDate();
         }
 

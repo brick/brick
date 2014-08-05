@@ -3,7 +3,8 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Field\DateTimeField;
-use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\DateTimeParseException;
+use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\TimeZoneOffsetParser;
 use Brick\Type\Cast;
 
@@ -169,16 +170,18 @@ class TimeZoneOffset extends TimeZone
      *
      * Note that ± means either the plus or minus symbol.
      *
-     * @param string                     $text
-     * @param Parser\DateTimeParser|null $parser
+     * @param string              $text
+     * @param DateTimeParser|null $parser
      *
      * @return TimeZoneOffset
      *
-     * @throws Parser\DateTimeParseException
+     * @throws DateTimeParseException
      */
-    public static function parse($text, Parser\DateTimeParser $parser = null)
+    public static function parse($text, DateTimeParser $parser = null)
     {
-        $parser = $parser ?: new TimeZoneOffsetParser();
+        if (! $parser) {
+            $parser = new TimeZoneOffsetParser();
+        }
 
         return TimeZoneOffset::from($parser->parse($text));
     }

@@ -3,6 +3,7 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
+use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Utility\Math;
 use Brick\Locale\Locale;
 use Brick\Type\Cast;
@@ -123,15 +124,15 @@ class LocalTime
     /**
      * Obtains an instance of `LocalTime` from a text string.
      *
-     * @param string                     $text   The text to parse, such as `10:15`.
-     * @param Parser\DateTimeParser|null $parser The parser to use. Defaults to the ISO 8601 parser.
+     * @param string              $text   The text to parse, such as `10:15`.
+     * @param DateTimeParser|null $parser The parser to use, defaults to the ISO 8601 parser.
      *
      * @return LocalTime
      *
-     * @throws DateTimeException             If the time is not valid.
-     * @throws Parser\DateTimeParseException If the text string does not follow the expected format.
+     * @throws DateTimeException      If the time is not valid.
+     * @throws DateTimeParseException If the text string does not follow the expected format.
      */
-    public static function parse($text, Parser\DateTimeParser $parser = null)
+    public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
             $parser = Parser\DateTimeParsers::isoLocalTime();

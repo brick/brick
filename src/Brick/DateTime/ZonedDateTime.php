@@ -2,6 +2,9 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Parser\DateTimeParseException;
+use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParsers;
 use Brick\Locale\Locale;
 
 /**
@@ -116,17 +119,25 @@ class ZonedDateTime extends ReadableInstant
     }
 
     /**
-     * Obtains an instance of `ZonedDateTime` from a text string such as `2007-12-03T10:15:30+01:00[Europe/Paris]`.
+     * Obtains an instance of `ZonedDateTime` from a text string.
      *
-     * @param string $text The text to parse, such as `2007-12-03T10:15:30+01:00[Europe/Paris]`.
+     * Valid examples:
+     * - `2007-12-03T10:15:30+01:00`
+     * - `2007-12-03T10:15:30+01:00[Europe/Paris]`
+     *
+     * @param string              $text   The text to parse.
+     * @param DateTimeParser|null $parser The parser to use, defaults to the ISO 8601 parser.
      *
      * @return ZonedDateTime
      *
-     * @throws DateTimeException
+     * @throws DateTimeException      If the date is not valid.
+     * @throws DateTimeParseException If the text string does not follow the expected format.
      */
-    public static function parse($text)
+    public static function parse($text, DateTimeParser $parser = null)
     {
-        $parser = Parser\DateTimeParsers::isoZonedDateTime();
+        if (! $parser) {
+            $parser = DateTimeParsers::isoZonedDateTime();
+        }
 
         return ZonedDateTime::from($parser->parse($text));
     }
