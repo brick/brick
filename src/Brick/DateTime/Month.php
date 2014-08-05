@@ -21,26 +21,6 @@ class Month
     const DECEMBER  = 12;
 
     /**
-     * The English names of the months.
-     *
-     * @var array
-     */
-    private static $names = [
-        1 => 'January',
-             'February',
-             'March',
-             'April',
-             'May',
-             'June',
-             'July',
-             'August',
-             'September',
-             'October',
-             'November',
-             'December'
-    ];
-
-    /**
      * Cache of all the months.
      *
      * @var Month[]
@@ -355,14 +335,25 @@ class Month
     }
 
     /**
-     * Returns the English name of this Month.
-     *
-     * The first letter is uppercase, the following letters are lowercase.
+     * Returns the capitalized English name of this Month.
      *
      * @return string
      */
     public function __toString()
     {
-        return self::$names[$this->month];
+        return [
+            1 => 'JANUARY',
+            2 => 'FEBRUARY',
+            3 => 'MARCH',
+            4 => 'APRIL',
+            5 => 'MAY',
+            6 => 'JUNE',
+            7 => 'JULY',
+            8 => 'AUGUST',
+            9 => 'SEPTEMBER',
+            10 => 'OCTOBER',
+            11 => 'NOVEMBER',
+            12 => 'DECEMBER'
+        ][$this->month];
     }
 }

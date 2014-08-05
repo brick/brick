@@ -301,6 +301,14 @@ class DayOfWeek
      */
     public function __toString()
     {
-        return [1 => 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'][$this->value];
+        return [
+            1 => 'MONDAY',
+            2 => 'TUESDAY',
+            3 => 'WEDNESDAY',
+            4 => 'THURSDAY',
+            5 => 'FRIDAY',
+            6 => 'SATURDAY',
+            7 => 'SUNDAY'
+        ][$this->value];
     }
 }

@@ -249,19 +249,35 @@ class MonthTest extends AbstractTestCase
         $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->firstDayOfYear(true));
     }
 
-    public function testToString()
+    /**
+     * @dataProvider providerToString
+     *
+     * @param string  $number The month number.
+     * @param integer $name   The expected month name.
+     */
+    public function testToString($number, $name)
     {
-        $this->assertEquals('January', (string) Month::january());
-        $this->assertEquals('February', (string) Month::february());
-        $this->assertEquals('March', (string) Month::march());
-        $this->assertEquals('April', (string) Month::april());
-        $this->assertEquals('May', (string) Month::may());
-        $this->assertEquals('June', (string) Month::june());
-        $this->assertEquals('July', (string) Month::july());
-        $this->assertEquals('August', (string) Month::august());
-        $this->assertEquals('September', (string) Month::september());
-        $this->assertEquals('October', (string) Month::october());
-        $this->assertEquals('November', (string) Month::november());
-        $this->assertEquals('December', (string) Month::december());
+        $this->assertSame($name, (string) Month::of($number));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToString()
+    {
+        return [
+            [1, 'JANUARY'],
+            [2, 'FEBRUARY'],
+            [3, 'MARCH'],
+            [4, 'APRIL'],
+            [5, 'MAY'],
+            [6, 'JUNE'],
+            [7, 'JULY'],
+            [8, 'AUGUST'],
+            [9, 'SEPTEMBER'],
+            [10, 'OCTOBER'],
+            [11, 'NOVEMBER'],
+            [12, 'DECEMBER']
+        ];
     }
 }
