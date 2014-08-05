@@ -127,30 +127,14 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider providerGetName
+     * @dataProvider providerToString
      *
-     * @param DayOfWeek $dayOfWeek
-     * @param string    $name
+     * @param DayOfWeek $dayOfWeek The day-of-week to test.
+     * @param string    $name      The expected name.
      */
-    public function testGetName(DayOfWeek $dayOfWeek, $name)
+    public function testToString(DayOfWeek $dayOfWeek, $name)
     {
-        $this->assertEquals($dayOfWeek->getName(), $name);
-    }
-
-    /**
-     * @return array
-     */
-    public function providerGetName()
-    {
-        return [
-            [DayOfWeek::monday(), 'Monday'],
-            [DayOfWeek::tuesday(),'Tuesday'],
-            [DayOfWeek::wednesday(), 'Wednesday'],
-            [DayOfWeek::thursday(), 'Thursday'],
-            [DayOfWeek::friday(), 'Friday'],
-            [DayOfWeek::saturday(), 'Saturday'],
-            [DayOfWeek::sunday(), 'Sunday']
-        ];
+        $this->assertSame($name, (string) $dayOfWeek);
     }
 
     public function testPlusMinusEntireWeeks()
@@ -258,6 +242,22 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
             [1, 6, 2],
             [1, 7, 1],
             [1, 8, 7],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToString()
+    {
+        return [
+            [DayOfWeek::monday(), 'MONDAY'],
+            [DayOfWeek::tuesday(),'TUESDAY'],
+            [DayOfWeek::wednesday(), 'WEDNESDAY'],
+            [DayOfWeek::thursday(), 'THURSDAY'],
+            [DayOfWeek::friday(), 'FRIDAY'],
+            [DayOfWeek::saturday(), 'SATURDAY'],
+            [DayOfWeek::sunday(), 'SUNDAY']
         ];
     }
 }

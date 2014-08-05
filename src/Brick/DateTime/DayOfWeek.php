@@ -175,16 +175,6 @@ class DayOfWeek
     }
 
     /**
-     * Returns the English name of this day of the week.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return jddayofweek($this->value - 1, CAL_DOW_SHORT);
-    }
-
-    /**
      * Returns the ISO 8601 value of this DayOfWeek.
      *
      * @return integer The day-of-week, from 1 (Monday) to 7 (Sunday).
@@ -302,5 +292,15 @@ class DayOfWeek
     public function isSunday()
     {
         return $this->value === self::SUNDAY;
+    }
+
+    /**
+     * Returns the capitalized English name of this day-of-week.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return [1 => 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'][$this->value];
     }
 }
