@@ -31,7 +31,7 @@ final class DateTimeParsers
      */
     public static function isoYear()
     {
-        return new NumberParser(DateTimeField::YEAR, 4, 9, false, NumberParser::SIGN_EXCEEDS_PAD);
+        return new NumberParser(DateTimeField::YEAR, 4, 9, true);
     }
 
     /**
@@ -79,7 +79,7 @@ final class DateTimeParsers
      */
     public static function isoNanoOfSecond()
     {
-        return new NumberParser(DateTimeField::NANO_OF_SECOND, 1, 9, true);
+        return new NumberParser(DateTimeField::NANO_OF_SECOND, 1, 9, false, true);
     }
 
     /**

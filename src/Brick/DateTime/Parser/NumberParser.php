@@ -4,79 +4,60 @@ namespace Brick\DateTime\Parser;
 
 /**
  * Parses a numeric string.
- *
- * @todo sign support
  */
 class NumberParser extends DateTimeParser
 {
     /**
-     * Sign only if the value is negative.
-     */
-    const SIGN_NORMAL = 0;
-
-    /**
-     * Always a sign, where zero will output `+`.
-     */
-    const SIGN_ALWAYS = 1;
-
-    /**
-     * Never a sign, only the absolute value.
-     */
-    const SIGN_NEVER = 2;
-
-    /**
-     * No negative values.
-     */
-    const SIGN_NOT_NEGATIVE = 3;
-
-    /**
-     * Sign only if the value exceeds the pad width.
-     */
-    const SIGN_EXCEEDS_PAD = 4;
-
-    /**
+     * The name of the date-time field being parsed.
+     *
      * @var string
      */
     private $fieldName;
 
     /**
+     * The min digits length.
+     *
      * @var integer
      */
     private $minLength;
 
     /**
+     * The max digits length.
+     *
      * @var integer
      */
     private $maxLength;
+
+    /**
+     * Whether to allow a minus sign in front of the digits.
+     *
+     * @var boolean
+     */
+    private $allowNegative;
 
     /**
      * Whether to pad the string up to the max length with zeros to the right before converting to an integer.
      *
      * @var boolean
      */
-    private $padRight;
-
-    /**
-     * @var integer
-     */
-    private $signStyle;
+    private $padZerosRight;
 
     /**
      * Class constructor.
      *
-     * @param string  $fieldName
-     * @param integer $minLength
-     * @param integer $maxLength
-     * @param boolean $padRight
-     * @param integer $signStyle
+     * @param string  $fieldName     The name of the field being parsed.
+     * @param integer $minLength     The min digits length.
+     * @param integer $maxLength     The max digits length.
+     * @param boolean $allowNegative Whether to allow a minus sign in front of the digits.
+     * @param boolean $padZerosRight Whether to pad with zeros to the right up to max length.
      */
-    public function __construct($fieldName, $minLength, $maxLength, $padRight = false, $signStyle = NumberParser::SIGN_NOT_NEGATIVE)
+    public function __construct($fieldName, $minLength, $maxLength, $allowNegative = false, $padZerosRight = false)
     {
-        $this->fieldName = $fieldName;
-        $this->minLength = $minLength;
-        $this->maxLength = $maxLength;
-        $this->padRight  = $padRight;
-        $this->signStyle = $signStyle;
+        $this->fieldName     = $fieldName;
+        $this->minLength     = $minLength;
+        $this->maxLength     = $maxLength;
+        $this->allowNegative = $allowNegative;
+        $this->padZerosRight = $padZerosRight;
     }
 
     /**
@@ -84,6 +65,7 @@ class NumberParser extends DateTimeParser
      */
     public function parseInto(DateTimeParseContext $context)
     {
+        $sign = $context->getNextCharsMatching('\-');
         $digits = $context->getNextDigits();
 
         if ($digits === '') {
@@ -101,11 +83,11 @@ class NumberParser extends DateTimeParser
             );
         }
 
-        if ($this->padRight) {
+        if ($this->padZerosRight) {
             $digits = str_pad($digits, $this->maxLength, '0', STR_PAD_RIGHT);
         }
 
-        $context->setParsedField($this->fieldName, (int) $digits);
+        $context->setParsedField($this->fieldName, (int) ($sign . $digits));
 
         return true;
     }
