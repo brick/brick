@@ -31,9 +31,11 @@ class TimeZoneOffset extends TimeZone
     /**
      * The string representation of this time-zone offset.
      *
-     * @var string
+     * This is generated on-the-fly, and will be null before the first call to getId().
+     *
+     * @var string|null
      */
-    private $id;
+    private $id = null;
 
     /**
      * Private constructor. Use a factory method to obtain an instance.
@@ -43,14 +45,6 @@ class TimeZoneOffset extends TimeZone
     private function __construct($totalSeconds)
     {
         $this->totalSeconds = $totalSeconds;
-
-        if ($totalSeconds === 0) {
-            $this->id = 'Z';
-        } elseif ($totalSeconds < 0) {
-            $this->id = '-' . LocalTime::ofSecondOfDay(-$totalSeconds);
-        } else {
-            $this->id = '+' . LocalTime::ofSecondOfDay($totalSeconds);
-        }
     }
 
     /**
@@ -90,9 +84,6 @@ class TimeZoneOffset extends TimeZone
         $minutes = Cast::toInteger($minutes);
         $seconds = Cast::toInteger($seconds);
 
-        if (self::haveDifferentSigns($hours, $minutes, $seconds)) {
-            throw new DateTimeException('Time zone offset hours, minutes and seconds must have the same sign');
-        }
         if ($hours < -TimeZoneOffset::MAX_HOURS || $hours > TimeZoneOffset::MAX_HOURS) {
             throw new DateTimeException('Time zone offset hours must be in the range -18 to 18');
         }
@@ -103,13 +94,22 @@ class TimeZoneOffset extends TimeZone
             throw new DateTimeException('Time zone offset seconds must be in the range -59 to 59');
         }
 
+        $err = ($hours > 0 && ($minutes < 0 || $seconds < 0))
+            || ($hours < 0 && ($minutes > 0 || $seconds > 0))
+            || ($minutes > 0 && $seconds < 0)
+            || ($minutes < 0 && $seconds > 0);
+
+        if ($err) {
+            throw new DateTimeException('Time zone offset hours, minutes and seconds must have the same sign');
+        }
+
         $totalSeconds = $hours * LocalTime::SECONDS_PER_HOUR + $minutes * LocalTime::SECONDS_PER_MINUTE + $seconds;
 
         if ($totalSeconds < -TimeZoneOffset::MAX_SECONDS || $totalSeconds > TimeZoneOffset::MAX_SECONDS) {
             throw new DateTimeException('Time zone offset not in valid range: -18:00 to +18:00');
         }
 
-        return TimeZoneOffset::ofTotalSeconds($totalSeconds);
+        return new TimeZoneOffset($totalSeconds);
     }
 
     /**
@@ -118,23 +118,6 @@ class TimeZoneOffset extends TimeZone
     public static function utc()
     {
         return new TimeZoneOffset(0);
-    }
-
-    /**
-     * Checks whether the three integers have different signs.
-     *
-     * @param integer $a The first integer.
-     * @param integer $b The second integer.
-     * @param integer $c The third integer.
-     *
-     * @return boolean
-     */
-    private static function haveDifferentSigns($a, $b, $c)
-    {
-        return ($a > 0 && ($b < 0 || $c < 0))
-            || ($a < 0 && ($b > 0 || $c > 0))
-            || ($b > 0 && $c < 0)
-            || ($b < 0 && $c > 0);
     }
 
     /**
@@ -187,38 +170,13 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
-     * @param string  $text            The offset text representation.
-     * @param integer $pos             The position to parse.
-     * @param integer $length          The number of characters to parse.
-     * @param boolean $precededByColon Whether this number should be preceded by a colon.
-     *
-     * @return integer The parsed number, from 0 to 99.
-     *
-     * @throws Parser\DateTimeParseException
-     */
-    private static function parseNumber($text, $pos, $length, $precededByColon)
-    {
-        if ($precededByColon && $text[$pos - 1] != ':') {
-            throw Parser\DateTimeParseException::invalidTimeZoneOffset($text, 'Colon not found when expected');
-        }
-
-        $number = substr($text, $pos, $length);
-
-        if (! ctype_digit($number)) {
-            throw Parser\DateTimeParseException::invalidTimeZoneOffset($text, 'Non numeric characters found');
-        }
-
-        return (int) $number;
-    }
-
-    /**
-     * Returns the total zone offset in seconds.
+     * Returns the total time-zone offset in seconds.
      *
      * This is the primary way to access the offset amount.
      * It returns the total of the hours, minutes and seconds fields as a
      * single offset that can be added to a time.
      *
-     * @return integer The total zone offset amount in seconds.
+     * @return integer The total time-zone offset amount in seconds.
      */
     public function getTotalSeconds()
     {
@@ -230,6 +188,16 @@ class TimeZoneOffset extends TimeZone
      */
     public function getId()
     {
+        if ($this->id === null) {
+            if ($this->totalSeconds < 0) {
+                $this->id = '-' . LocalTime::ofSecondOfDay(- $this->totalSeconds);
+            } elseif ($this->totalSeconds > 0) {
+                $this->id = '+' . LocalTime::ofSecondOfDay($this->totalSeconds);
+            } else {
+                $this->id = 'Z';
+            }
+        }
+
         return $this->id;
     }
 
@@ -246,11 +214,6 @@ class TimeZoneOffset extends TimeZone
      */
     public function toDateTimeZone()
     {
-        // We *need* to pass a third parameter (timezone), even though it will be ignored here.
-        $tz = new \DateTimeZone('UTC');
-
-        // DateTimeZone's constructor does not accept an offset,
-        // but DateTime can provide such a DateTimeZone.
-        return \DateTime::createFromFormat('O', $this->id, $tz)->getTimezone();
+        return new \DateTimeZone($this->getId());
     }
 }
