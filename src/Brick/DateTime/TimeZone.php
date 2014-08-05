@@ -24,13 +24,15 @@ abstract class TimeZone
     {
         $text = (string) $text;
 
+        if ($text === 'Z' || $text === 'z') {
+            return TimeZoneOffset::utc();
+        }
+
         if ($text === '') {
             throw new DateTimeParseException('The string is empty.');
         }
 
-        $char = $text[0];
-
-        if ($char === 'Z' || $char === 'z' || $char === '+' || $char === '-') {
+        if ($text[0] === '+' || $text[0] === '-') {
             return TimeZoneOffset::parse($text);
         }
 

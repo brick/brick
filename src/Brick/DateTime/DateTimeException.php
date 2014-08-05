@@ -9,12 +9,12 @@ namespace Brick\DateTime;
 class DateTimeException extends \RuntimeException
 {
     /**
-     * @param string $timeZone
+     * @param string $region
      *
      * @return DateTimeException
      */
-    public static function unknownTimeZone($timeZone)
+    public static function unknownTimeZoneRegion($region)
     {
-        return new self(sprintf('Unknown time zone (%s)', $timeZone));
+        return new self(sprintf('Unknown time zone region "%s".', $region));
     }
 }

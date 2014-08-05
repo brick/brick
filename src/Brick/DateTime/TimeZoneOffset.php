@@ -3,6 +3,8 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Field\DateTimeField;
+use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\TimeZoneOffsetParser;
 use Brick\Type\Cast;
 
 /**
@@ -114,7 +116,7 @@ class TimeZoneOffset extends TimeZone
      */
     public static function utc()
     {
-        return TimeZoneOffset::ofTotalSeconds(0);
+        return new TimeZoneOffset(0);
     }
 
     /**
@@ -167,61 +169,18 @@ class TimeZoneOffset extends TimeZone
      *
      * Note that ± means either the plus or minus symbol.
      *
-     * @param string $text
+     * @param string                     $text
+     * @param Parser\DateTimeParser|null $parser
      *
      * @return TimeZoneOffset
      *
      * @throws Parser\DateTimeParseException
      */
-    public static function parse($text)
+    public static function parse($text, Parser\DateTimeParser $parser = null)
     {
-        if ($text === 'Z' || $text === 'z') {
-            return self::utc();
-        }
+        $parser = $parser ?: new TimeZoneOffsetParser();
 
-        switch (strlen($text)) {
-            case 2:
-                $hours = self::parseNumber($text, 1, 1, false);
-                $minutes = 0;
-                $seconds = 0;
-                break;
-            case 3:
-                $hours = self::parseNumber($text, 1, 2, false);
-                $minutes = 0;
-                $seconds = 0;
-                break;
-            case 5:
-                $hours = self::parseNumber($text, 1, 2, false);
-                $minutes = self::parseNumber($text, 3, 2, false);
-                $seconds = 0;
-                break;
-            case 6:
-                $hours = self::parseNumber($text, 1, 2, false);
-                $minutes = self::parseNumber($text, 4, 2, true);
-                $seconds = 0;
-                break;
-            case 7;
-                $hours = self::parseNumber($text, 1, 2, false);
-                $minutes = self::parseNumber($text, 3, 2, false);
-                $seconds = self::parseNumber($text, 5, 2, false);
-                break;
-            case 9:
-                $hours = self::parseNumber($text, 1, 2, false);
-                $minutes = self::parseNumber($text, 4, 2, true);
-                $seconds = self::parseNumber($text, 7, 2, true);
-                break;
-            default:
-                throw Parser\DateTimeParseException::invalidTimeZoneOffset($text);
-        }
-
-        switch ($text[0]) {
-            case '+':
-                return self::of($hours, $minutes, $seconds);
-            case '-':
-                return self::of(- $hours, - $minutes, - $seconds);
-            default:
-                throw Parser\DateTimeParseException::invalidTimeZoneOffset($text, 'Plus/minus not found when expected');
-        }
+        return TimeZoneOffset::from($parser->parse($text));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Field\DateTimeField;
+use Brick\DateTime\Parser\TimeZoneRegionParser;
 
 /**
  * A geographical region where the same time-zone rules apply, such as `Europe/London`.
@@ -17,31 +18,51 @@ class TimeZoneRegion extends TimeZone
     /**
      * Private constructor. Use a factory method to obtain an instance.
      *
-     * @param string $timezone
-     *
-     * @throws DateTimeException
+     * @param \DateTimeZone $zone
      */
-    private function __construct($timezone)
+    private function __construct(\DateTimeZone $zone)
     {
+        $this->zone = $zone;
+    }
+
+    /**
+     * @param string $id The region id.
+     *
+     * @return TimeZoneRegion
+     *
+     * @throws DateTimeException If the region id is invalid.
+     */
+    public function of($id)
+    {
+        $id = (string) $id;
+
+        if ($id === '' || $id === 'Z' || $id === 'z' || $id[0] === '+' || $id[0] === '-') {
+            // DateTimeZone would accept offsets, but TimeZoneRegion targets regions only.
+            throw DateTimeException::unknownTimeZoneRegion($id);
+        }
+
         try {
-            $this->zone = new \DateTimeZone($timezone);
+            return new TimeZoneRegion(new \DateTimeZone($id));
         } catch (\Exception $e) {
-            throw new DateTimeException(sprintf('Unknown or bad timezone "%s".', $timezone));
+            throw DateTimeException::unknownTimeZoneRegion($id);
         }
     }
 
     /**
      * Parses a region id, such as 'Europe/London'.
      *
-     * @param string $text
+     * @param string                     $text
+     * @param Parser\DateTimeParser|null $parser
      *
      * @return TimeZoneRegion
      *
      * @throws \Brick\DateTime\Parser\DateTimeParseException
      */
-    public static function parse($text)
+    public static function parse($text, Parser\DateTimeParser $parser = null)
     {
-        return new TimeZoneRegion($text);
+        $parser = $parser ?: new TimeZoneRegionParser();
+
+        return TimeZoneRegion::from($parser->parse($text));
     }
 
     /**
@@ -55,7 +76,7 @@ class TimeZoneRegion extends TimeZone
             return null;
         }
 
-        return self::parse($result->getField(DateTimeField::TIME_ZONE_REGION));
+        return self::of($result->getField(DateTimeField::TIME_ZONE_REGION));
     }
 
     /**
