@@ -9,38 +9,151 @@ use Brick\DateTime\YearMonth;
  */
 class YearMonthTest extends \PHPUnit_Framework_TestCase
 {
-    public function testOf()
+    /**
+     * @param integer   $year      The expected year.
+     * @param integer   $month     The expected month.
+     * @param YearMonth $yearMonth The year-month to test.
+     */
+    private function assertYearMonthEquals($year, $month, YearMonth $yearMonth)
     {
-        $ym = YearMonth::of(2007, 7);
-
-        $this->assertSame(2007, $ym->getYear());
-        $this->assertSame(7, $ym->getMonth());
+        $this->assertSame($year, $yearMonth->getYear());
+        $this->assertSame($month, $yearMonth->getMonth());
     }
 
-    public function testParse()
+    public function testOf()
     {
-        $ym = YearMonth::parse('2011-02');
-
-        $this->assertSame(2011, $ym->getYear());
-        $this->assertSame(2, $ym->getMonth());
+        $this->assertYearMonthEquals(2007, 7, YearMonth::of(2007, 7));
     }
 
     /**
-     * @expectedException \Brick\DateTime\DateTimeException
+     * @dataProvider providerParse
+     *
+     * @param string  $text  The text to parse.
+     * @param integer $year  The expected year.
+     * @param integer $month The expected month.
      */
-    public function testParseInvalidStringThrowsException()
+    public function testParse($text, $year, $month)
     {
-        YearMonth::parse('2010-01-01');
+        $this->assertYearMonthEquals($year, $month, YearMonth::parse($text));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParse()
+    {
+        return [
+            ['2011-02', 2011, 02],
+            ['0908-11', 908, 11],
+            ['-0050-01', -50, 1],
+            ['-12345-02', -12345, 2],
+            ['12345-03', 12345, 3]
+        ];
+    }
+
+    /**
+     * @dataProvider providerParseInvalidStringThrowsException
+     * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param string $string
+     */
+    public function testParseInvalidStringThrowsException($string)
+    {
+        YearMonth::parse($string);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidStringThrowsException()
+    {
+        return [
+            ['999-01'],
+            ['-999-01'],
+            ['2010-01-01'],
+            [' 2010-10'],
+            ['2010-10 '],
+            ['2010.10']
+        ];
+    }
+
+    /**
+     * @dataProvider providerGetLengthOfMonth
+     *
+     * @param integer $year   The year.
+     * @param integer $month  The month.
+     * @param integer $length The expected length of month.
+     */
+    public function testGetLengthOfMonth($year, $month, $length)
+    {
+        $this->assertSame($length, YearMonth::of($year, $month)->getLengthOfMonth());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerGetLengthOfMonth()
+    {
+        return [
+            [1999, 1, 31],
+            [2000, 1, 31],
+            [1999, 2, 28],
+            [2000, 2, 29],
+            [1999, 3, 31],
+            [2000, 3, 31],
+            [1999, 4, 30],
+            [2000, 4, 30],
+            [1999, 5, 31],
+            [2000, 5, 31],
+            [1999, 6, 30],
+            [2000, 6, 30],
+            [1999, 7, 31],
+            [2000, 7, 31],
+            [1999, 8, 31],
+            [2000, 8, 31],
+            [1999, 9, 30],
+            [2000, 9, 30],
+            [1999, 10, 31],
+            [2000, 10, 31],
+            [1999, 11, 30],
+            [2000, 11, 30],
+            [1999, 12, 31],
+            [2000, 12, 31]
+        ];
+    }
+
+    /**
+     * @dataProvider providerGetLengthOfYear
+     *
+     * @param integer $year   The year.
+     * @param integer $month  The month.
+     * @param integer $length The expected length of year.
+     */
+    public function testGetLengthOfYear($year, $month, $length)
+    {
+        $this->assertSame($length, YearMonth::of($year, $month)->getLengthOfYear());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerGetLengthOfYear()
+    {
+        return [
+            [1999, 1, 365],
+            [2000, 1, 366],
+            [2001, 1, 365]
+        ];
     }
 
     public function testWithYear()
     {
-        $this->assertSame(2001, YearMonth::of(2000, 1)->withYear(2001)->getYear());
+        $this->assertYearMonthEquals(2001, 5, YearMonth::of(2000, 5)->withYear(2001));
     }
 
     public function testWithMonth()
     {
-        $this->assertSame(12, YearMonth::of(2000, 11)->withMonth(12)->getMonth());
+        $this->assertYearMonthEquals(2000, 12, YearMonth::of(2000, 1)->withMonth(12));
     }
 
     public function testAtDay()

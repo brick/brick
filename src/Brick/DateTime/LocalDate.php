@@ -320,7 +320,7 @@ class LocalDate
     private function resolvePreviousValid($year, $month, $day)
     {
         if ($day > 28) {
-            $day = min($day, YearMonth::of($year, $month)->getNumberOfDays());
+            $day = min($day, YearMonth::of($year, $month)->getLengthOfMonth());
         }
 
         return new LocalDate($year, $month, $day);

@@ -117,13 +117,33 @@ class YearMonth
     }
 
     /**
-     * Returns the number of days in this YearMonth.
+     * Returns whether the year is a leap year.
      *
-     * @return integer [28-31]
+     * @return boolean
      */
-    public function getNumberOfDays()
+    public function isLeapYear()
     {
-        return cal_days_in_month(CAL_GREGORIAN, $this->month, $this->year);
+        return (new Year($this->year))->isLeap();
+    }
+
+    /**
+     * Returns the length of the month in days, taking account of the year.
+     *
+     * @return integer
+     */
+    public function getLengthOfMonth()
+    {
+        return Month::of($this->month)->getLength($this->isLeapYear());
+    }
+
+    /**
+     * Returns the length of the year in days, either 365 or 366.
+     *
+     * @return integer
+     */
+    public function getLengthOfYear()
+    {
+        return $this->isLeapYear() ? 366: 365;
     }
 
     /**
