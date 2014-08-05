@@ -36,7 +36,11 @@ class Year
         ]);
 
         if ($this->year === false) {
-            throw new \UnexpectedValueException('Year must be an integer in the interval [0-9999]');
+            throw new \UnexpectedValueException(sprintf(
+                'Year must be an integer in the range %d to %d.',
+                self::MIN_YEAR,
+                self::MAX_YEAR
+            ));
         }
     }
 

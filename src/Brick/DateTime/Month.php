@@ -92,7 +92,7 @@ class Month
             return self::$values[$month];
         }
 
-        throw new \UnexpectedValueException('Month must be an integer in the interval [1-12]');
+        throw new \UnexpectedValueException('Month must be an integer in the range 1 to 12.');
     }
 
     /**

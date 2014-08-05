@@ -89,13 +89,13 @@ class LocalDate
         self::checkYear($year);
 
         if ($month < 1 || $month > 12) {
-            throw new DateTimeException('Month must be in the interval [1, 12]');
+            throw new DateTimeException('Month must be in the range 1 to 12.');
         }
 
         $daysInMonth = Month::of($month)->getLength(Year::of($year)->isLeap());
 
         if ($day < 1 || $day > $daysInMonth) {
-            throw new DateTimeException(sprintf('Day must be in the interval [1, %d]', $daysInMonth));
+            throw new DateTimeException(sprintf('Day must be in the range 1 to %d.', $daysInMonth));
         }
 
         return new LocalDate($year, $month, $day);
@@ -114,7 +114,7 @@ class LocalDate
     {
         if ($year < Year::MIN_YEAR || $year > Year::MAX_YEAR) {
             throw new DateTimeException(sprintf(
-                'Year must be in the interval [%d, %d]',
+                'Year must be in the range %d to %d.',
                 Year::MIN_YEAR,
                 Year::MAX_YEAR
             ));
@@ -134,7 +134,7 @@ class LocalDate
         $daysInYear = (new Year($year))->getLength();
 
         if ($dayOfYear < 1 || $dayOfYear > $daysInYear) {
-            throw new DateTimeException(sprintf('Day of year must be in the interval [1, %d]', $daysInYear));
+            throw new DateTimeException(sprintf('Day of year must be in the range 1 to %d.', $daysInYear));
         }
     }
 

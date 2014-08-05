@@ -85,15 +85,15 @@ class LocalTime
         $nano  = Cast::toInteger($nano);
 
         if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
-            throw new DateTimeException('Hour must be in the interval [0-23]');
+            throw new DateTimeException('Hour must be in the range 0 to 23.');
         }
 
         if ($minute < 0 || $minute >= LocalTime::MINUTES_PER_HOUR) {
-            throw new DateTimeException('Minute must be in the interval [0-59]');
+            throw new DateTimeException('Minute must be in the range 0 to 59.');
         }
 
         if ($second < 0 || $second >= LocalTime::SECONDS_PER_MINUTE) {
-            throw new DateTimeException('Second must be in the interval [0-59]');
+            throw new DateTimeException('Second must be in the range 0 to 59.');
         }
 
         if ($nano < 0 || $nano >= LocalTime::NANOS_PER_SECOND) {
@@ -155,11 +155,11 @@ class LocalTime
         $nanoOfSecond = (int) $nanoOfSecond;
 
         if ($secondOfDay < 0 || $secondOfDay >= self::SECONDS_PER_DAY) {
-            throw new DateTimeException('Second of day must be in the interval 0 to 86,399.');
+            throw new DateTimeException('Second of day must be in the range 0 to 86,399.');
         }
 
         if ($nanoOfSecond < 0 || $nanoOfSecond >= self::NANOS_PER_SECOND) {
-            throw new DateTimeParseException('Nano of second must be in the interval 0 to 999,999,999.');
+            throw new DateTimeParseException('Nano of second must be in the range 0 to 999,999,999.');
         }
 
         $hours = Math::div($secondOfDay, self::SECONDS_PER_HOUR);

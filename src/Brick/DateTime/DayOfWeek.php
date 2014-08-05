@@ -67,7 +67,7 @@ class DayOfWeek
             return self::$values[$day];
         }
 
-        throw new \UnexpectedValueException('Day must be an integer in the interval [1-7]');
+        throw new \UnexpectedValueException('Day must be an integer in the range 1 to 7.');
     }
 
     /**
