@@ -12,7 +12,7 @@ class DayOfWeekTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOfInvalidDayThrowsException
-     * @expectedException \UnexpectedValueException
+     * @expectedException \InvalidArgumentException
      *
      * @param integer $day
      */

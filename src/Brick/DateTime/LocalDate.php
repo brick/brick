@@ -131,7 +131,7 @@ class LocalDate
      */
     private static function checkDayOfYear($year, $dayOfYear)
     {
-        $daysInYear = (new Year($year))->getLength();
+        $daysInYear = Year::of($year)->getLength();
 
         if ($dayOfYear < 1 || $dayOfYear > $daysInYear) {
             throw new DateTimeException(sprintf('Day of year must be in the range 1 to %d.', $daysInYear));
@@ -154,16 +154,16 @@ class LocalDate
         self::checkYear($year);
         self::checkDayOfYear($year, $dayOfYear);
 
-        $leap = (new Year($year))->isLeap();
+        $leap = Year::of($year)->isLeap();
 
         $monthOfYear = Month::of(Math::div($dayOfYear - 1, 31) + 1);
-        $monthEnd = $monthOfYear->firstDayOfYear($leap) + $monthOfYear->getLength($leap) - 1;
+        $monthEnd = $monthOfYear->getFirstDayOfYear($leap) + $monthOfYear->getLength($leap) - 1;
 
         if ($dayOfYear > $monthEnd) {
             $monthOfYear = $monthOfYear->plus(1);
         }
 
-        $dayOfMonth = $dayOfYear - $monthOfYear->firstDayOfYear($leap) + 1;
+        $dayOfMonth = $dayOfYear - $monthOfYear->getFirstDayOfYear($leap) + 1;
 
         return LocalDate::of($year, $monthOfYear->getValue(), $dayOfMonth);
     }
@@ -315,7 +315,7 @@ class LocalDate
      */
     public function getDayOfYear()
     {
-        return Month::of($this->month)->firstDayOfYear($this->isLeapYear()) + $this->day - 1;
+        return Month::of($this->month)->getFirstDayOfYear($this->isLeapYear()) + $this->day - 1;
     }
 
     /**

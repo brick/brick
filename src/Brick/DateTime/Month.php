@@ -2,6 +2,8 @@
 
 namespace Brick\DateTime;
 
+use Brick\Type\Cast;
+
 /**
  * Represents a month.
  */
@@ -21,58 +23,58 @@ class Month
     const DECEMBER  = 12;
 
     /**
-     * Cache of all the months.
-     *
-     * @var Month[]
-     */
-    private static $values = [];
-
-    /**
-     * The month number, 1 (January) to 12 (December).
+     * The month number, from 1 (January) to 12 (December).
      *
      * @var integer
      */
-    private $month;
+    private $value;
 
     /**
      * Private constructor. Use of() to get a Month instance.
      *
-     * @param integer $month
-     *
-     * @throws \UnexpectedValueException
+     * @param integer $month The month value, validated.
      */
     private function __construct($month)
     {
-        $this->month = $month;
+        $this->value = $month;
+    }
+
+    /**
+     * Returns a cached Month instance.
+     *
+     * @param integer $value The month value, validated.
+     *
+     * @return Month
+     */
+    private function get($value)
+    {
+        static $values;
+
+        if (! isset($values[$value])) {
+            $values[$value] = new Month($value);
+        }
+
+        return $values[$value];
     }
 
     /**
      * Returns an instance of Month for the given month value.
      *
-     * @param integer $month The day month number, from 1 (January) to 12 (December).
+     * @param integer $value The month number, from 1 (January) to 12 (December).
      *
      * @return Month The Month instance.
      *
-     * @throws \UnexpectedValueException
+     * @throws \InvalidArgumentException
      */
-    public static function of($month)
+    public static function of($value)
     {
-        $month = filter_var($month, FILTER_VALIDATE_INT, [
-            'options' => [
-                'min_range' => self::JANUARY,
-                'max_range' => self::DECEMBER
-            ]
-        ]);
+        $value = Cast::toInteger($value);
 
-        if (is_int($month)) {
-            if (! isset(self::$values[$month])) {
-                self::$values[$month] = new Month($month);
-            }
-
-            return self::$values[$month];
+        if ($value < Month::JANUARY || $value > Month::DECEMBER) {
+            throw new \InvalidArgumentException('The month must be in range 1 to 12.');
         }
 
-        throw new \UnexpectedValueException('Month must be an integer in the range 1 to 12.');
+        return Month::get($value);
     }
 
     /**
@@ -80,12 +82,12 @@ class Month
      *
      * @return Month[]
      */
-    public static function getMonths()
+    public static function getAll()
     {
         $months = [];
 
         for ($month = Month::JANUARY; $month <= Month::DECEMBER; $month++) {
-            $months[] = Month::of($month);
+            $months[] = Month::get($month);
         }
 
         return $months;
@@ -98,7 +100,7 @@ class Month
      */
     public static function january()
     {
-        return Month::of(Month::JANUARY);
+        return Month::get(Month::JANUARY);
     }
 
     /**
@@ -108,7 +110,7 @@ class Month
      */
     public static function february()
     {
-        return Month::of(Month::FEBRUARY);
+        return Month::get(Month::FEBRUARY);
     }
 
     /**
@@ -118,7 +120,7 @@ class Month
      */
     public static function march()
     {
-        return Month::of(Month::MARCH);
+        return Month::get(Month::MARCH);
     }
 
     /**
@@ -128,7 +130,7 @@ class Month
      */
     public static function april()
     {
-        return Month::of(Month::APRIL);
+        return Month::get(Month::APRIL);
     }
 
     /**
@@ -138,7 +140,7 @@ class Month
      */
     public static function may()
     {
-        return Month::of(Month::MAY);
+        return Month::get(Month::MAY);
     }
 
     /**
@@ -148,7 +150,7 @@ class Month
      */
     public static function june()
     {
-        return Month::of(Month::JUNE);
+        return Month::get(Month::JUNE);
     }
 
     /**
@@ -158,7 +160,7 @@ class Month
      */
     public static function july()
     {
-        return Month::of(Month::JULY);
+        return Month::get(Month::JULY);
     }
 
     /**
@@ -168,7 +170,7 @@ class Month
      */
     public static function august()
     {
-        return Month::of(Month::AUGUST);
+        return Month::get(Month::AUGUST);
     }
 
     /**
@@ -178,7 +180,7 @@ class Month
      */
     public static function september()
     {
-        return Month::of(Month::SEPTEMBER);
+        return Month::get(Month::SEPTEMBER);
     }
 
     /**
@@ -188,7 +190,7 @@ class Month
      */
     public static function october()
     {
-        return Month::of(Month::OCTOBER);
+        return Month::get(Month::OCTOBER);
     }
 
     /**
@@ -198,7 +200,7 @@ class Month
      */
     public static function november()
     {
-        return Month::of(Month::NOVEMBER);
+        return Month::get(Month::NOVEMBER);
     }
 
     /**
@@ -208,23 +210,33 @@ class Month
      */
     public static function december()
     {
-        return Month::of(Month::DECEMBER);
+        return Month::get(Month::DECEMBER);
+    }
+
+    /**
+     * Returns the ISO-8601 month number.
+     *
+     * @return integer The month number, from 1 (January) to 12 (December).
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 
     /**
      * Returns whether this Month equals another Month.
      *
-     * @param Month $other
+     * @param Month $that
      *
      * @return boolean
      */
-    public function isEqualTo(Month $other)
+    public function isEqualTo(Month $that)
     {
-        return ($this->month == $other->month);
+        return ($this->value === $that->value);
     }
 
     /**
-     * Gets the day-of-year for the first day of this month.
+     * Returns the day-of-year for the first day of this month.
      *
      * This returns the day-of-year that this month begins on, using the leap
      * year flag to determine the length of February.
@@ -233,11 +245,11 @@ class Month
      *
      * @return integer
      */
-    public function firstDayOfYear($leapYear)
+    public function getFirstDayOfYear($leapYear)
     {
         $leap = $leapYear ? 1 : 0;
 
-        switch ($this->month) {
+        switch ($this->value) {
             case Month::JANUARY:
                 return 1;
             case Month::FEBRUARY:
@@ -267,7 +279,7 @@ class Month
     }
 
     /**
-     * Gets the length of this month in days.
+     * Returns the length of this month in days.
      *
      * This takes a flag to determine whether to return the length for a leap year or not.
      *
@@ -281,7 +293,7 @@ class Month
      */
     public function getLength($leapYear)
     {
-        switch ($this->month) {
+        switch ($this->value) {
             case Month::FEBRUARY:
                 return ($leapYear ? 29 : 28);
             case Month::APRIL:
@@ -306,7 +318,7 @@ class Month
      */
     public function plus($months)
     {
-        return Month::of((((($this->month - 1 + $months) % 12) + 12) % 12) + 1);
+        return Month::get((((($this->value - 1 + $months) % 12) + 12) % 12) + 1);
     }
 
     /**
@@ -322,16 +334,6 @@ class Month
     public function minus($months)
     {
         return $this->plus(- $months);
-    }
-
-    /**
-     * Returns the ISO-8601 month number.
-     *
-     * @return integer The month number, from 1 (January) to 12 (December).
-     */
-    public function getValue()
-    {
-        return $this->month;
     }
 
     /**
@@ -354,6 +356,6 @@ class Month
             10 => 'OCTOBER',
             11 => 'NOVEMBER',
             12 => 'DECEMBER'
-        ][$this->month];
+        ][$this->value];
     }
 }

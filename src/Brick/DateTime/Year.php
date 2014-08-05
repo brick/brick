@@ -1,6 +1,7 @@
 <?php
 
 namespace Brick\DateTime;
+use Brick\Type\Cast;
 
 /**
  * Represents a year.
@@ -15,43 +16,44 @@ class Year
      *
      * @var integer
      */
-    private $year;
+    private $value;
 
     /**
      * Class constructor.
      *
-     * @param integer $year The year to represent.
-     *
-     * @throws \UnexpectedValueException
-     *
-     * @todo private, checks in of()
+     * @param integer $value The year to represent.
      */
-    public function __construct($year)
+    private function __construct($value)
     {
-        $this->year = filter_var($year, FILTER_VALIDATE_INT, [
-            'options' => [
-                'min_range' => self::MIN_YEAR,
-                'max_range' => self::MAX_YEAR
-            ]
-        ]);
+        $this->value = $value;
+    }
 
-        if ($this->year === false) {
-            throw new \UnexpectedValueException(sprintf(
-                'Year must be an integer in the range %d to %d.',
+    /**
+     * @param integer $value
+     *
+     * @return Year
+     */
+    public static function of($value)
+    {
+        $value = Cast::toInteger($value);
+
+        if ($value < Year::MIN_YEAR || $value > Year::MAX_YEAR) {
+            throw new \InvalidArgumentException(sprintf(
+                'Year must be in the range %d to %d.',
                 self::MIN_YEAR,
                 self::MAX_YEAR
             ));
         }
+
+        return new Year($value);
     }
 
     /**
-     * @param integer $year
-     *
-     * @return Year
+     * @return integer
      */
-    public static function of($year)
+    public function getValue()
     {
-        return new Year($year);
+        return $this->value;
     }
 
     /**
@@ -69,11 +71,11 @@ class Year
      */
     public function isLeap()
     {
-        return (($this->year & 3) == 0) && (($this->year % 100) != 0 || ($this->year % 400) == 0);
+        return (($this->value & 3) === 0) && (($this->value % 100) !== 0 || ($this->value % 400) === 0);
     }
 
     /**
-     * Gets the length of this year in days.
+     * Returns the length of this year in days.
      *
      * @return integer The length of this year in days, 365 or 366.
      */
@@ -87,17 +89,19 @@ class Year
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param integer $yearsToAdd The years to add, may be negative.
+     * @param integer $years The years to add, may be negative.
      *
      * @return Year A Year based on this year with the period added.
      */
-    public function plus($yearsToAdd)
+    public function plus($years)
     {
-        if ($yearsToAdd == 0) {
+        $years = Cast::toInteger($years);
+
+        if ($years === 0) {
             return $this;
         }
 
-        return new Year($this->year + $yearsToAdd);
+        return new Year($this->value + $years);
     }
 
     /**
@@ -105,24 +109,18 @@ class Year
      *
      * This instance is immutable and unaffected by this method call.
      *
-     * @param integer $yearsToSubtract The years to subtract, may be negative.
+     * @param integer $years The years to subtract, may be negative.
      *
      * @return Year A Year based on this year with the period subtracted.
      */
-    public function minus($yearsToSubtract)
+    public function minus($years)
     {
-        if ($yearsToSubtract == 0) {
+        $years = Cast::toInteger($years);
+
+        if ($years === 0) {
             return $this;
         }
 
-        return $this->plus(- $yearsToSubtract);
-    }
-
-    /**
-     * @return integer
-     */
-    public function toInteger()
-    {
-        return $this->year;
+        return new Year($this->value - $years);
     }
 }

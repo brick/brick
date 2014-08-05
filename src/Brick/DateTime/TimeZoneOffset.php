@@ -279,7 +279,7 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
-     * Gets the total zone offset in seconds.
+     * Returns the total zone offset in seconds.
      *
      * This is the primary way to access the offset amount.
      * It returns the total of the hours, minutes and seconds fields as a

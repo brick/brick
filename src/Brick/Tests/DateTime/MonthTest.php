@@ -27,7 +27,7 @@ class MonthTest extends AbstractTestCase
 
     /**
      * @dataProvider providerOfInvalidThrowsException
-     * @expectedException \UnexpectedValueException
+     * @expectedException \InvalidArgumentException
      *
      * @param integer $invalidMonth
      */
@@ -81,7 +81,7 @@ class MonthTest extends AbstractTestCase
 
     public function testPlusMinusEntireYears()
     {
-        foreach (Month::getMonths() as $month) {
+        foreach (Month::getAll() as $month) {
             foreach ([-24, -12, 0, 12, 24] as $monthsToAdd) {
                 $this->assertTrue($month->plus($monthsToAdd)->isEqualTo($month));
                 $this->assertTrue($month->minus($monthsToAdd)->isEqualTo($month));
@@ -219,34 +219,34 @@ class MonthTest extends AbstractTestCase
 
     public function testFirstDayOfYearNotLeapYear()
     {
-        $this->assertEquals(1, Month::january()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31, Month::february()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28, Month::march()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31, Month::april()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30, Month::may()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31, Month::june()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30, Month::july()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31, Month::august()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->firstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->firstDayOfYear(false));
+        $this->assertEquals(1, Month::january()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31, Month::february()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28, Month::march()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31, Month::april()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30, Month::may()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31, Month::june()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30, Month::july()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31, Month::august()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->getFirstDayOfYear(false));
+        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->getFirstDayOfYear(false));
     }
 
     public function testFirstDayOfYearLeapYear()
     {
-        $this->assertEquals(1, Month::january()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31, Month::february()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29, Month::march()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31, Month::april()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30, Month::may()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31, Month::june()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30, Month::july()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31, Month::august()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->firstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->firstDayOfYear(true));
+        $this->assertEquals(1, Month::january()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31, Month::february()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29, Month::march()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31, Month::april()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30, Month::may()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31, Month::june()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30, Month::july()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31, Month::august()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->getFirstDayOfYear(true));
+        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->getFirstDayOfYear(true));
     }
 
     /**

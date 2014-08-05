@@ -129,7 +129,7 @@ class YearMonth
      */
     public function isLeapYear()
     {
-        return (new Year($this->year))->isLeap();
+        return Year::of($this->year)->isLeap();
     }
 
     /**
