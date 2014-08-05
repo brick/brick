@@ -53,11 +53,7 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
 
     public function testOf()
     {
-        $date = LocalDate::of(2007, 7, 15);
-
-        $this->assertEquals(2007, $date->getYear());
-        $this->assertEquals(7, $date->getMonth());
-        $this->assertEquals(15, $date->getDay());
+        $this->assertLocalDateEquals(2007, 7, 15, LocalDate::of(2007, 7, 15));
     }
 
     /**
@@ -164,6 +160,122 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
             [1000, '1972-09-27'],
             [10000, '1997-05-19'],
             [100000, '2243-10-17']
+        ];
+    }
+
+    /**
+     * @dataProvider providerDayOfWeek
+     *
+     * @param integer $year      The year to test.
+     * @param integer $month     The month to test.
+     * @param integer $day       The day-of-month to test.
+     * @param integer $dayOfWeek The expected day-of-week number.
+     */
+    public function testGetDayOfWeek($year, $month, $day, $dayOfWeek)
+    {
+        $this->assertSame($dayOfWeek, LocalDate::of($year, $month, $day)->getDayOfWeek()->getValue());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerDayOfWeek()
+    {
+        return [
+            [2000, 1, 3, 1],
+            [2000, 2, 8, 2],
+            [2000, 3, 8, 3],
+            [2000, 4, 6, 4],
+            [2000, 5, 5, 5],
+            [2000, 6, 3, 6],
+            [2000, 7, 9, 7],
+            [2000, 8, 7, 1],
+            [2000, 9, 5, 2],
+            [2000, 10, 11, 3],
+            [2000, 11, 16, 4],
+            [2000, 12, 29, 5],
+            [2001, 1, 1, 1],
+            [2001, 2, 6, 2],
+            [2001, 3, 7, 3],
+            [2001, 4, 5, 4],
+            [2001, 5, 4, 5],
+            [2001, 6, 9, 6],
+            [2001, 7, 8, 7],
+            [2001, 8, 6, 1],
+            [2001, 9, 4, 2],
+            [2001, 10, 10, 3],
+            [2001, 11, 15, 4],
+            [2001, 12, 21, 5]
+        ];
+    }
+
+    /**
+     * @dataProvider providerDayOfYear
+     *
+     * @param integer $year      The year to test.
+     * @param integer $month     The month to test.
+     * @param integer $day       The day-of-month to test.
+     * @param integer $dayOfWeek The expected day-of-year number.
+     */
+    public function testGetDayOfYear($year, $month, $day, $dayOfWeek)
+    {
+        $this->assertSame($dayOfWeek, LocalDate::of($year, $month, $day)->getDayOfYear());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerDayOfYear()
+    {
+        return [
+            [2000, 1, 1, 1],
+            [2000, 1, 31, 31],
+            [2000, 2, 1, 32],
+            [2000, 2, 29, 60],
+            [2000, 3, 1, 61],
+            [2000, 3, 31, 91],
+            [2000, 4, 1, 92],
+            [2000, 4, 30, 121],
+            [2000, 5, 1, 122],
+            [2000, 5, 31, 152],
+            [2000, 6, 1, 153],
+            [2000, 6, 30, 182],
+            [2000, 7, 1, 183],
+            [2000, 7, 31, 213],
+            [2000, 8, 1, 214],
+            [2000, 8, 31, 244],
+            [2000, 9, 1, 245],
+            [2000, 9, 30, 274],
+            [2000, 10, 1, 275],
+            [2000, 10, 31, 305],
+            [2000, 11, 1, 306],
+            [2000, 11, 30, 335],
+            [2000, 12, 1, 336],
+            [2000, 12, 31, 366],
+            [2001, 1, 1, 1],
+            [2001, 1, 31, 31],
+            [2001, 2, 1, 32],
+            [2001, 2, 28, 59],
+            [2001, 3, 1, 60],
+            [2001, 3, 31, 90],
+            [2001, 4, 1, 91],
+            [2001, 4, 30, 120],
+            [2001, 5, 1, 121],
+            [2001, 5, 31, 151],
+            [2001, 6, 1, 152],
+            [2001, 6, 30, 181],
+            [2001, 7, 1, 182],
+            [2001, 7, 31, 212],
+            [2001, 8, 1, 213],
+            [2001, 8, 31, 243],
+            [2001, 9, 1, 244],
+            [2001, 9, 30, 273],
+            [2001, 10, 1, 274],
+            [2001, 10, 31, 304],
+            [2001, 11, 1, 305],
+            [2001, 11, 30, 334],
+            [2001, 12, 1, 335],
+            [2001, 12, 31, 365]
         ];
     }
 

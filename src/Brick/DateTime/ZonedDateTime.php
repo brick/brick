@@ -267,6 +267,14 @@ class ZonedDateTime extends ReadableInstant
     /**
      * @return integer
      */
+    public function getDayOfYear()
+    {
+        return $this->localDateTime->getDayOfYear();
+    }
+
+    /**
+     * @return integer
+     */
     public function getHour()
     {
         return $this->localDateTime->getHour();

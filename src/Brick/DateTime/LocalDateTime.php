@@ -161,6 +161,14 @@ class LocalDateTime
     /**
      * @return integer
      */
+    public function getDayOfYear()
+    {
+        return $this->date->getDayOfYear();
+    }
+
+    /**
+     * @return integer
+     */
     public function getHour()
     {
         return $this->time->getHour();

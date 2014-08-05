@@ -309,6 +309,16 @@ class LocalDate
     }
 
     /**
+     * Returns the day-of-year, from 1 to 365, or 366 in a leap year.
+     *
+     * @return integer
+     */
+    public function getDayOfYear()
+    {
+        return Month::of($this->month)->firstDayOfYear($this->isLeapYear()) + $this->day - 1;
+    }
+
+    /**
      * Resolves the date, resolving days past the end of month.
      *
      * @param integer $year  The year to represent, validated as an integer from MIN_YEAR to MAX_YEAR.
