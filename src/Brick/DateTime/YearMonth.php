@@ -10,11 +10,15 @@ use Brick\Type\Cast;
 class YearMonth
 {
     /**
+     * The year, from MIN_YEAR to MAX_YEAR.
+     *
      * @var integer
      */
     private $year;
 
     /**
+     * The month, from 1 to 12.
+     *
      * @var integer
      */
     private $month;
@@ -22,8 +26,8 @@ class YearMonth
     /**
      * Class constructor.
      *
-     * @param integer $year  The year, validated as an integer in the valid range.
-     * @param integer $month The month, validated as an integer in the valid range.
+     * @param integer $year  The year, validated as an integer from MIN_YEAR to MAX_YEAR.
+     * @param integer $month The month, validated as an integer in the range 1 to 12.
      */
     private function __construct($year, $month)
     {
@@ -49,7 +53,7 @@ class YearMonth
         LocalDate::checkYear($year);
 
         if ($month < 1 || $month > 12) {
-            throw new DateTimeException('Month must be in the interval [1, 12]');
+            throw new DateTimeException('Month must be in the range 1 to 12.');
         }
 
         return new YearMonth($year, $month);
@@ -89,13 +93,15 @@ class YearMonth
     }
 
     /**
-     * @param TimeZone $timezone
+     * Returns the current year-month in the given time-zone.
+     *
+     * @param TimeZone $timeZone
      *
      * @return YearMonth
      */
-    public static function now(TimeZone $timezone)
+    public static function now(TimeZone $timeZone)
     {
-        $localDate = LocalDate::now($timezone);
+        $localDate = LocalDate::now($timeZone);
 
         return new YearMonth($localDate->getYear(), $localDate->getMonth());
     }
@@ -147,6 +153,59 @@ class YearMonth
     }
 
     /**
+     * @param YearMonth $that
+     *
+     * @return integer [-1,0,1] If this year-month is before, on, or after the given year-month.
+     */
+    public function compareTo(YearMonth $that)
+    {
+        if ($this->year < $that->year) {
+            return -1;
+        }
+        if ($this->year > $that->year) {
+            return 1;
+        }
+        if ($this->month < $that->month) {
+            return -1;
+        }
+        if ($this->month > $that->month) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param YearMonth $that
+     *
+     * @return boolean
+     */
+    public function isEqualTo(YearMonth $that)
+    {
+        return $this->compareTo($that) === 0;
+    }
+
+    /**
+     * @param YearMonth $that
+     *
+     * @return boolean
+     */
+    public function isBefore(YearMonth $that)
+    {
+        return $this->compareTo($that) === -1;
+    }
+
+    /**
+     * @param YearMonth $that
+     *
+     * @return boolean
+     */
+    public function isAfter(YearMonth $that)
+    {
+        return $this->compareTo($that) === 1;
+    }
+
+    /**
      * Returns a copy of this YearMonth with the year altered.
      *
      * @param integer $year
@@ -188,18 +247,6 @@ class YearMonth
     public function atDay($day)
     {
         return LocalDate::of($this->year, $this->month, $day);
-    }
-
-    /**
-     * Returns an integer representation of this YearMonth.
-     *
-     * This allows the comparison of two YearMonth instances.
-     *
-     * @return integer
-     */
-    public function toInteger()
-    {
-        return 12 * $this->year + $this->month;
     }
 
     /**

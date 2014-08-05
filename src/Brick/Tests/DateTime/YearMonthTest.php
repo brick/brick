@@ -2,6 +2,9 @@
 
 namespace Brick\Tests\DateTime;
 
+use Brick\DateTime\Clock\FixedClock;
+use Brick\DateTime\Instant;
+use Brick\DateTime\TimeZone;
 use Brick\DateTime\YearMonth;
 
 /**
@@ -78,6 +81,81 @@ class YearMonthTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider providerParseInvalidYearMonthThrowsException
+     * @expectedException \Brick\DateTime\DateTimeException
+     */
+    public function testParseInvalidYearMonthThrowsException($text)
+    {
+        YearMonth::parse($text);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidYearMonthThrowsException()
+    {
+        return [
+            ['2000-00'],
+            ['2000-13']
+        ];
+    }
+
+    /**
+     * @dataProvider providerNow
+     *
+     * @param integer $epochSecond The epoch second.
+     * @param string  $timeZone    The time-zone.
+     * @param integer $year        The expected year.
+     * @param integer $month       The expected month.
+     */
+    public function testNow($epochSecond, $timeZone, $year, $month)
+    {
+        Instant::setDefaultClock(new FixedClock(Instant::of($epochSecond)));
+
+        $this->assertYearMonthEquals($year, $month, YearMonth::now(TimeZone::of($timeZone)));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerNow()
+    {
+        return [
+            [946684799, '+00:00', 1999, 12],
+            [946684799, 'America/Los_Angeles', 1999, 12],
+            [946684799, '+01:00', 2000, 1],
+            [946684799, 'Europe/Paris', 2000, 1],
+        ];
+    }
+
+    /**
+     * @dataProvider providerIsLeapYear
+     *
+     * @param integer $year   The year to test.
+     * @param integer $month  The month to test.
+     * @param boolean $isLeap The expected result.
+     */
+    public function testIsLeapYear($year, $month, $isLeap)
+    {
+        $this->assertSame($isLeap, YearMonth::of($year, $month)->isLeapYear());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsLeapYear()
+    {
+        return [
+            [1999, 1, false],
+            [2000, 2, true],
+            [2001, 3, false],
+            [2002, 4, false],
+            [2003, 5, false],
+            [2004, 6, true]
+        ];
+    }
+
+    /**
      * @dataProvider providerGetLengthOfMonth
      *
      * @param integer $year   The year.
@@ -146,6 +224,87 @@ class YearMonthTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param integer $result The expected result.
+     */
+    public function testCompareTo($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result, YearMonth::of($y1, $m1)->compareTo(YearMonth::of($y2, $m2)));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerCompareTo()
+    {
+        return [
+            [2001, 1, 2001, 1,  0],
+            [2001, 1, 2001, 2, -1],
+            [2001, 1, 2002, 1, -1],
+            [2001, 1, 2002, 2, -1],
+            [2001, 2, 2001, 1,  1],
+            [2001, 2, 2001, 2,  0],
+            [2001, 2, 2002, 1, -1],
+            [2001, 2, 2002, 2, -1],
+            [2002, 1, 2001, 1,  1],
+            [2002, 1, 2001, 2,  1],
+            [2002, 1, 2002, 1,  0],
+            [2002, 1, 2002, 2, -1],
+            [2002, 2, 2001, 1,  1],
+            [2002, 2, 2001, 2,  1],
+            [2002, 2, 2002, 1,  1],
+            [2002, 2, 2002, 2,  0],
+        ];
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param boolean $result The comparison result.
+     */
+    public function testIsEqualTo($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == 0, YearMonth::of($y1, $m1)->isEqualTo(YearMonth::of($y2, $m2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param boolean $result The comparison result.
+     */
+    public function testIsBefore($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == -1, YearMonth::of($y1, $m1)->isBefore(YearMonth::of($y2, $m2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param boolean $result The comparison result.
+     */
+    public function testIsAfter($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == 1, YearMonth::of($y1, $m1)->isAfter(YearMonth::of($y2, $m2)));
+    }
+
     public function testWithYear()
     {
         $this->assertYearMonthEquals(2001, 5, YearMonth::of(2000, 5)->withYear(2001));
@@ -159,11 +318,6 @@ class YearMonthTest extends \PHPUnit_Framework_TestCase
     public function testAtDay()
     {
         $this->assertSame('2001-02-03', YearMonth::of(2001, 02)->atDay(3)->toString());
-    }
-
-    public function testToInteger()
-    {
-        $this->assertSame(2012 * 12 + 11, YearMonth::of(2012, 11)->toInteger());
     }
 
     public function testToString()
