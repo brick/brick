@@ -19,14 +19,14 @@ use Brick\Locale\Locale;
 class LocalDate
 {
     /**
-     * The minimum supported year for instances of `LocalDate`, -999,999,999.
+     * The minimum supported year for instances of `LocalDate`, -999,999.
      */
-    const MIN_YEAR = -999999999;
+    const MIN_YEAR = -999999;
 
     /**
-     * The maximum supported year for instances of `LocalDate`, 999,999,999.
+     * The maximum supported year for instances of `LocalDate`, 999,999.
      */
-    const MAX_YEAR = 999999999;
+    const MAX_YEAR = 999999;
 
     /**
      * The number of days from year zero to year 1970.
@@ -629,11 +629,21 @@ class LocalDate
     }
 
     /**
-     * Returns the number of days since the 1st January of year zero.
+     * Checks if the year is a leap year, according to the ISO proleptic calendar system rules.
+     *
+     * @return boolean
+     */
+    public function isLeapYear()
+    {
+        return Year::of($this->year)->isLeap();
+    }
+
+    /**
+     * Returns the number of days since the UNIX epoch of 1st January 1970.
      *
      * @return integer
      */
-    public function toInteger()
+    public function toEpochDay()
     {
         $y = $this->year;
         $m = $this->month;
@@ -656,27 +666,7 @@ class LocalDate
             }
         }
 
-        return $total;
-    }
-
-    /**
-     * Checks if the year is a leap year, according to the ISO proleptic calendar system rules.
-     *
-     * @return boolean
-     */
-    public function isLeapYear()
-    {
-        return Year::of($this->year)->isLeap();
-    }
-
-    /**
-     * Returns the number of days since the UNIX epoch of 1st January 1970.
-     *
-     * @return integer
-     */
-    public function toEpochDay()
-    {
-        return $this->toInteger() - self::DAYS_0000_TO_1970;
+        return $total - self::DAYS_0000_TO_1970;
     }
 
     /**
