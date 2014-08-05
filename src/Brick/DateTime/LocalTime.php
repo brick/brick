@@ -543,21 +543,9 @@ class LocalTime
      *
      * @return boolean
      */
-    public function isGreaterThan(LocalTime $that)
+    public function isAfter(LocalTime $that)
     {
-        return $this->compareTo($that) > 0;
-    }
-
-    /**
-     * Checks if this LocalTime is greater than, or equal to, the specified time.
-     *
-     * @param LocalTime $that The time to compare to.
-     *
-     * @return boolean
-     */
-    public function isGreaterThanOrEqualTo(LocalTime $that)
-    {
-        return $this->compareTo($that) >= 0;
+        return $this->compareTo($that) === 1;
     }
 
     /**
@@ -567,21 +555,9 @@ class LocalTime
      *
      * @return boolean
      */
-    public function isLessThan(LocalTime $that)
+    public function isBefore(LocalTime $that)
     {
-        return $this->compareTo($that) < 0;
-    }
-
-    /**
-     * Checks if this LocalTime is less than, or equal to, the specified time.
-     *
-     * @param LocalTime $that The time to compare to.
-     *
-     * @return boolean
-     */
-    public function isLessThanOrEqualTo(LocalTime $that)
-    {
-        return $this->compareTo($that) <= 0;
+        return $this->compareTo($that) === -1;
     }
 
     /**
@@ -689,7 +665,7 @@ class LocalTime
         $min = LocalTime::max();
 
         foreach ($times as $time) {
-            if ($time->isLessThan($min)) {
+            if ($time->isBefore($min)) {
                 $min = $time;
             }
         }
@@ -715,7 +691,7 @@ class LocalTime
         $max = LocalTime::min();
 
         foreach ($times as $time) {
-            if ($time->isGreaterThan($max)) {
+            if ($time->isAfter($max)) {
                 $max = $time;
             }
         }

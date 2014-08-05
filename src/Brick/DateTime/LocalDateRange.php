@@ -59,7 +59,7 @@ class LocalDateRange implements \Iterator, \Countable
      */
     public static function of(LocalDate $from, LocalDate $to)
     {
-        if ($to->isLessThan($from)) {
+        if ($to->isBefore($from)) {
             throw new DateTimeException('The end date must not be before the start date.');
         }
 
@@ -138,7 +138,7 @@ class LocalDateRange implements \Iterator, \Countable
      */
     public function contains(LocalDate $date)
     {
-        return $date->isGreaterThanOrEqualTo($this->from) && $date->isLessThanOrEqualTo($this->to);
+        return ! ($date->isBefore($this->from) || $date->isAfter($this->to));
     }
 
     /**
@@ -178,7 +178,7 @@ class LocalDateRange implements \Iterator, \Countable
      */
     public function valid()
     {
-        return $this->current->isLessThanOrEqualTo($this->to);
+        return ! $this->current->isAfter($this->to);
     }
 
     /**

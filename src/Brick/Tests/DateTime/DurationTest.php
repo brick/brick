@@ -834,36 +834,28 @@ class DurationTest extends AbstractTestCase
                 if ($i < $j) {
                     $this->assertLessThan(0, $a->compareTo($b), $a . ' <=> ' . $b);
                     $this->assertTrue($a->isLessThan($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isLessThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isGreaterThan($b), $a . ' <=> ' . $b);
-                    $this->assertFalse($a->isGreaterThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isEqualTo($b), $a . ' <=> ' . $b);
                 }
                 elseif ($i > $j) {
                     $this->assertGreaterThan(0, $a->compareTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isLessThan($b), $a . ' <=> ' . $b);
-                    $this->assertFalse($a->isLessThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertTrue($a->isGreaterThan($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isGreaterThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isEqualTo($b), $a . ' <=> ' . $b);
                 }
                 else {
                     $this->assertEquals(0, $a->compareTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isLessThan($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isLessThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isGreaterThan($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isGreaterThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertTrue($a->isEqualTo($b), $a . ' <=> ' . $b);
                 }
 
                 if ($i <= $j) {
                     $this->assertLessThanOrEqual(0, $a->compareTo($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isLessThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isGreaterThan($b), $a . ' <=> ' . $b);
                 }
                 if ($i >= $j) {
                     $this->assertGreaterThanOrEqual(0, $a->compareTo($b), $a . ' <=> ' . $b);
-                    $this->assertTrue($a->isGreaterThanOrEqualTo($b), $a . ' <=> ' . $b);
                     $this->assertFalse($a->isLessThan($b), $a . ' <=> ' . $b);
                 }
             }

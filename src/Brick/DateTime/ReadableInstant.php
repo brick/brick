@@ -77,18 +77,6 @@ abstract class ReadableInstant
     }
 
     /**
-     * Returns whether this instant is after, or equal to, another.
-     *
-     * @param ReadableInstant $that
-     *
-     * @return boolean
-     */
-    public function isAfterOrEqualTo(ReadableInstant $that)
-    {
-        return $this->compareTo($that) >= 0;
-    }
-
-    /**
      * Returns whether this instant is before another.
      *
      * @param ReadableInstant $that
@@ -101,18 +89,6 @@ abstract class ReadableInstant
     }
 
     /**
-     * Returns whether this instant is before, or equal to, another.
-     *
-     * @param ReadableInstant $that
-     *
-     * @return boolean
-     */
-    public function isBeforeOrEqualTo(ReadableInstant $that)
-    {
-        return $this->compareTo($that) <= 0;
-    }
-
-    /**
      * Returns whether this instant is between the given instants, inclusive.
      *
      * @param ReadableInstant $first
@@ -122,7 +98,7 @@ abstract class ReadableInstant
      */
     public function isBetweenInclusive(ReadableInstant $first, ReadableInstant $last)
     {
-        return $this->isAfterOrEqualTo($first) && $this->isBeforeOrEqualTo($last);
+        return ! ($this->isBefore($first) || $this->isAfter($last));
     }
 
     /**
@@ -149,16 +125,6 @@ abstract class ReadableInstant
     }
 
     /**
-     * Returns whether this instant is in the past or present.
-     *
-     * @return boolean
-     */
-    public function isPastOrPresent()
-    {
-        return $this->isBeforeOrEqualTo(Instant::now());
-    }
-
-    /**
      * Returns whether this instant is in the future.
      *
      * @return boolean
@@ -166,15 +132,5 @@ abstract class ReadableInstant
     public function isFuture()
     {
         return $this->isAfter(Instant::now());
-    }
-
-    /**
-     * Returns whether this instant is in the future or present.
-     *
-     * @return boolean
-     */
-    public function isFutureOrPresent()
-    {
-        return $this->isAfterOrEqualTo(Instant::now());
     }
 }

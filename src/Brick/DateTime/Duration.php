@@ -553,18 +553,6 @@ class Duration
     }
 
     /**
-     * Checks if this Duration is greater, or equal to than the specified duration.
-     *
-     * @param \Brick\DateTime\Duration $that
-     *
-     * @return boolean
-     */
-    public function isGreaterThanOrEqualTo(Duration $that)
-    {
-        return $this->compareTo($that) >= 0;
-    }
-
-    /**
      * Checks if this Duration is less than the specified duration.
      *
      * @param \Brick\DateTime\Duration $that
@@ -574,18 +562,6 @@ class Duration
     public function isLessThan(Duration $that)
     {
         return $this->compareTo($that) < 0;
-    }
-
-    /**
-     * Checks if this Duration is less than, or equal to the specified duration.
-     *
-     * @param \Brick\DateTime\Duration $that
-     *
-     * @return boolean
-     */
-    public function isLessThanOrEqualTo(Duration $that)
-    {
-        return $this->compareTo($that) <= 0;
     }
 
     /**

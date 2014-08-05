@@ -34,8 +34,8 @@ class Interval
      */
     public function __construct(ReadableInstant $startInclusive, ReadableInstant $endExclusive)
     {
-        if (! $endExclusive->isAfterOrEqualTo($startInclusive)) {
-            throw new DateTimeException('The end instant must be after or equal to the start instant');
+        if ($endExclusive->isBefore($startInclusive)) {
+            throw new DateTimeException('The end instant must not be before the start instant.');
         }
 
         $this->start = $startInclusive;

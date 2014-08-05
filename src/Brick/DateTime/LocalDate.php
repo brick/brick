@@ -563,9 +563,9 @@ class LocalDate
      *
      * @return boolean
      */
-    public function isLessThan(LocalDate $that)
+    public function isBefore(LocalDate $that)
     {
-        return $this->compareTo($that) < 0;
+        return $this->compareTo($that) === -1;
     }
 
     /**
@@ -573,29 +573,9 @@ class LocalDate
      *
      * @return boolean
      */
-    public function isLessThanOrEqualTo(LocalDate $that)
+    public function isAfter(LocalDate $that)
     {
-        return $this->compareTo($that) <= 0;
-    }
-
-    /**
-     * @param LocalDate $that
-     *
-     * @return boolean
-     */
-    public function isGreaterThan(LocalDate $that)
-    {
-        return $this->compareTo($that) > 0;
-    }
-
-    /**
-     * @param LocalDate $that
-     *
-     * @return boolean
-     */
-    public function isGreaterThanOrEqualTo(LocalDate $that)
-    {
-        return $this->compareTo($that) >= 0;
+        return $this->compareTo($that) === 1;
     }
 
     /**
@@ -608,7 +588,7 @@ class LocalDate
      */
     public function isBetweenInclusive(LocalDate $first, LocalDate $last)
     {
-        return $this->isGreaterThanOrEqualTo($first) && $this->isLessThanOrEqualTo($last);
+        return ! ($this->isBefore($first) || $this->isAfter($last));
     }
 
     /**
@@ -621,7 +601,7 @@ class LocalDate
      */
     public function isBetweenExclusive(LocalDate $first, LocalDate $last)
     {
-        return $this->isGreaterThan($first) && $this->isLessThan($last);
+        return $this->isAfter($first) && $this->isBefore($last);
     }
 
     /**
