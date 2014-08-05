@@ -7,23 +7,8 @@ use Brick\DateTime\LocalTime;
 /**
  * Unit tests for class LocalTime.
  */
-class LocalTimeTest extends \PHPUnit_Framework_TestCase
+class LocalTimeTest extends AbstractTestCase
 {
-    /**
-     * @param integer   $hour   The expected hour.
-     * @param integer   $minute The expected minute.
-     * @param integer   $second The expected second.
-     * @param integer   $nano   The expected nano-of-second.
-     * @param LocalTime $time   The time to test.
-     */
-    private function assertLocalTimeEquals($hour, $minute, $second, $nano, LocalTime $time)
-    {
-        $this->assertSame($hour, $time->getHour());
-        $this->assertSame($minute, $time->getMinute());
-        $this->assertSame($second, $time->getSecond());
-        $this->assertSame($nano, $time->getNano());
-    }
-
     public function testMidnight()
     {
         $this->assertLocalTimeEquals(0, 0, 0, 0, LocalTime::midnight());

@@ -8,7 +8,7 @@ use Brick\DateTime\LocalDateRange;
 /**
  * Unit tests for class LocalDateRange.
  */
-class LocalDateRangeTest extends \PHPUnit_Framework_TestCase
+class LocalDateRangeTest extends AbstractTestCase
 {
     public function testConstructorAndAccessors()
     {

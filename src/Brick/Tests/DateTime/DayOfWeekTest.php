@@ -8,7 +8,7 @@ use Brick\DateTime\LocalDate;
 /**
  * Unit tests for class DayOfWeek.
  */
-class DayOfWeekTest extends \PHPUnit_Framework_TestCase
+class DayOfWeekTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOfInvalidDayThrowsException

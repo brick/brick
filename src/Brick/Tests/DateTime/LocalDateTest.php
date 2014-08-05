@@ -3,11 +3,12 @@
 namespace Brick\Tests\DateTime;
 
 use Brick\DateTime\LocalDate;
+use Brick\DateTime\LocalTime;
 
 /**
  * Unit tests for class LocalDate.
  */
-class LocalDateTest extends \PHPUnit_Framework_TestCase
+class LocalDateTest extends AbstractTestCase
 {
     /**
      * @var LocalDate
@@ -28,19 +29,6 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
      * @var integer
      */
     private $maxValidEpochDay;
-
-    /**
-     * @param integer   $year  The expected year.
-     * @param integer   $month The expected month.
-     * @param integer   $day   The expected day.
-     * @param LocalDate $date  The date to test.
-     */
-    private function assertLocalDateEquals($year, $month, $day, LocalDate $date)
-    {
-        $this->assertSame($year, $date->getYear());
-        $this->assertSame($month, $date->getMonth());
-        $this->assertSame($day, $date->getDay());
-    }
 
     public function setUp()
     {
@@ -409,6 +397,12 @@ class LocalDateTest extends \PHPUnit_Framework_TestCase
             [2012, 1, 2, -1, 2012, 1, 1],
             [2012, 1, 1, -1, 2011, 12, 31]
         ];
+    }
+
+    public function testAtTime()
+    {
+        $localDateTime = LocalDate::of(1, 2, 3)->atTime(LocalTime::of(4, 5, 6, 7));
+        $this->assertLocalDateTimeEquals(1, 2, 3, 4, 5, 6, 7, $localDateTime);
     }
 
     /**

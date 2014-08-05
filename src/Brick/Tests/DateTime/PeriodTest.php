@@ -7,21 +7,8 @@ use Brick\DateTime\Period;
 /**
  * Unit tests for class Period.
  */
-class PeriodTest extends \PHPUnit_Framework_TestCase
+class PeriodTest extends AbstractTestCase
 {
-    /**
-     * @param integer $years  The expected number of years in the period.
-     * @param integer $months The expected number of months in the period.
-     * @param integer $days   The expected number of days in the period.
-     * @param Period  $period The period to test.
-     */
-    private function assertPeriodEquals($years, $months, $days, Period $period)
-    {
-        $this->assertSame($years, $period->getYears());
-        $this->assertSame($months, $period->getMonths());
-        $this->assertSame($days, $period->getDays());
-    }
-
     public function testZero()
     {
         $this->assertPeriodEquals(0, 0, 0, Period::zero());

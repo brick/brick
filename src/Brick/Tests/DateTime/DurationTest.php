@@ -8,27 +8,11 @@ use Brick\DateTime\Instant;
 /**
  * Unit tests for class Duration.
  */
-class DurationTest extends \PHPUnit_Framework_TestCase
+class DurationTest extends AbstractTestCase
 {
-    /**
-     * @param Duration $expected
-     * @param Duration $actual
-     */
-    private function assertDurationEquals(Duration $expected, Duration $actual)
-    {
-        $this->assertTrue($expected->isEqualTo($actual), sprintf(
-            'Failed asserting that %s equals to %s',
-            $actual->toString(),
-            $expected->toString()
-        ));
-    }
-
     public function testZero()
     {
-        $zero = Duration::zero();
-
-        $this->assertSame(0, $zero->getSeconds());
-        $this->assertSame(0, $zero->getNanos());
+        $this->assertDurationEquals(0, 0, Duration::zero());
     }
 
     /**
@@ -42,9 +26,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     public function testOfSeconds($seconds, $nanoAdjustment, $expectedSeconds, $expectedNanos)
     {
         $duration = Duration::ofSeconds($seconds, $nanoAdjustment);
-
-        $this->assertSame($expectedSeconds, $duration->getSeconds());
-        $this->assertSame($expectedNanos, $duration->getNanos());
+        $this->assertDurationEquals($expectedSeconds, $expectedNanos, $duration);
     }
 
     /**
@@ -97,13 +79,10 @@ class DurationTest extends \PHPUnit_Framework_TestCase
      */
     public function testBetween($seconds1, $nanos1, $seconds2, $nanos2, $seconds, $nanos)
     {
-        $duration = Duration::between(
-            Instant::of($seconds1, $nanos1),
-            Instant::of($seconds2, $nanos2)
-        );
+        $i1 = Instant::of($seconds1, $nanos1);
+        $i2 = Instant::of($seconds2, $nanos2);
 
-        $this->assertSame($seconds, $duration->getSeconds());
-        $this->assertSame($nanos, $duration->getNanos());
+        $this->assertDurationEquals($seconds, $nanos, Duration::between($i1, $i2));
     }
 
     /**
@@ -133,16 +112,13 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerParse
      *
-     * @param string  $text
-     * @param integer $seconds
-     * @param integer $nanos
+     * @param string  $text    The string to test.
+     * @param integer $seconds The expected seconds.
+     * @param integer $nanos   The expected nanos.
      */
     public function testParse($text, $seconds, $nanos)
     {
-        $duration = Duration::parse($text);
-
-        $this->assertSame($seconds, $duration->getSeconds());
-        $this->assertSame($nanos, $duration->getNanos());
+        $this->assertDurationEquals($seconds, $nanos, Duration::parse($text));
     }
 
     /**
@@ -190,7 +166,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
      * @dataProvider providerParseFailureThrowsException
      * @expectedException \Brick\DateTime\Parser\DateTimeParseException
      *
-     * @param string $text
+     * @param string $text The string to test.
      */
     public function testParseFailureThrowsException($text)
     {
@@ -347,20 +323,19 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerPlus
      *
-     * @param integer $s1              The 1st duration's seconds.
-     * @param integer $n1              The 1st duration's nanoseconds.
-     * @param integer $s2              The 2nd duration's seconds.
-     * @param integer $n2              The 2nd duration's nanoseconds.
-     * @param integer $expectedSeconds The expected seconds.
-     * @param integer $expectedNanos  The expected nanoseconds.
+     * @param integer $s1 The 1st duration's seconds.
+     * @param integer $n1 The 1st duration's nanoseconds.
+     * @param integer $s2 The 2nd duration's seconds.
+     * @param integer $n2 The 2nd duration's nanoseconds.
+     * @param integer $s  The expected seconds.
+     * @param integer $n  The expected nanoseconds.
      */
-    public function testPlus($s1, $n1, $s2, $n2, $expectedSeconds, $expectedNanos)
+    public function testPlus($s1, $n1, $s2, $n2, $s, $n)
     {
         $duration1 = Duration::ofSeconds($s1, $n1);
         $duration2 = Duration::ofSeconds($s2, $n2);
 
-        $expected = Duration::ofSeconds($expectedSeconds, $expectedNanos);
-        $this->assertDurationEquals($expected, $duration1->plus($duration2));
+        $this->assertDurationEquals($s, $n, $duration1->plus($duration2));
     }
 
     /**
@@ -369,42 +344,42 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     public function providerPlus()
     {
         return [
-            [-1, -1, -1, -1, -2, -2],
-            [-1, -1, -1, 0, -2, -1],
-            [-1, -1, 0, -1, -1, -2],
-            [-1, -1, 0, 0, -1, -1],
+            [-1, -1, -1, -1, -3, 999999998],
+            [-1, -1, -1, 0, -3, 999999999],
+            [-1, -1, 0, -1, -2, 999999998],
+            [-1, -1, 0, 0, -2, 999999999],
             [-1, -1, 0, 1, -1, 0],
-            [-1, -1, 1, 0, 0, -1],
+            [-1, -1, 1, 0, -1, 999999999],
             [-1, -1, 1, 1, 0, 0],
-            [-1, 0, -1, -1, -2, -1],
+            [-1, 0, -1, -1, -3, 999999999],
             [-1, 0, -1, 0, -2, 0],
-            [-1, 0, 0, -1, -1, -1],
+            [-1, 0, 0, -1, -2, 999999999],
             [-1, 0, 0, 0, -1, 0],
-            [-1, 0, 0, 1, 0, -999999999],
+            [-1, 0, 0, 1, -1, 1],
             [-1, 0, 1, 0, 0, 0],
             [-1, 0, 1, 1, 0, 1],
-            [0, -1, -1, -1, -1, -2],
-            [0, -1, -1, 0, -1, -1],
-            [0, -1, 0, -1, 0, -2],
-            [0, -1, 0, 0, 0, -1],
+            [0, -1, -1, -1, -2, 999999998],
+            [0, -1, -1, 0, -2, 999999999],
+            [0, -1, 0, -1, -1, 999999998],
+            [0, -1, 0, 0, -1, 999999999],
             [0, -1, 0, 1, 0, 0],
             [0, -1, 1, 0, 0, 999999999],
             [0, -1, 1, 1, 1, 0],
-            [0, 0, -1, -1, -1, -1],
+            [0, 0, -1, -1, -2, 999999999],
             [0, 0, -1, 0, -1, 0],
-            [0, 0, 0, -1, 0, -1],
+            [0, 0, 0, -1, -1, 999999999],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 1, 0, 1],
             [0, 0, 1, 0, 1, 0],
             [0, 0, 1, 1, 1, 1],
             [0, 1, -1, -1, -1, 0],
-            [0, 1, -1, 0, 0, -999999999],
+            [0, 1, -1, 0, -1, 1],
             [0, 1, 0, -1, 0, 0],
             [0, 1, 0, 0, 0, 1],
             [0, 1, 0, 1, 0, 2],
             [0, 1, 1, 0, 1, 1],
             [0, 1, 1, 1, 1, 2],
-            [1, 0, -1, -1, 0, -1],
+            [1, 0, -1, -1, -1, 999999999],
             [1, 0, -1, 0, 0, 0],
             [1, 0, 0, -1, 0, 999999999],
             [1, 0, 0, 0, 1, 0],
@@ -421,7 +396,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
 
             [1, 999999999, 1, 1, 3, 0],
             [1, 999999999, -1, -1, 0, 999999998],
-            [-1, -999999999, 1, 999999998, 0, -1],
+            [-1, -999999999, 1, 999999998, -1, 999999999],
             [-1, -999999999, -1, -1, -3, 0],
         ];
     }
@@ -438,9 +413,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
     public function testPlusSeconds($seconds, $nanos, $secondsToAdd, $expectedSeconds, $expectedNanos)
     {
         $duration = Duration::ofSeconds($seconds, $nanos)->plusSeconds($secondsToAdd);
-        $expected = Duration::ofSeconds($expectedSeconds, $expectedNanos);
-
-        $this->assertDurationEquals($expected, $duration);
+        $this->assertDurationEquals($expectedSeconds, $expectedNanos, $duration);
     }
 
     /**
@@ -468,7 +441,7 @@ class DurationTest extends \PHPUnit_Framework_TestCase
             [PHP_INT_MAX, 0, 0, PHP_INT_MAX, 0],
 
             [-1, -5,  2, 0,  999999995],
-            [ 1,  5, -2, 0, -999999995],
+            [ 1,  5, -2, -1, 5],
         ];
     }
 
@@ -756,10 +729,10 @@ class DurationTest extends \PHPUnit_Framework_TestCase
         $duration = Duration::ofSeconds($seconds, $nanos);
         $expected = Duration::ofSeconds($expectedSeconds, $expectedNanos);
 
-        $this->assertDurationEquals($expected, $duration->dividedBy($divisor));
-        $this->assertDurationEquals($expected, $duration->negated()->dividedBy(-$divisor));
-        $this->assertDurationEquals($expected->negated(), $duration->negated()->dividedBy($divisor));
-        $this->assertDurationEquals($expected->negated(), $duration->dividedBy(-$divisor));
+        $this->assertTrue($duration->dividedBy($divisor)->isEqualTo($expected));
+        $this->assertTrue($duration->negated()->dividedBy(-$divisor)->isEqualTo($expected));
+        $this->assertTrue($duration->negated()->dividedBy($divisor)->isEqualTo($expected->negated()));
+        $this->assertTrue($duration->dividedBy(-$divisor)->isEqualTo($expected->negated()));
     }
 
     /**

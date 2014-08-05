@@ -3,39 +3,13 @@
 namespace Brick\Tests\DateTime;
 
 use Brick\DateTime\LocalDateTime;
-use Brick\DateTime\LocalDate;
-use Brick\DateTime\LocalTime;
 use Brick\DateTime\TimeZone;
-use Brick\DateTime\TimeZoneOffset;
-use Brick\DateTime\ZonedDateTime;
-use Brick\DateTime\Year;
 
 /**
  * Unit tests for class LocalDateTime.
  */
-class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
+class LocalDateTimeTest extends AbstractTestCase
 {
-    /**
-     * @param integer       $y  The expected year.
-     * @param integer       $m  The expected month.
-     * @param integer       $d  The expected day.
-     * @param integer       $h  The expected hour.
-     * @param integer       $i  The expected minute.
-     * @param integer       $s  The expected second.
-     * @param integer       $n  The expected nano-of-second.
-     * @param LocalDateTime $dt The date-time to test.
-     */
-    private function assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime $dt)
-    {
-        $this->assertSame($y, $dt->getYear());
-        $this->assertSame($m, $dt->getMonth());
-        $this->assertSame($d, $dt->getDay());
-        $this->assertSame($h, $dt->getHour());
-        $this->assertSame($i, $dt->getMinute());
-        $this->assertSame($s, $dt->getSecond());
-        $this->assertSame($n, $dt->getNano());
-    }
-
     public function testOf()
     {
         $dateTime = LocalDateTime::of(2001, 12, 23, 12, 34, 56, 987654321);
@@ -498,15 +472,13 @@ class LocalDateTimeTest extends \PHPUnit_Framework_TestCase
      *
      * @param string  $dateTime     The date-time.
      * @param string  $timeZone     The time-zone.
-     * @param integer $epochSecond  The expected epoch second of the resulting instant.
-     * @param integer $nanoOfSecond The expected nano-of-second of the resulting instant.
+     * @param integer $epochSeconds  The expected epoch second of the resulting instant.
+     * @param integer $nanos The expected nano-of-second of the resulting instant.
      */
-    public function testAtTimeZone($dateTime, $timeZone, $epochSecond, $nanoOfSecond)
+    public function testAtTimeZone($dateTime, $timeZone, $epochSeconds, $nanos)
     {
         $zonedDateTime = LocalDateTime::parse($dateTime)->atTimeZone(TimeZone::of($timeZone));
-
-        $this->assertSame($epochSecond, $zonedDateTime->getTimestamp());
-        $this->assertSame($nanoOfSecond, $zonedDateTime->getNanos());
+        $this->assertReadableInstantEquals($epochSeconds, $nanos, $zonedDateTime);
     }
 
     /**

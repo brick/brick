@@ -10,7 +10,7 @@ use Brick\DateTime\TimeZone;
 /**
  * Unit tests for class ZonedDateTime.
  */
-class ZonedDateTimeTest extends \PHPUnit_Framework_TestCase
+class ZonedDateTimeTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOfTimestamp

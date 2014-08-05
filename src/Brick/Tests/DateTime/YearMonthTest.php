@@ -10,19 +10,8 @@ use Brick\DateTime\YearMonth;
 /**
  * Unit tests for class YearMonth.
  */
-class YearMonthTest extends \PHPUnit_Framework_TestCase
+class YearMonthTest extends AbstractTestCase
 {
-    /**
-     * @param integer   $year      The expected year.
-     * @param integer   $month     The expected month.
-     * @param YearMonth $yearMonth The year-month to test.
-     */
-    private function assertYearMonthEquals($year, $month, YearMonth $yearMonth)
-    {
-        $this->assertSame($year, $yearMonth->getYear());
-        $this->assertSame($month, $yearMonth->getMonth());
-    }
-
     public function testOf()
     {
         $this->assertYearMonthEquals(2007, 7, YearMonth::of(2007, 7));
@@ -317,7 +306,7 @@ class YearMonthTest extends \PHPUnit_Framework_TestCase
 
     public function testAtDay()
     {
-        $this->assertSame('2001-02-03', YearMonth::of(2001, 02)->atDay(3)->toString());
+        $this->assertLocalDateEquals(2001, 2, 3, YearMonth::of(2001, 02)->atDay(3));
     }
 
     public function testToString()

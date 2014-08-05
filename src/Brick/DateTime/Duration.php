@@ -599,7 +599,7 @@ class Duration
     }
 
     /**
-     * Returns the nanoseconds adjustment of this Duration.
+     * Returns the nanoseconds adjustment of this Duration, in the range 0 to 999,999,999.
      *
      * @return integer
      */

@@ -7,7 +7,7 @@ use Brick\DateTime\Month;
 /**
  * Unit tests for class Month.
  */
-class MonthTest extends \PHPUnit_Framework_TestCase
+class MonthTest extends AbstractTestCase
 {
     public function testConstants()
     {

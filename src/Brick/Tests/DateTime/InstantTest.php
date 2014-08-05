@@ -7,7 +7,7 @@ use Brick\DateTime\Instant;
 /**
  * Unit tests for class Instant.
  */
-class InstantTest extends \PHPUnit_Framework_TestCase
+class InstantTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOf
