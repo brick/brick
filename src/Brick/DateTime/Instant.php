@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Clock\Clock;
 use Brick\DateTime\Utility\Time;
 use Brick\Type\Cast;
 
@@ -29,40 +30,6 @@ class Instant extends ReadableInstant
      * @var integer
      */
     private $nano;
-
-    /**
-     * The global default Clock to use.
-     *
-     * @todo Not a very clean approach. Having the app get the Clock from DI & use it explicitly could be better?
-     *
-     * @var Clock\Clock|null
-     */
-    private static $clock = null;
-
-    /**
-     * Sets the default clock.
-     *
-     * @param Clock\Clock $clock
-     * @return void
-     */
-    public static function setDefaultClock(Clock\Clock $clock)
-    {
-        self::$clock = $clock;
-    }
-
-    /**
-     * Returns the default clock. Defaults to the system clock unless overridden.
-     *
-     * @return Clock\Clock
-     */
-    public static function getDefaultClock()
-    {
-        if (self::$clock) {
-            return self::$clock;
-        } else {
-            return new Clock\SystemClock();
-        }
-    }
 
     /**
      * Private constructor. Use of() to obtain an Instant.
@@ -124,7 +91,7 @@ class Instant extends ReadableInstant
      */
     public static function now()
     {
-        return Instant::getDefaultClock()->getTime();
+        return Clock::getDefault()->getTime();
     }
 
     /**

@@ -7,14 +7,14 @@ use Brick\DateTime\Duration;
 /**
  * This clock adds an offset to an underlying clock.
  */
-class OffsetClock implements Clock
+class OffsetClock extends Clock
 {
     /**
      * The reference clock.
      *
      * @var Clock
      */
-    private $clock;
+    private $default;
 
     /**
      * The offset to apply to the clock.
@@ -31,7 +31,7 @@ class OffsetClock implements Clock
      */
     public function __construct(Clock $clock, Duration $offset)
     {
-        $this->clock  = $clock;
+        $this->default  = $clock;
         $this->offset = $offset;
     }
 
@@ -40,6 +40,6 @@ class OffsetClock implements Clock
      */
     public function getTime()
     {
-        return $this->clock->getTime()->plus($this->offset);
+        return $this->default->getTime()->plus($this->offset);
     }
 }

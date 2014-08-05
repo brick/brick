@@ -2,6 +2,7 @@
 
 namespace Brick\Tests\DateTime;
 
+use Brick\DateTime\Clock\Clock;
 use Brick\DateTime\Clock\FixedClock;
 use Brick\DateTime\Instant;
 use Brick\DateTime\TimeZone;
@@ -99,7 +100,7 @@ class YearMonthTest extends AbstractTestCase
      */
     public function testNow($epochSecond, $timeZone, $year, $month)
     {
-        Instant::setDefaultClock(new FixedClock(Instant::of($epochSecond)));
+        Clock::setDefault(new FixedClock(Instant::of($epochSecond)));
 
         $this->assertYearMonthEquals($year, $month, YearMonth::now(TimeZone::of($timeZone)));
     }

@@ -9,7 +9,7 @@ use Brick\DateTime\Instant;
  *
  * This clock has a microsecond precision on most systems.
  */
-class SystemClock implements Clock
+class SystemClock extends Clock
 {
     /**
      * {@inheritdoc}
