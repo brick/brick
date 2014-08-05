@@ -182,8 +182,8 @@ class Duration
         $startInclusive = $startInclusive->getInstant();
         $endExclusive = $endExclusive->getInstant();
 
-        $seconds = $endExclusive->getTimestamp() - $startInclusive->getTimestamp();
-        $nanos = $endExclusive->getNanos() - $startInclusive->getNanos();
+        $seconds = $endExclusive->getEpochSecond() - $startInclusive->getEpochSecond();
+        $nanos = $endExclusive->getNano() - $startInclusive->getNano();
 
         return Duration::ofSeconds($seconds, $nanos);
     }

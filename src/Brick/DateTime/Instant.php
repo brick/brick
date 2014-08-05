@@ -21,14 +21,14 @@ class Instant extends ReadableInstant
      *
      * @var integer
      */
-    private $timestamp;
+    private $epochSecond;
 
     /**
      * The nanoseconds adjustment to the epoch seconds, in the range 0 to 999,999,999.
      *
      * @var integer
      */
-    private $nanos;
+    private $nano;
 
     /**
      * The global default Clock to use.
@@ -67,13 +67,13 @@ class Instant extends ReadableInstant
     /**
      * Private constructor. Use of() to obtain an Instant.
      *
-     * @param integer $timestamp The timestamp, validated as an integer.
-     * @param integer $nanos     The nanoseconds, validated as an integer in the range 0 to 999,999,999.
+     * @param integer $epochSecond The epoch second, validated as an integer.
+     * @param integer $nano        The nanosecond adjustment, validated as an integer in the range 0 to 999,999,999.
      */
-    private function __construct($timestamp, $nanos = 0)
+    private function __construct($epochSecond, $nano = 0)
     {
-        $this->timestamp = $timestamp;
-        $this->nanos     = $nanos;
+        $this->epochSecond = $epochSecond;
+        $this->nano        = $nano;
     }
 
     /**
@@ -88,16 +88,16 @@ class Instant extends ReadableInstant
      * * Duration::of(4, -999999999);
      * * Duration::of(2, 1000000001);
      *
-     * @param integer $timestamp      The number of seconds since the UNIX epoch of 1970-01-01T00:00:00Z.
+     * @param integer $epochSecond    The number of seconds since the UNIX epoch of 1970-01-01T00:00:00Z.
      * @param integer $nanoAdjustment The adjustment to the epoch second in nanoseconds.
      *
      * @return Instant
      *
      * @throws \InvalidArgumentException If the parameters are not valid integers.
      */
-    public static function of($timestamp, $nanoAdjustment = 0)
+    public static function of($epochSecond, $nanoAdjustment = 0)
     {
-        $seconds = Cast::toInteger($timestamp);
+        $seconds = Cast::toInteger($epochSecond);
         $nanoAdjustment = Cast::toInteger($nanoAdjustment);
 
         $nanos = $nanoAdjustment % LocalTime::NANOS_PER_SECOND;
@@ -163,8 +163,8 @@ class Instant extends ReadableInstant
         }
 
         Time::add(
-            $this->timestamp,
-            $this->nanos,
+            $this->epochSecond,
+            $this->nano,
             $duration->getSeconds(),
             $duration->getNanos(),
             $seconds,
@@ -187,7 +187,7 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        Time::add($this->timestamp, $this->nanos, $seconds, 0, $seconds, $nanos);
+        Time::add($this->epochSecond, $this->nano, $seconds, 0, $seconds, $nanos);
 
         return new Instant($seconds, $nanos);
     }
@@ -301,17 +301,17 @@ class Instant extends ReadableInstant
     /**
      * @return integer
      */
-    public function getTimestamp()
+    public function getEpochSecond()
     {
-        return $this->timestamp;
+        return $this->epochSecond;
     }
 
     /**
      * @return integer
      */
-    public function getNanos()
+    public function getNano()
     {
-        return $this->nanos;
+        return $this->nano;
     }
 
     /**
@@ -359,7 +359,7 @@ class Instant extends ReadableInstant
      */
     public function toDateTime(\DateTimeZone $dateTimeZone)
     {
-        $dateTime = new \DateTime('@' . $this->timestamp, $dateTimeZone);
+        $dateTime = new \DateTime('@' . $this->epochSecond, $dateTimeZone);
         $dateTime->setTimezone($dateTimeZone);
 
         return $dateTime;

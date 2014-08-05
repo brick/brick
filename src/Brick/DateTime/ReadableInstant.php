@@ -15,17 +15,17 @@ abstract class ReadableInstant
     /**
      * @return integer
      */
-    public function getTimestamp()
+    public function getEpochSecond()
     {
-        return $this->getInstant()->getTimestamp();
+        return $this->getInstant()->getEpochSecond();
     }
 
     /**
      * @return integer
      */
-    public function getNanos()
+    public function getNano()
     {
-        return $this->getInstant()->getNanos();
+        return $this->getInstant()->getNano();
     }
 
     /**
@@ -37,13 +37,13 @@ abstract class ReadableInstant
      */
     public function compareTo(ReadableInstant $that)
     {
-        $seconds = $this->getTimestamp() - $that->getTimestamp();
+        $seconds = $this->getEpochSecond() - $that->getEpochSecond();
 
         if ($seconds !== 0) {
             return $seconds > 0 ? 1 : -1;
         }
 
-        $nanos = $this->getNanos() - $that->getNanos();
+        $nanos = $this->getNano() - $that->getNano();
 
         if ($nanos !== 0) {
             return $nanos > 0 ? 1 : -1;

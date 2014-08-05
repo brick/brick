@@ -141,23 +141,25 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function ofInstant(Instant $instant, TimeZone $timeZone)
     {
-        return ZonedDateTime::ofTimestamp($instant->getInstant()->getTimestamp(), $timeZone);
+        return ZonedDateTime::ofEpochSecond($instant->getInstant()->getEpochSecond(), $timeZone);
     }
 
     /**
-     * Creates a ZonedDateTime from a timestamp and a time zone.
+     * @todo nano as second parameter
      *
-     * @param integer  $timestamp
+     * Creates a ZonedDateTime from an epoch second and a time zone.
+     *
+     * @param integer  $epochSecond
      * @param TimeZone $timeZone
      *
      * @return ZonedDateTime
      */
-    public static function ofTimestamp($timestamp, TimeZone $timeZone)
+    public static function ofEpochSecond($epochSecond, TimeZone $timeZone)
     {
         $dateTimeZone = $timeZone->toDateTimeZone();
 
         // We need to pass a DateTimeZone to avoid a PHP warning...
-        $dateTime = new \DateTime('@' . $timestamp, $dateTimeZone);
+        $dateTime = new \DateTime('@' . $epochSecond, $dateTimeZone);
 
         // ... but this DateTimeZone is ignored because of the timestamp, so we set it again.
         $dateTime->setTimezone($dateTimeZone);

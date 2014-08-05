@@ -21,8 +21,8 @@ class InstantTest extends AbstractTestCase
     {
         $duration = Instant::of($seconds, $nanoAdjustment);
 
-        $this->assertSame($expectedSeconds, $duration->getTimestamp());
-        $this->assertSame($expectedNanos, $duration->getNanos());
+        $this->assertSame($expectedSeconds, $duration->getEpochSecond());
+        $this->assertSame($expectedNanos, $duration->getNano());
     }
 
     /**

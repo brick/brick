@@ -16,14 +16,14 @@ use Brick\DateTime\YearMonth;
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param integer         $epochSeconds The expected epoch seconds.
-     * @param integer         $nanos        The expected nanoseconds adjustment.
-     * @param ReadableInstant $instant      The instant to test.
+     * @param integer         $epochSecond The expected epoch second.
+     * @param integer         $nano        The expected nanosecond adjustment.
+     * @param ReadableInstant $instant     The instant to test.
      */
-    protected function assertReadableInstantEquals($epochSeconds, $nanos, ReadableInstant $instant)
+    protected function assertReadableInstantEquals($epochSecond, $nano, ReadableInstant $instant)
     {
-        $this->assertSame($epochSeconds, $instant->getTimestamp());
-        $this->assertSame($nanos, $instant->getNanos());
+        $this->assertSame($epochSecond, $instant->getEpochSecond());
+        $this->assertSame($nano, $instant->getNano());
     }
 
     /**

@@ -16,11 +16,11 @@ class SystemClock implements Clock
      */
     public function getTime()
     {
-        list ($fraction, $timestamp) = explode(' ', microtime());
+        list ($fraction, $epochSecond) = explode(' ', microtime());
 
-        $timestamp = (int) $timestamp;
-        $nanos = 10 * (int) substr($fraction, 2, 8);
+        $epochSecond    = (int) $epochSecond;
+        $nanoAdjustment = 10 * (int) substr($fraction, 2, 8);
 
-        return Instant::of($timestamp, $nanos);
+        return Instant::of($epochSecond, $nanoAdjustment);
     }
 }
