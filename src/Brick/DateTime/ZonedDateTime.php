@@ -74,7 +74,7 @@ class ZonedDateTime extends ReadableInstant
     public static function of(LocalDateTime $dateTime, TimeZone $timeZone, TimeZoneOffset $preferredOffset = null)
     {
         $dtz = $timeZone->toDateTimeZone();
-        $dt = new \DateTime($dateTime->toString(), $dtz);
+        $dt = new \DateTime((string) $dateTime, $dtz);
 
         if ($timeZone instanceof TimeZoneOffset) {
             $timeZoneOffset = $timeZone;
@@ -697,27 +697,20 @@ class ZonedDateTime extends ReadableInstant
     /**
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
-        $string = $this->localDateTime->toString() . $this->timeZoneOffset->getId();
+        $string = $this->localDateTime . $this->timeZoneOffset;
 
         if ($this->timeZone instanceof TimeZoneRegion) {
-            $string .= '[' . $this->timeZone->getId() . ']';
+            $string .= '[' . $this->timeZone . ']';
         }
 
         return $string;
     }
 
     /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
-    }
-
-    /**
      * @param \Brick\Locale\Locale $locale
+     *
      * @return string
      */
     public function format(Locale $locale)

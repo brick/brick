@@ -329,17 +329,9 @@ class Instant extends ReadableInstant
     /**
      * @return string
      */
-    public function toString()
-    {
-        return ZonedDateTime::ofInstant($this, TimeZone::utc())->toString();
-    }
-
-    /**
-     * @return string
-     */
     public function __toString()
     {
-        return $this->toString();
+        return (string) ZonedDateTime::ofInstant($this, TimeZone::utc());
     }
 
     /**

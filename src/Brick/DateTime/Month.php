@@ -361,16 +361,8 @@ class Month
      *
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
         return self::$names[$this->month];
-    }
-
-    /**
-     * @return string
-     */
-    public function  __toString()
-    {
-        return $this->toString();
     }
 }

@@ -24,7 +24,7 @@ class ZonedDateTimeTest extends AbstractTestCase
         $zonedDateTime = ZonedDateTime::ofEpochSecond($timestamp, TimeZone::of($timeZone));
 
         $this->assertEquals($timestamp, $zonedDateTime->getInstant()->getEpochSecond());
-        $this->assertEquals($formattedDatetime, $zonedDateTime->getDateTime()->toString());
+        $this->assertEquals($formattedDatetime, (string) $zonedDateTime->getDateTime());
     }
 
     /**
@@ -103,12 +103,12 @@ class ZonedDateTimeTest extends AbstractTestCase
 
         $this->assertEquals($timezone1, $datetime1->getTimezone());
         $this->assertEquals($timezone2, $datetime2->getTimezone());
-        $this->assertEquals('2001-09-08T18:46:40', $datetime2->getDateTime()->toString());
+        $this->assertEquals('2001-09-08T18:46:40', (string) $datetime2->getDateTime());
 
         $datetime2 = $datetime1->withTimeZoneSameLocal($timezone2);
 
         $this->assertEquals($timezone1, $datetime1->getTimezone());
         $this->assertEquals($timezone2, $datetime2->getTimezone());
-        $this->assertEquals('2001-09-09T01:46:40', $datetime2->getDateTime()->toString());
+        $this->assertEquals('2001-09-09T01:46:40', (string) $datetime2->getDateTime());
     }
 }

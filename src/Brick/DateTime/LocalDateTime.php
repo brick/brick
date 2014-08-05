@@ -687,17 +687,9 @@ class LocalDateTime
     /**
      * @return string
      */
-    public function toString()
-    {
-        return $this->date->toString() . 'T' . $this->time->toString();
-    }
-
-    /**
-     * @return string
-     */
     public function __toString()
     {
-        return $this->toString();
+        return $this->date . 'T' . $this->time;
     }
 
     /**

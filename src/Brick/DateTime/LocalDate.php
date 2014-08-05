@@ -698,19 +698,11 @@ class LocalDate
      *
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
         $pattern = ($this->year < 0 ? '%05d' : '%04d') . '-%02d-%02d';
 
         return sprintf($pattern, $this->year, $this->month, $this->day);
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     /**

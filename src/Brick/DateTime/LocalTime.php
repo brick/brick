@@ -636,7 +636,7 @@ class LocalTime
      *
      * @return string A string representation of this time.
      */
-    public function toString()
+    public function __toString()
     {
         if ($this->nano === 0) {
             if ($this->second === 0) {
@@ -649,16 +649,6 @@ class LocalTime
         $nanos = rtrim(sprintf('%09u', $this->nano), '0');
 
         return sprintf('%02u:%02u:%02u.%s', $this->hour, $this->minute, $this->second, $nanos);
-    }
-
-    /**
-     * Returns this time as a string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     /**

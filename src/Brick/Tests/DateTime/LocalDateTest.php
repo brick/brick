@@ -415,7 +415,7 @@ class LocalDateTest extends AbstractTestCase
      */
     public function testToString($year, $month, $day, $expected)
     {
-        $this->assertSame($expected, LocalDate::of($year, $month, $day)->toString());
+        $this->assertSame($expected, (string) LocalDate::of($year, $month, $day));
     }
 
     /**

@@ -130,7 +130,7 @@ class LocalDateRange implements \Iterator, \Countable
      */
     public function key()
     {
-        return $this->current->toString();
+        return (string) $this->current;
     }
 
     /**
@@ -168,16 +168,8 @@ class LocalDateRange implements \Iterator, \Countable
     /**
      * @return string
      */
-    public function toString()
-    {
-        return $this->from->toString() . '/' . $this->to->toString();
-    }
-
-    /**
-     * @return string
-     */
     public function __toString()
     {
-        return $this->toString();
+        return $this->from . '/' . $this->to;
     }
 }

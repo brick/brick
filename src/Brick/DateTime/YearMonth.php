@@ -254,16 +254,8 @@ class YearMonth
      *
      * @return string
      */
-    public function toString()
-    {
-        return sprintf('%02u-%02u', $this->year, $this->month);
-    }
-
-    /**
-     * @return string
-     */
     public function __toString()
     {
-        return $this->toString();
+        return sprintf('%02u-%02u', $this->year, $this->month);
     }
 }

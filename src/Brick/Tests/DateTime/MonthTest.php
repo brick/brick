@@ -251,17 +251,17 @@ class MonthTest extends AbstractTestCase
 
     public function testToString()
     {
-        $this->assertEquals('January', Month::january()->toString());
-        $this->assertEquals('February', Month::february()->toString());
-        $this->assertEquals('March', Month::march()->toString());
-        $this->assertEquals('April', Month::april()->toString());
-        $this->assertEquals('May', Month::may()->toString());
-        $this->assertEquals('June', Month::june()->toString());
-        $this->assertEquals('July', Month::july()->toString());
-        $this->assertEquals('August', Month::august()->toString());
-        $this->assertEquals('September', Month::september()->toString());
-        $this->assertEquals('October', Month::october()->toString());
-        $this->assertEquals('November', Month::november()->toString());
-        $this->assertEquals('December', Month::december()->toString());
+        $this->assertEquals('January', (string) Month::january());
+        $this->assertEquals('February', (string) Month::february());
+        $this->assertEquals('March', (string) Month::march());
+        $this->assertEquals('April', (string) Month::april());
+        $this->assertEquals('May', (string) Month::may());
+        $this->assertEquals('June', (string) Month::june());
+        $this->assertEquals('July', (string) Month::july());
+        $this->assertEquals('August', (string) Month::august());
+        $this->assertEquals('September', (string) Month::september());
+        $this->assertEquals('October', (string) Month::october());
+        $this->assertEquals('November', (string) Month::november());
+        $this->assertEquals('December', (string) Month::december());
     }
 }

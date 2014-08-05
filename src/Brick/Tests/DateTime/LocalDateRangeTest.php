@@ -44,7 +44,6 @@ class LocalDateRangeTest extends AbstractTestCase
             LocalDate::of(2011, 1, 1)
         );
 
-        $this->assertSame('2008-12-31/2011-01-01', $range->toString());
         $this->assertSame('2008-12-31/2011-01-01', (string) $range);
     }
 

@@ -246,7 +246,7 @@ class LocalTimeTest extends AbstractTestCase
      */
     public function testToString($h, $m, $s, $n, $r)
     {
-        $this->assertSame($r, LocalTime::of($h, $m, $s, $n)->toString());
+        $this->assertSame($r, (string) LocalTime::of($h, $m, $s, $n));
     }
 
     /**

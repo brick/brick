@@ -311,6 +311,6 @@ class YearMonthTest extends AbstractTestCase
 
     public function testToString()
     {
-        $this->assertSame('2013-09', YearMonth::of(2013, 9)->toString());
+        $this->assertSame('2013-09', (string) YearMonth::of(2013, 9));
     }
 }

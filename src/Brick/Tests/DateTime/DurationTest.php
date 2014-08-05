@@ -907,7 +907,7 @@ class DurationTest extends AbstractTestCase
      */
     public function testToString($seconds, $nanos, $expected)
     {
-        $this->assertEquals($expected, Duration::ofSeconds($seconds, $nanos)->toString());
+        $this->assertEquals($expected, (string) Duration::ofSeconds($seconds, $nanos));
     }
 
     /**

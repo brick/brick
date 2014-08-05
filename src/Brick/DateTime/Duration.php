@@ -626,7 +626,7 @@ class Duration
      *
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
         $seconds = $this->seconds;
         $nanos = $this->nanos;
@@ -650,13 +650,5 @@ class Duration
         }
 
         return $string . 'S';
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 }
