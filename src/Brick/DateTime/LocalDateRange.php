@@ -13,15 +13,8 @@ use Brick\DateTime\Parser\DateTimeParsers;
  * LocalDateRange is iteratable: keys are ISO string representation of dates, values are LocalDate objects.
  * LocalDateRange is countable: count() returns the number of dates the range contains.
  */
-class LocalDateRange implements \Iterator, \Countable
+class LocalDateRange implements \IteratorAggregate, \Countable
 {
-    /**
-     * The current date the iterator points to.
-     *
-     * @var \Brick\DateTime\LocalDate
-     */
-    private $current;
-
     /**
      * The from date.
      *
@@ -44,7 +37,6 @@ class LocalDateRange implements \Iterator, \Countable
      */
     private function __construct(LocalDate $from, LocalDate $to)
     {
-        $this->current = $from;
         $this->from    = $from;
         $this->to      = $to;
     }
@@ -142,43 +134,16 @@ class LocalDateRange implements \Iterator, \Countable
     }
 
     /**
-     * @return LocalDate
-     */
-    public function current()
-    {
-        return $this->current;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function key()
+    public function getIterator()
     {
-        return (string) $this->current;
-    }
+        $date = $this->from;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        $this->current = $this->current->plusDays(1);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        $this->current = $this->from;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        return ! $this->current->isAfter($this->to);
+        while (! $date->isAfter($this->to)) {
+            yield $date;
+            $date = $date->plusDays(1);
+        }
     }
 
     /**

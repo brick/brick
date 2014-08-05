@@ -57,6 +57,7 @@ class LocalDateRangeTest extends AbstractTestCase
         for ($i = 0; $i < 2; $i++) { // Test twice to test iterator rewind
             $expected = $from;
             foreach ($range as $date) {
+                /** @var LocalDate $date */
                 $this->assertTrue($date->isEqualTo($expected));
                 $expected = $expected->plusDays(1);
             }
