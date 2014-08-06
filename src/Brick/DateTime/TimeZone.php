@@ -96,7 +96,7 @@ abstract class TimeZone
      */
     public static function fromDateTimeZone(\DateTimeZone $dateTimeZone)
     {
-        return TimeZone::of($dateTimeZone->getName());
+        return TimeZone::parse($dateTimeZone->getName());
     }
 
     /**
