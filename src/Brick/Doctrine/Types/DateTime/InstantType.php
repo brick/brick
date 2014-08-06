@@ -9,7 +9,10 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Doctrine type for Instant. This type maps to an integer column.
+ * Doctrine type for Instant.
+ *
+ * This type stores the epochSecond only in an integer column.
+ * The nanoseconds are silently discarded.
  */
 class InstantType extends Type
 {
@@ -39,7 +42,7 @@ class InstantType extends Type
         }
 
         if ($value instanceof Instant) {
-            return (string) $value;
+            return $value->getEpochSecond();
         }
 
         throw new UnexpectedValueException(Instant::class, $value);

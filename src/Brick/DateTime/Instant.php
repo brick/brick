@@ -294,14 +294,6 @@ class Instant extends ReadableInstant
     }
 
     /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) ZonedDateTime::ofInstant($this, TimeZone::utc());
-    }
-
-    /**
      * @param \DateTime $dateTime
      *
      * @return Instant
@@ -322,5 +314,13 @@ class Instant extends ReadableInstant
         $dateTime->setTimezone($dateTimeZone);
 
         return $dateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) ZonedDateTime::ofInstant($this, TimeZone::utc());
     }
 }
