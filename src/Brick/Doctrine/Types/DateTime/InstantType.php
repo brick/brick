@@ -39,7 +39,7 @@ class InstantType extends Type
         }
 
         if ($value instanceof Instant) {
-            return $value->toString();
+            return (string) $value;
         }
 
         throw new UnexpectedValueException(Instant::class, $value);

@@ -39,7 +39,7 @@ class LocalTimeType extends Type
         }
 
         if ($value instanceof LocalTime) {
-            return $value->toString();
+            return (string) $value;
         }
 
         throw new UnexpectedValueException(LocalTime::class, $value);

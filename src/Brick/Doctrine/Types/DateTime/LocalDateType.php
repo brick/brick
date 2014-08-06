@@ -39,7 +39,7 @@ class LocalDateType extends Type
         }
 
         if ($value instanceof LocalDate) {
-            return $value->toString();
+            return (string) $value;
         }
 
         throw new UnexpectedValueException(LocalDate::class, $value);
