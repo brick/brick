@@ -17,7 +17,7 @@ final class DateTimeParsers
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return StringLiteralParser
      */
@@ -99,6 +99,21 @@ final class DateTimeParsers
             ->append(self::isoYear(DateTimeField::YEAR))
             ->append(self::literal('-'))
             ->append(self::isoMonthOfYear(DateTimeField::MONTH_OF_YEAR))
+            ->toParser();
+    }
+
+    /**
+     * Returns a parser for an ISO month-day such as `--12-31`.
+     *
+     * @return DateTimeParser
+     */
+    public static function isoMonthDay()
+    {
+        return DateTimeParserBuilder::create()
+            ->append(self::literal('--'))
+            ->append(self::isoMonthOfYear(DateTimeField::MONTH_OF_YEAR))
+            ->append(self::literal('-'))
+            ->append(self::isoDayOfMonth(DateTimeField::DAY_OF_MONTH))
             ->toParser();
     }
 

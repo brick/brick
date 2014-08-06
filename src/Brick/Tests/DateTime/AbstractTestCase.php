@@ -6,6 +6,7 @@ use Brick\DateTime\Duration;
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalDateTime;
 use Brick\DateTime\LocalTime;
+use Brick\DateTime\MonthDay;
 use Brick\DateTime\Period;
 use Brick\DateTime\ReadableInstant;
 use Brick\DateTime\YearMonth;
@@ -84,6 +85,17 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($year, $yearMonth->getYear());
         $this->assertSame($month, $yearMonth->getMonth());
+    }
+
+    /**
+     * @param integer  $month    The expected month.
+     * @param integer  $day      The expected day.
+     * @param MonthDay $monthDay The month-day to test.
+     */
+    protected function assertMonthDayEquals($month, $day, MonthDay $monthDay)
+    {
+        $this->assertSame($month, $monthDay->getMonth());
+        $this->assertSame($day, $monthDay->getDay());
     }
 
     /**

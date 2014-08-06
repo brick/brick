@@ -102,9 +102,11 @@ class YearMonthTest extends AbstractTestCase
      */
     public function testNow($epochSecond, $timeZone, $year, $month)
     {
-        Clock::setDefault(new FixedClock(Instant::of($epochSecond)));
+        $previousClock = Clock::setDefault(new FixedClock(Instant::of($epochSecond)));
 
         $this->assertYearMonthEquals($year, $month, YearMonth::now(TimeZone::parse($timeZone)));
+
+        Clock::setDefault($previousClock);
     }
 
     /**
@@ -231,6 +233,48 @@ class YearMonthTest extends AbstractTestCase
     }
 
     /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param integer $result The comparison result.
+     */
+    public function testIsEqualTo($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == 0, YearMonth::of($y1, $m1)->isEqualTo(YearMonth::of($y2, $m2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param integer $result The comparison result.
+     */
+    public function testIsBefore($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == -1, YearMonth::of($y1, $m1)->isBefore(YearMonth::of($y2, $m2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $y1     The year of the base year-month.
+     * @param integer $m1     The month of the base year-month.
+     * @param integer $y2     The year of the year-month to compare to.
+     * @param integer $m2     The month of the year-month to compare to.
+     * @param integer $result The comparison result.
+     */
+    public function testIsAfter($y1, $m1, $y2, $m2, $result)
+    {
+        $this->assertSame($result == 1, YearMonth::of($y1, $m1)->isAfter(YearMonth::of($y2, $m2)));
+    }
+
+    /**
      * @return array
      */
     public function providerCompareTo()
@@ -253,48 +297,6 @@ class YearMonthTest extends AbstractTestCase
             [2002, 2, 2002, 1,  1],
             [2002, 2, 2002, 2,  0],
         ];
-    }
-
-    /**
-     * @dataProvider providerCompareTo
-     *
-     * @param integer $y1     The year of the base year-month.
-     * @param integer $m1     The month of the base year-month.
-     * @param integer $y2     The year of the year-month to compare to.
-     * @param integer $m2     The month of the year-month to compare to.
-     * @param boolean $result The comparison result.
-     */
-    public function testIsEqualTo($y1, $m1, $y2, $m2, $result)
-    {
-        $this->assertSame($result == 0, YearMonth::of($y1, $m1)->isEqualTo(YearMonth::of($y2, $m2)));
-    }
-
-    /**
-     * @dataProvider providerCompareTo
-     *
-     * @param integer $y1     The year of the base year-month.
-     * @param integer $m1     The month of the base year-month.
-     * @param integer $y2     The year of the year-month to compare to.
-     * @param integer $m2     The month of the year-month to compare to.
-     * @param boolean $result The comparison result.
-     */
-    public function testIsBefore($y1, $m1, $y2, $m2, $result)
-    {
-        $this->assertSame($result == -1, YearMonth::of($y1, $m1)->isBefore(YearMonth::of($y2, $m2)));
-    }
-
-    /**
-     * @dataProvider providerCompareTo
-     *
-     * @param integer $y1     The year of the base year-month.
-     * @param integer $m1     The month of the base year-month.
-     * @param integer $y2     The year of the year-month to compare to.
-     * @param integer $m2     The month of the year-month to compare to.
-     * @param boolean $result The comparison result.
-     */
-    public function testIsAfter($y1, $m1, $y2, $m2, $result)
-    {
-        $this->assertSame($result == 1, YearMonth::of($y1, $m1)->isAfter(YearMonth::of($y2, $m2)));
     }
 
     public function testWithYear()

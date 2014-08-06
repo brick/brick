@@ -65,7 +65,12 @@ class NumberParser extends DateTimeParser
      */
     public function parseInto(DateTimeParseContext $context)
     {
-        $sign = $context->getNextCharsMatching('\-');
+        if ($this->allowNegative) {
+            $sign = $context->getNextCharsMatching('\-');
+        } else {
+            $sign = '';
+        }
+
         $digits = $context->getNextDigits();
 
         if ($digits === '') {
