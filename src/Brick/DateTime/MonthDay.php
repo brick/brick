@@ -209,9 +209,14 @@ class MonthDay
     /**
      * Returns a copy of this MonthDay with the month-of-year altered.
      *
+     * If the day-of-month is invalid for the specified month, the day will
+     * be adjusted to the last valid day-of-month.
+     *
      * @param integer $month
      *
-     * @return MonthDay If the day-of-month is invalid for the month.
+     * @return MonthDay
+     *
+     * @throws DateTimeException If the month is invalid.
      */
     public function withMonth($month)
     {
@@ -222,13 +227,16 @@ class MonthDay
         }
 
         Field\MonthOfYear::check($month);
-        Field\DayOfMonth::check($this->day, $month);
 
-        return new MonthDay($month, $this->day);
+        $lastDay = Field\MonthOfYear::getLength($month);
+
+        return new MonthDay($month, ($lastDay < $this->day) ? $lastDay : $this->day);
     }
 
     /**
      * Returns a copy of this MonthDay with the day-of-month altered.
+     *
+     * If the day-of-month is invalid for the month, an exception is thrown.
      *
      * @param integer $day
      *

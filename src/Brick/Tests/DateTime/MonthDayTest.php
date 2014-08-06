@@ -315,17 +315,18 @@ class MonthDayTest extends AbstractTestCase
     /**
      * @dataProvider providerWithMonth
      *
-     * @param integer $month    The month of the base month-day to test.
-     * @param integer $day      The day of base the month-day to test.
-     * @param integer $newMonth The new month to apply.
+     * @param integer $month       The month of the base month-day to test.
+     * @param integer $day         The day of base the month-day to test.
+     * @param integer $newMonth    The new month to apply.
+     * @param integer $expectedDay The expected day of the resulting month-day.
      */
-    public function testWithMonth($month, $day, $newMonth)
+    public function testWithMonth($month, $day, $newMonth, $expectedDay)
     {
         $monthDay = MonthDay::of($month, $day);
         $newMonthDay = $monthDay->withMonth($newMonth);
 
         $this->assertMonthDayEquals($month, $day, $monthDay);
-        $this->assertMonthDayEquals($newMonth, $day, $newMonthDay);
+        $this->assertMonthDayEquals($newMonth, $expectedDay, $newMonthDay);
     }
 
     /**
@@ -334,12 +335,22 @@ class MonthDayTest extends AbstractTestCase
     public function providerWithMonth()
     {
         return [
-            [1, 1, 12],
-            [1, 31, 12],
-            [12, 1, 1],
-            [12, 31, 1],
-            [2, 28, 3],
-            [3, 29, 2]
+            [1, 1, 1, 1],
+            [1, 1, 12, 1],
+            [1, 31, 12, 31],
+            [1, 31, 11, 30],
+            [1, 31, 10, 31],
+            [1, 31, 9, 30],
+            [1, 31, 2, 29],
+            [1, 30, 2, 29],
+            [1, 29, 2, 29],
+            [1, 28, 2, 28],
+            [2, 29, 2, 29],
+            [2, 29, 3, 29],
+            [2, 29, 4, 29],
+            [11, 30, 11, 30],
+            [11, 30, 12, 30],
+            [11, 30, 2, 29]
         ];
     }
 
@@ -362,17 +373,8 @@ class MonthDayTest extends AbstractTestCase
     public function providerWithInvalidMonthThrowsException()
     {
         return [
-            [12, 31, 11],
-            [11, 30, 2],
-            [10, 31, 9],
-            [9, 30, 2],
-            [8, 31, 6],
-            [7, 31, 4],
-            [6, 30, 2],
-            [5, 31, 2],
-            [4, 31, 2],
-            [3, 31, 2],
-            [1, 31, 2]
+            [1, 1, 0],
+            [12, 31, 13]
         ];
     }
 
