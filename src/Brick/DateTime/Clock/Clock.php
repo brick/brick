@@ -10,26 +10,29 @@ abstract class Clock
     /**
      * The global default Clock.
      *
-     * @var \Brick\DateTime\Clock\Clock|null
+     * @var Clock|null
      */
     private static $default = null;
 
     /**
      * Sets the default clock.
      *
-     * @param \Brick\DateTime\Clock\Clock $clock
+     * @param Clock $clock The new clock.
      *
-     * @return void
+     * @return Clock The previous clock.
      */
     public static function setDefault(Clock $clock)
     {
+        $current = self::getDefault();
         self::$default = $clock;
+
+        return $current;
     }
 
     /**
      * Returns the default clock. Defaults to the system clock unless overridden.
      *
-     * @return \Brick\DateTime\Clock\Clock
+     * @return Clock
      */
     public static function getDefault()
     {
