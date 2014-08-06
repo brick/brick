@@ -22,7 +22,7 @@ class Year
     /**
      * Class constructor.
      *
-     * @param integer $value The year to represent.
+     * @param integer $value The year to represent, validated.
      */
     private function __construct($value)
     {
@@ -36,17 +36,27 @@ class Year
      */
     public static function of($value)
     {
+        return new Year(Year::check($value));
+    }
+
+    /**
+     * Checks the given year, and returns it type-casted to integer.
+     *
+     * @param integer $value
+     *
+     * @return integer
+     *
+     * @throws DateTimeException If the year is not in the valid range.
+     */
+    public static function check($value)
+    {
         $value = Cast::toInteger($value);
 
         if ($value < Year::MIN_YEAR || $value > Year::MAX_YEAR) {
-            throw new \InvalidArgumentException(sprintf(
-                'Year must be in the range %d to %d.',
-                self::MIN_YEAR,
-                self::MAX_YEAR
-            ));
+            throw DateTimeException::notInRange('Year', Year::MIN_YEAR, Year::MAX_YEAR, $value);
         }
 
-        return new Year($value);
+        return $value;
     }
 
     /**

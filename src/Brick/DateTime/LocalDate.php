@@ -87,15 +87,9 @@ class LocalDate
      */
     public static function of($year, $month, $day)
     {
-        $year = Cast::toInteger($year);
-        $month = Cast::toInteger($month);
+        $year = Year::check($year);
+        $month = Month::check($month);
         $day = Cast::toInteger($day);
-
-        self::checkYear($year);
-
-        if ($month < 1 || $month > 12) {
-            throw new DateTimeException('Month must be in the range 1 to 12.');
-        }
 
         $daysInMonth = Month::of($month)->getLength(Year::of($year)->isLeap());
 
@@ -104,26 +98,6 @@ class LocalDate
         }
 
         return new LocalDate($year, $month, $day);
-    }
-
-    /**
-     * @todo was private (expects a validated integer, but was needed for YearMonth as well) - fix that
-     *
-     * @param integer $year The year to check, validated as an integer.
-     *
-     * @return void
-     *
-     * @throws DateTimeException
-     */
-    public static function checkYear($year)
-    {
-        if ($year < Year::MIN_YEAR || $year > Year::MAX_YEAR) {
-            throw new DateTimeException(sprintf(
-                'Year must be in the range %d to %d.',
-                Year::MIN_YEAR,
-                Year::MAX_YEAR
-            ));
-        }
     }
 
     /**
@@ -153,10 +127,9 @@ class LocalDate
      */
     public static function ofYearDay($year, $dayOfYear)
     {
-        $year = Cast::toInteger($year);
+        $year = Year::check($year);
         $dayOfYear = Cast::toInteger($dayOfYear);
 
-        self::checkYear($year);
         self::checkDayOfYear($year, $dayOfYear);
 
         $leap = Year::of($year)->isLeap();
@@ -249,7 +222,7 @@ class LocalDate
         $yearEst += Math::div($marchMonth0, 10);
 
         // Check year now we are certain it is correct.
-        self::checkYear($yearEst);
+        Year::check($yearEst);
 
         return new LocalDate($yearEst, $month, $dom);
     }

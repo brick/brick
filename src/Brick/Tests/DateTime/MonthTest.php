@@ -27,7 +27,7 @@ class MonthTest extends AbstractTestCase
 
     /**
      * @dataProvider providerOfInvalidThrowsException
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Brick\DateTime\DateTimeException
      *
      * @param integer $invalidMonth
      */

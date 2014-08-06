@@ -48,11 +48,11 @@ class YearMonthTest extends AbstractTestCase
      * @dataProvider providerParseInvalidStringThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
      *
-     * @param string $string
+     * @param string $text The text to parse.
      */
-    public function testParseInvalidStringThrowsException($string)
+    public function testParseInvalidStringThrowsException($text)
     {
-        YearMonth::parse($string);
+        YearMonth::parse($text);
     }
 
     /**
@@ -73,6 +73,8 @@ class YearMonthTest extends AbstractTestCase
     /**
      * @dataProvider providerParseInvalidYearMonthThrowsException
      * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param string $text The text to parse.
      */
     public function testParseInvalidYearMonthThrowsException($text)
     {

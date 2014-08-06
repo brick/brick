@@ -68,13 +68,27 @@ class Month
      */
     public static function of($value)
     {
+        return Month::get(Month::check($value));
+    }
+
+    /**
+     * Checks the given month value, and returns it type-casted to integer.
+     *
+     * @param integer $value
+     *
+     * @return integer
+     *
+     * @throws DateTimeException If the month is not in the valid range.
+     */
+    public static function check($value)
+    {
         $value = Cast::toInteger($value);
 
         if ($value < Month::JANUARY || $value > Month::DECEMBER) {
-            throw new \InvalidArgumentException('The month must be in range 1 to 12.');
+            throw DateTimeException::notInRange('Month', Month::JANUARY, Month::DECEMBER, $value);
         }
 
-        return Month::get($value);
+        return $value;
     }
 
     /**

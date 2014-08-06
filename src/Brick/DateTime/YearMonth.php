@@ -4,7 +4,6 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
-use Brick\DateTime\Utility\Cast;
 
 /**
  * Represents the combination of a year and a month.
@@ -49,16 +48,7 @@ class YearMonth
      */
     public static function of($year, $month)
     {
-        $year = Cast::toInteger($year);
-        $month = Cast::toInteger($month);
-
-        LocalDate::checkYear($year);
-
-        if ($month < 1 || $month > 12) {
-            throw new DateTimeException('Month must be in the range 1 to 12.');
-        }
-
-        return new YearMonth($year, $month);
+        return new YearMonth(Year::check($year), Month::check($month));
     }
 
     /**
