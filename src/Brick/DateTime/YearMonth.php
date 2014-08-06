@@ -215,11 +215,15 @@ class YearMonth
      */
     public function withYear($year)
     {
-        if ($year == $this->year) {
+        $year = Cast::toInteger($year);
+
+        if ($year === $this->year) {
             return $this;
         }
 
-        return YearMonth::of($year, $this->month);
+        Field\Year::check($year);
+
+        return new YearMonth($year, $this->month);
     }
 
     /**
@@ -231,19 +235,25 @@ class YearMonth
      */
     public function withMonth($month)
     {
-        if ($month == $this->month) {
+        $month = Cast::toInteger($month);
+
+        if ($month === $this->month) {
             return $this;
         }
 
-        return YearMonth::of($this->year, $month);
+        Field\MonthOfYear::check($month);
+
+        return new YearMonth($this->year, $month);
     }
 
     /**
      * Combines this year-month with a day-of-month to create a LocalDate.
      *
-     * @param integer $day
+     * @param integer $day The day-of-month to use, valid for the year-month.
      *
-     * @return LocalDate
+     * @return LocalDate The date formed from this year-month and the specified day.
+     *
+     * @throws DateTimeException If the day is not valid for this year-month.
      */
     public function atDay($day)
     {

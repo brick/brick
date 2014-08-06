@@ -42,8 +42,10 @@ class LocalDateRange implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param LocalDate $from
-     * @param LocalDate $to
+     * Creates an instance of LocalDateRange from two LocalDate instances.
+     *
+     * @param LocalDate $from The start date.
+     * @param LocalDate $to   The end date.
      *
      * @return LocalDateRange
      *
