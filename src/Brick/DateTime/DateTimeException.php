@@ -9,22 +9,16 @@ namespace Brick\DateTime;
 class DateTimeException extends \RuntimeException
 {
     /**
-     * @param string  $name   A meaningful name for the tested value.
+     * @param string  $field  The tested field.
+     * @param integer $value  The actual value.
      * @param integer $min    The minimum allowed value.
      * @param integer $max    The maximum allowed value.
-     * @param integer $actual The actual value.
      *
      * @return DateTimeException
      */
-    public static function notInRange($name, $min, $max, $actual)
+    public static function fieldNotInRange($field, $value, $min, $max)
     {
-        return new self(sprintf(
-            '%s must be in the range %d to %d, got %d.',
-            $name,
-            $min,
-            $max,
-            $actual
-        ));
+        return new DateTimeException("Invalid $field: $value is not in the range $min to $max");
     }
 
     /**

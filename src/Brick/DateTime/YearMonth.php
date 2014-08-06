@@ -4,6 +4,7 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Utility\Cast;
 
 /**
  * Represents the combination of a year and a month.
@@ -48,7 +49,13 @@ class YearMonth
      */
     public static function of($year, $month)
     {
-        return new YearMonth(Year::check($year), Month::check($month));
+        $year  = Cast::toInteger($year);
+        $month = Cast::toInteger($month);
+
+        Field\Year::check($year);
+        Field\MonthOfYear::check($month);
+
+        return new YearMonth($year, $month);
     }
 
     /**

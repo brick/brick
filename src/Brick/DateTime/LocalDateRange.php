@@ -37,8 +37,8 @@ class LocalDateRange implements \IteratorAggregate, \Countable
      */
     private function __construct(LocalDate $from, LocalDate $to)
     {
-        $this->from    = $from;
-        $this->to      = $to;
+        $this->from = $from;
+        $this->to   = $to;
     }
 
     /**

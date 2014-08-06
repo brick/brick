@@ -5,12 +5,12 @@ namespace Brick\DateTime;
 use Brick\DateTime\Utility\Cast;
 
 /**
- * Represents a year.
+ * Represents a year in the proleptic calendar.
  */
 class Year
 {
-    const MIN_YEAR = LocalDate::MIN_YEAR;
-    const MAX_YEAR = LocalDate::MAX_YEAR;
+    const MIN_VALUE = LocalDate::MIN_YEAR;
+    const MAX_VALUE = LocalDate::MAX_YEAR;
 
     /**
      * The year being represented.
@@ -36,27 +36,11 @@ class Year
      */
     public static function of($value)
     {
-        return new Year(Year::check($value));
-    }
-
-    /**
-     * Checks the given year, and returns it type-casted to integer.
-     *
-     * @param integer $value
-     *
-     * @return integer
-     *
-     * @throws DateTimeException If the year is not in the valid range.
-     */
-    public static function check($value)
-    {
         $value = Cast::toInteger($value);
 
-        if ($value < Year::MIN_YEAR || $value > Year::MAX_YEAR) {
-            throw DateTimeException::notInRange('Year', Year::MIN_YEAR, Year::MAX_YEAR, $value);
-        }
+        Field\Year::check($value);
 
-        return $value;
+        return new Year($value);
     }
 
     /**
@@ -82,7 +66,7 @@ class Year
      */
     public function isLeap()
     {
-        return (($this->value & 3) === 0) && (($this->value % 100) !== 0 || ($this->value % 400) === 0);
+        return Field\Year::isLeap($this->value);
     }
 
     /**
@@ -133,5 +117,13 @@ class Year
         }
 
         return new Year($this->value - $years);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->value;
     }
 }

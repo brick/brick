@@ -14,16 +14,6 @@ use Brick\DateTime\Utility\Cast;
 class TimeZoneOffset extends TimeZone
 {
     /**
-     * The absolute maximum seconds.
-     */
-    const MAX_SECONDS = 64800;
-
-    /**
-     * The absolute maximum hours.
-     */
-    const MAX_HOURS = 18;
-
-    /**
      * @var integer
      */
     private $totalSeconds;
@@ -84,16 +74,6 @@ class TimeZoneOffset extends TimeZone
         $minutes = Cast::toInteger($minutes);
         $seconds = Cast::toInteger($seconds);
 
-        if ($hours < -TimeZoneOffset::MAX_HOURS || $hours > TimeZoneOffset::MAX_HOURS) {
-            throw new DateTimeException('Time zone offset hours must be in the range -18 to 18');
-        }
-        if ($minutes < -LocalTime::MINUTES_PER_HOUR || $minutes > LocalTime::MINUTES_PER_HOUR) {
-            throw new DateTimeException('Time zone offset minutes must be in the range -59 to 59');
-        }
-        if ($seconds < -LocalTime::SECONDS_PER_MINUTE || $seconds > LocalTime::SECONDS_PER_MINUTE) {
-            throw new DateTimeException('Time zone offset seconds must be in the range -59 to 59');
-        }
-
         $err = ($hours > 0 && ($minutes < 0 || $seconds < 0))
             || ($hours < 0 && ($minutes > 0 || $seconds > 0))
             || ($minutes > 0 && $seconds < 0)
@@ -103,11 +83,11 @@ class TimeZoneOffset extends TimeZone
             throw new DateTimeException('Time zone offset hours, minutes and seconds must have the same sign');
         }
 
-        $totalSeconds = $hours * LocalTime::SECONDS_PER_HOUR + $minutes * LocalTime::SECONDS_PER_MINUTE + $seconds;
+        $totalSeconds = $hours * LocalTime::SECONDS_PER_HOUR
+            + $minutes * LocalTime::SECONDS_PER_MINUTE
+            + $seconds;
 
-        if ($totalSeconds < -TimeZoneOffset::MAX_SECONDS || $totalSeconds > TimeZoneOffset::MAX_SECONDS) {
-            throw new DateTimeException('Time zone offset not in valid range: -18:00 to +18:00');
-        }
+        Field\OffsetSeconds::check($totalSeconds);
 
         return new TimeZoneOffset($totalSeconds);
     }
@@ -135,9 +115,7 @@ class TimeZoneOffset extends TimeZone
     {
         $totalSeconds = Cast::toInteger($totalSeconds);
 
-        if ($totalSeconds < -TimeZoneOffset::MAX_SECONDS || $totalSeconds > TimeZoneOffset::MAX_SECONDS) {
-            throw new DateTimeException('Time zone offset not in valid range: -18:00 to +18:00');
-        }
+        Field\OffsetSeconds::check($totalSeconds);
 
         return new TimeZoneOffset($totalSeconds);
     }

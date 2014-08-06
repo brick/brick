@@ -54,17 +54,17 @@ class LocalTime
     /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param integer $hour   The hour, validated as an integer in the range 0 to 23.
-     * @param integer $minute The minute, validated as an integer in the range 0 to 59.
-     * @param integer $second The second, validated as an integer in the range 0 to 59.
-     * @param integer $nanos  The nanoseconds, validated as an integer in the range 0 to 999,999,999.
+     * @param integer $hour   The hour-of-day, validated as an integer in the range 0 to 23.
+     * @param integer $minute The minute-of-hour, validated as an integer in the range 0 to 59.
+     * @param integer $second The second-of-minute, validated as an integer in the range 0 to 59.
+     * @param integer $nano   The nano-of-second, validated as an integer in the range 0 to 999,999,999.
      */
-    private function __construct($hour, $minute, $second, $nanos)
+    private function __construct($hour, $minute, $second, $nano)
     {
         $this->hour   = $hour;
         $this->minute = $minute;
         $this->second = $second;
-        $this->nano  = $nanos;
+        $this->nano   = $nano;
     }
 
     /**
@@ -75,7 +75,6 @@ class LocalTime
      *
      * @return LocalTime
      *
-     * @throws \InvalidArgumentException
      * @throws DateTimeException
      */
     public static function of($hour, $minute, $second = 0, $nano = 0)
@@ -83,23 +82,12 @@ class LocalTime
         $hour   = Cast::toInteger($hour);
         $minute = Cast::toInteger($minute);
         $second = Cast::toInteger($second);
-        $nano  = Cast::toInteger($nano);
+        $nano   = Cast::toInteger($nano);
 
-        if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
-            throw new DateTimeException('Hour must be in the range 0 to 23.');
-        }
-
-        if ($minute < 0 || $minute >= LocalTime::MINUTES_PER_HOUR) {
-            throw new DateTimeException('Minute must be in the range 0 to 59.');
-        }
-
-        if ($second < 0 || $second >= LocalTime::SECONDS_PER_MINUTE) {
-            throw new DateTimeException('Second must be in the range 0 to 59.');
-        }
-
-        if ($nano < 0 || $nano >= LocalTime::NANOS_PER_SECOND) {
-            throw new DateTimeParseException('Nanoseconds out of range: ' . $nano);
-        }
+        Field\HourOfDay::check($hour);
+        Field\MinuteOfHour::check($minute);
+        Field\SecondOfMinute::check($second);
+        Field\NanoOfSecond::check($nano);
 
         return new LocalTime($hour, $minute, $second, $nano);
     }
@@ -152,16 +140,11 @@ class LocalTime
      */
     public static function ofSecondOfDay($secondOfDay, $nanoOfSecond = 0)
     {
-        $secondOfDay = (int) $secondOfDay;
-        $nanoOfSecond = (int) $nanoOfSecond;
+        $secondOfDay = Cast::toInteger($secondOfDay);
+        $nanoOfSecond = Cast::toInteger($nanoOfSecond);
 
-        if ($secondOfDay < 0 || $secondOfDay >= self::SECONDS_PER_DAY) {
-            throw new DateTimeException('Second of day must be in the range 0 to 86,399.');
-        }
-
-        if ($nanoOfSecond < 0 || $nanoOfSecond >= self::NANOS_PER_SECOND) {
-            throw new DateTimeParseException('Nano of second must be in the range 0 to 999,999,999.');
-        }
+        Field\SecondOfDay::check($secondOfDay);
+        Field\NanoOfSecond::check($nanoOfSecond);
 
         $hours = Math::div($secondOfDay, self::SECONDS_PER_HOUR);
         $secondOfDay -= $hours * self::SECONDS_PER_HOUR;
@@ -254,21 +237,21 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the hour-of-day value altered.
      *
-     * @param integer $hour
+     * @param integer $hour The new hour-of-day.
      *
      * @return LocalTime
+     *
+     * @throws DateTimeException If the hour-of-day if not valid.
      */
     public function withHour($hour)
     {
-        $hour = (int) $hour;
+        $hour = Cast::toInteger($hour);
 
         if ($hour === $this->hour) {
             return $this;
         }
 
-        if ($hour < 0 || $hour >= LocalTime::HOURS_PER_DAY) {
-            throw new \InvalidArgumentException('Invalid value for hour-of-day: ' . $hour);
-        }
+        Field\HourOfDay::check($hour);
 
         return new LocalTime($hour, $this->minute, $this->second, $this->nano);
     }
@@ -276,21 +259,21 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the minute-of-hour value altered.
      *
-     * @param integer $minute
+     * @param integer $minute The new minute-of-hour.
      *
      * @return LocalTime
+     *
+     * @throws DateTimeException If the minute-of-hour if not valid.
      */
     public function withMinute($minute)
     {
-        $minute = (int) $minute;
+        $minute = Cast::toInteger($minute);
 
         if ($minute === $this->minute) {
             return $this;
         }
 
-        if ($minute < 0 || $minute >= LocalTime::MINUTES_PER_HOUR) {
-            throw new \InvalidArgumentException('Invalid value for minute-of-hour: ' . $minute);
-        }
+        Field\MinuteOfHour::check($minute);
 
         return new LocalTime($this->hour, $minute, $this->second, $this->nano);
     }
@@ -298,21 +281,21 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the second-of-minute value altered.
      *
-     * @param integer $second
+     * @param integer $second The new second-of-minute.
      *
      * @return LocalTime
+     *
+     * @throws DateTimeException If the second-of-minute if not valid.
      */
     public function withSecond($second)
     {
-        $second = (int) $second;
+        $second = Cast::toInteger($second);
 
         if ($second === $this->second) {
             return $this;
         }
 
-        if ($second < 0 || $second >= LocalTime::SECONDS_PER_MINUTE) {
-            throw new \InvalidArgumentException('Invalid value for second-of-minute: ' . $second);
-        }
+        Field\SecondOfMinute::check($second);
 
         return new LocalTime($this->hour, $this->minute, $second, $this->nano);
     }
@@ -320,23 +303,21 @@ class LocalTime
     /**
      * Returns a copy of this LocalTime with the nano-of-second value altered.
      *
-     * @param integer $nano
+     * @param integer $nano The new nano-of-second.
      *
      * @return LocalTime
      *
-     * @throws \InvalidArgumentException
+     * @throws DateTimeException If the nano-of-second if not valid.
      */
     public function withNano($nano)
     {
-        $nano = (int) $nano;
+        $nano = Cast::toInteger($nano);
 
         if ($nano === $this->nano) {
             return $this;
         }
 
-        if ($nano < 0 || $nano >= LocalTime::NANOS_PER_SECOND) {
-            throw new \InvalidArgumentException('Invalid value for nano-of-second: ' . $nano);
-        }
+        Field\NanoOfSecond::check($nano);
 
         return new LocalTime($this->hour, $this->minute, $this->second, $nano);
     }
@@ -355,7 +336,7 @@ class LocalTime
      */
     public function plusHours($hours)
     {
-        $hours = (int) $hours;
+        $hours = Cast::toInteger($hours);
 
         if ($hours === 0) {
             return $this;
@@ -380,7 +361,7 @@ class LocalTime
      */
     public function plusMinutes($minutes)
     {
-        $minutes = (int) $minutes;
+        $minutes = Cast::toInteger($minutes);
 
         if ($minutes === 0) {
             return $this;
@@ -408,7 +389,7 @@ class LocalTime
      */
     public function plusSeconds($seconds)
     {
-        $seconds = (int) $seconds;
+        $seconds = Cast::toInteger($seconds);
 
         if ($seconds === 0) {
             return $this;
@@ -437,7 +418,7 @@ class LocalTime
      */
     public function plusNanos($nanos)
     {
-        $nanos = (int) $nanos;
+        $nanos = Cast::toInteger($nanos);
 
         if ($nanos === 0) {
             return $this;
@@ -491,7 +472,7 @@ class LocalTime
     }
 
     /**
-     * @param integer$nanos
+     * @param integer $nanos
      *
      * @return LocalTime
      */

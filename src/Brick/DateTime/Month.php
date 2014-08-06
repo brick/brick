@@ -64,31 +64,15 @@ class Month
      *
      * @return Month The Month instance.
      *
-     * @throws \InvalidArgumentException
+     * @throws DateTimeException
      */
     public static function of($value)
     {
-        return Month::get(Month::check($value));
-    }
-
-    /**
-     * Checks the given month value, and returns it type-casted to integer.
-     *
-     * @param integer $value
-     *
-     * @return integer
-     *
-     * @throws DateTimeException If the month is not in the valid range.
-     */
-    public static function check($value)
-    {
         $value = Cast::toInteger($value);
 
-        if ($value < Month::JANUARY || $value > Month::DECEMBER) {
-            throw DateTimeException::notInRange('Month', Month::JANUARY, Month::DECEMBER, $value);
-        }
+        Field\MonthOfYear::check($value);
 
-        return $value;
+        return Month::get($value);
     }
 
     /**
@@ -398,18 +382,18 @@ class Month
     public function __toString()
     {
         return [
-            1 => 'JANUARY',
-            2 => 'FEBRUARY',
-            3 => 'MARCH',
-            4 => 'APRIL',
-            5 => 'MAY',
-            6 => 'JUNE',
-            7 => 'JULY',
-            8 => 'AUGUST',
-            9 => 'SEPTEMBER',
-            10 => 'OCTOBER',
-            11 => 'NOVEMBER',
-            12 => 'DECEMBER'
+            1  => 'January',
+            2  => 'February',
+            3  => 'March',
+            4  => 'April',
+            5  => 'May',
+            6  => 'June',
+            7  => 'July',
+            8  => 'August',
+            9  => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December'
         ][$this->value];
     }
 }

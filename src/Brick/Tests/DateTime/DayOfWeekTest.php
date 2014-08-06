@@ -12,7 +12,7 @@ class DayOfWeekTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOfInvalidDayThrowsException
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Brick\DateTime\DateTimeException
      *
      * @param integer $day
      */
@@ -251,13 +251,13 @@ class DayOfWeekTest extends AbstractTestCase
     public function providerToString()
     {
         return [
-            [DayOfWeek::monday(), 'MONDAY'],
-            [DayOfWeek::tuesday(),'TUESDAY'],
-            [DayOfWeek::wednesday(), 'WEDNESDAY'],
-            [DayOfWeek::thursday(), 'THURSDAY'],
-            [DayOfWeek::friday(), 'FRIDAY'],
-            [DayOfWeek::saturday(), 'SATURDAY'],
-            [DayOfWeek::sunday(), 'SUNDAY']
+            [DayOfWeek::monday(), 'Monday'],
+            [DayOfWeek::tuesday(),'Tuesday'],
+            [DayOfWeek::wednesday(), 'Wednesday'],
+            [DayOfWeek::thursday(), 'Thursday'],
+            [DayOfWeek::friday(), 'Friday'],
+            [DayOfWeek::saturday(), 'Saturday'],
+            [DayOfWeek::sunday(), 'Sunday']
         ];
     }
 }

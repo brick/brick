@@ -80,41 +80,21 @@ class LocalDate
      * @param integer $month The month-of-year, from 1 (January) to 12 (December).
      * @param integer $day   The day-of-month, from 1 to 31.
      *
-     * @return LocalDate
+     * @return LocalDate The LocalDate instance.
      *
-     * @throws DateTimeException
-     * @throws \InvalidArgumentException
+     * @throws DateTimeException If the date is not valid.
      */
     public static function of($year, $month, $day)
     {
-        $year = Year::check($year);
-        $month = Month::check($month);
+        $year = Cast::toInteger($year);
+        $month = Cast::toInteger($month);
         $day = Cast::toInteger($day);
 
-        $daysInMonth = Month::of($month)->getLength(Year::of($year)->isLeap());
-
-        if ($day < 1 || $day > $daysInMonth) {
-            throw new DateTimeException(sprintf('Day must be in the range 1 to %d.', $daysInMonth));
-        }
+        Field\Year::check($year);
+        Field\MonthOfYear::check($month);
+        Field\DayOfMonth::check($day, $month, $year);
 
         return new LocalDate($year, $month, $day);
-    }
-
-    /**
-     * @param integer $year      The year, validated as an integer, and valid year.
-     * @param integer $dayOfYear The day of year, validated as an integer.
-     *
-     * @return void
-     *
-     * @throws DateTimeException
-     */
-    private static function checkDayOfYear($year, $dayOfYear)
-    {
-        $daysInYear = Year::of($year)->getLength();
-
-        if ($dayOfYear < 1 || $dayOfYear > $daysInYear) {
-            throw new DateTimeException(sprintf('Day of year must be in the range 1 to %d.', $daysInYear));
-        }
     }
 
     /**
@@ -127,21 +107,22 @@ class LocalDate
      */
     public static function ofYearDay($year, $dayOfYear)
     {
-        $year = Year::check($year);
+        $year = Cast::toInteger($year);
         $dayOfYear = Cast::toInteger($dayOfYear);
 
-        self::checkDayOfYear($year, $dayOfYear);
+        Field\Year::check($year);
+        Field\DayOfYear::check($dayOfYear, $year);
 
-        $leap = Year::of($year)->isLeap();
+        $isLeap = Field\Year::isLeap($year);
 
         $monthOfYear = Month::of(Math::div($dayOfYear - 1, 31) + 1);
-        $monthEnd = $monthOfYear->getFirstDayOfYear($leap) + $monthOfYear->getLength($leap) - 1;
+        $monthEnd = $monthOfYear->getFirstDayOfYear($isLeap) + $monthOfYear->getLength($isLeap) - 1;
 
         if ($dayOfYear > $monthEnd) {
             $monthOfYear = $monthOfYear->plus(1);
         }
 
-        $dayOfMonth = $dayOfYear - $monthOfYear->getFirstDayOfYear($leap) + 1;
+        $dayOfMonth = $dayOfYear - $monthOfYear->getFirstDayOfYear($isLeap) + 1;
 
         return LocalDate::of($year, $monthOfYear->getValue(), $dayOfMonth);
     }
@@ -222,7 +203,7 @@ class LocalDate
         $yearEst += Math::div($marchMonth0, 10);
 
         // Check year now we are certain it is correct.
-        Year::check($yearEst);
+        Field\Year::check($yearEst);
 
         return new LocalDate($yearEst, $month, $dom);
     }
