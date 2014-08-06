@@ -73,6 +73,16 @@ class DayOfWeek
     }
 
     /**
+     * @param TimeZone $timeZone
+     *
+     * @return DayOfWeek
+     */
+    public static function now(TimeZone $timeZone)
+    {
+        return LocalDate::now($timeZone)->getDayOfWeek();
+    }
+
+    /**
      * Returns the seven days of the week in an array.
      *
      * @param DayOfWeek $first The day to return first. Optional, defaults to Monday.
