@@ -34,7 +34,7 @@ class TimeZoneRegion extends TimeZone
      *
      * @throws DateTimeException If the region id is invalid.
      */
-    public function of($id)
+    public static function of($id)
     {
         $id = (string) $id;
 
