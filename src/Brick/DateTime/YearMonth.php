@@ -4,7 +4,7 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
-use Brick\Type\Cast;
+use Brick\DateTime\Utility\Cast;
 
 /**
  * Represents the combination of a year and a month.

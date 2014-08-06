@@ -6,7 +6,7 @@ use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\TimeZoneOffsetParser;
-use Brick\Type\Cast;
+use Brick\DateTime\Utility\Cast;
 
 /**
  * A time-zone offset from Greenwich/UTC, such as `+02:00`.

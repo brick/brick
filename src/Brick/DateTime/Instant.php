@@ -4,7 +4,7 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Clock\Clock;
 use Brick\DateTime\Utility\Time;
-use Brick\Type\Cast;
+use Brick\DateTime\Utility\Cast;
 
 /**
  * Represents a point in time, with a 1 second precision.

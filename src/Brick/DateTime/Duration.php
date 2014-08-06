@@ -3,9 +3,9 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Utility\Time;
+use Brick\DateTime\Utility\Cast;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
-use Brick\Type\Cast;
 
 /**
  * Represents a duration of time measured in seconds.

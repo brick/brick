@@ -8,7 +8,7 @@ use Brick\DateTime\Parser\DateTimeParseResult;
 use Brick\DateTime\Parser\DateTimeParsers;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Utility\Math;
-use Brick\Type\Cast;
+use Brick\DateTime\Utility\Cast;
 use Brick\Locale\Locale;
 
 /**

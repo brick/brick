@@ -1,7 +1,8 @@
 <?php
 
 namespace Brick\DateTime;
-use Brick\Type\Cast;
+
+use Brick\DateTime\Utility\Cast;
 
 /**
  * Represents a year.

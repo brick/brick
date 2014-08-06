@@ -2,7 +2,7 @@
 
 namespace Brick\DateTime;
 
-use Brick\Type\Cast;
+use Brick\DateTime\Utility\Cast;
 
 /**
  * A day-of-week, such as Tuesday.

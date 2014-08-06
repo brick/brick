@@ -5,8 +5,8 @@ namespace Brick\DateTime;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Utility\Math;
+use Brick\DateTime\Utility\Cast;
 use Brick\Locale\Locale;
-use Brick\Type\Cast;
 
 /**
  * A time without a time-zone in the ISO-8601 calendar system, such as 10:15:30.
