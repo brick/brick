@@ -455,7 +455,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public function withTimeZoneSameInstant(TimeZone $timeZone)
     {
-        return ZonedDateTime::ofInstant($this->toInstant(), $timeZone);
+        return ZonedDateTime::ofInstant($this->getInstant(), $timeZone);
     }
 
     /**
@@ -498,7 +498,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public function plusDuration(Duration $duration)
     {
-        return ZonedDateTime::ofInstant($this->toInstant()->plus($duration), $this->timeZone);
+        return ZonedDateTime::ofInstant($this->getInstant()->plus($duration), $this->timeZone);
     }
 
     /**
@@ -691,18 +691,6 @@ class ZonedDateTime extends ReadableInstant
     public function minusSeconds($seconds)
     {
         return $this->plusSeconds(- $seconds);
-    }
-
-    /**
-     * Returns the instant represented by this ZonedDateTime.
-     *
-     * @todo now redundant with getInstant(), remove.
-     *
-     * @return Instant
-     */
-    public function toInstant()
-    {
-        return $this->getInstant();
     }
 
     /**
