@@ -92,11 +92,11 @@ class Locale
     public static function create($language, $region = null)
     {
         $subtags = [
-            'language' => Cast::toString($language)
+            'language' => (string) $language
         ];
 
         if ($region !== null) {
-            $subtags['region'] = Cast::toString($region);
+            $subtags['region'] = (string) $region;
         }
 
         return self::build($subtags);
@@ -113,10 +113,10 @@ class Locale
      */
     public static function parse($locale)
     {
-        $locale = Cast::toString($locale);
+        $locale = (string) $locale;
 
-        if ($locale == '') {
-            throw new \InvalidArgumentException('Invalid locale.');
+        if ($locale === '') {
+            throw new \InvalidArgumentException('Locale string cannot be empty.');
         }
 
         $subtags = \Locale::parseLocale($locale);
