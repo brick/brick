@@ -299,6 +299,8 @@ class LocalDate
     /**
      * Returns a copy of this LocalDate with the year altered.
      *
+     * If the day-of-month is invalid for the year, it will be changed to the last valid day of the month.
+     *
      * @param integer $year
      *
      * @return LocalDate
@@ -311,6 +313,8 @@ class LocalDate
             return $this;
         }
 
+        Field\Year::check($year);
+
         return $this->resolvePreviousValid($year, $this->month, $this->day);
     }
 
@@ -320,6 +324,8 @@ class LocalDate
      * @param integer $month
      *
      * @return LocalDate
+     *
+     * @throws DateTimeException If the month is invalid.
      */
     public function withMonth($month)
     {
@@ -329,15 +335,21 @@ class LocalDate
             return $this;
         }
 
+        Field\MonthOfYear::check($month);
+
         return $this->resolvePreviousValid($this->year, $month, $this->day);
     }
 
     /**
      * Returns a copy of this LocalDate with the day-of-month altered.
      *
+     * If the resulting date is invalid, an exception is thrown.
+     *
      * @param integer $day
      *
      * @return LocalDate
+     *
+     * @throws DateTimeException If day is invalid for the current year and month.
      */
     public function withDay($day)
     {
@@ -347,11 +359,16 @@ class LocalDate
             return $this;
         }
 
-        return $this->resolvePreviousValid($this->year, $this->month, $day);
+        Field\DayOfMonth::check($day, $this->month, $this->year);
+
+        return new LocalDate($this->year, $this->month, $day);
     }
 
     /**
      * Returns a copy of this LocalDate with the specified period in years added.
+     *
+     * If the day-of-month is invalid for the resulting year and month,
+     * it will be changed to the last valid day of the month.
      *
      * @param integer $years
      *
@@ -370,6 +387,9 @@ class LocalDate
 
     /**
      * Returns a copy of this LocalDate with the specified period in months added.
+     *
+     * If the day-of-month is invalid for the resulting year and month,
+     * it will be changed to the last valid day of the month.
      *
      * @param integer $months
      *
