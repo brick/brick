@@ -79,6 +79,70 @@ class MonthTest extends AbstractTestCase
         ];
     }
 
+    /**
+     * @dataProvider minLengthProvider
+     *
+     * @param integer $month     The month value.
+     * @param integer $minLength The expected min length.
+     */
+    public function testGetMinLength($month, $minLength)
+    {
+        $this->assertSame($minLength, Month::of($month)->getMinLength());
+    }
+
+    /**
+     * @return array
+     */
+    public function minLengthProvider()
+    {
+        return [
+            [1, 31],
+            [2, 28],
+            [3, 31],
+            [4, 30],
+            [5, 31],
+            [6, 30],
+            [7, 31],
+            [8, 31],
+            [9, 30],
+            [10, 31],
+            [11, 30],
+            [12, 31]
+        ];
+    }
+
+    /**
+     * @dataProvider maxLengthProvider
+     *
+     * @param integer $month     The month value.
+     * @param integer $minLength The expected min length.
+     */
+    public function testGetMaxLength($month, $minLength)
+    {
+        $this->assertSame($minLength, Month::of($month)->getMaxLength());
+    }
+
+    /**
+     * @return array
+     */
+    public function maxLengthProvider()
+    {
+        return [
+            [1, 31],
+            [2, 29],
+            [3, 31],
+            [4, 30],
+            [5, 31],
+            [6, 30],
+            [7, 31],
+            [8, 31],
+            [9, 30],
+            [10, 31],
+            [11, 30],
+            [12, 31]
+        ];
+    }
+
     public function testPlusMinusEntireYears()
     {
         foreach (Month::getAll() as $month) {

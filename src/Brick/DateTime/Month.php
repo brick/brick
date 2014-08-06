@@ -250,6 +250,46 @@ class Month
     }
 
     /**
+     * Returns the minimum length of this month in days.
+     *
+     * @return integer The minimum length of this month in days, from 28 to 31.
+     */
+    public function getMinLength()
+    {
+        switch ($this->value) {
+            case Month::FEBRUARY:
+                return 28;
+            case Month::APRIL:
+            case Month::JUNE:
+            case Month::SEPTEMBER:
+            case Month::NOVEMBER:
+                return 30;
+            default:
+                return 31;
+        }
+    }
+
+    /**
+     * Returns the maximum length of this month in days.
+     *
+     * @return integer The maximum length of this month in days, from 29 to 31.
+     */
+    public function getMaxLength()
+    {
+        switch ($this->value) {
+            case Month::FEBRUARY:
+                return 29;
+            case Month::APRIL:
+            case Month::JUNE:
+            case Month::SEPTEMBER:
+            case Month::NOVEMBER:
+                return 30;
+            default:
+                return 31;
+        }
+    }
+
+    /**
      * Returns the day-of-year for the first day of this month.
      *
      * This returns the day-of-year that this month begins on, using the leap
