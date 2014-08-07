@@ -3,6 +3,7 @@
 namespace Brick\Doctrine;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\CountWalker;
 
 /**
  * This helper collection wraps a non-executed Doctrine Query.
@@ -17,53 +18,39 @@ class QueryCollection implements \Countable, \IteratorAggregate
      *
      * @var \Doctrine\ORM\Query
      */
-    protected $query;
+    private $query;
 
     /**
      * The elements in this collection, if it has been entirely loaded.
      *
      * @var array
      */
-    protected $elements = [];
+    private $elements = [];
 
     /**
      * Whether this collection has been entirely loaded or not.
      *
      * @var boolean
      */
-    protected $isLoaded = false;
+    private $isLoaded = false;
 
     /**
      * Class constructor.
      *
      * @param \Doctrine\ORM\Query
+     *
      * @throws \RuntimeException
      */
     public function __construct(Query $query)
     {
         if ($query->getFirstResult() !== null || $query->getMaxResults() !== null) {
-            throw new \RuntimeException('Cannot build a QueryCollection from a Query with firstResult or maxResults set');
+            throw new \RuntimeException(
+                'Cannot build a QueryCollection from a Query ' .
+                'with firstResult or maxResults set.'
+            );
         }
 
         $this->query = $this->cloneQuery($query);
-    }
-
-    /**
-     * Clones a Query object.
-     *
-     * @param  \Doctrine\ORM\Query $query
-     * @return \Doctrine\ORM\Query
-     */
-    protected function cloneQuery(Query $query)
-    {
-        $queryClone = clone $query;
-        $queryClone->setParameters($query->getParameters());
-
-        foreach ($query->getHints() as $key => $value) {
-            $queryClone->setHint($key, $value);
-        }
-
-        return $queryClone;
     }
 
     /**
@@ -74,16 +61,12 @@ class QueryCollection implements \Countable, \IteratorAggregate
     public function count()
     {
         if ($this->isLoaded) {
-            // if the collection is entirely loaded, return the count of the internal array
             return count($this->elements);
         }
 
-        $query = $this->cloneQuery($this->query);
-
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['DoctrineExtensions\Paginate\CountWalker']);
-        $query->setFirstResult(null)->setMaxResults(null);
-
-        return $query->getSingleScalarResult();
+        return $this->cloneQuery($this->query)
+            ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class])
+            ->getSingleScalarResult();
     }
 
     /**
@@ -91,39 +74,39 @@ class QueryCollection implements \Countable, \IteratorAggregate
      */
     public function isEmpty()
     {
-        return $this->count() == 0;
+        return $this->count() === 0;
     }
 
     /**
      * Returns a subset of the collection as an array.
      *
-     * @param  integer      $offset
-     * @param  integer|null $length
-     * @return object[]
+     * @param integer      $offset The start offset, 0-based.
+     * @param integer|null $length The maximum number of results, or null for no maximum.
+     *
+     * @return array<object>
      */
     public function slice($offset, $length = null)
     {
         if ($this->isLoaded) {
-            // if the collection is entirely loaded, get the slice from the internal array
-            return array_slice($this->elements, $offset, $length, true);
+            return array_slice($this->elements, $offset, $length);
         }
 
-        $query = $this->cloneQuery($this->query);
-
-        $query->setFirstResult($offset);
-        $query->setMaxResults($length);
-
-        return $query->getResult();
+        return $this->cloneQuery($this->query)
+            ->setFirstResult($offset)
+            ->setMaxResults($length)
+            ->getResult();
     }
 
     /**
-     * @return object|null
+     * Returns the first entity in the collection, or null if the collection is empty.
+     *
+     * @return object|null The entity, or null if the collection is empty.
      */
     public function getFirstOrNull()
     {
         $objects = $this->slice(0, 1);
 
-        return count($objects) ? reset($objects) : null;
+        return $objects ? $objects[0] : null;
     }
 
     /**
@@ -133,10 +116,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
      */
     public function getIterator()
     {
-        if (! $this->isLoaded) {
-            $this->elements = $this->query->getResult();
-            $this->isLoaded = true;
-        }
+        $this->load();
 
         return new \ArrayIterator($this->elements);
     }
@@ -144,15 +124,44 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * Loads the whole collection and returns it as an array.
      *
-     * @return array An array of objects.
+     * @return array<object> The entities.
      */
     public function toArray()
+    {
+        $this->load();
+
+        return $this->elements;
+    }
+
+    /**
+     * Loads the collection into memory.
+     *
+     * @return void
+     */
+    private function load()
     {
         if (! $this->isLoaded) {
             $this->elements = $this->query->getResult();
             $this->isLoaded = true;
         }
+    }
 
-        return $this->elements;
+    /**
+     * Clones a Query object.
+     *
+     * @param \Doctrine\ORM\Query $query The query to clone.
+     *
+     * @return \Doctrine\ORM\Query The cloned query.
+     */
+    private function cloneQuery(Query $query)
+    {
+        $queryClone = clone $query;
+        $queryClone->setParameters($query->getParameters());
+
+        foreach ($query->getHints() as $key => $value) {
+            $queryClone->setHint($key, $value);
+        }
+
+        return $queryClone;
     }
 }
