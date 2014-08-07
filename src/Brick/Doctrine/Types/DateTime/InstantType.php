@@ -3,6 +3,7 @@
 namespace Brick\Doctrine\Types\DateTime;
 
 use Brick\DateTime\Instant;
+use Brick\DateTime\ReadableInstant;
 use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
@@ -11,8 +12,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 /**
  * Doctrine type for Instant.
  *
- * This type stores the epochSecond only in an integer column.
- * The nanoseconds are silently discarded.
+ * This type stores the epochSecond in an integer column, silently discarding the nanos.
+ * This type accepts any ReadableInstant, but always recreates an Instant from the database.
  */
 class InstantType extends Type
 {
@@ -41,11 +42,11 @@ class InstantType extends Type
             return null;
         }
 
-        if ($value instanceof Instant) {
+        if ($value instanceof ReadableInstant) {
             return $value->getEpochSecond();
         }
 
-        throw new UnexpectedValueException(Instant::class, $value);
+        throw new UnexpectedValueException(ReadableInstant::class, $value);
     }
 
     /**
