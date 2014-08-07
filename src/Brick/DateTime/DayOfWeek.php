@@ -43,7 +43,7 @@ class DayOfWeek
      *
      * @return DayOfWeek
      */
-    private function get($value)
+    private static function get($value)
     {
         static $values;
 
