@@ -186,39 +186,32 @@ class NativeCalculator extends Calculator
      *
      * @param string $a
      * @param string $b
-     * @param integer $aLen
-     * @param integer $bLen
+     * @param integer $x
+     * @param integer $y
      *
      * @return string
      */
-    private function doSub($a, $b, $aLen, $bLen)
+    private function doSub($a, $b, $x, $y)
     {
-        $cmp = $this->doCmp($a, $b, $aLen, $bLen);
+        $cmp = $this->doCmp($a, $b, $x, $y);
 
-        if ($cmp == 1) {
-            return $this->doDoSub($a, $b, $aLen, $bLen);
-        } elseif ($cmp == -1) {
-            return $this->invert($this->doDoSub($b, $a, $bLen, $aLen));
+        if ($cmp === 0) {
+            return '0';
         }
 
-        return '0';
-    }
+        $invert = ($cmp === -1);
 
-    /**
-     * Performs the subtraction of two non-signed large integers.
-     *
-     * *The second number must be lower than or equal to the first number.*
-     *
-     * @param string  $a
-     * @param string  $b
-     * @param integer $aLen
-     * @param integer $bLen
-     *
-     * @return string
-     */
-    private function doDoSub($a, $b, $aLen, $bLen)
-    {
-        $length = $this->pad($a, $b, $aLen, $bLen);
+        if ($invert) {
+            $c = $a;
+            $a = $b;
+            $b = $c;
+
+            $z = $x;
+            $x = $y;
+            $y = $z;
+        }
+
+        $length = $this->pad($a, $b, $x, $y);
 
         $carry = 0;
         $result = '';
@@ -241,6 +234,10 @@ class NativeCalculator extends Calculator
 
         if ($result === '') {
             return '0';
+        }
+
+        if ($invert) {
+            $result = $this->invert($result);
         }
 
         return $result;
