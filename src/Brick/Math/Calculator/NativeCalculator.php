@@ -10,16 +10,52 @@ use Brick\Math\Calculator;
 class NativeCalculator extends Calculator
 {
     /**
+     * The max number of digits the platform can natively add, subtract or divide without overflow.
+     *
+     * @var integer
+     */
+    private $maxDigitsAddDiv = 0;
+
+    /**
+     * The max number of digits the platform can natively multiply without overflow.
+     *
+     * @var integer
+     */
+    private $maxDigitsMul = 0;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+        switch (PHP_INT_SIZE) {
+            case 4:
+                $this->maxDigitsAddDiv = 9;
+                $this->maxDigitsMul = 4;
+                break;
+
+            case 8:
+                $this->maxDigitsAddDiv = 18;
+                $this->maxDigitsMul = 9;
+                break;
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function add($a, $b)
     {
-        $this->init($a, $b, $aNeg, $bNeg);
+        $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
+
+        if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
+            return (string) ($a + $b);
+        }
 
         if ($aNeg === $bNeg) {
-            $result = $this->doAdd($a, $b);
+            $result = $this->doAdd($aDig, $bDig);
         } else {
-            $result = $this->doSub($a, $b);
+            $result = $this->doSub($aDig, $bDig);
         }
 
         if ($aNeg) {
@@ -42,9 +78,13 @@ class NativeCalculator extends Calculator
      */
     public function mul($a, $b)
     {
-        $this->init($a, $b, $aNeg, $bNeg);
+        $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
-        $result = $this->doMul($a, $b);
+        if ($aLen <= $this->maxDigitsMul && $bLen <= $this->maxDigitsMul) {
+            return (string) ($a * $b);
+        }
+
+        $result = $this->doMul($aDig, $bDig);
 
         if ($aNeg !== $bNeg) {
             $result = $this->invert($result);
@@ -58,9 +98,15 @@ class NativeCalculator extends Calculator
      */
     public function div($a, $b, & $r)
     {
-        $this->init($a, $b, $aNeg, $bNeg);
+        $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
-        $result = $this->doDiv($a, $b, $r);
+        if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
+            $r = (string) ($a % $b);
+
+            return (string) (($a - $r) / $b);
+        }
+
+        $result = $this->doDiv($aDig, $bDig, $r);
 
         if ($aNeg !== $bNeg) {
             $result = $this->invert($result);
@@ -252,13 +298,6 @@ class NativeCalculator extends Calculator
         $x = strlen($a);
         $y = strlen($b);
 
-        // will not overflow an integer
-        if ($x <= 9 && $y <= 9) {
-            $r = (string) ($a % $b);
-
-            return (string) (($a - $r) / $b);
-        }
-
         $cmp = $this->doCmp($a, $b);
 
         if ($cmp === -1) {
@@ -345,24 +384,37 @@ class NativeCalculator extends Calculator
     /**
      * Initializes the variables needed by the public methods.
      *
-     * @param string  $a    The first operand; optional minus sign will be removed.
-     * @param string  $b    The second operand; optional minus sign will be removed.
-     * @param boolean $aNeg Whether the first operand is negative.
-     * @param boolean $bNeg Whether the second operand is negative.
+     * @param string  $a    The first operand.
+     * @param string  $b    The second operand.
+     * @param string  $aDig A variable to store the digits of the first operand.
+     * @param string  $bDig A variable to store the digits of the second operand.
+     * @param boolean $aNeg A variable to store whether the first operand is negative.
+     * @param boolean $bNeg A variable to store whether the second operand is negative.
+     * @param boolean $aLen A variable to store the number of digits in the first operand.
+     * @param boolean $bLen A variable to store the number of digits in the second operand.
      *
      * @return void
      */
-    private function init(& $a, & $b, & $aNeg, & $bNeg)
+    private function init($a, $b, & $aDig, & $bDig, & $aNeg, & $bNeg, & $aLen, & $bLen)
     {
         $aNeg = ($a[0] === '-');
         $bNeg = ($b[0] === '-');
 
+        $aLen = strlen($a);
+        $bLen = strlen($b);
+
         if ($aNeg) {
-            $a = substr($a, 1);
+            $aDig = substr($a, 1);
+            $aLen--;
+        } else {
+            $aDig = $a;
         }
 
         if ($bNeg) {
-            $b = substr($b, 1);
+            $bDig = substr($b, 1);
+            $bLen--;
+        } else {
+            $bDig = $b;
         }
     }
 
