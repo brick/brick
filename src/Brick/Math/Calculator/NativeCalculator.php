@@ -53,9 +53,9 @@ class NativeCalculator extends Calculator
         }
 
         if ($aNeg === $bNeg) {
-            $result = $this->doAdd($aDig, $bDig);
+            $result = $this->doAdd($aDig, $bDig, $aLen, $bLen);
         } else {
-            $result = $this->doSub($aDig, $bDig);
+            $result = $this->doSub($aDig, $bDig, $aLen, $bLen);
         }
 
         if ($aNeg) {
@@ -84,7 +84,7 @@ class NativeCalculator extends Calculator
             return (string) ($a * $b);
         }
 
-        $result = $this->doMul($aDig, $bDig);
+        $result = $this->doMul($aDig, $bDig, $aLen, $bLen);
 
         if ($aNeg !== $bNeg) {
             $result = $this->invert($result);
@@ -106,7 +106,7 @@ class NativeCalculator extends Calculator
             return (string) (($a - $r) / $b);
         }
 
-        $result = $this->doDiv($aDig, $bDig, $r);
+        $result = $this->doDiv($aDig, $bDig, $aLen, $bLen, $r);
 
         if ($aNeg !== $bNeg) {
             $result = $this->invert($result);
@@ -148,14 +148,16 @@ class NativeCalculator extends Calculator
     /**
      * Performs the addition of two non-signed large integers.
      *
-     * @param string $a
-     * @param string $b
+     * @param string  $a
+     * @param string  $b
+     * @param integer $aLen
+     * @param integer $bLen
      *
      * @return string
      */
-    private function doAdd($a, $b)
+    private function doAdd($a, $b, $aLen, $bLen)
     {
-        $length = $this->pad($a, $b);
+        $length = $this->pad($a, $b, $aLen, $bLen);
 
         $carry = 0;
         $result = '';
@@ -184,17 +186,19 @@ class NativeCalculator extends Calculator
      *
      * @param string $a
      * @param string $b
+     * @param integer $aLen
+     * @param integer $bLen
      *
      * @return string
      */
-    private function doSub($a, $b)
+    private function doSub($a, $b, $aLen, $bLen)
     {
-        $cmp = $this->doCmp($a, $b);
+        $cmp = $this->doCmp($a, $b, $aLen, $bLen);
 
         if ($cmp == 1) {
-            return $this->doDoSub($a, $b);
+            return $this->doDoSub($a, $b, $aLen, $bLen);
         } elseif ($cmp == -1) {
-            return $this->invert($this->doDoSub($b, $a));
+            return $this->invert($this->doDoSub($b, $a, $bLen, $aLen));
         }
 
         return '0';
@@ -205,14 +209,16 @@ class NativeCalculator extends Calculator
      *
      * *The second number must be lower than or equal to the first number.*
      *
-     * @param string $a
-     * @param string $b
+     * @param string  $a
+     * @param string  $b
+     * @param integer $aLen
+     * @param integer $bLen
      *
      * @return string
      */
-    private function doDoSub($a, $b)
+    private function doDoSub($a, $b, $aLen, $bLen)
     {
-        $length = $this->pad($a, $b);
+        $length = $this->pad($a, $b, $aLen, $bLen);
 
         $carry = 0;
         $result = '';
@@ -243,16 +249,15 @@ class NativeCalculator extends Calculator
     /**
      * Performs the multiplication of two non-signed large integers.
      *
-     * @param string $a
-     * @param string $b
+     * @param string  $a
+     * @param string  $b
+     * @param integer $x
+     * @param integer $y
      *
      * @return string
      */
-    private function doMul($a, $b)
+    private function doMul($a, $b, $x, $y)
     {
-        $x = strlen($a);
-        $y = strlen($b);
-
         $result = '0';
 
         for ($i = $x - 1; $i >= 0; $i--) {
@@ -281,13 +286,15 @@ class NativeCalculator extends Calculator
     /**
      * Performs the division of two non-signed large integers.
      *
-     * @param string $a
-     * @param string $b
-     * @param string $r
+     * @param string  $a
+     * @param string  $b
+     * @param integer $x
+     * @param integer $y
+     * @param string  $r
      *
      * @return string
      */
-    private function doDiv($a, $b, & $r)
+    private function doDiv($a, $b, $x, $y, & $r)
     {
         if ($b === '1') {
             $r = '0';
@@ -295,10 +302,7 @@ class NativeCalculator extends Calculator
             return $a;
         }
 
-        $x = strlen($a);
-        $y = strlen($b);
-
-        $cmp = $this->doCmp($a, $b);
+        $cmp = $this->doCmp($a, $b, $x, $y);
 
         if ($cmp === -1) {
             $r = $a;
@@ -316,9 +320,9 @@ class NativeCalculator extends Calculator
 
         $q = '0';
 
-        for ($g = 0; $g <= 1000; $g++) {
+        for (;;) {
             $focus = substr($a, 0, $y);
-            $cmp = $this->doCmp($focus, $b);
+            $cmp = $this->doCmp($focus, $b, strlen($focus), strlen($b));
 
             if ($cmp === -1) {
                 if ($y >= $x) {
@@ -354,22 +358,21 @@ class NativeCalculator extends Calculator
      *
      * @param string $a
      * @param string $b
+     * @param integer $aLen
+     * @param integer $bLen
      *
      * @return integer [-1, 0, 1]
      */
-    private function doCmp($a, $b)
+    private function doCmp($a, $b, $aLen, $bLen)
     {
-        $la = strlen($a);
-        $lb = strlen($b);
-
-        if ($la > $lb) {
+        if ($aLen > $bLen) {
             return 1;
         }
-        if ($la < $lb) {
+        if ($aLen < $bLen) {
             return -1;
         }
 
-        for ($i = 0; $i < $la; $i++) {
+        for ($i = 0; $i < $aLen; $i++) {
             if ($a[$i] > $b[$i]) {
                 return 1;
             }
@@ -455,22 +458,21 @@ class NativeCalculator extends Calculator
     /**
      * Pads `$a` or `$b` with zeros on the left to make them the same length.
      *
-     * @param string $a
-     * @param string $b
+     * @param string  $a
+     * @param string  $b
+     * @param integer $aLen
+     * @param integer $bLen
      *
      * @return integer The length of both strings.
      */
-    private function pad(& $a, & $b)
+    private function pad(& $a, & $b, $aLen, $bLen)
     {
-        $la = strlen($a);
-        $lb = strlen($b);
+        $length = $aLen > $bLen ? $aLen : $bLen;
 
-        $length = $la > $lb ? $la : $lb;
-
-        if ($la < $length) {
+        if ($aLen < $length) {
             $a = str_pad($a, $length, '0', STR_PAD_LEFT);
         }
-        if ($lb < $length) {
+        if ($bLen < $length) {
             $b = str_pad($b, $length, '0', STR_PAD_LEFT);
         }
 
