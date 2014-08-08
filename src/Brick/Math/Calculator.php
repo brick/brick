@@ -2,6 +2,8 @@
 
 namespace Brick\Math;
 
+use Brick\Math\Calculator\NativeCalculator;
+
 /**
  * Performs basic operations on arbitrary size integers.
  *
@@ -64,7 +66,7 @@ abstract class Calculator
             return new Calculator\BcMathCalculator();
         }
 
-        throw new \RuntimeException('No math library is available. A native implementation is not available yet.');
+        return new NativeCalculator();
     }
 
     /**

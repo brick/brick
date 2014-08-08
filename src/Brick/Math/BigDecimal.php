@@ -410,7 +410,7 @@ class BigDecimal
 
         if ($scale < 0) {
             $calculator = Calculator::get();
-            $power = $calculator->pow(10, -$scale);
+            $power = $calculator->pow('10', -$scale);
             $value = $calculator->mul($value, $power);
             $scale = 0;
         }

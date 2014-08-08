@@ -188,7 +188,7 @@ class BigInteger
                 $result = $calc->add($result, $add);
             }
 
-            $power = $calc->mul($power, $base);
+            $power = $calc->mul($power, (string) $base);
         }
 
         return new BigInteger($sign . $result);
