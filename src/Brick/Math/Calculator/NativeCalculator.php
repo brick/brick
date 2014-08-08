@@ -148,16 +148,16 @@ class NativeCalculator extends Calculator
     /**
      * Performs the addition of two non-signed large integers.
      *
-     * @param string  $a
-     * @param string  $b
-     * @param integer $aLen
-     * @param integer $bLen
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
      *
      * @return string
      */
-    private function doAdd($a, $b, $aLen, $bLen)
+    private function doAdd($a, $b, $x, $y)
     {
-        $length = $this->pad($a, $b, $aLen, $bLen);
+        $length = $this->pad($a, $b, $x, $y);
 
         $carry = 0;
         $result = '';
@@ -181,13 +181,14 @@ class NativeCalculator extends Calculator
 
         return strrev($result);
     }
+
     /**
      * Performs the subtraction of two non-signed large integers.
      *
-     * @param string $a
-     * @param string $b
-     * @param integer $x
-     * @param integer $y
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
      *
      * @return string
      */
@@ -246,10 +247,10 @@ class NativeCalculator extends Calculator
     /**
      * Performs the multiplication of two non-signed large integers.
      *
-     * @param string  $a
-     * @param string  $b
-     * @param integer $x
-     * @param integer $y
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
      *
      * @return string
      */
@@ -271,10 +272,11 @@ class NativeCalculator extends Calculator
                 $line .= $carry;
             }
 
-            $line = strrev($line);
-            $line = $this->trim($line);
+            $line = rtrim($line, '0');
 
-            $result = $this->add($result, $line);
+            if ($line !== '') {
+                $result = $this->add($result, strrev($line));
+            }
         }
 
         return $result;
@@ -283,11 +285,11 @@ class NativeCalculator extends Calculator
     /**
      * Performs the division of two non-signed large integers.
      *
-     * @param string  $a
-     * @param string  $b
-     * @param integer $x
-     * @param integer $y
-     * @param string  $r
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
+     * @param string  $r A variable to store the remainder of the division.
      *
      * @return string
      */
@@ -353,23 +355,23 @@ class NativeCalculator extends Calculator
     /**
      * Compares two non-signed large numbers.
      *
-     * @param string $a
-     * @param string $b
-     * @param integer $aLen
-     * @param integer $bLen
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
      *
      * @return integer [-1, 0, 1]
      */
-    private function doCmp($a, $b, $aLen, $bLen)
+    private function doCmp($a, $b, $x, $y)
     {
-        if ($aLen > $bLen) {
+        if ($x > $y) {
             return 1;
         }
-        if ($aLen < $bLen) {
+        if ($x < $y) {
             return -1;
         }
 
-        for ($i = 0; $i < $aLen; $i++) {
+        for ($i = 0; $i < $x; $i++) {
             if ($a[$i] > $b[$i]) {
                 return 1;
             }
@@ -421,9 +423,9 @@ class NativeCalculator extends Calculator
     /**
      * Returns the given number with the sign changed.
      *
-     * @param string $n
+     * @param string $n The number to invert.
      *
-     * @return string
+     * @return string The inverted number.
      */
     private function invert($n)
     {
@@ -439,38 +441,26 @@ class NativeCalculator extends Calculator
     }
 
     /**
-     * Trims leading zeros from a non-signed large number.
+     * Pads the left of one of the given numbers with zeros if necessary to make both numbers the same length.
      *
-     * @param string $number
+     * The numbers must only consist of digits, without leading minus sign.
      *
-     * @return string
-     */
-    private function trim($number)
-    {
-        $number = ltrim($number, '0');
-
-        return $number === '' ? '0' : $number;
-    }
-
-    /**
-     * Pads `$a` or `$b` with zeros on the left to make them the same length.
-     *
-     * @param string  $a
-     * @param string  $b
-     * @param integer $aLen
-     * @param integer $bLen
+     * @param string  $a The first operand.
+     * @param string  $b The second operand.
+     * @param integer $x The length of the first operand.
+     * @param integer $y The length of the second operand.
      *
      * @return integer The length of both strings.
      */
-    private function pad(& $a, & $b, $aLen, $bLen)
+    private function pad(& $a, & $b, $x, $y)
     {
-        $length = $aLen > $bLen ? $aLen : $bLen;
+        $length = $x > $y ? $x : $y;
 
-        if ($aLen < $length) {
-            $a = str_pad($a, $length, '0', STR_PAD_LEFT);
+        for (; $x < $length; $x++) {
+            $a = '0' . $a;
         }
-        if ($bLen < $length) {
-            $b = str_pad($b, $length, '0', STR_PAD_LEFT);
+        for (; $y < $length; $y++) {
+            $b = '0' . $b;
         }
 
         return $length;
