@@ -348,6 +348,24 @@ class BigDecimal
     }
 
     /**
+     * Returns this number exponentiated.
+     *
+     * @param integer $exponent The exponent, as a positive-or-zero integer.
+     *
+     * @return BigDecimal
+     */
+    public function power($exponent)
+    {
+        $exponent = (int) $exponent;
+
+        if ($exponent < 0) {
+            throw new \InvalidArgumentException('The exponent cannot be negative.');
+        }
+
+        return new BigDecimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
+    }
+
+    /**
      * Returns a Decimal with the current value and the specified scale.
      *
      * @param integer $scale
@@ -426,24 +444,6 @@ class BigDecimal
     public function abs()
     {
         return $this->isNegative() ? $this->negated() : $this;
-    }
-
-    /**
-     * Returns this number exponentiated.
-     *
-     * @param integer $exponent The exponent, as a positive-or-zero integer.
-     *
-     * @return BigDecimal
-     */
-    public function power($exponent)
-    {
-        $exponent = (int) $exponent;
-
-        if ($exponent < 0) {
-            throw new \InvalidArgumentException('The exponent cannot be negative.');
-        }
-
-        return new BigDecimal(Calculator::get()->pow($this->value, $exponent), $this->scale * $exponent);
     }
 
     /**
@@ -656,7 +656,7 @@ class BigDecimal
      *
      * @return string
      */
-    public function toString()
+    public function __toString()
     {
         if ($this->scale === 0) {
             return $this->value;
@@ -665,14 +665,6 @@ class BigDecimal
         $value = $this->getUnscaledValueWithLeadingZeros();
 
         return substr($value, 0, -$this->scale) . '.' . substr($value, -$this->scale);
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     /**
@@ -690,9 +682,9 @@ class BigDecimal
         $a = $x->value;
         $b = $y->value;
 
-        if ($x->scale > $y->scale) {
+        if ($b !== '0' && $x->scale > $y->scale) {
             $b .= str_repeat('0', $x->scale - $y->scale);
-        } elseif ($x->scale < $y->scale) {
+        } elseif ($a !== '0' && $x->scale < $y->scale) {
             $a .= str_repeat('0', $y->scale - $x->scale);
         }
     }
@@ -706,7 +698,7 @@ class BigDecimal
     {
         $value = $this->value;
 
-        if ($scale > $this->scale) {
+        if ($this->value !== '0' && $scale > $this->scale) {
             $value .= str_repeat('0', $scale - $this->scale);
         }
 
