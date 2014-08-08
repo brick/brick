@@ -6,33 +6,10 @@ use Brick\Math\Calculator;
 use Brick\Math\BigInteger;
 
 /**
- * Unit tests for class Decimal.
+ * Unit tests for class BigInteger.
  */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
 {
-    /**
-     * @return \Brick\Math\Calculator
-     */
-    abstract public function getCalculator();
-
-    /**
-     * @inheritdoc
-     */
-    public function setUp()
-    {
-        Calculator::set($this->getCalculator());
-    }
-
-    /**
-     * @param BigInteger|string $expected
-     * @param BigInteger|string $actual
-     */
-    private function assertBigIntegerEquals($expected, $actual)
-    {
-        $message = sprintf('Expected %s, got %s', $expected, $actual);
-        $this->assertTrue(BigInteger::of($actual)->isEqualTo($expected), $message);
-    }
-
     public function testOfBigInteger()
     {
         $zero = BigInteger::zero();
