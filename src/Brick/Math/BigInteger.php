@@ -90,9 +90,8 @@ class BigInteger
      * Returns a BigInteger of the given value.
      *
      * The value can be a BigInteger, a native integer,
-     * or a string representing an integer in any base.
-     *
-     * The value can optionally be prefixed with the `+` or `-` sign.
+     * or a string representing an integer in base 10,
+     * optionally prefixed with the `+` or `-` sign.
      *
      * @param BigInteger|integer|string $value The value.
      *
@@ -116,6 +115,8 @@ class BigInteger
     /**
      * Parses a string containing an integer in the given base.
      *
+     * The string can optionally be prefixed with the `+` or `-` sign.
+     *
      * @param string  $number The number to parse.
      * @param integer $base   The base of the number.
      *
@@ -135,7 +136,7 @@ class BigInteger
         }
 
         if ($base < 2 || $base > 36) {
-            throw new \InvalidArgumentException(sprintf('Base %d is out of range [2, 36]', $base));
+            throw new \InvalidArgumentException(sprintf('Base %d is not in range 2 to 36.', $base));
         }
 
         if ($number[0] === '-') {
@@ -264,6 +265,8 @@ class BigInteger
      * @param integer                   $roundingMode
      *
      * @return BigInteger
+     *
+     * @throws ArithmeticException If the dividend is zero.
      */
     public function dividedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -352,6 +355,8 @@ class BigInteger
      * @param BigInteger|integer|string $that The divisor.
      *
      * @return BigInteger[] An array containing the quotient and the remainder.
+     *
+     * @throws ArithmeticException If the divided is zero.
      */
     public function divideAndRemainder($that)
     {
@@ -361,11 +366,7 @@ class BigInteger
             throw ArithmeticException::divisionByZero();
         }
 
-        $p = $this->value;
-        $q = $that->value;
-
-        $calculator = Calculator::get();
-        $quotient = $calculator->div($p, $q, $remainder);
+        $quotient = Calculator::get()->div($this->value, $that->value, $remainder);
 
         $quotient = new BigInteger($quotient);
         $remainder = new BigInteger($remainder);
@@ -396,11 +397,9 @@ class BigInteger
     /**
      * Returns a BigInteger whose value is shifted left by the given number of bits (this << bits).
      *
-     * @param integer $bits
+     * @param integer $bits The shift distance, in bits.
      *
-     * @return \Brick\Math\BigInteger
-     *
-     * @throws \InvalidArgumentException If `$bits` is negative.
+     * @return \Brick\Math\BigInteger The shifted value.
      */
     public function shiftedLeft($bits)
     {
@@ -411,7 +410,7 @@ class BigInteger
         }
 
         if ($bits < 0) {
-            throw new \InvalidArgumentException('The number of bits to shift must not be negative.');
+            return $this->shiftedRight(-$bits);
         }
 
         return $this->multipliedBy(Calculator::get()->pow('2', $bits));
@@ -420,11 +419,9 @@ class BigInteger
     /**
      * Returns a BigInteger whose value is shifted right by the given number of bits (this >> bits).
      *
-     * @param integer $bits
+     * @param integer $bits The shift distance, in bits.
      *
-     * @return \Brick\Math\BigInteger
-     *
-     * @throws \InvalidArgumentException If `$bits` is negative.
+     * @return \Brick\Math\BigInteger The shifted value.
      */
     public function shiftedRight($bits)
     {
@@ -435,7 +432,7 @@ class BigInteger
         }
 
         if ($bits < 0) {
-            throw new \InvalidArgumentException('The number of bits to shift must not be negative.');
+            return $this->shiftedLeft(-$bits);
         }
 
         return $this->dividedBy(Calculator::get()->pow('2', $bits), RoundingMode::FLOOR);
@@ -574,10 +571,7 @@ class BigInteger
      */
     public function toInteger()
     {
-        $min = BigInteger::of(~PHP_INT_MAX);
-        $max = BigInteger::of(PHP_INT_MAX);
-
-        if ($this->isLessThan($min) || $this->isGreaterThan($max)) {
+        if ($this->isLessThan(~PHP_INT_MAX) || $this->isGreaterThan(PHP_INT_MAX)) {
             throw ArithmeticException::integerOverflow();
         }
 

@@ -3,7 +3,7 @@
 namespace Brick\Math;
 
 /**
- * Exception for arithmetic operations.
+ * Exception thrown when arithmetic operations fail.
  */
 class ArithmeticException extends \RuntimeException
 {

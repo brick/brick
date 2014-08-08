@@ -90,7 +90,15 @@ abstract class Calculator
      */
     public function neg($n)
     {
-        return ($n[0] === '-') ? substr($n, 1) : '-' . $n;
+        if ($n === '0') {
+            return '0';
+        }
+
+        if ($n[0] === '-') {
+            return substr($n, 1);
+        }
+
+        return '-' . $n;
     }
 
     /**
