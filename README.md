@@ -3,7 +3,18 @@ Brick
 
 PHP 5.5+ framework under development.
 
-You're free to use this framework for your own use/research, but please note that the API can, and will, change at any time. Following is a non-exhaustive component overview.
+This is the main incubator for components under development.
+Once a component reaches sufficient maturity, it will be moved to its own repository and composer package, and enter a beta phase.
+
+The incubator can be included in your project using [Composer](https://getcomposer.org/). Just define the following requirement in your `composer.json` file:
+
+    {
+        "require": {
+            "brick/brick": "dev-master"
+        }
+    }
+
+You're free to use the incubator for your own use/research, but please note that the API can, and will, change at any time.
 
 Brick\Application
 -----------------
@@ -18,9 +29,15 @@ Although a controller can be any class method or function, this component provid
 Brick\DateTime
 --------------
 
-A powerful set of immutable classes to handle dates and times. Although PHP has a native `DateTime` class, it misses several simple concepts like an isolated date or time, known as `LocalDate` and `LocalTime`, or a date/time without a time zone, known as `LocalDateTime`.
+A powerful set of immutable classes to work with dates and times.
+Although PHP has a native `DateTime` class, it lacks many simple concepts like `LocalDate`, `LocalTime`, etc.
 
-This component is heavily inspired by the JSR-310 API from Java.
+The classes offer up to a nanosecond precision, where the native API has a 1 second precision.
+
+The date-time API also offers a configurable `Clock` that you can set in your automated tests.
+
+This component follows an important part of the JSR 310 (Date and Time API) specification from Java.
+Don't expect an exact match of class and method names though, as many differences exist for technical or practical reasons.
 
 Brick\DependencyInjection
 -------------------------
@@ -61,7 +78,7 @@ A collection of classes to handle countries, languages and currencies.
 Brick\Math
 ----------
 
-Provides a `Decimal` class to work with arbitrary precision decimal numbers.
+Provides the `BigInteger` and `BigDecimal` classes to work with arbitrary precision numbers.
 
 Brick\Money
 -----------
