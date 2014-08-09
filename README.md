@@ -16,6 +16,8 @@ The incubator can be included in your project using [Composer](https://getcompos
 
 You're free to use the incubator for your own use/research, but please note that the API can, and will, change at any time.
 
+---
+
 Brick\Application
 -----------------
 
@@ -80,7 +82,7 @@ Brick\Math
 
 Provides the `BigInteger` and `BigDecimal` classes to work with arbitrary precision numbers.
 
-These classes use the [GMP](http://php.net/manual/en/book.gmp.php) and [BCMath](http://php.net/manual/en/book.bc.php)
+This component uses the [GMP](http://php.net/manual/en/book.gmp.php) and [BCMath](http://php.net/manual/en/book.bc.php)
 extensions for fast computation when they are available, but can also fall back to a native PHP implementation,
 guaranteeing that it will work on any PHP installation. All of this is totally transparent to the developer, as the
 component auto-detects the fastest implementation available at runtime.
@@ -89,6 +91,11 @@ Brick\Money
 -----------
 
 Handles exact monetary calculations.
+
+Working with financial data is a serious matter, and small rounding mistakes in an application may lead to disastrous
+consequences in real life. That's why floating-point arithmetic is not suited for monetary calculations.
+
+This component is based on the `Math` component and handles exact calculations on arbitrary-precision monies.
 
 Brick\PhoneNumber
 -----------------
