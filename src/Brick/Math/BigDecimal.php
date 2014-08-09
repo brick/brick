@@ -276,7 +276,7 @@ class BigDecimal
         $q = $that->valueWithMinScale($this->scale - $scale);
 
         $calculator = Calculator::get();
-        $result = $calculator->div($p, $q, $remainder);
+        list ($result, $remainder) = $calculator->div($p, $q);
 
         $hasDiscardedFraction = ($remainder !== '0');
         $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');

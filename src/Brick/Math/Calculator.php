@@ -173,11 +173,10 @@ abstract class Calculator
      *
      * @param string $a The dividend.
      * @param string $b The divisor, must not be zero.
-     * @param string $r A variable to store the remainder of the division.
      *
-     * @return string The quotient.
+     * @return string[] An array containing the quotient and remainder.
      */
-    abstract public function div($a, $b, & $r);
+    abstract public function div($a, $b);
 
     /**
      * Exponentiates a number.

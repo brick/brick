@@ -36,13 +36,14 @@ class GmpCalculator extends Calculator
     /**
      * {@inheritdoc}
      */
-    public function div($a, $b, & $r)
+    public function div($a, $b)
     {
         list ($q, $r) = gmp_div_qr($a, $b);
 
+        $q = gmp_strval($q);
         $r = gmp_strval($r);
 
-        return gmp_strval($q);
+        return [$q, $r];
     }
 
     /**

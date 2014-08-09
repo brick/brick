@@ -36,11 +36,12 @@ class BcMathCalculator extends Calculator
     /**
      * {@inheritdoc}
      */
-    public function div($a, $b, & $r)
+    public function div($a, $b)
     {
+        $q = bcdiv($a, $b, 0);
         $r = bcmod($a, $b);
 
-        return bcdiv($a, $b, 0);
+        return [$q, $r];
     }
 
     /**

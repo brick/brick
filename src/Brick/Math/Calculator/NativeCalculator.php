@@ -61,7 +61,7 @@ class NativeCalculator extends Calculator
         }
 
         if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
-            return (string) ($a + $b);
+            return (string) ((int) $a + (int) $b);
         }
 
         if ($aNeg === $bNeg) {
@@ -113,7 +113,7 @@ class NativeCalculator extends Calculator
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
         if ($aLen <= $this->maxDigitsMul && $bLen <= $this->maxDigitsMul) {
-            return (string) ($a * $b);
+            return (string) ((int) $a * (int) $b);
         }
 
         $result = $this->doMul($aDig, $bDig, $aLen, $bLen);
@@ -128,51 +128,50 @@ class NativeCalculator extends Calculator
     /**
      * {@inheritdoc}
      */
-    public function div($a, $b, & $r)
+    public function div($a, $b)
     {
         if ($a === '0') {
-            $r = '0';
-
-            return '0';
+            return ['0', '0'];
         }
 
         if ($a === $b) {
-            $r = '0';
-
-            return '1';
+            return ['1', '0'];
         }
 
         if ($b === '1') {
-            $r = '0';
-
-            return $a;
+            return [$a, '0'];
         }
 
         if ($b === '-1') {
-            $r = '0';
-
-            return $this->neg($a);
+            return [$this->neg($a), '0'];
         }
 
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
         if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
-            $r = (string) ($a % $b);
+            $a = (int) $a;
+            $b = (int) $b;
 
-            return (string) (($a - $r) / $b);
+            $r = $a % $b;
+            $q = ($a - $r) / $b;
+
+            $q = (string) $q;
+            $r = (string) $r;
+
+            return [$q, $r];
         }
 
-        $result = $this->doDiv($aDig, $bDig, $aLen, $bLen, $r);
+        list ($q, $r) = $this->doDiv($aDig, $bDig, $aLen, $bLen);
 
         if ($aNeg !== $bNeg) {
-            $result = $this->neg($result);
+            $q = $this->neg($q);
         }
 
         if ($aNeg) {
             $r = $this->neg($r);
         }
 
-        return $result;
+        return [$q, $r];
     }
 
     /**
@@ -341,18 +340,15 @@ class NativeCalculator extends Calculator
      * @param string  $b The second operand.
      * @param integer $x The length of the first operand.
      * @param integer $y The length of the second operand.
-     * @param string  $r A variable to store the remainder of the division.
      *
-     * @return string
+     * @return string[] The quotient and remainder.
      */
-    private function doDiv($a, $b, $x, $y, & $r)
+    private function doDiv($a, $b, $x, $y)
     {
         $cmp = $this->doCmp($a, $b, $x, $y);
 
         if ($cmp === -1) {
-            $r = $a;
-
-            return '0';
+            return ['0', $a];
         }
 
         // we now know that a > b && x >= y
@@ -394,7 +390,7 @@ class NativeCalculator extends Calculator
             $z = $y;
         }
 
-        return $q;
+        return [$q, $r];
     }
 
     /**

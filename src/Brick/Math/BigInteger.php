@@ -280,7 +280,7 @@ class BigInteger
         $q = $that->value;
 
         $calculator = Calculator::get();
-        $result = $calculator->div($p, $q, $remainder);
+        list ($result, $remainder) = $calculator->div($p, $q);
 
         $hasDiscardedFraction = ($remainder !== '0');
         $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');
@@ -366,7 +366,7 @@ class BigInteger
             throw ArithmeticException::divisionByZero();
         }
 
-        $quotient = Calculator::get()->div($this->value, $that->value, $remainder);
+        list ($quotient, $remainder) = Calculator::get()->div($this->value, $that->value);
 
         $quotient = new BigInteger($quotient);
         $remainder = new BigInteger($remainder);
@@ -610,7 +610,7 @@ class BigInteger
         $result = '';
 
         while ($value !== '0') {
-            $value = $calc->div($value, $base, $remainder);
+            list ($value, $remainder) = $calc->div($value, $base);
             $remainder = (int) $remainder;
 
             $result .= $dictionary[$remainder];
