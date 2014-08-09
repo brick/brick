@@ -46,7 +46,19 @@ class NativeCalculator extends Calculator
      */
     public function add($a, $b)
     {
+        if ($a === '0') {
+            return $b;
+        }
+
+        if ($b === '0') {
+            return $a;
+        }
+
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
+
+        if ($a === $b && $aNeg !== $bNeg) {
+            return '0';
+        }
 
         if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
             return (string) ($a + $b);
@@ -59,7 +71,7 @@ class NativeCalculator extends Calculator
         }
 
         if ($aNeg) {
-            $result = $this->invert($result);
+            $result = $this->neg($result);
         }
 
         return $result;
@@ -70,7 +82,7 @@ class NativeCalculator extends Calculator
      */
     public function sub($a, $b)
     {
-        return $this->add($a, $this->invert($b));
+        return $this->add($a, $this->neg($b));
     }
 
     /**
@@ -78,6 +90,26 @@ class NativeCalculator extends Calculator
      */
     public function mul($a, $b)
     {
+        if ($a === '0' || $b === '0') {
+            return '0';
+        }
+
+        if ($a === '1') {
+            return $b;
+        }
+
+        if ($b === '1') {
+            return $a;
+        }
+
+        if ($a === '-1') {
+            return $this->neg($b);
+        }
+
+        if ($b === '-1') {
+            return $this->neg($a);
+        }
+
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
         if ($aLen <= $this->maxDigitsMul && $bLen <= $this->maxDigitsMul) {
@@ -87,7 +119,7 @@ class NativeCalculator extends Calculator
         $result = $this->doMul($aDig, $bDig, $aLen, $bLen);
 
         if ($aNeg !== $bNeg) {
-            $result = $this->invert($result);
+            $result = $this->neg($result);
         }
 
         return $result;
@@ -98,6 +130,30 @@ class NativeCalculator extends Calculator
      */
     public function div($a, $b, & $r)
     {
+        if ($a === '0') {
+            $r = '0';
+
+            return '0';
+        }
+
+        if ($a === $b) {
+            $r = '0';
+
+            return '1';
+        }
+
+        if ($b === '1') {
+            $r = '0';
+
+            return $a;
+        }
+
+        if ($b === '-1') {
+            $r = '0';
+
+            return $this->neg($a);
+        }
+
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
 
         if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
@@ -109,11 +165,11 @@ class NativeCalculator extends Calculator
         $result = $this->doDiv($aDig, $bDig, $aLen, $bLen, $r);
 
         if ($aNeg !== $bNeg) {
-            $result = $this->invert($result);
+            $result = $this->neg($result);
         }
 
         if ($aNeg) {
-            $r = $this->invert($r);
+            $r = $this->neg($r);
         }
 
         return $result;
@@ -196,10 +252,6 @@ class NativeCalculator extends Calculator
     {
         $cmp = $this->doCmp($a, $b, $x, $y);
 
-        if ($cmp === 0) {
-            return '0';
-        }
-
         $invert = ($cmp === -1);
 
         if ($invert) {
@@ -238,7 +290,7 @@ class NativeCalculator extends Calculator
         }
 
         if ($invert) {
-            $result = $this->invert($result);
+            $result = $this->neg($result);
         }
 
         return $result;
@@ -295,12 +347,6 @@ class NativeCalculator extends Calculator
      */
     private function doDiv($a, $b, $x, $y, & $r)
     {
-        if ($b === '1') {
-            $r = '0';
-
-            return $a;
-        }
-
         $cmp = $this->doCmp($a, $b, $x, $y);
 
         if ($cmp === -1) {
@@ -309,47 +355,46 @@ class NativeCalculator extends Calculator
             return '0';
         }
 
-        if ($cmp === 0) {
-            $r = '0';
-
-            return '1';
-        }
-
         // we now know that a > b && x >= y
 
-        $q = '0';
+        $q = '0'; // quotient
+        $r = $a; // remainder
+        $z = $y; // focus length, always $y or $y+1
 
         for (;;) {
-            $focus = substr($a, 0, $y);
-            $cmp = $this->doCmp($focus, $b, strlen($focus), strlen($b));
+            $focus = substr($a, 0, $z);
+
+            $cmp = $this->doCmp($focus, $b, $z, $y);
 
             if ($cmp === -1) {
-                if ($y >= $x) {
-                    $r = $a;
-
-                    return $q;
+                if ($z === $x) { // remainder < dividend
+                    break;
                 }
 
-                $y++;
-                continue;
+                $z++;
             }
 
-            $zeros = str_repeat('0', $x - $y);
-
-            $diff = $this->sub($a, $b . $zeros);
+            $zeros = str_repeat('0', $x - $z);
 
             $q = $this->add($q, '1' . $zeros);
-            $a = $diff;
+            $a = $this->sub($a, $b . $zeros);
 
-            if ($a === '0') {
-                $r = '0';
+            $r = $a;
 
-                return $q;
+            if ($r === '0') { // remainder == 0
+                break;
             }
 
             $x = strlen($a);
-            $y = strlen($b);
+
+            if ($x < $y) { // remainder < dividend
+                break;
+            }
+
+            $z = $y;
         }
+
+        return $q;
     }
 
     /**
@@ -372,10 +417,13 @@ class NativeCalculator extends Calculator
         }
 
         for ($i = 0; $i < $x; $i++) {
-            if ($a[$i] > $b[$i]) {
+            $ai = (int) $a[$i];
+            $bi = (int) $b[$i];
+
+            if ($ai > $bi) {
                 return 1;
             }
-            if ($a[$i] < $b[$i]) {
+            if ($ai < $bi) {
                 return -1;
             }
         }
@@ -421,26 +469,6 @@ class NativeCalculator extends Calculator
     }
 
     /**
-     * Returns the given number with the sign changed.
-     *
-     * @param string $n The number to invert.
-     *
-     * @return string The inverted number.
-     */
-    private function invert($n)
-    {
-        if ($n === '0') {
-            return '0';
-        }
-
-        if ($n[0] !== '-') {
-            return '-' . $n;
-        }
-
-        return substr($n, 1);
-    }
-
-    /**
      * Pads the left of one of the given numbers with zeros if necessary to make both numbers the same length.
      *
      * The numbers must only consist of digits, without leading minus sign.
@@ -456,11 +484,11 @@ class NativeCalculator extends Calculator
     {
         $length = $x > $y ? $x : $y;
 
-        for (; $x < $length; $x++) {
-            $a = '0' . $a;
+        if ($x < $length) {
+            $a = str_repeat('0', $length - $x) . $a;
         }
-        for (; $y < $length; $y++) {
-            $b = '0' . $b;
+        if ($y < $length) {
+            $b = str_repeat('0', $length - $y) . $b;
         }
 
         return $length;
