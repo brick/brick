@@ -2,6 +2,8 @@
 
 namespace Brick\Math;
 
+use Brick\Math\Internal\Calculator;
+
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */

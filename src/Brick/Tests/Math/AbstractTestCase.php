@@ -4,7 +4,7 @@ namespace Brick\Tests\Math;
 
 use Brick\Math\BigDecimal;
 use Brick\Math\BigInteger;
-use Brick\Math\Calculator;
+use Brick\Math\Internal\Calculator;
 
 /**
  * Base class for Math test cases.
@@ -12,7 +12,7 @@ use Brick\Math\Calculator;
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @return \Brick\Math\Calculator
+     * @return \Brick\Math\Internal\Calculator
      */
     abstract public function getCalculator();
 

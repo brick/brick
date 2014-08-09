@@ -2,7 +2,7 @@
 
 namespace Brick\Tests\Math\BigDecimal;
 
-use Brick\Math\Calculator\NativeCalculator;
+use Brick\Math\Internal\Calculator\NativeCalculator;
 
 /**
  * Runs the BigDecimal tests using the native calculator.

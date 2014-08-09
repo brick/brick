@@ -2,7 +2,7 @@
 
 namespace Brick\Math;
 
-use Brick\Math\Calculator;
+use Brick\Math\Internal\Calculator;
 
 /**
  * An arbitrary-size integer.
@@ -170,7 +170,7 @@ class BigInteger
             return new BigInteger($sign . $number);
         }
 
-        $calc = Calculator::get();
+        $calc = Internal\Calculator::get();
         $number = strtolower($number);
 
         $result = '0';
@@ -253,7 +253,7 @@ class BigInteger
     public function multipliedBy($that)
     {
         $that = BigInteger::of($that);
-        $value = Calculator::get()->mul($this->value, $that->value);
+        $value = Internal\Calculator::get()->mul($this->value, $that->value);
 
         return new BigInteger($value);
     }
@@ -366,7 +366,7 @@ class BigInteger
             throw ArithmeticException::divisionByZero();
         }
 
-        list ($quotient, $remainder) = Calculator::get()->div($this->value, $that->value);
+        list ($quotient, $remainder) = Internal\Calculator::get()->div($this->value, $that->value);
 
         $quotient = new BigInteger($quotient);
         $remainder = new BigInteger($remainder);
@@ -603,7 +603,7 @@ class BigInteger
 
         $dictionary = '0123456789abcdefghijklmnopqrstuvwxyz';
 
-        $calc = Calculator::get();
+        $calc = Internal\Calculator::get();
 
         $value = $this->value;
         $base = (string) $base;

@@ -1,11 +1,13 @@
 <?php
 
-namespace Brick\Math\Calculator;
+namespace Brick\Math\Internal\Calculator;
 
-use Brick\Math\Calculator;
+use Brick\Math\Internal\Calculator;
 
 /**
  * Calculator implementation built around the bcmath library.
+ *
+ * @internal
  */
 class BcMathCalculator extends Calculator
 {

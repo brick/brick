@@ -1,8 +1,6 @@
 <?php
 
-namespace Brick\Math;
-
-use Brick\Math\Calculator\NativeCalculator;
+namespace Brick\Math\Internal;
 
 /**
  * Performs basic operations on arbitrary size integers.
@@ -11,13 +9,15 @@ use Brick\Math\Calculator\NativeCalculator;
  * without leading zero, and with an optional leading minus sign.
  * Any other parameter format will lead to undefined behaviour.
  * All methods return a string respecting this format.
+ *
+ * @internal
  */
 abstract class Calculator
 {
     /**
-     * The Calculator instance to use for all calculations.
+     * The Calculator instance in use.
      *
-     * @var \Brick\Math\Calculator|null
+     * @var Calculator|null
      */
     private static $instance = null;
 
@@ -26,7 +26,7 @@ abstract class Calculator
      *
      * An instance is typically set only in unit tests: the autodetect is usually the best option.
      *
-     * @param \Brick\Math\Calculator|null $calculator The calculator instance, or NULL to revert to autodetect.
+     * @param Calculator|null $calculator The calculator instance, or NULL to revert to autodetect.
      *
      * @return void
      */
@@ -40,7 +40,7 @@ abstract class Calculator
      *
      * If none has been explicitly set, the fastest available implementation will be returned.
      *
-     * @return \Brick\Math\Calculator
+     * @return Calculator
      */
     public static function get()
     {
@@ -54,7 +54,7 @@ abstract class Calculator
     /**
      * Returns the fastest available Calculator implementation.
      *
-     * @return \Brick\Math\Calculator
+     * @return Calculator
      */
     private static function detect()
     {
@@ -66,7 +66,7 @@ abstract class Calculator
             return new Calculator\BcMathCalculator();
         }
 
-        return new NativeCalculator();
+        return new Calculator\NativeCalculator();
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class Calculator
      *
      * @param string $n The number.
      *
-     * @return string The inverse value.
+     * @return string The negated value.
      */
     public function neg($n)
     {
@@ -104,13 +104,9 @@ abstract class Calculator
     /**
      * Returns an integer representing the sign of the given number.
      *
-     * * -1 if the number is negative
-     * *  0 if the number is zero
-     * *  1 if the number is positive
-     *
      * @param string $n
      *
-     * @return integer [-1, 0, 1]
+     * @return integer [-1, 0, 1] If the number is negative, zero, or positive.
      */
     public function sign($n)
     {
@@ -131,7 +127,7 @@ abstract class Calculator
      * @param string $a The first number.
      * @param string $b The second number.
      *
-     * @return integer [-1, 0, 1]
+     * @return integer [-1, 0, 1] If the first number is less than, equal to, or greater than the second number.
      */
     public function cmp($a, $b)
     {

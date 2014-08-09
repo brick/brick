@@ -2,7 +2,7 @@
 
 namespace Brick\Tests\Math\BigInteger;
 
-use Brick\Math\Calculator\BcMathCalculator;
+use Brick\Math\Internal\Calculator\BcMathCalculator;
 
 /**
  * @requires extension bcmath

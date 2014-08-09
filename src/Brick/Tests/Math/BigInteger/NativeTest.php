@@ -2,7 +2,7 @@
 
 namespace Brick\Tests\Math\BigInteger;
 
-use Brick\Math\Calculator\NativeCalculator;
+use Brick\Math\Internal\Calculator\NativeCalculator;
 
 /**
  * Runs the BigInteger tests using the native calculator.
