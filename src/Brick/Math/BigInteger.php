@@ -33,60 +33,6 @@ class BigInteger
     }
 
     /**
-     * Returns the minimum of the given values.
-     *
-     * @param array<BigInteger|integer|string> An array of integers to return the minimum value of.
-     *
-     * @return \Brick\Math\BigInteger The minimum value.
-     *
-     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
-     */
-    public static function min(array $values)
-    {
-        $min = null;
-
-        foreach ($values as $value) {
-            $value = BigInteger::of($value);
-            if ($min === null || $value->isLessThan($min)) {
-                $min = $value;
-            }
-        }
-
-        if ($min === null) {
-            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
-        }
-
-        return $min;
-    }
-
-    /**
-     * Returns the maximum of the given values.
-     *
-     * @param array<BigInteger|integer|string> An array of integers to return the maximum value of.
-     *
-     * @return \Brick\Math\BigInteger The maximum value.
-     *
-     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
-     */
-    public static function max(array $values)
-    {
-        $max = null;
-
-        foreach ($values as $value) {
-            $value = BigInteger::of($value);
-            if ($max === null || $value->isGreaterThan($max)) {
-                $max = $value;
-            }
-        }
-
-        if ($max === null) {
-            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
-        }
-
-        return $max;
-    }
-
-    /**
      * Returns a BigInteger of the given value.
      *
      * The value can be a BigInteger, a native integer,
@@ -170,7 +116,7 @@ class BigInteger
             return new BigInteger($sign . $number);
         }
 
-        $calc = Internal\Calculator::get();
+        $calc = Calculator::get();
         $number = strtolower($number);
 
         $result = '0';
@@ -214,6 +160,60 @@ class BigInteger
     }
 
     /**
+     * Returns the minimum of the given values.
+     *
+     * @param array<BigInteger|integer|string> An array of integers to return the minimum value of.
+     *
+     * @return \Brick\Math\BigInteger The minimum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
+     */
+    public static function min(array $values)
+    {
+        $min = null;
+
+        foreach ($values as $value) {
+            $value = BigInteger::of($value);
+            if ($min === null || $value->isLessThan($min)) {
+                $min = $value;
+            }
+        }
+
+        if ($min === null) {
+            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
+        }
+
+        return $min;
+    }
+
+    /**
+     * Returns the maximum of the given values.
+     *
+     * @param array<BigInteger|integer|string> An array of integers to return the maximum value of.
+     *
+     * @return \Brick\Math\BigInteger The maximum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
+     */
+    public static function max(array $values)
+    {
+        $max = null;
+
+        foreach ($values as $value) {
+            $value = BigInteger::of($value);
+            if ($max === null || $value->isGreaterThan($max)) {
+                $max = $value;
+            }
+        }
+
+        if ($max === null) {
+            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
+        }
+
+        return $max;
+    }
+
+    /**
      * Returns the sum of this number and the given one.
      *
      * @param BigInteger|integer|string $that
@@ -253,7 +253,7 @@ class BigInteger
     public function multipliedBy($that)
     {
         $that = BigInteger::of($that);
-        $value = Internal\Calculator::get()->mul($this->value, $that->value);
+        $value = Calculator::get()->mul($this->value, $that->value);
 
         return new BigInteger($value);
     }
@@ -366,7 +366,7 @@ class BigInteger
             throw ArithmeticException::divisionByZero();
         }
 
-        list ($quotient, $remainder) = Internal\Calculator::get()->div($this->value, $that->value);
+        list ($quotient, $remainder) = Calculator::get()->div($this->value, $that->value);
 
         $quotient = new BigInteger($quotient);
         $remainder = new BigInteger($remainder);
@@ -559,7 +559,7 @@ class BigInteger
 
         $dictionary = '0123456789abcdefghijklmnopqrstuvwxyz';
 
-        $calc = Internal\Calculator::get();
+        $calc = Calculator::get();
 
         $value = $this->value;
         $base = (string) $base;

@@ -289,6 +289,77 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     }
 
     /**
+     * @dataProvider providerMin
+     *
+     * @param array  $values The values to test.
+     * @param integer $index The index of the minimum value in the test array.
+     */
+    public function testMin(array $values, $index)
+    {
+        $this->assertTrue(BigInteger::min($values)->isEqualTo($values[$index]));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMin()
+    {
+        return [
+            [[0, 1, -1], 2],
+            [[0, '10', '5989'], 0],
+            [[0, '10', '5989', '-1'], 3],
+            [['-1', '1'], 0],
+            [['-1', '1', '2', '3', '-100'], 4],
+            [['999999999999999999999999999', '1000000000000000000000000000'], 0],
+            [['-999999999999999999999999999', '-1000000000000000000000000000'], 1]
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMinOfZeroValuesThrowsException()
+    {
+        BigInteger::min([]);
+    }
+
+    /**
+     * @dataProvider providerMax
+     *
+     * @param array  $values The values to test.
+     * @param integer $index The index of the maximum value in the test array.
+     */
+    public function testMax(array $values, $index)
+    {
+        $this->assertTrue(BigInteger::max($values)->isEqualTo($values[$index]));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMax()
+    {
+        return [
+            [[0, 1, -1], 1],
+            [[0, '10', '5989'], 2],
+            [[0, '10', '5989', '-1'], 2],
+            [[0, '10', '5989', '-1', '6000'], 4],
+            [['-1', '0'], 1],
+            [['-1', '1', '2', '3', '-100'], 3],
+            [['999999999999999999999999999', '1000000000000000000000000000'], 1],
+            [['-999999999999999999999999999', '-1000000000000000000000000000'], 0]
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMaxOfZeroValuesThrowsException()
+    {
+        BigInteger::max([]);
+    }
+
+    /**
      * @dataProvider providerPlus
      *
      * @param string $a The base number.
