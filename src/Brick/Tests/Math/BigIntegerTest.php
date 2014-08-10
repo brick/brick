@@ -1482,4 +1482,13 @@ abstract class BigIntegerTest extends AbstractTestCase
             [37]
         ];
     }
+
+    public function testSerialize()
+    {
+        $value = '-1234567890987654321012345678909876543210123456789';
+
+        $number = BigInteger::of($value);
+
+        $this->assertBigIntegerEquals($value, unserialize(serialize($number)));
+    }
 }

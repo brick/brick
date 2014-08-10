@@ -10,7 +10,7 @@ use Brick\Math\Internal\Calculator;
  * All methods accepting a number as a parameter accept either a BigInteger instance,
  * an integer, or a string representing an arbitrary size integer.
  */
-class BigInteger
+class BigInteger implements \Serializable
 {
     /**
      * The value, as a string of digits with optional leading minus sign.
@@ -581,5 +581,33 @@ class BigInteger
     public function __toString()
     {
         return $this->value;
+    }
+
+    /**
+     * This method is required by interface Serializable and SHOULD NOT be accessed directly.
+     *
+     * @internal
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return $this->value;
+    }
+
+    /**
+     * This method is required by interface Serializable and MUST NOT be accessed directly.
+     *
+     * Accessing this method directly would bypass consistency checks and break immutability.
+     *
+     * @internal
+     *
+     * @param string $value
+     *
+     * @return void
+     */
+    public function unserialize($value)
+    {
+        $this->value = $value;
     }
 }

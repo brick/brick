@@ -1845,4 +1845,14 @@ abstract class BigDecimalTest extends AbstractTestCase
             ['-123', 4, '-0.0123'],
         ];
     }
+
+    public function testSerialize()
+    {
+        $value = '-1234567890987654321012345678909876543210123456789';
+        $scale = 37;
+
+        $number = BigDecimal::ofUnscaledValue($value, $scale);
+
+        $this->assertBigDecimalEquals($value, $scale, unserialize(serialize($number)));
+    }
 }

@@ -7,7 +7,7 @@ use Brick\Math\Internal\Calculator;
 /**
  * Immutable, arbitrary-precision signed decimal numbers.
  */
-class BigDecimal
+class BigDecimal implements \Serializable
 {
     /**
      * The unscaled value of this decimal number.
@@ -670,12 +670,43 @@ class BigDecimal
     }
 
     /**
+     * This method is required by interface Serializable and SHOULD NOT be accessed directly.
+     *
+     * @internal
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return $this->value . ':' . $this->scale;
+    }
+
+    /**
+     * This method is required by interface Serializable and MUST NOT be accessed directly.
+     *
+     * Accessing this method directly would bypass consistency checks and break immutability.
+     *
+     * @internal
+     *
+     * @param string $value
+     *
+     * @return void
+     */
+    public function unserialize($value)
+    {
+        list ($value, $scale) = explode(':', $value);
+
+        $this->value = $value;
+        $this->scale = (int) $scale;
+    }
+
+    /**
      * Puts the internal values of the given decimal numbers on the same scale.
      *
      * @param BigDecimal $x The first decimal number.
      * @param BigDecimal $y The second decimal number.
-     * @param string  $a A variable to store the scaled integer value of $x.
-     * @param string  $b A variable to store the scaled integer value of $y.
+     * @param string     $a A variable to store the scaled integer value of $x.
+     * @param string     $b A variable to store the scaled integer value of $y.
      *
      * @return void
      */
