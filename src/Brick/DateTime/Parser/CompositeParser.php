@@ -5,12 +5,12 @@ namespace Brick\DateTime\Parser;
 /**
  * Aggregates a collection of parsers that together match a string.
  */
-class CompositeParser extends DateTimeParser
+class CompositeParser extends ContextParser
 {
     /**
      * The list of parsers to use.
      *
-     * @var DateTimeParser[]
+     * @var ContextParser[]
      */
     private $parsers;
 
@@ -24,7 +24,7 @@ class CompositeParser extends DateTimeParser
     /**
      * Class constructor.
      *
-     * @param DateTimeParser[] $parsers
+     * @param ContextParser[] $parsers
      * @param boolean          $optional
      */
     public function __construct(array $parsers, $optional)

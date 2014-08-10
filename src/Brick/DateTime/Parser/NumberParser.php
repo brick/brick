@@ -5,7 +5,7 @@ namespace Brick\DateTime\Parser;
 /**
  * Parses a numeric string.
  */
-class NumberParser extends DateTimeParser
+class NumberParser extends ContextParser
 {
     /**
      * The name of the date-time field being parsed.

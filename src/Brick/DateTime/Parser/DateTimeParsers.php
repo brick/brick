@@ -29,7 +29,7 @@ final class DateTimeParsers
     /**
      * @param string $field
      *
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoYear($field)
     {
@@ -39,7 +39,7 @@ final class DateTimeParsers
     /**
      * @param string $field
      *
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoMonthOfYear($field)
     {
@@ -49,7 +49,7 @@ final class DateTimeParsers
     /**
      * @param string $field
      *
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoDayOfMonth($field)
     {
@@ -57,7 +57,7 @@ final class DateTimeParsers
     }
 
     /**
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoHourOfDay()
     {
@@ -65,7 +65,7 @@ final class DateTimeParsers
     }
 
     /**
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoMinuteOfHour()
     {
@@ -73,7 +73,7 @@ final class DateTimeParsers
     }
 
     /**
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoSecondOfMinute()
     {
@@ -81,7 +81,7 @@ final class DateTimeParsers
     }
 
     /**
-     * @return DateTimeParser
+     * @return NumberParser
      */
     public static function isoNanoOfSecond()
     {
@@ -91,7 +91,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO year-month such as `2011-12`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoYearMonth()
     {
@@ -105,7 +105,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO month-day such as `--12-31`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoMonthDay()
     {
@@ -122,7 +122,7 @@ final class DateTimeParsers
      *
      * @param boolean $intervalEnd
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoLocalDate($intervalEnd = false)
     {
@@ -142,7 +142,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO local time such as `10:15`, `10:15:30` or `10:15:30.123456`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoLocalTime()
     {
@@ -162,7 +162,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO local date-time such as `2011-12-03T10:15:30`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoLocalDateTime()
     {
@@ -176,7 +176,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO local date range, such as `2011-12-03/2011-12-04`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoLocalDateRange()
     {
@@ -190,7 +190,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO date-time with an offset, such as `2011-12-03T10:15:30+01:00`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoOffsetDateTime()
     {
@@ -203,7 +203,7 @@ final class DateTimeParsers
     /**
      * Returns a parser for an ISO date-time with offset & region, such as `2011-12-03T10:15:30+01:00[Europe/Paris]`.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public static function isoZonedDateTime()
     {

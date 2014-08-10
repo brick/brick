@@ -5,7 +5,7 @@ namespace Brick\DateTime\Parser;
 /**
  * Matches an exact string.
  */
-class StringLiteralParser extends DateTimeParser
+class StringLiteralParser extends ContextParser
 {
     /**
      * @var string

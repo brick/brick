@@ -7,7 +7,7 @@ use Brick\DateTime\Field\DateTimeField;
 /**
  * Parses a time-zone region, such as 'Europe/London'.
  */
-class TimeZoneRegionParser extends DateTimeParser
+class TimeZoneRegionParser extends ContextParser
 {
     /**
      * {@inheritdoc}

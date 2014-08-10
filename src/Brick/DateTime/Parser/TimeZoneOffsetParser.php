@@ -7,7 +7,7 @@ use Brick\DateTime\Field\DateTimeField;
 /**
  * Parses a time-zone offset, such as 'Z' or '+01:00'.
  */
-class TimeZoneOffsetParser extends DateTimeParser
+class TimeZoneOffsetParser extends ContextParser
 {
     /**
      * {@inheritdoc}

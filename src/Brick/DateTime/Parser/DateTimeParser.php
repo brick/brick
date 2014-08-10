@@ -3,32 +3,16 @@
 namespace Brick\DateTime\Parser;
 
 /**
- * Base class that date-time parsers must extend.
+ * Interface that all date-time parsers must implement.
  */
-abstract class DateTimeParser
+interface DateTimeParser
 {
     /**
-     * @param DateTimeParseContext $context The parsing context.
+     * @param string $text The text to parse.
      *
-     * @return boolean Whether the parsing was successful.
+     * @return DateTimeParseResult The parse result, containing the parsed fields.
+     *
+     * @throws DateTimeParseException If the given text could not be parsed.
      */
-    abstract public function parseInto(DateTimeParseContext $context);
-
-    /**
-     * @param string $text
-     *
-     * @return DateTimeParseResult
-     *
-     * @throws DateTimeParseException
-     */
-    public function parse($text)
-    {
-        $context = DateTimeParseContext::create($text);
-
-        if (! $this->parseInto($context)) {
-            throw DateTimeParseException::parseError($context);
-        }
-
-        return $context->toParseResult();
-    }
+    public function parse($text);
 }

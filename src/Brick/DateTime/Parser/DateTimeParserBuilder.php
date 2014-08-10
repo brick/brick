@@ -10,7 +10,7 @@ class DateTimeParserBuilder
     /**
      * The list of parsers that will be used.
      *
-     * @var DateTimeParser[]
+     * @var ContextParser[]
      */
     private $parsers = [];
 
@@ -40,7 +40,7 @@ class DateTimeParserBuilder
     }
 
     /**
-     * Creates an instance of `DateTimeParserBuilder`.
+     * Creates an instance of `AbstractParserBuilder`.
      *
      * @return DateTimeParserBuilder
      */
@@ -52,11 +52,11 @@ class DateTimeParserBuilder
     /**
      * Appends a date-time parser.
      *
-     * @param DateTimeParser $parser
+     * @param ContextParser $parser
      *
      * @return DateTimeParserBuilder
      */
-    public function append(DateTimeParser $parser)
+    public function append(ContextParser $parser)
     {
         $this->active->parsers[] = $parser;
 
@@ -102,9 +102,9 @@ class DateTimeParserBuilder
     }
 
     /**
-     * Completes this builder by creating the DateTimeParser.
+     * Completes this builder by creating the parser.
      *
-     * @return DateTimeParser
+     * @return CompositeParser
      */
     public function toParser()
     {
