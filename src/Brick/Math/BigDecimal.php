@@ -42,60 +42,6 @@ class BigDecimal
     }
 
     /**
-     * Returns the minimum of the given values.
-     *
-     * @param array<Decimal|number|string> An array of decimals to return the minimum value of.
-     *
-     * @return \Brick\Math\BigDecimal The minimum value.
-     *
-     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
-     */
-    public static function min(array $values)
-    {
-        $min = null;
-
-        foreach ($values as $value) {
-            $value = BigDecimal::of($value);
-            if ($min === null || $value->isLessThan($min)) {
-                $min = $value;
-            }
-        }
-
-        if ($min === null) {
-            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
-        }
-
-        return $min;
-    }
-
-    /**
-     * Returns the maximum of the given values.
-     *
-     * @param array<Decimal|number|string> An array of decimals to return the maximum value of.
-     *
-     * @return \Brick\Math\BigDecimal The maximum value.
-     *
-     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
-     */
-    public static function max(array $values)
-    {
-        $max = null;
-
-        foreach ($values as $value) {
-            $value = BigDecimal::of($value);
-            if ($max === null || $value->isGreaterThan($max)) {
-                $max = $value;
-            }
-        }
-
-        if ($max === null) {
-            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
-        }
-
-        return $max;
-    }
-
-    /**
      * Returns a decimal of the given value.
      *
      * Note: you should avoid passing floating point numbers to this method.
@@ -187,6 +133,60 @@ class BigDecimal
         }
 
         return $zero;
+    }
+
+    /**
+     * Returns the minimum of the given values.
+     *
+     * @param array<Decimal|number|string> An array of decimals to return the minimum value of.
+     *
+     * @return \Brick\Math\BigDecimal The minimum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
+     */
+    public static function min(array $values)
+    {
+        $min = null;
+
+        foreach ($values as $value) {
+            $value = BigDecimal::of($value);
+            if ($min === null || $value->isLessThan($min)) {
+                $min = $value;
+            }
+        }
+
+        if ($min === null) {
+            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
+        }
+
+        return $min;
+    }
+
+    /**
+     * Returns the maximum of the given values.
+     *
+     * @param array<Decimal|number|string> An array of decimals to return the maximum value of.
+     *
+     * @return \Brick\Math\BigDecimal The maximum value.
+     *
+     * @throws \InvalidArgumentException If no values are given, or an invalid value is given.
+     */
+    public static function max(array $values)
+    {
+        $max = null;
+
+        foreach ($values as $value) {
+            $value = BigDecimal::of($value);
+            if ($max === null || $value->isGreaterThan($max)) {
+                $max = $value;
+            }
+        }
+
+        if ($max === null) {
+            throw new \InvalidArgumentException(__METHOD__ . '() expects at least one value.');
+        }
+
+        return $max;
     }
 
     /**

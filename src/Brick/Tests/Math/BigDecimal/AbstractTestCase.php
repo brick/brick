@@ -208,6 +208,90 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     }
 
     /**
+     * @dataProvider providerMin
+     *
+     * @param array  $values The values to test.
+     * @param integer $index The index of the minimum value in the test array.
+     */
+    public function testMin(array $values, $index)
+    {
+        $this->assertTrue(BigDecimal::min($values)->isEqualTo($values[$index]));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMin()
+    {
+        return [
+            [[0, 1, -1], 2],
+            [[0, 1, -1, -1.2], 3],
+            [['1e30', '123456789123456789123456789', 2e25], 2],
+            [['1e30', '123456789123456789123456789', 2e26], 1],
+            [[0, '10', '5989', '-1'], 3],
+            [['-0.0000000000000000000000000000001', '0'], 0],
+            [['0.00000000000000000000000000000001', '0'], 1],
+            [['-1', '1', '2', '3', '-99.1'], 4],
+            [['999999999999999999999999999.99999999999', '1000000000000000000000000000'], 0],
+            [['-999999999999999999999999999.99999999999', '-1000000000000000000000000000'], 1],
+            [['9.9e50', '1e50'], 1],
+            [['9.9e50', '1e51'], 0],
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMinOfZeroValuesThrowsException()
+    {
+        BigDecimal::min([]);
+    }
+
+    /**
+     * @dataProvider providerMax
+     *
+     * @param array  $values The values to test.
+     * @param integer $index The index of the maximum value in the test array.
+     */
+    public function testMax(array $values, $index)
+    {
+        $this->assertTrue(BigDecimal::max($values)->isEqualTo($values[$index]));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerMax()
+    {
+        return [
+            [[0, 0.9, -1.00], 1],
+            [[0, 0.01, -1, -1.2], 1],
+            [[0, 0.01, -1, -1.2, '2e-1'], 4],
+            [['1e-30', '123456789123456789123456789', 2e25], 1],
+            [['1e-30', '123456789123456789123456789', 2e26], 2],
+            [[0, '10', '5989', '-1'], 2],
+            [[0, '10', '5989', '5989.000000000000000000000000000000001', '-1'], 3],
+            [[0, '10', '5989', '5989.000000000000000000000000000000001', '-1', '5990'], 5],
+            [['-0.0000000000000000000000000000001', '0'], 1],
+            [['0.00000000000000000000000000000001', '0'], 0],
+            [['-1', '1', '2', '3', '-99.1'], 3],
+            [['-1', '1', '2', '3', '-99.1', '3.1'], 5],
+            [['999999999999999999999999999.99999999999', '1000000000000000000000000000'], 1],
+            [['-999999999999999999999999999.99999999999', '-1000000000000000000000000000'], 0],
+            [['9.9e50', '1e50'], 0],
+            [['9.9e50', '1e51'], 1],
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMaxOfZeroValuesThrowsException()
+    {
+        BigDecimal::max([]);
+    }
+
+    /**
      * @dataProvider providerPlus
      *
      * @param string  $a             The base number.
