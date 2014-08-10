@@ -43,7 +43,7 @@ class BigInteger implements \Serializable
      *
      * @return BigInteger
      *
-     * @throws \InvalidArgumentException If the number is malformed.
+     * @throws \InvalidArgumentException If the argument is not a valid number.
      */
     public static function of($value)
     {
@@ -266,7 +266,8 @@ class BigInteger implements \Serializable
      *
      * @return BigInteger
      *
-     * @throws ArithmeticException If the dividend is zero.
+     * @throws ArithmeticException       If the divisor is zero or rounding is necessary.
+     * @throws \InvalidArgumentException If the divisor or the rounding mode is invalid.
      */
     public function dividedBy($that, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -276,76 +277,11 @@ class BigInteger implements \Serializable
             throw ArithmeticException::divisionByZero();
         }
 
-        $p = $this->value;
-        $q = $that->value;
-
         $calculator = Calculator::get();
-        list ($result, $remainder) = $calculator->div($p, $q);
+        $result = $calculator->divRounded($this->value, $that->value, $roundingMode);
 
-        $hasDiscardedFraction = ($remainder !== '0');
-        $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');
-
-        $discardedFractionSign = function() use ($calculator, $remainder, $q) {
-            $r = $calculator->abs($calculator->mul($remainder, '2'));
-            $q = $calculator->abs($q);
-
-            return $calculator->cmp($r, $q);
-        };
-
-        $increment = false;
-
-        switch ($roundingMode) {
-            case RoundingMode::UNNECESSARY:
-                if ($hasDiscardedFraction) {
-                    throw ArithmeticException::roundingNecessary();
-                }
-                break;
-
-            case RoundingMode::UP:
-                $increment = $hasDiscardedFraction;
-                break;
-
-            case RoundingMode::DOWN:
-                break;
-
-            case RoundingMode::CEILING:
-                $increment = $hasDiscardedFraction && $isPositiveOrZero;
-                break;
-
-            case RoundingMode::FLOOR:
-                $increment = $hasDiscardedFraction && ! $isPositiveOrZero;
-                break;
-
-            case RoundingMode::HALF_UP:
-                $increment = $discardedFractionSign() >= 0;
-                break;
-
-            case RoundingMode::HALF_DOWN:
-                $increment = $discardedFractionSign() > 0;
-                break;
-
-            case RoundingMode::HALF_CEILING:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() >= 0 : $discardedFractionSign() > 0;
-                break;
-
-            case RoundingMode::HALF_FLOOR:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
-                break;
-
-            case RoundingMode::HALF_EVEN:
-                $lastDigit = (int) substr($result, -1);
-                $lastDigitIsEven = ($lastDigit % 2 === 0);
-                $increment = $lastDigitIsEven ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Invalid rounding mode.');
-        }
-
-        if ($increment) {
-            $result = $isPositiveOrZero
-                ? $calculator->add($result, '1')
-                : $calculator->sub($result, '1');
+        if ($result === null) {
+            throw ArithmeticException::roundingNecessary();
         }
 
         return new BigInteger($result);
@@ -356,7 +292,7 @@ class BigInteger implements \Serializable
      *
      * @return BigInteger[] An array containing the quotient and the remainder.
      *
-     * @throws ArithmeticException If the divided is zero.
+     * @throws ArithmeticException If the divisor is zero.
      */
     public function divideAndRemainder($that)
     {

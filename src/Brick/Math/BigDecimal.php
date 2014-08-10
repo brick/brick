@@ -243,18 +243,16 @@ class BigDecimal implements \Serializable
     }
 
     /**
-     * @todo inverse $scale and $roundingMode parameters order
-     *
      * Returns the result of the division of this number and the given one.
      *
      * @param BigDecimal|number|string $that         The number to divide.
-     * @param integer|null          $scale        The scale, or null to use the scale of this number.
-     * @param integer               $roundingMode The rounding mode.
+     * @param integer|null             $scale        The scale, or null to use the scale of this number.
+     * @param integer                  $roundingMode The rounding mode.
      *
      * @return \Brick\Math\BigDecimal
      *
      * @throws \Brick\Math\ArithmeticException If the divisor is zero or rounding is necessary.
-     * @throws \InvalidArgumentException       If the scale is invalid.
+     * @throws \InvalidArgumentException       If the divisor, the scale or the rounding mode is invalid.
      */
     public function dividedBy($that, $scale = null, $roundingMode = RoundingMode::UNNECESSARY)
     {
@@ -278,72 +276,10 @@ class BigDecimal implements \Serializable
         $q = $that->valueWithMinScale($this->scale - $scale);
 
         $calculator = Calculator::get();
-        list ($result, $remainder) = $calculator->div($p, $q);
+        $result = $calculator->divRounded($p, $q, $roundingMode);
 
-        $hasDiscardedFraction = ($remainder !== '0');
-        $isPositiveOrZero = ($p[0] === '-') === ($q[0] === '-');
-
-        $discardedFractionSign = function() use ($calculator, $remainder, $q) {
-            $r = $calculator->abs($calculator->mul($remainder, '2'));
-            $q = $calculator->abs($q);
-
-            return $calculator->cmp($r, $q);
-        };
-
-        $increment = false;
-
-        switch ($roundingMode) {
-            case RoundingMode::UNNECESSARY:
-                if ($hasDiscardedFraction) {
-                    throw ArithmeticException::roundingNecessary();
-                }
-                break;
-
-            case RoundingMode::UP:
-                $increment = $hasDiscardedFraction;
-                break;
-
-            case RoundingMode::DOWN:
-                break;
-
-            case RoundingMode::CEILING:
-                $increment = $hasDiscardedFraction && $isPositiveOrZero;
-                break;
-
-            case RoundingMode::FLOOR:
-                $increment = $hasDiscardedFraction && ! $isPositiveOrZero;
-                break;
-
-            case RoundingMode::HALF_UP:
-                $increment = $discardedFractionSign() >= 0;
-                break;
-
-            case RoundingMode::HALF_DOWN:
-                $increment = $discardedFractionSign() > 0;
-                break;
-
-            case RoundingMode::HALF_CEILING:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() >= 0 : $discardedFractionSign() > 0;
-                break;
-
-            case RoundingMode::HALF_FLOOR:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
-                break;
-
-            case RoundingMode::HALF_EVEN:
-                $lastDigit = (int) substr($result, -1);
-                $lastDigitIsEven = ($lastDigit % 2 === 0);
-                $increment = $lastDigitIsEven ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Invalid rounding mode.');
-        }
-
-        if ($increment) {
-            $result = $isPositiveOrZero
-                ? $calculator->add($result, '1')
-                : $calculator->sub($result, '1');
+        if ($result === null) {
+            throw ArithmeticException::roundingNecessary();
         }
 
         return new BigDecimal($result, $scale);
