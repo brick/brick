@@ -2,12 +2,13 @@
 
 namespace Brick\Tests\Math\BigDecimal;
 
+use Brick\Tests\Math\BigDecimalTest;
 use Brick\Math\Internal\Calculator\GmpCalculator;
 
 /**
  * @requires extension gmp
  */
-class GmpTest extends AbstractTestCase
+class GmpTest extends BigDecimalTest
 {
     /**
      * @inheritdoc

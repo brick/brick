@@ -2,12 +2,13 @@
 
 namespace Brick\Tests\Math\BigDecimal;
 
+use Brick\Tests\Math\BigDecimalTest;
 use Brick\Math\Internal\Calculator\NativeCalculator;
 
 /**
  * Runs the BigDecimal tests using the native calculator.
  */
-class NativeTest extends AbstractTestCase
+class NativeTest extends BigDecimalTest
 {
     /**
      * @inheritdoc

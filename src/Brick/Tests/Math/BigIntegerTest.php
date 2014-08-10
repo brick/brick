@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Tests\Math\BigInteger;
+namespace Brick\Tests\Math;
 
 use Brick\Math\ArithmeticException;
 use Brick\Math\Internal\Calculator;
@@ -10,7 +10,7 @@ use Brick\Math\RoundingMode;
 /**
  * Unit tests for class BigInteger.
  */
-abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
+abstract class BigIntegerTest extends AbstractTestCase
 {
     /**
      * @dataProvider providerOf

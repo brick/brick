@@ -7,7 +7,7 @@ use Brick\Math\BigInteger;
 use Brick\Math\Internal\Calculator;
 
 /**
- * Base class for Math test cases.
+ * Base class for BigInteger and BigDecimal test cases.
  */
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
