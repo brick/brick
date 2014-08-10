@@ -395,50 +395,6 @@ class BigInteger
     }
 
     /**
-     * Returns a BigInteger whose value is shifted left by the given number of bits (this << bits).
-     *
-     * @param integer $bits The shift distance, in bits.
-     *
-     * @return \Brick\Math\BigInteger The shifted value.
-     */
-    public function shiftedLeft($bits)
-    {
-        $bits = (int) $bits;
-
-        if ($bits === 0) {
-            return $this;
-        }
-
-        if ($bits < 0) {
-            return $this->shiftedRight(-$bits);
-        }
-
-        return $this->multipliedBy(Calculator::get()->pow('2', $bits));
-    }
-
-    /**
-     * Returns a BigInteger whose value is shifted right by the given number of bits (this >> bits).
-     *
-     * @param integer $bits The shift distance, in bits.
-     *
-     * @return \Brick\Math\BigInteger The shifted value.
-     */
-    public function shiftedRight($bits)
-    {
-        $bits = (int) $bits;
-
-        if ($bits === 0) {
-            return $this;
-        }
-
-        if ($bits < 0) {
-            return $this->shiftedLeft(-$bits);
-        }
-
-        return $this->dividedBy(Calculator::get()->pow('2', $bits), RoundingMode::FLOOR);
-    }
-
-    /**
      * Compares this number to the given one.
      *
      * @param BigInteger|integer|string $that
