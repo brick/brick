@@ -528,7 +528,7 @@ class BigInteger
     public function toInteger()
     {
         if ($this->isLessThan(~PHP_INT_MAX) || $this->isGreaterThan(PHP_INT_MAX)) {
-            throw ArithmeticException::integerOverflow();
+            throw ArithmeticException::integerOverflow($this);
         }
 
         return (int) $this->value;
