@@ -160,6 +160,36 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
         ];
     }
 
+    /**
+     * @dataProvider providerOfInvalidValueThrowsException
+     * @expectedException \InvalidArgumentException
+     *
+     * @param string $value
+     */
+    public function testOfInvalidValueThrowsException($value)
+    {
+        BigDecimal::of($value);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerOfInvalidValueThrowsException()
+    {
+        return [
+            [''],
+            ['a'],
+            [' 1'],
+            ['1 '],
+            ['1.'],
+            ['.1'],
+            ['+'],
+            ['-'],
+            ['+a'],
+            ['-a']
+        ];
+    }
+
     public function testOfBigDecimalReturnsThis()
     {
         $decimal = BigDecimal::of(123);
@@ -170,7 +200,7 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     /**
      * @dataProvider providerOfUnscaledValue
      *
-     * @param string  $unscaledValue         The unscaled value of the BigDecimal to create.
+     * @param string|integer $unscaledValue  The unscaled value of the BigDecimal to create.
      * @param integer $scale                 The scale of the BigDecimal to create.
      * @param string  $expectedUnscaledValue The expected result unscaled value.
      */
@@ -186,6 +216,11 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     public function providerOfUnscaledValue()
     {
         return [
+            [123456789, 0, '123456789'],
+            [123456789, 1, '123456789'],
+            [-123456789, 0, '-123456789'],
+            [-123456789, 1, '-123456789'],
+
             ['123456789012345678901234567890', 0, '123456789012345678901234567890'],
             ['123456789012345678901234567890', 1, '123456789012345678901234567890'],
             ['+123456789012345678901234567890', 0, '123456789012345678901234567890'],
@@ -200,6 +235,14 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['-0123456789012345678901234567890', 0, '-123456789012345678901234567890'],
             ['-0123456789012345678901234567890', 1, '-123456789012345678901234567890'],
         ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testOfUnscaledValueWithNegativeScaleThrowsException()
+    {
+        BigDecimal::ofUnscaledValue('0', -1);
     }
 
     public function testZero()
@@ -571,6 +614,22 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['7', '2', null],
             ['7', '3', 100]
         ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDividedByWithNegativeScaleThrowsException()
+    {
+        BigDecimal::of(1)->dividedBy(2, -1);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDividedByWithInvalidRoundingModeThrowsException()
+    {
+        BigDecimal::of(1)->dividedBy(2, 1, -1);
     }
 
     /**

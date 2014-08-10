@@ -283,6 +283,31 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
         ];
     }
 
+    /**
+     * @dataProvider providerParseWithInvalidBaseThrowsException
+     * @expectedException \InvalidArgumentException
+     *
+     * @param integer $base
+     */
+    public function testParseWithInvalidBaseThrowsException($base)
+    {
+        BigInteger::parse('0', $base);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseWithInvalidBaseThrowsException()
+    {
+        return [
+            [-2],
+            [-1],
+            [0],
+            [1],
+            [37]
+        ];
+    }
+
     public function testZero()
     {
         $this->assertBigIntegerEquals('0', BigInteger::zero());
@@ -377,6 +402,8 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     public function providerPlus()
     {
         return [
+            ['123456', '-123456', '0'],
+            ['-123456789', '123456789', '0'],
             ['3493049309220392055810', '9918493493849898938928310121', '9918496986899208159320365931'],
             ['546254089287665464650654', '-4654654565726542654005465', '-4108400476438877189354811'],
             ['-54654654625426504062224', '406546504670332465465435004', '406491850015707038961372780'],
@@ -427,6 +454,8 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
     public function providerMultipliedBy()
     {
         return [
+            ['123456789', '1', '123456789'],
+            ['123456789', '-1', '-123456789'],
             ['15892588375910581333', '2485910409339228962451', '39507550875019745254366764864945838527183'],
             ['341581435989834012309', '-91050393818389238433', '-31101124267925302088072082300643257871797'],
             ['-1204902920503999920003', '1984389583950290232332', '-2390996805119422027350037939263960284136996'],
@@ -459,6 +488,22 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['-8378278174814983902084304176539029302438924', '384758527893793829309012129991', '-21775419041855'],
             ['-444444444444444444444444444444444444411111', '-33333333333333', '13333333333333466666666666667']
         ];
+    }
+
+    /**
+     * @expectedException \Brick\Math\ArithmeticException
+     */
+    public function testDividedByZeroThrowsException()
+    {
+        BigInteger::of(1)->dividedBy(0);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDividedByWithInvalidRoundingModeThrowsException()
+    {
+        BigInteger::of(1)->dividedBy(2, -1);
     }
 
     /**
@@ -998,6 +1043,11 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['-1', '123', '0', '-1'],
             ['-1', '-123', '0', '-1'],
 
+            ['1999999999999999999999999', '2000000000000000000000000', '0', '1999999999999999999999999'],
+            ['1999999999999999999999999', '-2000000000000000000000000', '0', '1999999999999999999999999'],
+            ['-1999999999999999999999999', '2000000000000000000000000', '0', '-1999999999999999999999999'],
+            ['-1999999999999999999999999', '-2000000000000000000000000', '0', '-1999999999999999999999999'],
+
             ['123', '1', '123', '0'],
             ['123', '-1', '-123', '0'],
             ['-123', '1', '-123', '0'],
@@ -1034,6 +1084,14 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['-123456789123456789123456789', '7654321987654321', '-16129030020', '-1834176331740369'],
             ['-123456789123456789123456789', '-654321987654321', '188678955396', '-205094497790673'],
         ];
+    }
+
+    /**
+     * @expectedException \Brick\Math\ArithmeticException
+     */
+    public function testDivideAndRemainderByZeroThrowsException()
+    {
+        BigInteger::of(1)->divideAndRemainder(0);
     }
 
     /**
@@ -1397,6 +1455,31 @@ abstract class AbstractTestCase extends \Brick\Tests\Math\AbstractTestCase
             ['228',                                                        4,                                 '3210'],
             ['21',                                                         3,                                  '210'],
             ['2',                                                          2,                                   '10'],
+        ];
+    }
+
+    /**
+     * @dataProvider providerToStringWithInvalidBaseThrowsException
+     * @expectedException \InvalidArgumentException
+     *
+     * @param integer $base
+     */
+    public function testToStringWithInvalidBaseThrowsException($base)
+    {
+        BigInteger::of(0)->toString($base);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToStringWithInvalidBaseThrowsException()
+    {
+        return [
+            [-2],
+            [-1],
+            [0],
+            [1],
+            [37]
         ];
     }
 }

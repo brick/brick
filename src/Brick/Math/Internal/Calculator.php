@@ -7,8 +7,9 @@ namespace Brick\Math\Internal;
  *
  * All parameters must be validated as non-empty strings of digits,
  * without leading zero, and with an optional leading minus sign.
+ *
  * Any other parameter format will lead to undefined behaviour.
- * All methods return a string respecting this format.
+ * All methods must return strings respecting this format.
  *
  * @internal
  */
@@ -53,6 +54,8 @@ abstract class Calculator
 
     /**
      * Returns the fastest available Calculator implementation.
+     *
+     * @codeCoverageIgnore
      *
      * @return Calculator
      */

@@ -27,6 +27,8 @@ class NativeCalculator extends Calculator
 
     /**
      * Class constructor.
+     *
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -57,10 +59,6 @@ class NativeCalculator extends Calculator
         }
 
         $this->init($a, $b, $aDig, $bDig, $aNeg, $bNeg, $aLen, $bLen);
-
-        if ($a === $b && $aNeg !== $bNeg) {
-            return '0';
-        }
 
         if ($aLen <= $this->maxDigitsAddDiv && $bLen <= $this->maxDigitsAddDiv) {
             return (string) ((int) $a + (int) $b);
@@ -220,7 +218,7 @@ class NativeCalculator extends Calculator
         $result = '';
 
         for ($i = $length - 1; $i >= 0; $i--) {
-            $sum = $a[$i] + $b[$i] + $carry;
+            $sum = (int) $a[$i] + (int) $b[$i] + $carry;
 
             if ($sum >= 10) {
                 $carry = 1;
@@ -251,6 +249,10 @@ class NativeCalculator extends Calculator
      */
     private function doSub($a, $b, $x, $y)
     {
+        if ($a === $b) {
+            return '0';
+        }
+
         $cmp = $this->doCmp($a, $b, $x, $y);
 
         $invert = ($cmp === -1);
@@ -271,7 +273,7 @@ class NativeCalculator extends Calculator
         $result = '';
 
         for ($i = $length - 1; $i >= 0; $i--) {
-            $sum = $a[$i] - $b[$i] - $carry;
+            $sum = (int) $a[$i] - (int) $b[$i] - $carry;
 
             if ($sum < 0) {
                 $carry = 1;
@@ -285,10 +287,6 @@ class NativeCalculator extends Calculator
 
         $result = strrev($result);
         $result = ltrim($result, '0');
-
-        if ($result === '') {
-            return '0';
-        }
 
         if ($invert) {
             $result = $this->neg($result);
@@ -315,7 +313,7 @@ class NativeCalculator extends Calculator
             $line = str_repeat('0', $x - 1 - $i);
             $carry = 0;
             for ($j = $y - 1; $j >= 0; $j--) {
-                $mul = $b[$j] * $a[$i] + $carry;
+                $mul = (int) $a[$i] * (int) $b[$j] + $carry;
                 $digit = $mul % 10;
                 $carry = ($mul - $digit) / 10;
                 $line .= $digit;
