@@ -69,9 +69,50 @@ class ZonedDateTimeTest extends AbstractTestCase
             ['2001-02-03T01:02-03:00', '2001-02-03', '01:02', '-03:00', '-03:00'],
             ['2001-02-03T01:02:03+04:00', '2001-02-03', '01:02:03', '+04:00', '+04:00'],
             ['2001-02-03T01:02:03.456+12:34:56', '2001-02-03', '01:02:03.456', '+12:34:56', '+12:34:56'],
+            ['2001-02-03T01:02Z[Europe/London]', '2001-02-03', '01:02', 'Z', 'Europe/London'],
             ['2001-02-03T01:02+00:00[Europe/London]', '2001-02-03', '01:02', 'Z', 'Europe/London'],
-            ['2001-02-03T01:02:03+00:00[Europe/London]', '2001-02-03', '01:02:03', 'Z', 'Europe/London'],
+            ['2001-02-03T01:02:03-00:00[Europe/London]', '2001-02-03', '01:02:03', 'Z', 'Europe/London'],
             ['2001-02-03T01:02:03.456+00:00[Europe/London]', '2001-02-03', '01:02:03.456', 'Z', 'Europe/London']
+        ];
+    }
+
+    /**
+     * @dataProvider providerParseInvalidStringThrowsException
+     * @expectedException \Brick\DateTime\Parser\DateTimeParseException
+     *
+     * @param string $text
+     */
+    public function testParseInvalidStringThrowsException($text)
+    {
+        ZonedDateTime::parse($text);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidStringThrowsException()
+    {
+        return [
+            [''],
+            ['2001'],
+            ['2001-'],
+            ['2001-02'],
+            ['2001-02-'],
+            ['2001-02-03'],
+            ['2001-02-03T'],
+            ['2001-02-03T04'],
+            ['2001-02-03T04:'],
+            ['2001-02-03T04:05'],
+            ['2001-02-03T04:05:06'],
+            ['2001-02-03T04:05:06.789'],
+            ['2001-02-03T04:05Z[]'],
+            ['2001-02-03T04:05[Europe/London]'],
+            ['2001-02-03T04:05:06[Europe/London]'],
+            ['2001-02-03T04:05.789Z[Europe/London]'],
+            ['2001-02-03T04:05:06Z[Europe/London'],
+
+            [' 2001-02-03T01:02:03Z'],
+            ['2001-02-03T01:02:03Z ']
         ];
     }
 

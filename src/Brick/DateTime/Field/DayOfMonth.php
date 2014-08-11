@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The day-of-month field.
- *
- * @internal
  */
 final class DayOfMonth
 {

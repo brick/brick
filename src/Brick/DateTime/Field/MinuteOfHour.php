@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The minute-of-hour field.
- *
- * @internal
  */
 class MinuteOfHour
 {

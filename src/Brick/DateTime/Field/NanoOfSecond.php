@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The nano-of-second field.
- *
- * @internal
  */
 class NanoOfSecond
 {

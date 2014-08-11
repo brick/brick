@@ -2,13 +2,17 @@
 
 namespace Brick\DateTime\Parser;
 
-use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Field\DayOfMonth;
 use Brick\DateTime\Field\FractionOfSecond;
 use Brick\DateTime\Field\HourOfDay;
 use Brick\DateTime\Field\MinuteOfHour;
 use Brick\DateTime\Field\MonthOfYear;
 use Brick\DateTime\Field\SecondOfMinute;
+use Brick\DateTime\Field\TimeZoneOffsetHour;
+use Brick\DateTime\Field\TimeZoneOffsetMinute;
+use Brick\DateTime\Field\TimeZoneOffsetSecond;
+use Brick\DateTime\Field\TimeZoneOffsetSign;
+use Brick\DateTime\Field\TimeZoneRegion;
 use Brick\DateTime\Field\Year;
 
 /**
@@ -167,16 +171,16 @@ final class IsoParsers
 
         return $parser = (new PatternParser())
             ->startGroup()
-            ->appendCapturePattern('[Zz]', DateTimeField::TIME_ZONE_OFFSET_SIGN)
+            ->appendCapturePattern('[Zz]', TimeZoneOffsetSign::NAME)
             ->appendOr()
             ->startGroup()
-            ->appendCapturePattern('[\-\+]', DateTimeField::TIME_ZONE_OFFSET_SIGN)
-            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_HOUR)
+            ->appendCapturePattern('[\-\+]', TimeZoneOffsetSign::NAME)
+            ->appendCapturePattern(TimeZoneOffsetHour::PATTERN, TimeZoneOffsetHour::NAME)
             ->appendLiteral(':')
-            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_MINUTE)
+            ->appendCapturePattern(TimeZoneOffsetMinute::PATTERN, TimeZoneOffsetMinute::NAME)
             ->startOptional()
             ->appendLiteral(':')
-            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_SECOND)
+            ->appendCapturePattern(TimeZoneOffsetSecond::PATTERN, TimeZoneOffsetSecond::NAME)
             ->endOptional()
             ->endGroup()
             ->endGroup();
@@ -196,7 +200,7 @@ final class IsoParsers
         }
 
         return $parser = (new PatternParser())
-            ->appendCapturePattern('[A-Za-z0-9/_\-]+', DateTimeField::TIME_ZONE_REGION);
+            ->appendCapturePattern(TimeZoneRegion::PATTERN, TimeZoneRegion::NAME);
     }
 
     /**

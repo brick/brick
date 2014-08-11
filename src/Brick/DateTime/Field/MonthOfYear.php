@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The month-of-year field.
- *
- * @internal
  */
 final class MonthOfYear
 {

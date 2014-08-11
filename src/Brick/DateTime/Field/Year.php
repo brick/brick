@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The proleptic year field.
- *
- * @internal
  */
 final class Year
 {

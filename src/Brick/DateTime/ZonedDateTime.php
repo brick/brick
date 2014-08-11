@@ -2,7 +2,6 @@
 
 namespace Brick\DateTime;
 
-use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
@@ -120,7 +119,7 @@ class ZonedDateTime extends ReadableInstant
 
         $timeZoneOffset = TimeZoneOffset::from($result);
 
-        if ($result->hasField(DateTimeField::TIME_ZONE_REGION)) {
+        if ($result->hasField(Field\TimeZoneRegion::NAME)) {
             $timeZone = TimeZoneRegion::from($result);
         } else {
             $timeZone = $timeZoneOffset;

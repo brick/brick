@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The day-of-week field.
- *
- * @internal
  */
 final class DayOfWeek
 {

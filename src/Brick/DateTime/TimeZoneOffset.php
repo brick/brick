@@ -7,7 +7,6 @@ use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
 use Brick\DateTime\Parser\IsoParsers;
-use Brick\DateTime\Parser\TimeZoneOffsetParser;
 use Brick\DateTime\Utility\Cast;
 
 /**
@@ -42,9 +41,11 @@ class TimeZoneOffset extends TimeZone
     /**
      * Obtains an instance of `TimeZoneOffset` using an offset in hours, minutes and seconds.
      *
-     * @param integer $hours   The time-zone offset in hours, from -18 to +18.
-     * @param integer $minutes The time-zone offset in minutes, from 0 to ±59, sign matching hours.
-     * @param integer $seconds The time-zone offset in seconds, from 0 to ±59, sign matching hours and minute.
+     * The total number of seconds must not exceed 64,800 seconds.
+     *
+     * @param integer $hours   The time-zone offset in hours.
+     * @param integer $minutes The time-zone offset in minutes, from 0 to 59, sign matching hours.
+     * @param integer $seconds The time-zone offset in seconds, from 0 to 59, sign matching hours and minute.
      *
      * @return TimeZoneOffset
      *
@@ -55,6 +56,10 @@ class TimeZoneOffset extends TimeZone
         $hours = Cast::toInteger($hours);
         $minutes = Cast::toInteger($minutes);
         $seconds = Cast::toInteger($seconds);
+
+        Field\TimeZoneOffsetHour::check($hours);
+        Field\TimeZoneOffsetMinute::check($minutes);
+        Field\TimeZoneOffsetSecond::check($seconds);
 
         $err = ($hours > 0 && ($minutes < 0 || $seconds < 0))
             || ($hours < 0 && ($minutes > 0 || $seconds > 0))
@@ -69,7 +74,7 @@ class TimeZoneOffset extends TimeZone
             + $minutes * LocalTime::SECONDS_PER_MINUTE
             + $seconds;
 
-        Field\OffsetSeconds::check($totalSeconds);
+        Field\TimeZoneOffsetTotalSeconds::check($totalSeconds);
 
         return new TimeZoneOffset($totalSeconds);
     }
@@ -97,7 +102,7 @@ class TimeZoneOffset extends TimeZone
     {
         $totalSeconds = Cast::toInteger($totalSeconds);
 
-        Field\OffsetSeconds::check($totalSeconds);
+        Field\TimeZoneOffsetTotalSeconds::check($totalSeconds);
 
         return new TimeZoneOffset($totalSeconds);
     }
@@ -112,15 +117,15 @@ class TimeZoneOffset extends TimeZone
      */
     public static function from(DateTimeParseResult $result)
     {
-        $sign = $result->getField(DateTimeField::TIME_ZONE_OFFSET_SIGN);
+        $sign = $result->getField(Field\TimeZoneOffsetSign::NAME);
 
         if ($sign === 'Z' || $sign === 'z') {
             return TimeZoneOffset::utc();
         }
 
-        $hour   = $result->getField(DateTimeField::TIME_ZONE_OFFSET_HOUR);
-        $minute = $result->getField(DateTimeField::TIME_ZONE_OFFSET_MINUTE);
-        $second = $result->getOptionalField(DateTimeField::TIME_ZONE_OFFSET_SECOND);
+        $hour   = $result->getField(Field\TimeZoneOffsetHour::NAME);
+        $minute = $result->getField(Field\TimeZoneOffsetMinute::NAME);
+        $second = $result->getOptionalField(Field\TimeZoneOffsetSecond::NAME);
 
         $hour   = (int) $hour;
         $minute = (int) $minute;

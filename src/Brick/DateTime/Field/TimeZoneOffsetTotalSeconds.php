@@ -5,21 +5,19 @@ namespace Brick\DateTime\Field;
 use Brick\DateTime\DateTimeException;
 
 /**
- * The time-zone offset seconds field.
+ * The total number of seconds in a time-zone offset, from -64800 to 64800 (-18:00 to +18:00).
  *
  * The offset is relative to UTC/Greenwich.
- *
- * @internal
  */
-class OffsetSeconds
+class TimeZoneOffsetTotalSeconds
 {
     /**
      * The field name.
      */
-    const NAME = 'offset-seconds';
+    const NAME = 'time-zone-offset-total-seconds';
 
     /**
-     * The absolute maximum seconds.
+     * The absolute maximum seconds of the time-zone offset.
      */
     const MAX_SECONDS = 64800;
 

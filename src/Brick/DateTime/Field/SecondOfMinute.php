@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The second-of-minute field.
- *
- * @internal
  */
 class SecondOfMinute
 {

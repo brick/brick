@@ -6,8 +6,6 @@ use Brick\DateTime\DateTimeException;
 
 /**
  * The day-of-year field.
- *
- * @internal
  */
 final class DayOfYear
 {

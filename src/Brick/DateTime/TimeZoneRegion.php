@@ -2,12 +2,10 @@
 
 namespace Brick\DateTime;
 
-use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
 use Brick\DateTime\Parser\IsoParsers;
-use Brick\DateTime\Parser\TimeZoneRegionParser;
 
 /**
  * A geographical region where the same time-zone rules apply, such as `Europe/London`.
@@ -62,7 +60,7 @@ class TimeZoneRegion extends TimeZone
      */
     public static function from(DateTimeParseResult $result)
     {
-        $region = $result->getField(DateTimeField::TIME_ZONE_REGION);
+        $region = $result->getField(Field\TimeZoneRegion::NAME);
 
         return TimeZoneRegion::of($region);
     }
