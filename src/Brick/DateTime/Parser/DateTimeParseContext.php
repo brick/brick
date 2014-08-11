@@ -169,7 +169,7 @@ class DateTimeParseContext
     {
         $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
 
-        if (preg_match($pattern, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) === 0) {
+        if (preg_match($pattern, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) !== 1) {
             return '';
         }
 
@@ -185,23 +185,39 @@ class DateTimeParseContext
     }
 
     /**
+     * @param string $pattern A valid regular expression.
+     *
+     * @return array The matches, empty if the pattern didn't match.
+     */
+    public function match($pattern)
+    {
+        $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+
+        if (preg_match($pattern, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) !== 1) {
+            return [];
+        }
+
+        list ($string, $position) = $matches[0];
+
+        if ($position !== $this->active->position) {
+            return [];
+        }
+
+        $this->active->position += strlen($string);
+
+        foreach ($matches as & $match) {
+            $match = $match[0];
+        }
+
+        return $matches;
+    }
+
+    /**
      * @return string
      */
     public function getNextDigits()
     {
-        if (preg_match('/[0-9]+/', $this->text, $matches, PREG_OFFSET_CAPTURE, $this->active->position) === 0) {
-            return '';
-        }
-
-        list ($digits, $position) = $matches[0];
-
-        if ($position !== $this->active->position) {
-            return '';
-        }
-
-        $this->active->position += strlen($digits);
-
-        return $digits;
+        return $this->getNextCharsMatching('[0-9]+');
     }
 
     /**
