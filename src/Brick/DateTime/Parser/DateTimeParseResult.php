@@ -23,43 +23,54 @@ class DateTimeParseResult
     }
 
     /**
-     * @param string $field
+     * Returns whether this result has at least one value for the given field.
+     *
+     * @param string $name
      *
      * @return boolean
      */
-    public function hasField($field)
+    public function hasField($name)
     {
-        return isset($this->fields[$field]);
+        return isset($this->fields[$name]) && $this->fields[$name];
     }
 
     /**
-     * Returns the given required field.
+     * Returns the first value parsed for the given field.
      *
-     * @param string $field One of the DateTimeField constants.
+     * @param string $name One of the field constants.
      *
-     * @return mixed The value for this field.
+     * @return string The value for this field.
      *
      * @throws DateTimeParseException If the field is not present in this set.
      */
-    public function getField($field)
+    public function getField($name)
     {
-        if ($this->hasField($field)) {
-            return $this->fields[$field];
+        $value = $this->getOptionalField($name);
+
+        if ($value === '') {
+            throw new DateTimeParseException(sprintf('Field %s is not present in the parsed result.', $name));
         }
 
-        throw new DateTimeParseException(sprintf('Field %s is not present in the parsed result.', $field));
+        return $value;
     }
 
     /**
-     * Returns the given optional field.
+     * Returns the first value for the given field, or an empty string if not present.
      *
-     * @param string $field
-     * @param mixed  $defaultValue
+     * @param string $name
      *
-     * @return mixed
+     * @return string
      */
-    public function getOptionalField($field, $defaultValue)
+    public function getOptionalField($name)
     {
-        return $this->hasField($field) ? $this->fields[$field] : $defaultValue;
+        if (isset($this->fields[$name])) {
+            if ($this->fields[$name]) {
+                $result = array_shift($this->fields[$name]);
+
+                return $result;
+            }
+        }
+
+        return '';
     }
 }

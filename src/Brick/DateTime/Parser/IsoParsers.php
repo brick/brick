@@ -1,0 +1,241 @@
+<?php
+
+namespace Brick\DateTime\Parser;
+
+use Brick\DateTime\Field\DateTimeField;
+use Brick\DateTime\Field\DayOfMonth;
+use Brick\DateTime\Field\FractionOfSecond;
+use Brick\DateTime\Field\HourOfDay;
+use Brick\DateTime\Field\MinuteOfHour;
+use Brick\DateTime\Field\MonthOfYear;
+use Brick\DateTime\Field\SecondOfMinute;
+use Brick\DateTime\Field\Year;
+
+/**
+ * Provides ISO 8601 parser implementations.
+ */
+final class IsoParsers
+{
+    /**
+     * Private constructor. This class cannot be instantiated.
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * Returns a parser for an ISO local date such as `2014-12-31`.
+     *
+     * @return PatternParser
+     */
+    public static function localDate()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->appendCapturePattern(Year::PATTERN, Year::NAME)
+            ->appendLiteral('-')
+            ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME)
+            ->appendLiteral('-')
+            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME);
+    }
+
+    /**
+     * Returns a parser for an ISO local time such as `10:15:30.123`.
+     *
+     * The second and fraction of second are optional.
+     *
+     * @return PatternParser
+     */
+    public static function localTime()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->appendCapturePattern(HourOfDay::PATTERN, HourOfDay::NAME)
+            ->appendLiteral(':')
+            ->appendCapturePattern(MinuteOfHour::PATTERN, MinuteOfHour::NAME)
+            ->startOptional()
+            ->appendLiteral(':')
+            ->appendCapturePattern(SecondOfMinute::PATTERN, SecondOfMinute::NAME)
+            ->startOptional()
+            ->appendLiteral('.')
+            ->appendCapturePattern(FractionOfSecond::PATTERN, FractionOfSecond::NAME)
+            ->endOptional()
+            ->endOptional();
+    }
+
+    /**
+     * Returns a parser for an ISO local date-time such as `2014-12-31T10:15`.
+     *
+     * The second and fraction of second are optional.
+     *
+     * @return PatternParser
+     */
+    public static function localDateTime()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->append(self::localDate())
+            ->appendLiteral('T')
+            ->append(self::localTime());
+    }
+
+    /**
+     * Returns a parser for a range of local dates such as `2014-01-05/2015-03-15`.
+     *
+     * @return PatternParser
+     */
+    public static function localDateRange()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->append(self::localDate())
+            ->appendLiteral('/')
+            ->append(self::localDate());
+    }
+
+    /**
+     * Returns a parser for a year-month such as `2014-12`.
+     *
+     * @return PatternParser
+     */
+    public static function yearMonth()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->appendCapturePattern(Year::PATTERN, Year::NAME)
+            ->appendLiteral('-')
+            ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME);
+    }
+
+    /**
+     * Returns a parser for a month-day such as `12-31`.
+     *
+     * @return PatternParser
+     */
+    public static function monthDay()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->appendLiteral('--')
+            ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME)
+            ->appendLiteral('-')
+            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME);
+    }
+
+    /**
+     * Returns a parser for a time-zone offset such as `Z` or `+01:00`.
+     *
+     * @return PatternParser
+     */
+    public static function timeZoneOffset()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->startGroup()
+            ->appendCapturePattern('[Zz]', DateTimeField::TIME_ZONE_OFFSET_SIGN)
+            ->appendOr()
+            ->startGroup()
+            ->appendCapturePattern('[\-\+]', DateTimeField::TIME_ZONE_OFFSET_SIGN)
+            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_HOUR)
+            ->appendLiteral(':')
+            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_MINUTE)
+            ->startOptional()
+            ->appendLiteral(':')
+            ->appendCapturePattern('[0-9]{2}', DateTimeField::TIME_ZONE_OFFSET_SECOND)
+            ->endOptional()
+            ->endGroup()
+            ->endGroup();
+    }
+
+    /**
+     * Returns a parser for a time-zone region such as `Europe/London`.
+     *
+     * @return PatternParser
+     */
+    public static function timeZoneRegion()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->appendCapturePattern('[A-Za-z0-9/_\-]+', DateTimeField::TIME_ZONE_REGION);
+    }
+
+    /**
+     * Returns a parser for a month-day such as `12-31`.
+     *
+     * @return PatternParser
+     */
+    public static function offsetDateTime()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->append(self::localDateTime())
+            ->append(self::timeZoneOffset());
+    }
+
+    /**
+     * Returns a parser for a month-day such as `12-31`.
+     *
+     * @return PatternParser
+     */
+    public static function zonedDateTime()
+    {
+        static $parser;
+
+        if ($parser) {
+            return $parser;
+        }
+
+        return $parser = (new PatternParser())
+            ->append(self::offsetDateTime())
+            ->startOptional()
+            ->appendLiteral('[')
+            ->append(self::timeZoneRegion())
+            ->appendLiteral(']')
+            ->endOptional();
+    }
+}

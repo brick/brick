@@ -6,6 +6,7 @@ use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
 use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\IsoParsers;
 
 /**
  * Represents an inclusive range of local dates.
@@ -64,12 +65,15 @@ class LocalDateRange implements \IteratorAggregate, \Countable
      * @param DateTimeParseResult $result
      *
      * @return LocalDateRange
+     *
+     * @throws DateTimeException      If the date range is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
     public static function from(DateTimeParseResult $result)
     {
         return LocalDateRange::of(
-            LocalDate::from($result, false),
-            LocalDate::from($result, true)
+            LocalDate::from($result),
+            LocalDate::from($result)
         );
     }
 
@@ -89,7 +93,7 @@ class LocalDateRange implements \IteratorAggregate, \Countable
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = DateTimeParsers::isoLocalDateRange();
+            $parser = IsoParsers::localDateRange();
         }
 
         return LocalDateRange::from($parser->parse($text));

@@ -50,7 +50,10 @@ final class DateTimeField
     const NANO_OF_SECOND = 'nano-of-second';
 
     /**
-     * The sign of the time-zone offset: string '+' or '-'.
+     * The sign of the time-zone offset: string '+' or '-', 'z' or 'Z'.
+     *
+     * If the sign case-insensitively matches 'Z', the offset is of zero seconds (UTC)
+     * and is not followed by the hour/minute/second notation.
      */
     const TIME_ZONE_OFFSET_SIGN = 'offset-sign';
 
@@ -73,19 +76,4 @@ final class DateTimeField
      * The time-zone region: string such as 'Europe/London'.
      */
     const TIME_ZONE_REGION = 'time-zone-region';
-
-    /**
-     * The proleptic year of an interval end.
-     */
-    const END_YEAR = 'end-year';
-
-    /**
-     * The month-of-year of an interval end.
-     */
-    const END_MONTH_OF_YEAR = 'end-month-of-year';
-
-    /**
-     * The day-of-month of an interval end.
-     */
-    const END_DAY_OF_MONTH = 'end-day-of-month';
 }

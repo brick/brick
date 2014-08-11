@@ -2,9 +2,11 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
-use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\Locale\Locale;
 
 /**
@@ -105,16 +107,29 @@ class ZonedDateTime extends ReadableInstant
      *
      * This method is only useful to parsers.
      *
-     * @param Parser\DateTimeParseResult $result
+     * @param DateTimeParseResult $result
      *
      * @return ZonedDateTime
+     *
+     * @throws DateTimeException      If the zoned date-time is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
-    public static function from(Parser\DateTimeParseResult $result)
+    public static function from(DateTimeParseResult $result)
     {
+        $localDateTime = LocalDateTime::from($result);
+
+        $timeZoneOffset = TimeZoneOffset::from($result);
+
+        if ($result->hasField(DateTimeField::TIME_ZONE_REGION)) {
+            $timeZone = TimeZoneRegion::from($result);
+        } else {
+            $timeZone = $timeZoneOffset;
+        }
+
         return ZonedDateTime::of(
-            LocalDateTime::from($result),
-            TimeZone::from($result),
-            TimeZoneOffset::from($result)
+            $localDateTime,
+            $timeZone,
+            $timeZoneOffset
         );
     }
 
@@ -122,6 +137,7 @@ class ZonedDateTime extends ReadableInstant
      * Obtains an instance of `ZonedDateTime` from a text string.
      *
      * Valid examples:
+     * - `2007-12-03T10:15:30:45Z`
      * - `2007-12-03T10:15:30+01:00`
      * - `2007-12-03T10:15:30+01:00[Europe/Paris]`
      *
@@ -136,7 +152,7 @@ class ZonedDateTime extends ReadableInstant
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = DateTimeParsers::isoZonedDateTime();
+            $parser = IsoParsers::zonedDateTime();
         }
 
         return ZonedDateTime::from($parser->parse($text));

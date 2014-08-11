@@ -6,7 +6,7 @@ use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
 use Brick\DateTime\Parser\DateTimeParseResult;
-use Brick\DateTime\Parser\DateTimeParsers;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Utility\Cast;
 
 /**
@@ -66,13 +66,14 @@ class MonthDay
      *
      * @return MonthDay
      *
-     * @throws DateTimeException If the date is not valid.
+     * @throws DateTimeException      If the month-day is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
     public static function from(DateTimeParseResult $result)
     {
         return MonthDay::of(
-            $result->getField(DateTimeField::MONTH_OF_YEAR),
-            $result->getField(DateTimeField::DAY_OF_MONTH)
+            (int) $result->getField(Field\MonthOfYear::NAME),
+            (int) $result->getField(Field\DayOfMonth::NAME)
         );
     }
 
@@ -90,7 +91,7 @@ class MonthDay
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = DateTimeParsers::isoMonthDay();
+            $parser = IsoParsers::monthDay();
         }
 
         return MonthDay::from($parser->parse($text));

@@ -2,8 +2,13 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\HourOfDay;
+use Brick\DateTime\Field\MinuteOfHour;
+use Brick\DateTime\Field\SecondOfMinute;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Cast;
 use Brick\Locale\Locale;
@@ -93,20 +98,23 @@ class LocalTime
     }
 
     /**
-     * @param Parser\DateTimeParseResult $result
+     * @param DateTimeParseResult $result
      *
      * @return LocalTime
      *
-     * @throws DateTimeException If the time is not valid.
+     * @throws DateTimeException      If the time is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
-    public static function from(Parser\DateTimeParseResult $result)
+    public static function from(DateTimeParseResult $result)
     {
-        return LocalTime::of(
-            $result->getField(Field\DateTimeField::HOUR_OF_DAY),
-            $result->getField(Field\DateTimeField::MINUTE_OF_HOUR),
-            $result->getOptionalField(Field\DateTimeField::SECOND_OF_MINUTE, 0),
-            $result->getOptionalField(Field\DateTimeField::NANO_OF_SECOND, 0)
-        );
+        $hour     = $result->getField(HourOfDay::NAME);
+        $minute   = $result->getField(MinuteOfHour::NAME);
+        $second   = $result->getOptionalField(SecondOfMinute::NAME);
+        $fraction = $result->getOptionalField(Field\FractionOfSecond::NAME);
+
+        $nano = substr($fraction . '000000000', 0, 9);
+
+        return LocalTime::of((int) $hour, (int) $minute, (int) $second, (int) $nano);
     }
 
     /**
@@ -123,7 +131,7 @@ class LocalTime
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = Parser\DateTimeParsers::isoLocalTime();
+            $parser = IsoParsers::localTime();
         }
 
         return LocalTime::from($parser->parse($text));

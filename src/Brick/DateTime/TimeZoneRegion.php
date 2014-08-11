@@ -5,6 +5,8 @@ namespace Brick\DateTime;
 use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Parser\TimeZoneRegionParser;
 
 /**
@@ -51,6 +53,21 @@ class TimeZoneRegion extends TimeZone
     }
 
     /**
+     * @param DateTimeParseResult $result
+     *
+     * @return TimeZoneRegion
+     *
+     * @throws DateTimeException      If the region is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
+     */
+    public static function from(DateTimeParseResult $result)
+    {
+        $region = $result->getField(DateTimeField::TIME_ZONE_REGION);
+
+        return TimeZoneRegion::of($region);
+    }
+
+    /**
      * Parses a region id, such as 'Europe/London'.
      *
      * @param string               $text
@@ -63,24 +80,10 @@ class TimeZoneRegion extends TimeZone
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = new TimeZoneRegionParser();
+            $parser = IsoParsers::timeZoneRegion();
         }
 
         return TimeZoneRegion::from($parser->parse($text));
-    }
-
-    /**
-     * @param Parser\DateTimeParseResult $result
-     *
-     * @return TimeZoneRegion|null
-     */
-    public static function from(Parser\DateTimeParseResult $result)
-    {
-        if (! $result->hasField(DateTimeField::TIME_ZONE_REGION)) {
-            return null;
-        }
-
-        return self::of($result->getField(DateTimeField::TIME_ZONE_REGION));
     }
 
     /**

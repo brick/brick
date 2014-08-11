@@ -17,6 +17,11 @@ class HourOfDay
     const NAME = 'hour-of-day';
 
     /**
+     * The regular expression pattern of the ISO 8601 representation.
+     */
+    const PATTERN = '[0-9]{2}';
+
+    /**
      * @param integer $hourOfDay The hour-of-day to check, validated as an integer.
      *
      * @return void

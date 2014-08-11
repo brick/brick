@@ -17,6 +17,11 @@ final class Year
     const NAME = 'year';
 
     /**
+     * The regular expression pattern of the ISO 8601 representation.
+     */
+    const PATTERN = '\-?[0-9]{4,9}';
+
+    /**
      * The minimum allowed value.
      */
     const MIN_VALUE = -999999;

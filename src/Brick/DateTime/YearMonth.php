@@ -4,6 +4,8 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Utility\Cast;
 
 /**
@@ -59,17 +61,18 @@ class YearMonth
     }
 
     /**
-     * @param Parser\DateTimeParseResult $result
+     * @param DateTimeParseResult $result
      *
      * @return YearMonth
      *
-     * @throws DateTimeException If the date is not valid.
+     * @throws DateTimeException      If the year-month is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
-    public static function from(Parser\DateTimeParseResult $result)
+    public static function from(DateTimeParseResult $result)
     {
         return YearMonth::of(
-            $result->getField(Field\DateTimeField::YEAR),
-            $result->getField(Field\DateTimeField::MONTH_OF_YEAR)
+            (int) $result->getField(Field\Year::NAME),
+            (int) $result->getField(Field\MonthOfYear::NAME)
         );
     }
 
@@ -87,7 +90,7 @@ class YearMonth
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = Parser\DateTimeParsers::isoYearMonth();
+            $parser = IsoParsers::yearMonth();
         }
 
         return YearMonth::from($parser->parse($text));

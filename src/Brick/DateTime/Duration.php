@@ -57,6 +57,8 @@ class Duration
     /**
      * Obtains an instance of `Duration` by parsing a text string.
      *
+     * @todo integrate with parsers.
+     *
      * This will parse the string produced by `toString()` which is
      * the ISO-8601 format `PTnS` where `n` is the number of seconds.
      *

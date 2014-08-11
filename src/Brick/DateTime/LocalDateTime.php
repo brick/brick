@@ -4,6 +4,8 @@ namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Cast;
 use Brick\Locale\Locale;
@@ -78,13 +80,14 @@ class LocalDateTime
     }
 
     /**
-     * @param Parser\DateTimeParseResult $result
+     * @param DateTimeParseResult $result
      *
      * @return LocalDateTime
      *
-     * @throws DateTimeException If the date-time is not valid.
+     * @throws DateTimeException      If the date-time is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
      */
-    public static function from(Parser\DateTimeParseResult $result)
+    public static function from(DateTimeParseResult $result)
     {
         return new LocalDateTime(
             LocalDate::from($result),
@@ -106,7 +109,7 @@ class LocalDateTime
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = Parser\DateTimeParsers::isoLocalDateTime();
+            $parser = IsoParsers::localDateTime();
         }
 
         return LocalDateTime::from($parser->parse($text));

@@ -17,6 +17,11 @@ final class MonthOfYear
     const NAME = 'month-of-year';
 
     /**
+     * The regular expression pattern of the ISO 8601 representation.
+     */
+    const PATTERN = '[0-9]{2}';
+
+    /**
      * @param integer $monthOfYear The month-of-year to check, validated as an integer.
      *
      * @return void

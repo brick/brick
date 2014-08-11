@@ -5,6 +5,8 @@ namespace Brick\DateTime;
 use Brick\DateTime\Field\DateTimeField;
 use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Parser\DateTimeParser;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
 use Brick\DateTime\Parser\TimeZoneOffsetParser;
 use Brick\DateTime\Utility\Cast;
 
@@ -35,26 +37,6 @@ class TimeZoneOffset extends TimeZone
     private function __construct($totalSeconds)
     {
         $this->totalSeconds = $totalSeconds;
-    }
-
-    /**
-     * @param Parser\DateTimeParseResult $result
-     *
-     * @return TimeZoneOffset
-     */
-    public static function from(Parser\DateTimeParseResult $result)
-    {
-        $hour = $result->getField(DateTimeField::TIME_ZONE_OFFSET_HOUR);
-        $minute = $result->getField(DateTimeField::TIME_ZONE_OFFSET_MINUTE);
-        $second = $result->getOptionalField(DateTimeField::TIME_ZONE_OFFSET_SECOND, 0);
-
-        if ($result->getField(DateTimeField::TIME_ZONE_OFFSET_SIGN) === '-') {
-            $hour = -$hour;
-            $minute = -$minute;
-            $second = -$second;
-        }
-
-        return self::of($hour, $minute, $second);
     }
 
     /**
@@ -121,6 +103,39 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
+     * @param DateTimeParseResult $result
+     *
+     * @return TimeZoneOffset
+     *
+     * @throws DateTimeException      If the offset is not valid.
+     * @throws DateTimeParseException If required fields are missing from the result.
+     */
+    public static function from(DateTimeParseResult $result)
+    {
+        $sign = $result->getField(DateTimeField::TIME_ZONE_OFFSET_SIGN);
+
+        if ($sign === 'Z' || $sign === 'z') {
+            return TimeZoneOffset::utc();
+        }
+
+        $hour   = $result->getField(DateTimeField::TIME_ZONE_OFFSET_HOUR);
+        $minute = $result->getField(DateTimeField::TIME_ZONE_OFFSET_MINUTE);
+        $second = $result->getOptionalField(DateTimeField::TIME_ZONE_OFFSET_SECOND);
+
+        $hour   = (int) $hour;
+        $minute = (int) $minute;
+        $second = (int) $second;
+
+        if ($sign === '-') {
+            $hour   = -$hour;
+            $minute = -$minute;
+            $second = -$second;
+        }
+
+        return self::of($hour, $minute, $second);
+    }
+
+    /**
      * Parses a time-zone offset.
      *
      * The following ISO 8601 formats are accepted:
@@ -141,7 +156,7 @@ class TimeZoneOffset extends TimeZone
     public static function parse($text, DateTimeParser $parser = null)
     {
         if (! $parser) {
-            $parser = new TimeZoneOffsetParser();
+            $parser = IsoParsers::timeZoneOffset();
         }
 
         return TimeZoneOffset::from($parser->parse($text));
