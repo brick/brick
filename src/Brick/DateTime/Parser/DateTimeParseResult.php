@@ -10,16 +10,17 @@ class DateTimeParseResult
     /**
      * @var array
      */
-    private $fields;
+    private $fields = [];
 
     /**
-     * Class constructor.
+     * @param string $name
+     * @param string $value
      *
-     * @param array $fields
+     * @return void
      */
-    public function __construct(array $fields)
+    public function addField($name, $value)
     {
-        $this->fields = $fields;
+        $this->fields[$name][] = $value;
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Brick\DateTime\Parser;
 /**
  * Matches a regular expression pattern to a set of date-time fields.
  */
-class PatternParser extends ContextParser
+class PatternParser implements DateTimeParser
 {
     /**
      * @var string
@@ -132,22 +132,24 @@ class PatternParser extends ContextParser
     /**
      * {@inheritdoc}
      */
-    public function parseInto(DateTimeParseContext $context)
+    public function parse($text)
     {
-        $matches = $context->match($this->toPattern());
+        $pattern = '/^' . str_replace('/', '\/', $this->toPattern()) . '$/';
 
-        if (! $matches) {
-            return false;
+        if (preg_match($pattern, $text, $matches) !== 1) {
+            throw new DateTimeParseException(sprintf('Failed to parse "%s".', $text));
         }
+
+        $result = new DateTimeParseResult();
 
         $index = 1;
         foreach ($this->fields as $field) {
             if (isset($matches[$index]) && $matches[$index] !== '') {
-                $context->setParsedField($field, $matches[$index]);
+                $result->addField($field, $matches[$index]);
             }
             $index++;
         }
 
-        return true;
+        return $result;
     }
 }
