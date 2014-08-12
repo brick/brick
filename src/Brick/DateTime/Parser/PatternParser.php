@@ -10,123 +10,37 @@ class PatternParser implements DateTimeParser
     /**
      * @var string
      */
-    private $pattern = '';
+    private $pattern;
 
     /**
      * @var array
      */
-    private $fields = [];
+    private $fields;
 
     /**
-     * @var integer
+     * @param string $pattern The regular expression pattern.
+     * @param array  $fields  The fields constants to match.
      */
-    private $optionalLevel = 0;
-
-    /**
-     * @param PatternParser $parser
-     *
-     * @return static
-     */
-    public function append(PatternParser $parser)
+    public function __construct($pattern, array $fields)
     {
-        $this->pattern .= $parser->toPattern();
-        $this->fields = array_merge($this->fields, $parser->fields);
-
-        return $this;
-    }
-
-    /**
-     * @param string $literal
-     *
-     * @return static
-     */
-    public function appendLiteral($literal)
-    {
-        $this->pattern .= preg_quote($literal);
-
-        return $this;
-    }
-
-    /**
-     * @param string $pattern
-     * @param string $field
-     *
-     * @return static
-     */
-    public function appendCapturePattern($pattern, $field)
-    {
-        $this->pattern .= '(' . $pattern . ')';
-        $this->fields[] = $field;
-
-        return $this;
-    }
-
-    /**
-     * @return static
-     */
-    public function startGroup()
-    {
-        $this->pattern .= '(?:';
-
-        return $this;
-    }
-
-    /**
-     * @return static
-     */
-    public function endGroup()
-    {
-        $this->pattern .= ')';
-
-        return $this;
-    }
-
-    /**
-     * @return static
-     */
-    public function appendOr()
-    {
-        $this->pattern .= '|';
-
-        return $this;
-    }
-
-    /**
-     * @return static
-     */
-    public function startOptional()
-    {
-        $this->pattern .= '(?:';
-        $this->optionalLevel++;
-
-        return $this;
-    }
-
-    /**
-     * @return static
-     */
-    public function endOptional()
-    {
-        if ($this->optionalLevel === 0) {
-            throw new \RuntimeException('Cannot call endOptional() without a call to startOptional() first.');
-        }
-
-        $this->pattern .= ')?';
-        $this->optionalLevel--;
-
-        return $this;
+        $this->pattern = $pattern;
+        $this->fields  = $fields;
     }
 
     /**
      * @return string
      */
-    private function toPattern()
+    public function getPattern()
     {
-        if ($this->optionalLevel !== 0) {
-            throw new \RuntimeException('A call to startOptional() has not been followed by endOptional().');
-        }
-
         return $this->pattern;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
     }
 
     /**
@@ -134,7 +48,7 @@ class PatternParser implements DateTimeParser
      */
     public function parse($text)
     {
-        $pattern = '/^' . str_replace('/', '\/', $this->toPattern()) . '$/';
+        $pattern = '/^' . str_replace('/', '\/', $this->pattern) . '$/';
 
         if (preg_match($pattern, $text, $matches) !== 1) {
             throw new DateTimeParseException(sprintf('Failed to parse "%s".', $text));
@@ -143,10 +57,12 @@ class PatternParser implements DateTimeParser
         $result = new DateTimeParseResult();
 
         $index = 1;
+
         foreach ($this->fields as $field) {
             if (isset($matches[$index]) && $matches[$index] !== '') {
                 $result->addField($field, $matches[$index]);
             }
+
             $index++;
         }
 

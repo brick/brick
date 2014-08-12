@@ -40,12 +40,13 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->appendCapturePattern(Year::PATTERN, Year::NAME)
             ->appendLiteral('-')
             ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME)
             ->appendLiteral('-')
-            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME);
+            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME)
+            ->toParser();
     }
 
     /**
@@ -63,7 +64,7 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->appendCapturePattern(HourOfDay::PATTERN, HourOfDay::NAME)
             ->appendLiteral(':')
             ->appendCapturePattern(MinuteOfHour::PATTERN, MinuteOfHour::NAME)
@@ -74,7 +75,8 @@ final class IsoParsers
             ->appendLiteral('.')
             ->appendCapturePattern(FractionOfSecond::PATTERN, FractionOfSecond::NAME)
             ->endOptional()
-            ->endOptional();
+            ->endOptional()
+            ->toParser();
     }
 
     /**
@@ -92,10 +94,11 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->append(self::localDate())
             ->appendLiteral('T')
-            ->append(self::localTime());
+            ->append(self::localTime())
+            ->toParser();
     }
 
     /**
@@ -111,10 +114,11 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->append(self::localDate())
             ->appendLiteral('/')
-            ->append(self::localDate());
+            ->append(self::localDate())
+            ->toParser();
     }
 
     /**
@@ -130,10 +134,11 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->appendCapturePattern(Year::PATTERN, Year::NAME)
             ->appendLiteral('-')
-            ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME);
+            ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME)
+            ->toParser();
     }
 
     /**
@@ -149,11 +154,12 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->appendLiteral('--')
             ->appendCapturePattern(MonthOfYear::PATTERN, MonthOfYear::NAME)
             ->appendLiteral('-')
-            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME);
+            ->appendCapturePattern(DayOfMonth::PATTERN, DayOfMonth::NAME)
+            ->toParser();
     }
 
     /**
@@ -169,7 +175,7 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->startGroup()
             ->appendCapturePattern('[Zz]', TimeZoneOffsetSign::NAME)
             ->appendOr()
@@ -183,7 +189,8 @@ final class IsoParsers
             ->appendCapturePattern(TimeZoneOffsetSecond::PATTERN, TimeZoneOffsetSecond::NAME)
             ->endOptional()
             ->endGroup()
-            ->endGroup();
+            ->endGroup()
+            ->toParser();
     }
 
     /**
@@ -199,8 +206,9 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
-            ->appendCapturePattern(TimeZoneRegion::PATTERN, TimeZoneRegion::NAME);
+        return $parser = (new PatternParserBuilder())
+            ->appendCapturePattern(TimeZoneRegion::PATTERN, TimeZoneRegion::NAME)
+            ->toParser();
     }
 
     /**
@@ -216,9 +224,10 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->append(self::localDateTime())
-            ->append(self::timeZoneOffset());
+            ->append(self::timeZoneOffset())
+            ->toParser();
     }
 
     /**
@@ -234,12 +243,13 @@ final class IsoParsers
             return $parser;
         }
 
-        return $parser = (new PatternParser())
+        return $parser = (new PatternParserBuilder())
             ->append(self::offsetDateTime())
             ->startOptional()
             ->appendLiteral('[')
             ->append(self::timeZoneRegion())
             ->appendLiteral(']')
-            ->endOptional();
+            ->endOptional()
+            ->toParser();
     }
 }
