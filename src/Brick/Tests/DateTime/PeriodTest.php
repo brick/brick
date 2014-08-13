@@ -9,14 +9,79 @@ use Brick\DateTime\Period;
  */
 class PeriodTest extends AbstractTestCase
 {
+    public function testOf()
+    {
+        $this->assertPeriodEquals(6, 5, 4, Period::of(6, 5, 4));
+    }
+
     public function testZero()
     {
         $this->assertPeriodEquals(0, 0, 0, Period::zero());
     }
 
-    public function testOf()
+    /**
+     * @dataProvider providerParse
+     *
+     * @param string  $text   The text to parse.
+     * @param integer $years  The expected years in the period.
+     * @param integer $months The expected months in the period.
+     * @param integer $days   The expected days in the period.
+     */
+    public function testParse($text, $years, $months, $days)
     {
-        $this->assertPeriodEquals(6, 5, 4, Period::of(6, 5, 4));
+        $this->assertPeriodEquals($years, $months, $days, Period::parse($text));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParse()
+    {
+        return [
+            ['P0Y', 0, 0, 0],
+            ['P0M', 0, 0, 0],
+            ['P0W', 0, 0, 0],
+            ['P0D', 0, 0, 0],
+            ['P1Y', 1, 0, 0],
+            ['P1M', 0, 1, 0],
+            ['P1W', 0, 0, 7],
+            ['P1D', 0, 0, 1],
+            ['P1Y2M3W4D', 1, 2, 25],
+            ['P-1Y-2M-3W-4D', -1, -2, -25],
+            ['P-1Y-2M-3W+4D', -1, -2, -17],
+            ['-P-1Y-2M-3W4D', 1, 2, 17],
+            ['+P-1Y-2M+3W-4D', -1, -2, 17],
+            ['-P-1Y-2M+3W-4D', 1, 2, -17]
+        ];
+    }
+
+    /**
+     * @dataProvider providerParseInvalidStringThrowsException
+     * @expectedException \Brick\DateTime\Parser\DateTimeParseException
+     *
+     * @param string $text
+     */
+    public function testParseInvalidStringThrowsException($text)
+    {
+        Period::parse($text);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerParseInvalidStringThrowsException()
+    {
+        return [
+            [' P0D'],
+            ['P0D '],
+            ['P0'],
+            ['PD'],
+            ['0D'],
+            ['PXD'],
+            ['PT1S'],
+            ['P0D0D'],
+            ['PT0D1S']
+        ];
     }
 
     public function testPlusYears()

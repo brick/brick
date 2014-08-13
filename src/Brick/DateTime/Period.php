@@ -69,6 +69,64 @@ class Period
     }
 
     /**
+     * Obtains an instance of `Period` by parsing a text string.
+     *
+     * This will parse the ISO-8601 period format `PnYnMnWnD`
+     * which is the format returned by `__toString()`.
+     *
+     * All of the values (years, months, weeks, days) are optional,
+     * but the period must at least contain one of these values.
+     *
+     * A week is converted to 7 days.
+     *
+     * Each of the (years, months, weeks, days) values can optionally be preceded with a '+' or '-' sign.
+     * The whole string can also start with an optional '+' or '-' sign, which will further affect all the fields.
+     *
+     * @param string $text
+     *
+     * @return \Brick\DateTime\Period
+     *
+     * @throws \Brick\DateTime\Parser\DateTimeParseException
+     */
+    public static function parse($text)
+    {
+        $pattern =
+            '/^' .
+            '([\-\+]?)' .
+            'P' .
+            '(?:([\-\+]?[0-9]+)Y)?' .
+            '(?:([\-\+]?[0-9]+)M)?' .
+            '(?:([\-\+]?[0-9]+)W)?' .
+            '(?:([\-\+]?[0-9]+)D)?' .
+            '()$/i';
+
+        if (preg_match($pattern, $text, $matches) !== 1) {
+            throw Parser\DateTimeParseException::invalidPeriod($text);
+        }
+
+        list (, $sign, $years, $months, $weeks, $days) = $matches;
+
+        if ($years === '' && $months === '' && $weeks === '' && $days === '') {
+                throw Parser\DateTimeParseException::invalidPeriod($text);
+        }
+
+        $years  = (int) $years;
+        $months = (int) $months;
+        $weeks  = (int) $weeks;
+        $days   = (int) $days;
+
+        $days += LocalTime::DAYS_PER_WEEK * $weeks;
+
+        if ($sign === '-') {
+            $years  = -$years;
+            $months = -$months;
+            $days   = -$days;
+        }
+
+        return new Period($years, $months, $days);
+    }
+
+    /**
      * Returns a Period consisting of the number of years, months and days between two LocalDateTime instances.
      *
      * @param LocalDateTime $startInclusive

@@ -5,7 +5,7 @@ namespace Brick\DateTime\Parser;
 use Brick\DateTime\DateTimeException;
 
 /**
- * Exception thrown when an error occurs during parsing.
+ * Exception thrown when a parse error occurs.
  */
 class DateTimeParseException extends DateTimeException
 {
@@ -16,6 +16,15 @@ class DateTimeParseException extends DateTimeException
      */
     public static function invalidDuration($textToParse)
     {
-        return new self('Duration could not be parsed: ' . $textToParse);
+        return new self('Text cannot be parsed to a Duration: ' . $textToParse);
+    }
+    /**
+     * @param string $textToParse
+     *
+     * @return DateTimeParseException
+     */
+    public static function invalidPeriod($textToParse)
+    {
+        return new self('Text cannot be parsed to a Period: ' . $textToParse);
     }
 }
