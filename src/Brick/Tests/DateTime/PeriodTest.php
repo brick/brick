@@ -149,6 +149,11 @@ class PeriodTest extends AbstractTestCase
         $this->assertPeriodEquals(1, 2, 9, Period::of(1, 2, 3)->withDays(9));
     }
 
+    public function testMultipliedBy()
+    {
+        $this->assertPeriodEquals(-2, -4, -6, Period::of(1, 2, 3)->multipliedBy(-2));
+    }
+
     public function testNegated()
     {
         $this->assertPeriodEquals(-7, -8, -9, Period::of(7, 8, 9)->negated());

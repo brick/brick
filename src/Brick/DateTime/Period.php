@@ -216,6 +216,54 @@ class Period
      *
      * @return Period
      */
+    public function withYears($years)
+    {
+        $years = Cast::toInteger($years);
+
+        if ($years === $this->years) {
+            return $this;
+        }
+
+        return new Period($years, $this->months, $this->days);
+    }
+
+    /**
+     * @param integer $months
+     *
+     * @return Period
+     */
+    public function withMonths($months)
+    {
+        $months = Cast::toInteger($months);
+
+        if ($months === $this->months) {
+            return $this;
+        }
+
+        return new Period($this->years, $months, $this->days);
+    }
+
+    /**
+     * @param integer $days
+     *
+     * @return Period
+     */
+    public function withDays($days)
+    {
+        $days = Cast::toInteger($days);
+
+        if ($days === $this->days) {
+            return $this;
+        }
+
+        return new Period($this->years, $this->months, $days);
+    }
+
+    /**
+     * @param integer $years
+     *
+     * @return Period
+     */
     public function plusYears($years)
     {
         $years = Cast::toInteger($years);
@@ -308,51 +356,25 @@ class Period
     }
 
     /**
-     * @param integer $years
+     * Returns a new Period with each value multiplied by the given scalar.
+     *
+     * @param integer $scalar
      *
      * @return Period
      */
-    public function withYears($years)
+    public function multipliedBy($scalar)
     {
-        $years = Cast::toInteger($years);
+        $scalar = Cast::toInteger($scalar);
 
-        if ($years === $this->years) {
+        if ($scalar === 1) {
             return $this;
         }
 
-        return new Period($years, $this->months, $this->days);
-    }
-
-    /**
-     * @param integer $months
-     *
-     * @return Period
-     */
-    public function withMonths($months)
-    {
-        $months = Cast::toInteger($months);
-
-        if ($months === $this->months) {
-            return $this;
-        }
-
-        return new Period($this->years, $months, $this->days);
-    }
-
-    /**
-     * @param integer $days
-     *
-     * @return Period
-     */
-    public function withDays($days)
-    {
-        $days = Cast::toInteger($days);
-
-        if ($days === $this->days) {
-            return $this;
-        }
-
-        return new Period($this->years, $this->months, $days);
+        return new Period(
+            $this->years * $scalar,
+            $this->months * $scalar,
+            $this->days * $scalar
+        );
     }
 
     /**
