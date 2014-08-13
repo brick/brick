@@ -2,6 +2,7 @@
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Utility\Time;
 use Brick\DateTime\Utility\Cast;
 use Brick\Math\BigDecimal;
@@ -57,14 +58,18 @@ class Duration
     /**
      * Obtains an instance of `Duration` by parsing a text string.
      *
-     * @todo integrate with parsers.
+     * This will parse the ISO-8601 duration format `PnDTnHnMn.nS`
+     * which is the format returned by `__toString()`.
      *
-     * This will parse the string produced by `toString()` which is
-     * the ISO-8601 format `PTnS` where `n` is the number of seconds.
+     * All of the values (days, hours, minutes, seconds, nanoseconds) are optional,
+     * but the duration must at least contain one of the (days, hours, minutes, seconds) values.
      *
-     * If the duration contains a number of seconds with a decimal point,
-     * and the number of decimal places exceeds the nanosecond precision (9 digits),
-     * the duration will be silently truncated to 9 decimal places.
+     * A day is considered to by 24 hours, or 86400 seconds.
+     *
+     * The 'T' separator must only be present if one the (hours, minutes, seconds) values are present.
+     *
+     * Each of the (days, hours, minutes, seconds) values can optionally be preceded with a '+' or '-' sign.
+     * The whole string can also start with an optional '+' or '-' sign, which will further affect all the fields.
      *
      * @param string $text
      *
@@ -74,25 +79,60 @@ class Duration
      */
     public static function parse($text)
     {
-        if (preg_match('/^PT(\-?)([0-9]+)(?:\.([0-9]+))?S$/i', $text, $matches) === 0) {
+        $pattern =
+            '/^' .
+            '([\-\+]?)' .
+            'P' .
+            '(?:([\-\+]?[0-9]+)D)?' .
+            '(?:(T)' .
+            '(?:([\-\+]?[0-9]+)H)?' .
+            '(?:([\-\+]?[0-9]+)M)?' .
+            '(?:([\-\+]?[0-9]+)(?:\.([0-9]{1,9}))?S)?' .
+            ')?' .
+            '()$/i';
+
+        if (preg_match($pattern, $text, $matches) !== 1) {
             throw Parser\DateTimeParseException::invalidDuration($text);
         }
 
-        try {
-            $seconds = Cast::toInteger($matches[1] . $matches[2]);
-        } catch (\InvalidArgumentException $e) {
-            throw Parser\DateTimeParseException::invalidDuration($text);
+        list (, $sign, $days, $t, $hours, $minutes, $seconds, $nanos) = $matches;
+
+        if ($hours === '' && $minutes === '' && $seconds === '') {
+            if ($days === '' || $t === 'T') {
+                throw Parser\DateTimeParseException::invalidDuration($text);
+            }
         }
 
-        if (isset($matches[3])) {
-            $nanos = substr($matches[3] . '000000000', 0, 9);
-            $nanos = (int) $nanos;
-        } else {
-            $nanos = 0;
+        $allNegative = ($sign === '-');
+        $secondsNegative = ($seconds !== '' && $seconds[0] === '-');
+
+        $nanos = str_pad($nanos, 9, '0', STR_PAD_RIGHT);
+
+        $days    = (int) $days;
+        $hours   = (int) $hours;
+        $minutes = (int) $minutes;
+        $seconds = (int) $seconds;
+        $nanos   = (int) $nanos;
+
+        if ($secondsNegative) {
+            $nanos = -$nanos;
         }
 
-        if ($matches[1] === '-' && $nanos !== 0) {
-            $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
+        if ($allNegative) {
+            $days    = -$days;
+            $hours   = -$hours;
+            $minutes = -$minutes;
+            $seconds = -$seconds;
+            $nanos   = -$nanos;
+        }
+
+        $seconds +=
+            LocalTime::SECONDS_PER_DAY * $days +
+            LocalTime::SECONDS_PER_HOUR * $hours +
+            LocalTime::SECONDS_PER_MINUTE * $minutes;
+
+        if ($nanos < 0) {
+            $nanos += LocalTime::NANOS_PER_SECOND;
             $seconds--;
         }
 
