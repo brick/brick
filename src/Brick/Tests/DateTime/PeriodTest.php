@@ -11,7 +11,27 @@ class PeriodTest extends AbstractTestCase
 {
     public function testOf()
     {
-        $this->assertPeriodEquals(6, 5, 4, Period::of(6, 5, 4));
+        $this->assertPeriodEquals(1, 2, 3, Period::of(1, 2, 3));
+    }
+
+    public function testOfYears()
+    {
+        $this->assertPeriodEquals(11, 0, 0, Period::ofYears(11));
+    }
+
+    public function testOfMonths()
+    {
+        $this->assertPeriodEquals(0, 11, 0, Period::ofMonths(11));
+    }
+
+    public function testOfWeeks()
+    {
+        $this->assertPeriodEquals(0, 0, 77, Period::ofWeeks(11));
+    }
+
+    public function testOfDays()
+    {
+        $this->assertPeriodEquals(0, 0, 11, Period::ofDays(11));
     }
 
     public function testZero()

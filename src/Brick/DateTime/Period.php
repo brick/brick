@@ -59,6 +59,54 @@ class Period
     }
 
     /**
+     * @param integer $years
+     *
+     * @return Period
+     */
+    public static function ofYears($years)
+    {
+        $years = Cast::toInteger($years);
+
+        return new Period($years, 0, 0);
+    }
+
+    /**
+     * @param integer $months
+     *
+     * @return Period
+     */
+    public static function ofMonths($months)
+    {
+        $months = Cast::toInteger($months);
+
+        return new Period(0, $months, 0);
+    }
+
+    /**
+     * @param integer $weeks
+     *
+     * @return Period
+     */
+    public static function ofWeeks($weeks)
+    {
+        $weeks = Cast::toInteger($weeks);
+
+        return new Period(0, 0, $weeks * LocalTime::DAYS_PER_WEEK);
+    }
+
+    /**
+     * @param integer $days
+     *
+     * @return Period
+     */
+    public static function ofDays($days)
+    {
+        $days = Cast::toInteger($days);
+
+        return new Period(0, 0, $days);
+    }
+
+    /**
      * Creates a zero Period.
      *
      * @return Period
