@@ -10,7 +10,7 @@ use Brick\DateTime\Instant;
 class FixedClock extends Clock
 {
     /**
-     * @var int
+     * @var Instant
      */
     private $instant;
 
