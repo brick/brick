@@ -20,6 +20,7 @@ use Brick\Locale\Locale;
  */
 class LocalTime
 {
+    const MONTHS_PER_YEAR    = 12;
     const DAYS_PER_WEEK      = 7;
     const HOURS_PER_DAY      = 24;
     const MINUTES_PER_HOUR   = 60;

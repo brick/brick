@@ -160,6 +160,37 @@ class PeriodTest extends AbstractTestCase
     }
 
     /**
+     * @dataProvider providerNormalized
+     *
+     * @param integer $y  The years of the period to normalize.
+     * @param integer $m  The months of the period to normalize.
+     * @param integer $d  The days of the period to normalize.
+     * @param integer $ny The years of the normalized period.
+     * @param integer $nm The months of the normalized period.
+     */
+    public function testNormalized($y, $m, $d, $ny, $nm)
+    {
+        $this->assertPeriodEquals($ny, $nm, $d, Period::of($y, $m, $d)->normalized());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerNormalized()
+    {
+        return [
+            [1, 2, 3, 1, 2],
+            [1, 12, 1, 2, 0],
+            [1, 13, 2, 2, 1],
+            [1, -12, 1, 0, 0],
+            [1, -13, 0, 0, -1],
+            [0, 14, 0, 1, 2],
+            [0, -14, 0, -1, -2],
+            [-2, 6, 7, -1, -6]
+        ];
+    }
+
+    /**
      * @dataProvider providerIsZero
      *
      * @param integer $years  The number of years in the period.

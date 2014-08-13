@@ -3,6 +3,7 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Utility\Cast;
+use Brick\DateTime\Utility\Math;
 
 /**
  * A date-based amount of time in the ISO-8601 calendar system, such as '2 years, 3 months and 4 days'.
@@ -393,6 +394,34 @@ class Period
             - $this->months,
             - $this->days
         );
+    }
+
+    /**
+     * Returns a copy of this Period with the years and months normalized.
+     *
+     * This normalizes the years and months units, leaving the days unit unchanged.
+     * The months unit is adjusted to have an absolute value less than 12,
+     * with the years unit being adjusted to compensate. For example, a period of
+     * "1 year and 15 months" will be normalized to "2 years and 3 months".
+     *
+     * The sign of the years and months units will be the same after normalization.
+     * For example, a period of "1 year and -25 months" will be normalized to
+     * "-1 year and -1 month".
+     *
+     * @return Period
+     */
+    public function normalized()
+    {
+        $totalMonths = $this->years * LocalTime::MONTHS_PER_YEAR + $this->months;
+
+        $splitYears = Math::div($totalMonths, 12);
+        $splitMonths = $totalMonths % 12;
+
+        if ($splitYears === $this->years || $splitMonths === $this->months) {
+            return $this;
+        }
+
+        return new Period($splitYears, $splitMonths, $this->days);
     }
 
     /**
