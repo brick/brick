@@ -119,6 +119,21 @@ class PeriodTest extends AbstractTestCase
         $this->assertPeriodEquals(1, 2, 13, Period::of(1, 2, 3)->plusDays(10));
     }
 
+    public function testMinusYears()
+    {
+        $this->assertPeriodEquals(-1, 2, 3, Period::of(1, 2, 3)->minusYears(2));
+    }
+
+    public function testMinusMonths()
+    {
+        $this->assertPeriodEquals(1, -2, 3, Period::of(1, 2, 3)->minusMonths(4));
+    }
+
+    public function testMinusDays()
+    {
+        $this->assertPeriodEquals(1, 2, -3, Period::of(1, 2, 3)->minusDays(6));
+    }
+
     public function testWithYears()
     {
         $this->assertPeriodEquals(9, 2, 3, Period::of(1, 2, 3)->withYears(9));
@@ -132,6 +147,11 @@ class PeriodTest extends AbstractTestCase
     public function testWithDays()
     {
         $this->assertPeriodEquals(1, 2, 9, Period::of(1, 2, 3)->withDays(9));
+    }
+
+    public function testNegated()
+    {
+        $this->assertPeriodEquals(-7, -8, -9, Period::of(7, 8, 9)->negated());
     }
 
     /**

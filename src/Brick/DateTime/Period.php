@@ -264,6 +264,54 @@ class Period
      *
      * @return Period
      */
+    public function minusYears($years)
+    {
+        $years = Cast::toInteger($years);
+
+        if ($years === 0) {
+            return $this;
+        }
+
+        return new Period($this->years - $years, $this->months, $this->days);
+    }
+
+    /**
+     * @param integer $months
+     *
+     * @return Period
+     */
+    public function minusMonths($months)
+    {
+        $months = Cast::toInteger($months);
+
+        if ($months === 0) {
+            return $this;
+        }
+
+        return new Period($this->years, $this->months - $months, $this->days);
+    }
+
+    /**
+     * @param integer $days
+     *
+     * @return Period
+     */
+    public function minusDays($days)
+    {
+        $days = Cast::toInteger($days);
+
+        if ($days === 0) {
+            return $this;
+        }
+
+        return new Period($this->years, $this->months, $this->days - $days);
+    }
+
+    /**
+     * @param integer $years
+     *
+     * @return Period
+     */
     public function withYears($years)
     {
         $years = Cast::toInteger($years);
@@ -346,7 +394,10 @@ class Period
     }
 
     /**
-     * Returns a native DateInterval with the same values as this Period.
+     * Returns a native DateInterval object equivalent to this Period.
+     *
+     * We cannot use the constructor with the output of __toString(),
+     * as it does not support negative values.
      *
      * @return \DateInterval
      */
