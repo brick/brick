@@ -142,4 +142,42 @@ class PeriodTest extends AbstractTestCase
             [-1, 2, -3]
         ];
     }
+
+    /**
+     * *@dataProvider providerToString
+     *
+     * @param integer $years    The number of years in the period.
+     * @param integer $months   The number of months in the period.
+     * @param integer $days     The number of days in the period.
+     * @param string  $expected The expected string output.
+     */
+    public function testToString($years, $months, $days, $expected)
+    {
+        $this->assertSame($expected, (string) Period::of($years, $months, $days));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerToString()
+    {
+        return [
+            [0, 0, 0, 'P0D'],
+            [0, 0, 1, 'P1D'],
+            [0, 1, 0, 'P1M'],
+            [0, 1, 2, 'P1M2D'],
+            [1, 0, 0, 'P1Y'],
+            [1, 0, 2, 'P1Y2D'],
+            [1, 2, 0, 'P1Y2M'],
+            [1, 2, 3, 'P1Y2M3D'],
+
+            [0, 0, -1, 'P-1D'],
+            [0, -1, 0, 'P-1M'],
+            [0, -1, -2, 'P-1M-2D'],
+            [-1, 0, 0, 'P-1Y'],
+            [-1, 0, -2, 'P-1Y-2D'],
+            [-1, -2, 0, 'P-1Y-2M'],
+            [-1, -2, -3, 'P-1Y-2M-3D'],
+        ];
+    }
 }

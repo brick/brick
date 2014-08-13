@@ -253,4 +253,28 @@ class Period
             $this->days
         ));
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        if ($this->isZero()) {
+            return 'P0D';
+        }
+
+        $string = 'P';
+
+        if ($this->years !== 0) {
+            $string .= $this->years . 'Y';
+        }
+        if ($this->months !== 0) {
+            $string .= $this->months . 'M';
+        }
+        if ($this->days !== 0) {
+            $string .= $this->days . 'D';
+        }
+
+        return $string;
+    }
 }
