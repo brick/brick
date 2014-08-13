@@ -49,7 +49,7 @@ class TimeZoneOffset extends TimeZone
      *
      * @return TimeZoneOffset
      *
-     * @throws DateTimeException
+     * @throws DateTimeException If the values are not in range or the signs don't match.
      */
     public static function of($hours, $minutes = 0, $seconds = 0)
     {
@@ -80,14 +80,6 @@ class TimeZoneOffset extends TimeZone
     }
 
     /**
-     * @return TimeZoneOffset
-     */
-    public static function utc()
-    {
-        return new TimeZoneOffset(0);
-    }
-
-    /**
      * Obtains an instance of `TimeZoneOffset` specifying the total offset in seconds.
      *
      * The offset must be in the range `-18:00` to `+18:00`, which corresponds to -64800 to +64800.
@@ -105,6 +97,14 @@ class TimeZoneOffset extends TimeZone
         Field\TimeZoneOffsetTotalSeconds::check($totalSeconds);
 
         return new TimeZoneOffset($totalSeconds);
+    }
+
+    /**
+     * @return TimeZoneOffset
+     */
+    public static function utc()
+    {
+        return new TimeZoneOffset(0);
     }
 
     /**

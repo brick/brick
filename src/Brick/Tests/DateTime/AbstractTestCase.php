@@ -9,6 +9,7 @@ use Brick\DateTime\LocalTime;
 use Brick\DateTime\MonthDay;
 use Brick\DateTime\Period;
 use Brick\DateTime\ReadableInstant;
+use Brick\DateTime\TimeZoneOffset;
 use Brick\DateTime\YearMonth;
 
 /**
@@ -120,5 +121,14 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($years, $period->getYears());
         $this->assertSame($months, $period->getMonths());
         $this->assertSame($days, $period->getDays());
+    }
+
+    /**
+     * @param integer        $totalSeconds   The expected total offset in seconds.
+     * @param TimeZoneOffset $timeZoneOffset The time-zone offset to test.
+     */
+    protected function assertTimeZoneOffsetEquals($totalSeconds, TimeZoneOffset $timeZoneOffset)
+    {
+        $this->assertSame($totalSeconds, $timeZoneOffset->getTotalSeconds());
     }
 }

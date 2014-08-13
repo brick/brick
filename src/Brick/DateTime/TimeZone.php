@@ -41,7 +41,7 @@ abstract class TimeZone
     }
 
     /**
-     * @return TimeZone
+     * @return TimeZoneOffset
      */
     public static function utc()
     {
@@ -56,6 +56,8 @@ abstract class TimeZone
     abstract public function getId();
 
     /**
+     * Returns the offset from UTC at the given instant.
+     *
      * @param ReadableInstant $pointInTime The instant.
      *
      * @return integer The offset from UTC in seconds.
