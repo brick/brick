@@ -3,6 +3,7 @@
 namespace Brick\DateTime;
 
 use Brick\DateTime\Parser\DateTimeParseException;
+use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Time;
 use Brick\DateTime\Utility\Cast;
 use Brick\Math\BigDecimal;
@@ -637,34 +638,55 @@ class Duration
     }
 
     /**
-     * Returns an ISO-8601 seconds based string representation of this duration.
+     * Returns an ISO-8601 string representation of this duration.
      *
-     * If the decimal part is zero, it is omitted from the output.
-     * Examples: `PT123S`, `PT123.45`.
+     * The format of the returned string will be PTnHnMn.nS, where n is
+     * the relevant hours, minutes, seconds or nanoseconds part of the duration.
+     *
+     * If a section has a zero value, it is omitted, unless the whole duration is zero.
+     * The hours, minutes and seconds will all have the same sign.
+     *
+     * Note that multiples of 24 hours are not output as days to avoid confusion with Period.
      *
      * @return string
      */
     public function __toString()
     {
         $seconds = $this->seconds;
-        $nanos = $this->nanos;
+        $nanos   = $this->nanos;
+
+        if ($seconds === 0 && $nanos === 0) {
+            return 'PT0S';
+        }
+
+        $negative = ($seconds < 0);
+
+        if ($seconds < 0 && $nanos !== 0) {
+            $seconds++;
+            $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
+        }
+
+        $hours = Math::div($seconds, LocalTime::SECONDS_PER_HOUR);
+        $minutes = Math::div($seconds % LocalTime::SECONDS_PER_HOUR, LocalTime::SECONDS_PER_MINUTE);
+        $seconds = $seconds % LocalTime::SECONDS_PER_MINUTE;
 
         $string = 'PT';
 
-        if ($seconds < 0) {
-            $string .= '-';
-            $seconds = -$seconds;
-
-            if ($nanos !== 0) {
-                $nanos = LocalTime::NANOS_PER_SECOND - $nanos;
-                $seconds--;
-            }
+        if ($hours !== 0) {
+            $string .= $hours . 'H';
+        }
+        if ($minutes !== 0) {
+            $string .= $minutes . 'M';
         }
 
-        $string .= $seconds;
+        if ($seconds === 0 && $nanos === 0) {
+            return $string;
+        }
+
+        $string .= (($seconds === 0 && $negative) ? '-0' : $seconds);
 
         if ($nanos !== 0) {
-            $string .= sprintf('.%09d', $nanos);
+            $string .= '.' . rtrim(sprintf('%09d', $nanos), '0');
         }
 
         return $string . 'S';
