@@ -72,37 +72,52 @@ class LocalDateTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providerOfEpochDay
+     * @dataProvider providerEpochDay
      *
-     * @param integer $epochDay     The epoch day.
-     * @param string  $expectedDate The expected date string.
+     * @param integer $epochDay The epoch day.
+     * @param integer $year     The expected year.
+     * @param integer $month    The expected month.
+     * @param integer $day      The expected day.
      */
-    public function testOfEpochDay($epochDay, $expectedDate)
+    public function testOfEpochDay($epochDay, $year, $month, $day)
     {
-        $this->assertSame($expectedDate, (string) LocalDate::ofEpochDay($epochDay));
+        $this->assertLocalDateEquals($year, $month, $day, LocalDate::ofEpochDay($epochDay));
+    }
+
+    /**
+     * @dataProvider providerEpochDay
+     *
+     * @param integer $epochDay The expected epoch day.
+     * @param integer $year     The year.
+     * @param integer $month    The month.
+     * @param integer $day      The day.
+     */
+    public function testToEpochDay($epochDay, $year, $month, $day)
+    {
+        $this->assertSame($epochDay, LocalDate::of($year, $month, $day)->toEpochDay());
     }
 
     /**
      * @return array
      */
-    public function providerOfEpochDay()
+    public function providerEpochDay()
     {
         return [
-            [-1000000, '-0768-02-04'],
-            [-100000, '1696-03-17'],
-            [-10000, '1942-08-16'],
-            [-1000, '1967-04-07'],
-            [-100, '1969-09-23'],
-            [-10, '1969-12-22'],
-            [-1, '1969-12-31'],
-            [0, '1970-01-01'],
-            [1, '1970-01-02'],
-            [10, '1970-01-11'],
-            [100, '1970-04-11'],
-            [1000, '1972-09-27'],
-            [10000, '1997-05-19'],
-            [100000, '2243-10-17'],
-            [1000000, '4707-11-29']
+            [-1000000, -768,  2,  4],
+            [ -100000, 1696,  3, 17],
+            [  -10000, 1942,  8, 16],
+            [   -1000, 1967,  4,  7],
+            [    -100, 1969,  9, 23],
+            [     -10, 1969, 12, 22],
+            [      -1, 1969, 12, 31],
+            [       0, 1970,  1,  1],
+            [       1, 1970,  1,  2],
+            [      10, 1970,  1, 11],
+            [     100, 1970,  4, 11],
+            [    1000, 1972,  9, 27],
+            [   10000, 1997,  5, 19],
+            [  100000, 2243, 10, 17],
+            [ 1000000, 4707, 11, 29]
         ];
     }
 
