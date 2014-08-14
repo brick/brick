@@ -2,6 +2,7 @@
 
 namespace Brick\Tests\DateTime;
 
+use Brick\DateTime\Instant;
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalTime;
 use Brick\DateTime\ZonedDateTime;
@@ -13,24 +14,24 @@ use Brick\DateTime\TimeZone;
 class ZonedDateTimeTest extends AbstractTestCase
 {
     /**
-     * @dataProvider providerOfTimestamp
+     * @dataProvider providerOfInstant
      *
      * @param string $formattedDatetime
      * @param string $timeZone
      */
-    public function testOfTimestamp($formattedDatetime, $timeZone)
+    public function testOfInstant($formattedDatetime, $timeZone)
     {
-        $timestamp = 1000000000;
-        $zonedDateTime = ZonedDateTime::ofEpochSecond($timestamp, TimeZone::parse($timeZone));
+        $instant = Instant::of(1000000000);
+        $zonedDateTime = ZonedDateTime::ofInstant($instant, TimeZone::parse($timeZone));
 
-        $this->assertEquals($timestamp, $zonedDateTime->getInstant()->getEpochSecond());
+        $this->assertEquals(1000000000, $zonedDateTime->getInstant()->getEpochSecond());
         $this->assertEquals($formattedDatetime, (string) $zonedDateTime->getDateTime());
     }
 
     /**
      * @return array
      */
-    public function providerOfTimestamp()
+    public function providerOfInstant()
     {
         return [
             ['2001-09-09T01:46:40', 'UTC'],
@@ -139,7 +140,7 @@ class ZonedDateTimeTest extends AbstractTestCase
         $timezone1 = TimeZone::parse('UTC');
         $timezone2 = TimeZone::parse('America/Los_Angeles');
 
-        $datetime1 = ZonedDateTime::ofEpochSecond(1e9, $timezone1);
+        $datetime1 = ZonedDateTime::ofInstant(Instant::of(1000000000), $timezone1);
         $datetime2 = $datetime1->withTimeZoneSameInstant($timezone2);
 
         $this->assertEquals($timezone1, $datetime1->getTimezone());

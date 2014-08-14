@@ -98,7 +98,7 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function now(TimeZone $timeZone)
     {
-        return Instant::now()->atTimeZone($timeZone);
+        return ZonedDateTime::ofInstant(Instant::now(), $timeZone);
     }
 
     /**
@@ -167,30 +167,16 @@ class ZonedDateTime extends ReadableInstant
      */
     public static function ofInstant(Instant $instant, TimeZone $timeZone)
     {
-        return ZonedDateTime::ofEpochSecond($instant->getInstant()->getEpochSecond(), $timeZone);
-    }
-
-    /**
-     * @todo nano as second parameter
-     *
-     * Creates a ZonedDateTime from an epoch second and a time zone.
-     *
-     * @param integer  $epochSecond
-     * @param TimeZone $timeZone
-     *
-     * @return ZonedDateTime
-     */
-    public static function ofEpochSecond($epochSecond, TimeZone $timeZone)
-    {
         $dateTimeZone = $timeZone->toDateTimeZone();
 
         // We need to pass a DateTimeZone to avoid a PHP warning...
-        $dateTime = new \DateTime('@' . $epochSecond, $dateTimeZone);
+        $dateTime = new \DateTime('@' . $instant->getEpochSecond(), $dateTimeZone);
 
         // ... but this DateTimeZone is ignored because of the timestamp, so we set it again.
         $dateTime->setTimezone($dateTimeZone);
 
         $localDateTime = LocalDateTime::parse($dateTime->format('Y-m-d\TH:i:s'));
+        $localDateTime = $localDateTime->withNano($instant->getNano());
 
         if ($timeZone instanceof TimeZoneOffset) {
             $timeZoneOffset = $timeZone;
