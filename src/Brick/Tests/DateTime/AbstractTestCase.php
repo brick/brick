@@ -24,8 +24,10 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertReadableInstantEquals($epochSecond, $nano, ReadableInstant $instant)
     {
-        $this->assertSame($epochSecond, $instant->getEpochSecond());
-        $this->assertSame($nano, $instant->getNano());
+        $this->compare([$epochSecond, $nano], [
+            $instant->getEpochSecond(),
+            $instant->getNano()
+        ]);
     }
 
     /**
@@ -36,9 +38,11 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertLocalDateEquals($year, $month, $day, LocalDate $date)
     {
-        $this->assertSame($year, $date->getYear());
-        $this->assertSame($month, $date->getMonth());
-        $this->assertSame($day, $date->getDay());
+        $this->compare([$year, $month, $day], [
+            $date->getYear(),
+            $date->getMonth(),
+            $date->getDay()
+        ]);
     }
 
     /**
@@ -50,10 +54,12 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertLocalTimeEquals($hour, $minute, $second, $nano, LocalTime $time)
     {
-        $this->assertSame($hour, $time->getHour());
-        $this->assertSame($minute, $time->getMinute());
-        $this->assertSame($second, $time->getSecond());
-        $this->assertSame($nano, $time->getNano());
+        $this->compare([$hour, $minute, $second, $nano], [
+            $time->getHour(),
+            $time->getMinute(),
+            $time->getSecond(),
+            $time->getNano()
+        ]);
     }
 
     /**
@@ -68,13 +74,15 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertLocalDateTimeEquals($y, $m, $d, $h, $i, $s, $n, LocalDateTime $dateTime)
     {
-        $this->assertSame($y, $dateTime->getYear());
-        $this->assertSame($m, $dateTime->getMonth());
-        $this->assertSame($d, $dateTime->getDay());
-        $this->assertSame($h, $dateTime->getHour());
-        $this->assertSame($i, $dateTime->getMinute());
-        $this->assertSame($s, $dateTime->getSecond());
-        $this->assertSame($n, $dateTime->getNano());
+        $this->compare([$y, $m, $d, $h, $i, $s, $n], [
+            $dateTime->getYear(),
+            $dateTime->getMonth(),
+            $dateTime->getDay(),
+            $dateTime->getHour(),
+            $dateTime->getMinute(),
+            $dateTime->getSecond(),
+            $dateTime->getNano()
+        ]);
     }
 
     /**
@@ -84,8 +92,10 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertYearMonthEquals($year, $month, YearMonth $yearMonth)
     {
-        $this->assertSame($year, $yearMonth->getYear());
-        $this->assertSame($month, $yearMonth->getMonth());
+        $this->compare([$year, $month], [
+            $yearMonth->getYear(),
+            $yearMonth->getMonth()
+        ]);
     }
 
     /**
@@ -95,8 +105,10 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertMonthDayEquals($month, $day, MonthDay $monthDay)
     {
-        $this->assertSame($month, $monthDay->getMonth());
-        $this->assertSame($day, $monthDay->getDay());
+        $this->compare([$month, $day], [
+            $monthDay->getMonth(),
+            $monthDay->getDay()
+        ]);
     }
 
     /**
@@ -106,8 +118,10 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertDurationEquals($seconds, $nanos, Duration $duration)
     {
-        $this->assertSame($seconds, $duration->getSeconds());
-        $this->assertSame($nanos, $duration->getNanos());
+        $this->compare([$seconds, $nanos], [
+            $duration->getSeconds(),
+            $duration->getNanos()
+        ]);
     }
 
     /**
@@ -118,9 +132,11 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertPeriodEquals($years, $months, $days, Period $period)
     {
-        $this->assertSame($years, $period->getYears());
-        $this->assertSame($months, $period->getMonths());
-        $this->assertSame($days, $period->getDays());
+        $this->compare([$years, $months, $days], [
+            $period->getYears(),
+            $period->getMonths(),
+            $period->getDays()
+        ]);
     }
 
     /**
@@ -129,6 +145,37 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertTimeZoneOffsetEquals($totalSeconds, TimeZoneOffset $timeZoneOffset)
     {
-        $this->assertSame($totalSeconds, $timeZoneOffset->getTotalSeconds());
+        $this->compare([$totalSeconds], [
+            $timeZoneOffset->getTotalSeconds()
+        ]);
+    }
+
+    /**
+     * @param array $expected The expected values.
+     * @param array $actual   The actual values, count & keys matching expected values.
+     */
+    private function compare(array $expected, array $actual)
+    {
+        $message = $this->export($actual) . ' !== ' . $this->export($expected);
+
+        foreach ($expected as $key => $value) {
+            $this->assertSame($value, $actual[$key], $message);
+        }
+    }
+
+    /**
+     * Exports the given values as a string.
+     *
+     * @param array $values The values to export.
+     *
+     * @return string
+     */
+    private function export(array $values)
+    {
+        foreach ($values as & $value) {
+            $value = var_export($value, true);
+        }
+
+        return '(' . implode(', ', $values) . ')';
     }
 }
