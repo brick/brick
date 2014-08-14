@@ -4,16 +4,11 @@ namespace Brick\DateTime\Utility;
 
 /**
  * Type-casting utility class.
+ *
+ * @internal
  */
 final class Cast
 {
-    /**
-     * Private constructor. This class cannot be instantiated.
-     */
-    private function __construct()
-    {
-    }
-
     /**
      * Casts a variable to integer, ensuring that no data is silently lost.
      *

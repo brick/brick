@@ -4,8 +4,10 @@ namespace Brick\DateTime\Utility;
 
 /**
  * Internal utility class for calculations on integers.
+ *
+ * @internal
  */
-class Math
+final class Math
 {
     /**
      * Divides two integers into a quotient and a remainder.

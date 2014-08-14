@@ -6,8 +6,10 @@ use Brick\DateTime\LocalTime;
 
 /**
  * Internal utility class for calculations on time.
+ *
+ * @internal
  */
-class Time
+final class Time
 {
     /**
      * Adds two times consisting of seconds and nanoseconds.
