@@ -707,9 +707,7 @@ class LocalDateTime
         $formatter = new \IntlDateFormatter((string) $locale, \IntlDateFormatter::SHORT, \IntlDateFormatter::SHORT);
         $formatter->setTimeZone('UTC');
 
-        $datetime = new \DateTime(null, new \DateTimeZone('UTC'));
-        $this->getDate()->applyToDateTime($datetime);
-        $this->getTime()->applyToDateTime($datetime);
+        $datetime = new \DateTime($this->__toString(), new \DateTimeZone('UTC'));
 
         return $formatter->format($datetime);
     }

@@ -578,18 +578,6 @@ class LocalTime
     }
 
     /**
-     * @param \DateTime $dateTime
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function applyToDateTime(\DateTime $dateTime)
-    {
-        $dateTime->setTime($this->hour, $this->minute, $this->second);
-    }
-
-    /**
      * Returns this time as a string, such as 10:15.
      *
      * The output will be one of the following ISO-8601 formats:
@@ -633,7 +621,7 @@ class LocalTime
         $formatter->setTimeZone('UTC');
 
         $datetime = new \DateTime(null, new \DateTimeZone('UTC'));
-        $this->applyToDateTime($datetime);
+        $datetime->setTime($this->hour, $this->minute, $this->second);
 
         return $formatter->format($datetime);
     }

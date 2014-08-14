@@ -564,18 +564,6 @@ class LocalDate
     }
 
     /**
-     * @param \DateTime $dateTime
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function applyToDateTime(\DateTime $dateTime)
-    {
-        $dateTime->setDate($this->year, $this->month, $this->day);
-    }
-
-    /**
      * Checks if the year is a leap year, according to the ISO proleptic calendar system rules.
      *
      * @return boolean
@@ -639,7 +627,7 @@ class LocalDate
         $formatter->setTimeZone('UTC');
 
         $datetime = new \DateTime(null, new \DateTimeZone('UTC'));
-        $this->applyToDateTime($datetime);
+        $datetime->setDate($this->year, $this->month, $this->day);
 
         return $formatter->format($datetime);
     }
