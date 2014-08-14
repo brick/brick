@@ -552,32 +552,6 @@ class LocalDate
     }
 
     /**
-     * Returns whether this date is between the given dates, inclusive.
-     *
-     * @param LocalDate $first The first date.
-     * @param LocalDate $last  The last date.
-     *
-     * @return boolean
-     */
-    public function isBetweenInclusive(LocalDate $first, LocalDate $last)
-    {
-        return ! ($this->isBefore($first) || $this->isAfter($last));
-    }
-
-    /**
-     * Returns whether this date is between the given dates, exclusive.
-     *
-     * @param LocalDate $first The first date.
-     * @param LocalDate $last  The last date.
-     *
-     * @return boolean
-     */
-    public function isBetweenExclusive(LocalDate $first, LocalDate $last)
-    {
-        return $this->isAfter($first) && $this->isBefore($last);
-    }
-
-    /**
      * Returns a local date-time formed from this date at the specified time.
      *
      * @param LocalTime $time
