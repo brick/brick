@@ -229,18 +229,6 @@ class Duration
     }
 
     /**
-     * Returns a Duration representing the time elapsed since the given instant.
-     *
-     * @param \Brick\DateTime\ReadableInstant $startInclusive
-     *
-     * @return \Brick\DateTime\Duration
-     */
-    public static function since(ReadableInstant $startInclusive)
-    {
-        return Duration::between($startInclusive, Instant::now());
-    }
-
-    /**
      * Returns whether this Duration is zero length.
      *
      * @return boolean
