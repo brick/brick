@@ -268,9 +268,9 @@ class PeriodTest extends AbstractTestCase
         $period = Period::of($years, $months, $days);
         $dateInterval = $period->toDateInterval();
 
-        $this->assertEquals($years, $dateInterval->y);
-        $this->assertEquals($months, $dateInterval->m);
-        $this->assertEquals($days, $dateInterval->d);
+        $this->assertSame($years, $dateInterval->y);
+        $this->assertSame($months, $dateInterval->m);
+        $this->assertSame($days, $dateInterval->d);
     }
 
     /**

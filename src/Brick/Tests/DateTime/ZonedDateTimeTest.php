@@ -24,8 +24,8 @@ class ZonedDateTimeTest extends AbstractTestCase
         $instant = Instant::of(1000000000);
         $zonedDateTime = ZonedDateTime::ofInstant($instant, TimeZone::parse($timeZone));
 
-        $this->assertEquals(1000000000, $zonedDateTime->getInstant()->getEpochSecond());
-        $this->assertEquals($formattedDatetime, (string) $zonedDateTime->getDateTime());
+        $this->assertSame(1000000000, $zonedDateTime->getInstant()->getEpochSecond());
+        $this->assertSame($formattedDatetime, (string) $zonedDateTime->getDateTime());
     }
 
     /**
@@ -122,7 +122,7 @@ class ZonedDateTimeTest extends AbstractTestCase
         $date = LocalDate::of(2012, 6, 30);
         $datetime = ZonedDateTime::createFromDate($date, TimeZone::parse('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
-        $this->assertEquals(1341039600, $datetime->getInstant()->getEpochSecond());
+        $this->assertSame(1341039600, $datetime->getInstant()->getEpochSecond());
     }
 
     public function testCreateFromDateAndTime()
@@ -132,7 +132,7 @@ class ZonedDateTimeTest extends AbstractTestCase
         $datetime = ZonedDateTime::createFromDateAndTime($date, $time, TimeZone::parse('America/Los_Angeles'));
         $this->assertTrue($datetime->getDate()->isEqualTo($date));
         $this->assertTrue($datetime->getTime()->isEqualTo($time));
-        $this->assertEquals(1341084896, $datetime->getInstant()->getEpochSecond());
+        $this->assertSame(1341084896, $datetime->getInstant()->getEpochSecond());
     }
 
     public function testChangeTimeZone()
@@ -143,14 +143,14 @@ class ZonedDateTimeTest extends AbstractTestCase
         $datetime1 = ZonedDateTime::ofInstant(Instant::of(1000000000), $timezone1);
         $datetime2 = $datetime1->withTimeZoneSameInstant($timezone2);
 
-        $this->assertEquals($timezone1, $datetime1->getTimezone());
-        $this->assertEquals($timezone2, $datetime2->getTimezone());
-        $this->assertEquals('2001-09-08T18:46:40', (string) $datetime2->getDateTime());
+        $this->assertSame($timezone1, $datetime1->getTimezone());
+        $this->assertSame($timezone2, $datetime2->getTimezone());
+        $this->assertSame('2001-09-08T18:46:40', (string) $datetime2->getDateTime());
 
         $datetime2 = $datetime1->withTimeZoneSameLocal($timezone2);
 
-        $this->assertEquals($timezone1, $datetime1->getTimezone());
-        $this->assertEquals($timezone2, $datetime2->getTimezone());
-        $this->assertEquals('2001-09-09T01:46:40', (string) $datetime2->getDateTime());
+        $this->assertSame($timezone1, $datetime1->getTimezone());
+        $this->assertSame($timezone2, $datetime2->getTimezone());
+        $this->assertSame('2001-09-09T01:46:40', (string) $datetime2->getDateTime());
     }
 }

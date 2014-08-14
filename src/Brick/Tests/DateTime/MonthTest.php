@@ -11,18 +11,18 @@ class MonthTest extends AbstractTestCase
 {
     public function testConstants()
     {
-        $this->assertEquals(1, Month::JANUARY);
-        $this->assertEquals(2, Month::FEBRUARY);
-        $this->assertEquals(3, Month::MARCH);
-        $this->assertEquals(4, Month::APRIL);
-        $this->assertEquals(5, Month::MAY);
-        $this->assertEquals(6, Month::JUNE);
-        $this->assertEquals(7, Month::JULY);
-        $this->assertEquals(8, Month::AUGUST);
-        $this->assertEquals(9, Month::SEPTEMBER);
-        $this->assertEquals(10, Month::OCTOBER);
-        $this->assertEquals(11, Month::NOVEMBER);
-        $this->assertEquals(12, Month::DECEMBER);
+        $this->assertSame(1, Month::JANUARY);
+        $this->assertSame(2, Month::FEBRUARY);
+        $this->assertSame(3, Month::MARCH);
+        $this->assertSame(4, Month::APRIL);
+        $this->assertSame(5, Month::MAY);
+        $this->assertSame(6, Month::JUNE);
+        $this->assertSame(7, Month::JULY);
+        $this->assertSame(8, Month::AUGUST);
+        $this->assertSame(9, Month::SEPTEMBER);
+        $this->assertSame(10, Month::OCTOBER);
+        $this->assertSame(11, Month::NOVEMBER);
+        $this->assertSame(12, Month::DECEMBER);
     }
 
     /**
@@ -42,6 +42,7 @@ class MonthTest extends AbstractTestCase
     public function providerOfInvalidThrowsException()
     {
         return [
+            [-1],
             [0],
             [13]
         ];
@@ -51,11 +52,11 @@ class MonthTest extends AbstractTestCase
      * @dataProvider providerMonthFactoryMethods
      *
      * @param Month   $month        The Month to test.
-     * @param integer $integerValue The ISO 8601 day of the week integer value expected.
+     * @param integer $integerValue The expected ISO 8601 day-of-week integer value.
      */
     public function testMonthFactoryMethods(Month $month, $integerValue)
     {
-        $this->assertEquals($month->getValue(), $integerValue);
+        $this->assertSame($integerValue, $month->getValue());
     }
 
     /**
@@ -281,36 +282,50 @@ class MonthTest extends AbstractTestCase
         ];
     }
 
-    public function testFirstDayOfYearNotLeapYear()
+    /**
+     * @dataProvider providerFirstDayOfYear
+     *
+     * @param integer $month          The month value, from 1 to 12.
+     * @param boolean $leapYear       Whether to test on a leap year.
+     * @param integer $firstDayOfYear The expected first day of year.
+     */
+    public function testFirstDayOfYear($month, $leapYear, $firstDayOfYear)
     {
-        $this->assertEquals(1, Month::january()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31, Month::february()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28, Month::march()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31, Month::april()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30, Month::may()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31, Month::june()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30, Month::july()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31, Month::august()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->getFirstDayOfYear(false));
-        $this->assertEquals(1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->getFirstDayOfYear(false));
+        $this->assertSame($firstDayOfYear, Month::of($month)->getFirstDayOfYear($leapYear));
     }
 
-    public function testFirstDayOfYearLeapYear()
+    /**
+     * @return array
+     */
+    public function providerFirstDayOfYear()
     {
-        $this->assertEquals(1, Month::january()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31, Month::february()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29, Month::march()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31, Month::april()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30, Month::may()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31, Month::june()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30, Month::july()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31, Month::august()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31, Month::september()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30, Month::october()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31, Month::november()->getFirstDayOfYear(true));
-        $this->assertEquals(1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30, Month::december()->getFirstDayOfYear(true));
+        return [
+            [ 1, false, 1],
+            [ 2, false, 1 + 31],
+            [ 3, false, 1 + 31 + 28],
+            [ 4, false, 1 + 31 + 28 + 31],
+            [ 5, false, 1 + 31 + 28 + 31 + 30],
+            [ 6, false, 1 + 31 + 28 + 31 + 30 + 31],
+            [ 7, false, 1 + 31 + 28 + 31 + 30 + 31 + 30],
+            [ 8, false, 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31],
+            [ 9, false, 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31],
+            [10, false, 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30],
+            [11, false, 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31],
+            [12, false, 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30],
+
+            [ 1, true, 1],
+            [ 2, true, 1 + 31],
+            [ 3, true, 1 + 31 + 29],
+            [ 4, true, 1 + 31 + 29 + 31],
+            [ 5, true, 1 + 31 + 29 + 31 + 30],
+            [ 6, true, 1 + 31 + 29 + 31 + 30 + 31],
+            [ 7, true, 1 + 31 + 29 + 31 + 30 + 31 + 30],
+            [ 8, true, 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31],
+            [ 9, true, 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31],
+            [10, true, 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30],
+            [11, true, 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31],
+            [12, true, 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30],
+        ];
     }
 
     /**
@@ -330,15 +345,15 @@ class MonthTest extends AbstractTestCase
     public function providerToString()
     {
         return [
-            [1, 'January'],
-            [2, 'February'],
-            [3, 'March'],
-            [4, 'April'],
-            [5, 'May'],
-            [6, 'June'],
-            [7, 'July'],
-            [8, 'August'],
-            [9, 'September'],
+            [ 1, 'January'],
+            [ 2, 'February'],
+            [ 3, 'March'],
+            [ 4, 'April'],
+            [ 5, 'May'],
+            [ 6, 'June'],
+            [ 7, 'July'],
+            [ 8, 'August'],
+            [ 9, 'September'],
             [10, 'October'],
             [11, 'November'],
             [12, 'December']

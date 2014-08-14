@@ -51,7 +51,7 @@ class DayOfWeekTest extends AbstractTestCase
      */
     public function testDayOfWeekFactoryMethods(DayOfWeek $dayOfWeek, $integerValue)
     {
-        $this->assertEquals($integerValue, $dayOfWeek->getValue());
+        $this->assertSame($integerValue, $dayOfWeek->getValue());
     }
 
     /**

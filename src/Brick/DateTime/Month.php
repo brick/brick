@@ -310,10 +310,9 @@ class Month
                 return 274 + $leap;
             case Month::NOVEMBER:
                 return 305 + $leap;
-            case Month::DECEMBER:
-            default:
-                return 335 + $leap;
         }
+
+        return 335 + $leap;
     }
 
     /**
