@@ -381,6 +381,7 @@ class LocalDateTest extends AbstractTestCase
     public function providerWithDay()
     {
         return [
+            [2007, 6, 2, 2],
             [2007, 1, 1, 31],
             [2008, 2, 28, 29],
             [2010, 2, 27, 28]

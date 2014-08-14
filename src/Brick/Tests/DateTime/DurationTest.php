@@ -265,25 +265,82 @@ class DurationTest extends AbstractTestCase
         ];
     }
 
-    public function testIsZero()
+    /**
+     * @dataProvider providerCompareToZero
+     *
+     * @param integer $seconds The seconds of the duration.
+     * @param integer $nanos   The nanos of the duration.
+     * @param integer $cmp     The comparison value.
+     */
+    public function testIsZero($seconds, $nanos, $cmp)
     {
-        $this->assertFalse(Duration::ofSeconds(-1)->isZero());
-        $this->assertTrue(Duration::ofSeconds(0)->isZero());
-        $this->assertFalse(Duration::ofSeconds(1)->isZero());
+        $this->assertSame($cmp === 0, Duration::ofSeconds($seconds, $nanos)->isZero());
     }
 
-    public function testIsPositive()
+    /**
+     * @dataProvider providerCompareToZero
+     *
+     * @param integer $seconds The seconds of the duration.
+     * @param integer $nanos   The nanos of the duration.
+     * @param integer $cmp     The comparison value.
+     */
+    public function testIsPositive($seconds, $nanos, $cmp)
     {
-        $this->assertFalse(Duration::ofSeconds(-1)->isPositive());
-        $this->assertFalse(Duration::ofSeconds(0)->isPositive());
-        $this->assertTrue(Duration::ofSeconds(1)->isPositive());
+        $this->assertSame($cmp > 0, Duration::ofSeconds($seconds, $nanos)->isPositive());
     }
 
-    public function testIsNegative()
+    /**
+     * @dataProvider providerCompareToZero
+     *
+     * @param integer $seconds The seconds of the duration.
+     * @param integer $nanos   The nanos of the duration.
+     * @param integer $cmp     The comparison value.
+     */
+    public function testIsPositiveOrZero($seconds, $nanos, $cmp)
     {
-        $this->assertTrue(Duration::ofSeconds(-1)->isNegative());
-        $this->assertFalse(Duration::ofSeconds(0)->isNegative());
-        $this->assertFalse(Duration::ofSeconds(1)->isNegative());
+        $this->assertSame($cmp >= 0, Duration::ofSeconds($seconds, $nanos)->isPositiveOrZero());
+    }
+
+    /**
+     * @dataProvider providerCompareToZero
+     *
+     * @param integer $seconds The seconds of the duration.
+     * @param integer $nanos   The nanos of the duration.
+     * @param integer $cmp     The comparison value.
+     */
+    public function testIsNegative($seconds, $nanos, $cmp)
+    {
+        $this->assertSame($cmp < 0, Duration::ofSeconds($seconds, $nanos)->isNegative());
+    }
+
+    /**
+     * @dataProvider providerCompareToZero
+     *
+     * @param integer $seconds The seconds of the duration.
+     * @param integer $nanos   The nanos of the duration.
+     * @param integer $cmp     The comparison value.
+     */
+    public function testIsNegativeOrZero($seconds, $nanos, $cmp)
+    {
+        $this->assertSame($cmp <= 0, Duration::ofSeconds($seconds, $nanos)->isNegativeOrZero());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerCompareToZero()
+    {
+        return [
+            [-1, -1, -1],
+            [-1,  0, -1],
+            [-1,  1, -1],
+            [ 0, -1, -1],
+            [ 0,  0,  0],
+            [ 0,  1,  1],
+            [ 1, -1,  1],
+            [ 1,  0,  1],
+            [ 1,  1,  1]
+        ];
     }
 
     /**
@@ -377,6 +434,24 @@ class DurationTest extends AbstractTestCase
         $duration2 = Duration::ofSeconds($s2, $n2);
 
         $this->assertDurationEquals($s, $n, $duration1->plus($duration2));
+    }
+
+    /**
+     * @dataProvider providerPlus
+     *
+     * @param integer $s1 The 1st duration's seconds.
+     * @param integer $n1 The 1st duration's nanoseconds.
+     * @param integer $s2 The 2nd duration's seconds.
+     * @param integer $n2 The 2nd duration's nanoseconds.
+     * @param integer $s  The expected seconds.
+     * @param integer $n  The expected nanoseconds.
+     */
+    public function testMinus($s1, $n1, $s2, $n2, $s, $n)
+    {
+        $duration1 = Duration::ofSeconds($s1, $n1);
+        $duration2 = Duration::ofSeconds(-$s2, -$n2);
+
+        $this->assertDurationEquals($s, $n, $duration1->minus($duration2));
     }
 
     /**
@@ -848,10 +923,8 @@ class DurationTest extends AbstractTestCase
      */
     public function testNegated($seconds, $nanos, $expectedSeconds, $expectedNanos)
     {
-        $duration = Duration::ofSeconds($seconds, $nanos)->negated();
-
-        $this->assertSame($expectedSeconds, $duration->getSeconds());
-        $this->assertSame($expectedNanos, $duration->getNanos());
+        $duration = Duration::ofSeconds($seconds, $nanos);
+        $this->assertDurationEquals($expectedSeconds, $expectedNanos, $duration->negated());
     }
 
     /**
@@ -860,6 +933,7 @@ class DurationTest extends AbstractTestCase
     public function providerNegated()
     {
         return [
+            [0, 0, 0, 0],
             [1, 0, -1, 0],
             [-1, 0, 1, 0],
             [1, 1, -2, 999999999],
