@@ -2,8 +2,13 @@
 
 namespace Brick\Tests\DateTime;
 
+use Brick\DateTime\Clock\Clock;
+use Brick\DateTime\Clock\FixedClock;
+use Brick\DateTime\Instant;
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalTime;
+use Brick\DateTime\TimeZone;
+use Brick\DateTime\Year;
 
 /**
  * Unit tests for class LocalDate.
@@ -119,6 +124,44 @@ class LocalDateTest extends AbstractTestCase
             [  100000, 2243, 10, 17],
             [ 1000000, 4707, 11, 29]
         ];
+    }
+
+    /**
+     * @dataProvider providerNow
+     *
+     * @param integer $epochSecond The epoch second to set the clock to.
+     * @param string  $timeZone    The time-zone to get the date in.
+     * @param integer $year        The expected year.
+     * @param integer $month       The expected month.
+     * @param integer $day         The expected day.
+     */
+    public function testNow($epochSecond, $timeZone, $year, $month, $day)
+    {
+        Clock::setDefault(new FixedClock(Instant::of($epochSecond)));
+        $this->assertLocalDateEquals($year, $month, $day, LocalDate::now(TimeZone::parse($timeZone)));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerNow()
+    {
+        return [
+            [0, '-01:00', 1969, 12, 31],
+            [0, '+00:00', 1970, 1, 1],
+            [1407970800, '+01:00', 2014, 8, 14],
+            [1407970800, '-01:00', 2014, 8, 13]
+        ];
+    }
+
+    public function testMin()
+    {
+        $this->assertLocalDateEquals(Year::MIN_VALUE, 1, 1, LocalDate::min());
+    }
+
+    public function testMax()
+    {
+        $this->assertLocalDateEquals(Year::MAX_VALUE, 12, 31, LocalDate::max());
     }
 
     /**

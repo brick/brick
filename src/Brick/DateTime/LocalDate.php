@@ -220,17 +220,25 @@ class LocalDate
     }
 
     /**
+     * Returns the minimum supported LocalDate.
+     *
+     * This can be used by an application as a "far past" date.
+     *
      * @return LocalDate
      */
-    public static function minDate()
+    public static function min()
     {
         return LocalDate::of(self::MIN_YEAR, 1, 1);
     }
 
     /**
+     * Returns the maximum supported LocalDate.
+     *
+     * This can be used by an application as a "far future" date.
+     *
      * @return LocalDate
      */
-    public static function maxDate()
+    public static function max()
     {
         return LocalDate::of(self::MAX_YEAR, 12, 31);
     }
