@@ -2,12 +2,9 @@
 
 namespace Brick\DateTime;
 
-use Brick\DateTime\Parser\DateTimeParseException;
 use Brick\DateTime\Utility\Math;
 use Brick\DateTime\Utility\Time;
 use Brick\DateTime\Utility\Cast;
-use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 
 /**
  * Represents a duration of time measured in seconds.
@@ -475,21 +472,6 @@ class Duration
     }
 
     /**
-     * Creates a Duration out of a BigDecimal representing a number of seconds.
-     *
-     * @param BigDecimal $decimal
-     *
-     * @return Duration
-     */
-    private function create(BigDecimal $decimal)
-    {
-        $nanos = $decimal->withPointMovedRight(9)->toBigInteger();
-        $divRem = $nanos->divideAndRemainder(LocalTime::NANOS_PER_SECOND);
-
-        return Duration::ofSeconds($divRem[0]->toInteger(), $divRem[1]->toInteger());
-    }
-
-    /**
      * Returns a copy of this Duration divided by the given value.
      *
      * If this yields an inexact result, the result will be rounded down.
@@ -503,16 +485,33 @@ class Duration
         $divisor = Cast::toInteger($divisor);
 
         if ($divisor === 0) {
-            throw new \InvalidArgumentException('Cannot divide a Duration by zero.');
+            throw new DateTimeException('Cannot divide a Duration by zero.');
         }
 
         if ($divisor === 1) {
             return $this;
         }
 
-        $decimal = $this->toSeconds()->dividedBy($divisor, null, RoundingMode::DOWN);
+        $seconds = $this->seconds;
+        $nanos = $this->nanos;
 
-        return $this->create($decimal);
+        if ($seconds < 0 && $nanos !== 0) {
+            $seconds++;
+            $nanos -= LocalTime::NANOS_PER_SECOND;
+        }
+
+        $seconds = Math::div($seconds, $divisor, $remainder);
+        $nanos = Math::div($nanos, $divisor, $r1);
+
+        $nanos += $remainder * Math::div(LocalTime::NANOS_PER_SECOND, $divisor, $r2);
+        $nanos += Math::div($r1 + $remainder * $r2, $divisor);
+
+        if ($nanos < 0) {
+            $seconds--;
+            $nanos = LocalTime::NANOS_PER_SECOND + $nanos;
+        }
+
+        return new Duration($seconds, $nanos);
     }
 
     /**
@@ -625,16 +624,6 @@ class Duration
     public function getNanos()
     {
         return $this->nanos;
-    }
-
-    /**
-     * Returns the duration as a BigDecimal.
-     *
-     * @return BigDecimal
-     */
-    public function toSeconds()
-    {
-        return BigDecimal::of($this->seconds)->plus(BigDecimal::ofUnscaledValue($this->nanos, 9));
     }
 
     /**

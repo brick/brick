@@ -767,13 +767,8 @@ class DurationTest extends AbstractTestCase
      */
     public function testDividedBy($seconds, $nanos, $divisor, $expectedSeconds, $expectedNanos)
     {
-        $duration = Duration::ofSeconds($seconds, $nanos);
-        $expected = Duration::ofSeconds($expectedSeconds, $expectedNanos);
-
-        $this->assertTrue($duration->dividedBy($divisor)->isEqualTo($expected));
-        $this->assertTrue($duration->negated()->dividedBy(-$divisor)->isEqualTo($expected));
-        $this->assertTrue($duration->negated()->dividedBy($divisor)->isEqualTo($expected->negated()));
-        $this->assertTrue($duration->dividedBy(-$divisor)->isEqualTo($expected->negated()));
+        $duration = Duration::ofSeconds($seconds, $nanos)->dividedBy($divisor);
+        $this->assertDurationEquals($expectedSeconds, $expectedNanos, $duration);
     }
 
     /**
@@ -791,12 +786,52 @@ class DurationTest extends AbstractTestCase
             [3, 0, 7, 0, 428571428],
             [3, 0, 8, 0, 375000000],
             [0, 2, 2, 0, 1],
-            [0, 1, 2, 0, 0]
+            [0, 1, 2, 0, 0],
+
+            [3, 0, -1, -3, 0],
+            [3, 0, -2, -2, 500000000],
+            [3, 0, -3, -1, 0],
+            [3, 0, -4, -1, 250000000],
+            [3, 0, -5, -1, 400000000],
+            [3, 0, -6, -1, 500000000],
+            [3, 0, -7, -1, 571428572],
+            [3, 0, -8, -1, 625000000],
+            [0, 2, -2, -1, 999999999],
+            [0, 1, -2, 0, 0],
+
+            [-3, 0, 1, -3, 0],
+            [-3, 0, 2, -2, 500000000],
+            [-3, 0, 3, -1, 0],
+            [-3, 0, 4, -1, 250000000],
+            [-3, 0, 5, -1, 400000000],
+            [-3, 0, 6, -1, 500000000],
+            [-3, 0, 7, -1, 571428572],
+            [-3, 0, 8, -1, 625000000],
+            [-1, 999999998, 2, -1, 999999999],
+            [-1, 999999999, 2, 0, 0],
+
+            [-3, 0, -1, 3, 0],
+            [-3, 0, -2, 1, 500000000],
+            [-3, 0, -3, 1, 0],
+            [-3, 0, -4, 0, 750000000],
+            [-3, 0, -5, 0, 600000000],
+            [-3, 0, -6, 0, 500000000],
+            [-3, 0, -7, 0, 428571428],
+            [-3, 0, -8, 0, 375000000],
+            [-1, 999999998, -2, 0, 1],
+            [-1, 999999999, -2, 0, 0],
+
+            [10, 1, 7, 1, 428571428],
+            [10, 2, 7, 1, 428571428],
+            [10, 3, 7, 1, 428571429],
+            [10, 1, -7, -2, 571428572],
+            [10, 2, -7, -2, 571428572],
+            [10, 3, -7, -2, 571428571],
         ];
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Brick\DateTime\DateTimeException
      */
     public function testDividedByZeroThrowsException()
     {
