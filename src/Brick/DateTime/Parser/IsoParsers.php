@@ -212,7 +212,7 @@ final class IsoParsers
     }
 
     /**
-     * Returns a parser for a month-day such as `12-31`.
+     * Returns a parser for an offset date-time such as `2004-01-31T12:45:56+01:00`.
      *
      * @return PatternParser
      */
