@@ -288,6 +288,182 @@ class InstantTest extends AbstractTestCase
         ];
     }
 
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $s1  The epoch second of the 1st instant.
+     * @param integer $n1  The nanosecond adjustment of the 1st instant.
+     * @param integer $s2  The epoch second of the 2nd instant.
+     * @param integer $n2  The nanosecond adjustment of the 2nd instant.
+     * @param integer $cmp The expected comparison value.
+     */
+    public function testCompareTo($s1, $n1, $s2, $n2, $cmp)
+    {
+        $this->assertSame($cmp, Instant::of($s1, $n1)->compareTo(Instant::of($s2, $n2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $s1  The epoch second of the 1st instant.
+     * @param integer $n1  The nanosecond adjustment of the 1st instant.
+     * @param integer $s2  The epoch second of the 2nd instant.
+     * @param integer $n2  The nanosecond adjustment of the 2nd instant.
+     * @param integer $cmp The comparison value.
+     */
+    public function testIsEqualTo($s1, $n1, $s2, $n2, $cmp)
+    {
+        $this->assertSame($cmp === 0, Instant::of($s1, $n1)->isEqualTo(Instant::of($s2, $n2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $s1  The epoch second of the 1st instant.
+     * @param integer $n1  The nanosecond adjustment of the 1st instant.
+     * @param integer $s2  The epoch second of the 2nd instant.
+     * @param integer $n2  The nanosecond adjustment of the 2nd instant.
+     * @param integer $cmp The comparison value.
+     */
+    public function testIsAfter($s1, $n1, $s2, $n2, $cmp)
+    {
+        $this->assertSame($cmp === 1, Instant::of($s1, $n1)->isAfter(Instant::of($s2, $n2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $s1  The epoch second of the 1st instant.
+     * @param integer $n1  The nanosecond adjustment of the 1st instant.
+     * @param integer $s2  The epoch second of the 2nd instant.
+     * @param integer $n2  The nanosecond adjustment of the 2nd instant.
+     * @param integer $cmp The comparison value.
+     */
+    public function testIsBefore($s1, $n1, $s2, $n2, $cmp)
+    {
+        $this->assertSame($cmp === -1, Instant::of($s1, $n1)->isBefore(Instant::of($s2, $n2)));
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $testSecond The second of the test instant.
+     * @param integer $testNano   The nanosecond adjustment to the test instant.
+     * @param integer $nowSecond  The second of the current time.
+     * @param integer $nowNano    The nanosecond adjustment to the current time.
+     * @param integer $cmp        The comparison value.
+     */
+    public function testIsFuture($testSecond, $testNano, $nowSecond, $nowNano, $cmp)
+    {
+        Clock::setDefault(new FixedClock(Instant::of($nowSecond, $nowNano)));
+        $this->assertSame($cmp === 1, Instant::of($testSecond, $testNano)->isFuture());
+    }
+
+    /**
+     * @dataProvider providerCompareTo
+     *
+     * @param integer $testSecond The second of the test instant.
+     * @param integer $testNano   The nanosecond adjustment to the test instant.
+     * @param integer $nowSecond  The second of the current time.
+     * @param integer $nowNano    The nanosecond adjustment to the current time.
+     * @param integer $cmp        The comparison value.
+     */
+    public function testIsPast($testSecond, $testNano, $nowSecond, $nowNano, $cmp)
+    {
+        Clock::setDefault(new FixedClock(Instant::of($nowSecond, $nowNano)));
+        $this->assertSame($cmp === -1, Instant::of($testSecond, $testNano)->isPast());
+    }
+
+    /**
+     * @return array
+     */
+    public function providerCompareTo()
+    {
+        return [
+            [-1, -1, -1, -1,  0],
+            [-1, -1, -1,  0, -1],
+            [-1, -1, -1,  1, -1],
+            [-1, -1,  0, -1, -1],
+            [-1, -1,  0,  0, -1],
+            [-1, -1,  0,  1, -1],
+            [-1, -1,  1, -1, -1],
+            [-1, -1,  1,  0, -1],
+            [-1, -1,  1,  1, -1],
+            [-1,  0, -1, -1,  1],
+            [-1,  0, -1,  0,  0],
+            [-1,  0, -1,  1, -1],
+            [-1,  0,  0, -1, -1],
+            [-1,  0,  0,  0, -1],
+            [-1,  0,  0,  1, -1],
+            [-1,  0,  1, -1, -1],
+            [-1,  0,  1,  0, -1],
+            [-1,  0,  1,  1, -1],
+            [-1,  1, -1, -1,  1],
+            [-1,  1, -1,  0,  1],
+            [-1,  1, -1,  1,  0],
+            [-1,  1,  0, -1, -1],
+            [-1,  1,  0,  0, -1],
+            [-1,  1,  0,  1, -1],
+            [-1,  1,  1, -1, -1],
+            [-1,  1,  1,  0, -1],
+            [-1,  1,  1,  1, -1],
+            [ 0, -1, -1, -1,  1],
+            [ 0, -1, -1,  0,  1],
+            [ 0, -1, -1,  1,  1],
+            [ 0, -1,  0, -1,  0],
+            [ 0, -1,  0,  0, -1],
+            [ 0, -1,  0,  1, -1],
+            [ 0, -1,  1, -1, -1],
+            [ 0, -1,  1,  0, -1],
+            [ 0, -1,  1,  1, -1],
+            [ 0,  0, -1, -1,  1],
+            [ 0,  0, -1,  0,  1],
+            [ 0,  0, -1,  1,  1],
+            [ 0,  0,  0, -1,  1],
+            [ 0,  0,  0,  0,  0],
+            [ 0,  0,  0,  1, -1],
+            [ 0,  0,  1, -1, -1],
+            [ 0,  0,  1,  0, -1],
+            [ 0,  0,  1,  1, -1],
+            [ 0,  1, -1, -1,  1],
+            [ 0,  1, -1,  0,  1],
+            [ 0,  1, -1,  1,  1],
+            [ 0,  1,  0, -1,  1],
+            [ 0,  1,  0,  0,  1],
+            [ 0,  1,  0,  1,  0],
+            [ 0,  1,  1, -1, -1],
+            [ 0,  1,  1,  0, -1],
+            [ 0,  1,  1,  1, -1],
+            [ 1, -1, -1, -1,  1],
+            [ 1, -1, -1,  0,  1],
+            [ 1, -1, -1,  1,  1],
+            [ 1, -1,  0, -1,  1],
+            [ 1, -1,  0,  0,  1],
+            [ 1, -1,  0,  1,  1],
+            [ 1, -1,  1, -1,  0],
+            [ 1, -1,  1,  0, -1],
+            [ 1, -1,  1,  1, -1],
+            [ 1,  0, -1, -1,  1],
+            [ 1,  0, -1,  0,  1],
+            [ 1,  0, -1,  1,  1],
+            [ 1,  0,  0, -1,  1],
+            [ 1,  0,  0,  0,  1],
+            [ 1,  0,  0,  1,  1],
+            [ 1,  0,  1, -1,  1],
+            [ 1,  0,  1,  0,  0],
+            [ 1,  0,  1,  1, -1],
+            [ 1,  1, -1, -1,  1],
+            [ 1,  1, -1,  0,  1],
+            [ 1,  1, -1,  1,  1],
+            [ 1,  1,  0, -1,  1],
+            [ 1,  1,  0,  0,  1],
+            [ 1,  1,  0,  1,  1],
+            [ 1,  1,  1, -1,  1],
+            [ 1,  1,  1,  0,  1],
+            [ 1,  1,  1,  1,  0],
+        ];
+    }
+
     public function testGetInstant()
     {
         $instant = Instant::of(987654321, 123456789);

@@ -73,7 +73,7 @@ abstract class ReadableInstant
      */
     public function isAfter(ReadableInstant $that)
     {
-        return $this->compareTo($that) > 0;
+        return $this->compareTo($that) === 1;
     }
 
     /**
@@ -85,17 +85,7 @@ abstract class ReadableInstant
      */
     public function isBefore(ReadableInstant $that)
     {
-        return $this->compareTo($that) < 0;
-    }
-
-    /**
-     * Returns whether this instant is in the past.
-     *
-     * @return boolean
-     */
-    public function isPast()
-    {
-        return $this->isBefore(Instant::now());
+        return $this->compareTo($that) === -1;
     }
 
     /**
@@ -106,5 +96,15 @@ abstract class ReadableInstant
     public function isFuture()
     {
         return $this->isAfter(Instant::now());
+    }
+
+    /**
+     * Returns whether this instant is in the past.
+     *
+     * @return boolean
+     */
+    public function isPast()
+    {
+        return $this->isBefore(Instant::now());
     }
 }
