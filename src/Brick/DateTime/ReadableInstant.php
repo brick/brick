@@ -89,32 +89,6 @@ abstract class ReadableInstant
     }
 
     /**
-     * Returns whether this instant is between the given instants, inclusive.
-     *
-     * @param ReadableInstant $first
-     * @param ReadableInstant $last
-     *
-     * @return boolean
-     */
-    public function isBetweenInclusive(ReadableInstant $first, ReadableInstant $last)
-    {
-        return ! ($this->isBefore($first) || $this->isAfter($last));
-    }
-
-    /**
-     * Returns whether this instant is between the given instants, exclusive.
-     *
-     * @param ReadableInstant $first
-     * @param ReadableInstant $last
-     *
-     * @return boolean
-     */
-    public function isBetweenExclusive(ReadableInstant $first, ReadableInstant $last)
-    {
-        return $this->isAfter($first) && $this->isBefore($last);
-    }
-
-    /**
      * Returns whether this instant is in the past.
      *
      * @return boolean
