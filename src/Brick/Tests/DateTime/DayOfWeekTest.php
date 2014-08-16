@@ -106,31 +106,13 @@ class DayOfWeekTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @dataProvider providerFactoryMethods
-     *
-     * @param DayOfWeek $dayOfWeek    The DayOfWeek to test.
-     * @param integer   $integerValue The ISO 8601 day of the week integer value expected.
-     */
-    public function testFactoryMethods(DayOfWeek $dayOfWeek, $integerValue)
+    public function testIs()
     {
-        $this->assertDayOfWeekEquals($integerValue, $dayOfWeek);
-    }
-
-    /**
-     * @return array
-     */
-    public function providerFactoryMethods()
-    {
-        return [
-            [DayOfWeek::monday(), DayOfWeek::MONDAY],
-            [DayOfWeek::tuesday(), DayOfWeek::TUESDAY],
-            [DayOfWeek::wednesday(), DayOfWeek::WEDNESDAY],
-            [DayOfWeek::thursday(), DayOfWeek::THURSDAY],
-            [DayOfWeek::friday(), DayOfWeek::FRIDAY],
-            [DayOfWeek::saturday(), DayOfWeek::SATURDAY],
-            [DayOfWeek::sunday(), DayOfWeek::SUNDAY]
-        ];
+        for ($i = DayOfWeek::MONDAY; $i <= DayOfWeek::SUNDAY; $i++) {
+            for ($j = DayOfWeek::MONDAY; $j <= DayOfWeek::SUNDAY; $j++) {
+                $this->assertSame($i === $j, DayOfWeek::of($i)->is($j));
+            }
+        }
     }
 
     public function testIsEqualTo()
