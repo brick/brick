@@ -27,24 +27,24 @@ class Month
      *
      * @var integer
      */
-    private $value;
+    private $month;
 
     /**
      * Private constructor. Use of() to get a Month instance.
      *
-     * @param integer $month The month value, validated.
+     * @param integer $month The month value, validated as an integer from 1 to 12.
      */
     private function __construct($month)
     {
-        $this->value = $month;
+        $this->month = $month;
     }
 
     /**
      * Returns a cached Month instance.
      *
-     * @param integer $value The month value, validated.
+     * @param integer $value The month value, validated as an integer from 1 to 12.
      *
-     * @return Month
+     * @return Month The cached Month instance.
      */
     private function get($value)
     {
@@ -92,133 +92,25 @@ class Month
     }
 
     /**
-     * Returns a Month representing January.
-     *
-     * @return Month
-     */
-    public static function january()
-    {
-        return Month::get(Month::JANUARY);
-    }
-
-    /**
-     * Returns a Month representing February.
-     *
-     * @return Month
-     */
-    public static function february()
-    {
-        return Month::get(Month::FEBRUARY);
-    }
-
-    /**
-     * Returns a Month representing March.
-     *
-     * @return Month
-     */
-    public static function march()
-    {
-        return Month::get(Month::MARCH);
-    }
-
-    /**
-     * Returns a Month representing April.
-     *
-     * @return Month
-     */
-    public static function april()
-    {
-        return Month::get(Month::APRIL);
-    }
-
-    /**
-     * Returns a Month representing May.
-     *
-     * @return Month
-     */
-    public static function may()
-    {
-        return Month::get(Month::MAY);
-    }
-
-    /**
-     * Returns a Month representing June.
-     *
-     * @return Month
-     */
-    public static function june()
-    {
-        return Month::get(Month::JUNE);
-    }
-
-    /**
-     * Returns a Month representing July.
-     *
-     * @return Month
-     */
-    public static function july()
-    {
-        return Month::get(Month::JULY);
-    }
-
-    /**
-     * Returns a Month representing August.
-     *
-     * @return Month
-     */
-    public static function august()
-    {
-        return Month::get(Month::AUGUST);
-    }
-
-    /**
-     * Returns a Month representing September.
-     *
-     * @return Month
-     */
-    public static function september()
-    {
-        return Month::get(Month::SEPTEMBER);
-    }
-
-    /**
-     * Returns a Month representing October.
-     *
-     * @return Month
-     */
-    public static function october()
-    {
-        return Month::get(Month::OCTOBER);
-    }
-
-    /**
-     * Returns a Month representing November.
-     *
-     * @return Month
-     */
-    public static function november()
-    {
-        return Month::get(Month::NOVEMBER);
-    }
-
-    /**
-     * Returns a Month representing December.
-     *
-     * @return Month
-     */
-    public static function december()
-    {
-        return Month::get(Month::DECEMBER);
-    }
-
-    /**
      * Returns the ISO-8601 month number.
      *
      * @return integer The month number, from 1 (January) to 12 (December).
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->month;
+    }
+
+    /**
+     * Checks if this month matches the given month number.
+     *
+     * @param integer $month The month number to test against.
+     *
+     * @return boolean True if this month is equal to the given value, false otherwise.
+     */
+    public function is($month)
+    {
+        return $this->month == $month;
     }
 
     /**
@@ -230,7 +122,7 @@ class Month
      */
     public function isEqualTo(Month $that)
     {
-        return ($this->value === $that->value);
+        return ($this->month === $that->month);
     }
 
     /**
@@ -240,7 +132,7 @@ class Month
      */
     public function getMinLength()
     {
-        switch ($this->value) {
+        switch ($this->month) {
             case Month::FEBRUARY:
                 return 28;
             case Month::APRIL:
@@ -260,7 +152,7 @@ class Month
      */
     public function getMaxLength()
     {
-        switch ($this->value) {
+        switch ($this->month) {
             case Month::FEBRUARY:
                 return 29;
             case Month::APRIL:
@@ -287,7 +179,7 @@ class Month
     {
         $leap = $leapYear ? 1 : 0;
 
-        switch ($this->value) {
+        switch ($this->month) {
             case Month::JANUARY:
                 return 1;
             case Month::FEBRUARY:
@@ -330,7 +222,7 @@ class Month
      */
     public function getLength($leapYear)
     {
-        switch ($this->value) {
+        switch ($this->month) {
             case Month::FEBRUARY:
                 return ($leapYear ? 29 : 28);
             case Month::APRIL:
@@ -355,7 +247,7 @@ class Month
      */
     public function plus($months)
     {
-        return Month::get((((($this->value - 1 + $months) % 12) + 12) % 12) + 1);
+        return Month::get((((($this->month - 1 + $months) % 12) + 12) % 12) + 1);
     }
 
     /**
@@ -393,6 +285,6 @@ class Month
             10 => 'October',
             11 => 'November',
             12 => 'December'
-        ][$this->value];
+        ][$this->month];
     }
 }

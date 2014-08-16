@@ -49,38 +49,6 @@ class MonthTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providerMonthFactoryMethods
-     *
-     * @param Month   $month        The Month to test.
-     * @param integer $integerValue The expected ISO 8601 day-of-week integer value.
-     */
-    public function testMonthFactoryMethods(Month $month, $integerValue)
-    {
-        $this->assertSame($integerValue, $month->getValue());
-    }
-
-    /**
-     * @return array
-     */
-    public function providerMonthFactoryMethods()
-    {
-        return [
-            [Month::january(), Month::JANUARY],
-            [Month::february(), Month::FEBRUARY],
-            [Month::march(), Month::MARCH],
-            [Month::april(), Month::APRIL],
-            [Month::may(), Month::MAY],
-            [Month::june(), Month::JUNE],
-            [Month::july(), Month::JULY],
-            [Month::august(), Month::AUGUST],
-            [Month::september(), Month::SEPTEMBER],
-            [Month::october(), Month::OCTOBER],
-            [Month::november(), Month::NOVEMBER],
-            [Month::december(), Month::DECEMBER],
-        ];
-    }
-
-    /**
      * @dataProvider minLengthProvider
      *
      * @param integer $month     The month value.
