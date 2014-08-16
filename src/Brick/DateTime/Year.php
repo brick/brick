@@ -17,30 +17,40 @@ class Year
      *
      * @var integer
      */
-    private $value;
+    private $year;
 
     /**
      * Class constructor.
      *
-     * @param integer $value The year to represent, validated.
+     * @param integer $year The year to represent, validated.
      */
-    private function __construct($value)
+    private function __construct($year)
     {
-        $this->value = $value;
+        $this->year = $year;
     }
 
     /**
-     * @param integer $value
+     * @param integer $year
      *
      * @return Year
      */
-    public static function of($value)
+    public static function of($year)
     {
-        $value = Cast::toInteger($value);
+        $year = Cast::toInteger($year);
 
-        Field\Year::check($value);
+        Field\Year::check($year);
 
-        return new Year($value);
+        return new Year($year);
+    }
+
+    /**
+     * @param TimeZone $timeZone
+     *
+     * @return Year
+     */
+    public static function now(TimeZone $timeZone)
+    {
+        return new Year(LocalDate::now($timeZone)->getYear());
     }
 
     /**
@@ -48,7 +58,7 @@ class Year
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->year;
     }
 
     /**
@@ -66,7 +76,17 @@ class Year
      */
     public function isLeap()
     {
-        return Field\Year::isLeap($this->value);
+        return Field\Year::isLeap($this->year);
+    }
+
+    /**
+     * @param MonthDay $monthDay
+     *
+     * @return boolean
+     */
+    public function isValidMonthDay(MonthDay $monthDay)
+    {
+        return $monthDay->isValidYear($this->year);
     }
 
     /**
@@ -87,6 +107,8 @@ class Year
      * @param integer $years The years to add, may be negative.
      *
      * @return Year A Year based on this year with the period added.
+     *
+     * @throws DateTimeException If the resulting year exceeds the supported range.
      */
     public function plus($years)
     {
@@ -96,7 +118,11 @@ class Year
             return $this;
         }
 
-        return new Year($this->value + $years);
+        $year = $this->year + $years;
+
+        Field\Year::check($year);
+
+        return new Year($year);
     }
 
     /**
@@ -107,6 +133,8 @@ class Year
      * @param integer $years The years to subtract, may be negative.
      *
      * @return Year A Year based on this year with the period subtracted.
+     *
+     * @throws DateTimeException If the resulting year exceeds the supported range.
      */
     public function minus($years)
     {
@@ -116,7 +144,110 @@ class Year
             return $this;
         }
 
-        return new Year($this->value - $years);
+        $year = $this->year - $years;
+
+        Field\Year::check($year);
+
+        return new Year($year);
+    }
+
+    /**
+     * Compares this year to another year.
+     *
+     * @param Year $that The year to compare to.
+     *
+     * @return integer [-1, 0, 1] If this year is before, equal to, or after the given year.
+     */
+    public function compareTo(Year $that)
+    {
+        if ($this->year > $that->year) {
+            return 1;
+        }
+
+        if ($this->year < $that->year) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Checks if this year is equal to the given year.
+     *
+     * @param Year $that The year to compare to.
+     *
+     * @return boolean True if this year is equal to the given year, false otherwise.
+     */
+    public function isEqualTo(Year $that)
+    {
+        return $this->year === $that->year;
+    }
+
+    /**
+     * Checks if this year is after the given year.
+     *
+     * @param Year $that The year to compare to.
+     *
+     * @return boolean True if this year is after the given year, false otherwise.
+     */
+    public function isAfter(Year $that)
+    {
+        return $this->year > $that->year;
+    }
+
+    /**
+     * Checks if this year is before the given year.
+     *
+     * @param Year $that The year to compare to.
+     *
+     * @return boolean True if this year is before the given year, false otherwise.
+     */
+    public function isBefore(Year $that)
+    {
+        return $this->year < $that->year;
+    }
+
+    /**
+     * Combines this year with a day-of-year to create a LocalDate.
+     *
+     * @param integer $dayOfYear The day-of-year to use, from 1 to 366.
+     *
+     * @return LocalDate
+     *
+     * @throws DateTimeException If the day-of-year is invalid for this year.
+     */
+    public function atDay($dayOfYear)
+    {
+        return LocalDate::ofYearDay($this->year, $dayOfYear);
+    }
+
+    /**
+     * Combines this year with a month to create a YearMonth.
+     *
+     * @param integer $month The month-of-year to use, from 1 to 12.
+     *
+     * @return YearMonth
+     *
+     * @throws DateTimeException If the month is invalid.
+     */
+    public function atMonth($month)
+    {
+        return YearMonth::of($this->year, $month);
+    }
+
+    /**
+     * Combines this Year with a MonthDay to create a LocalDate.
+     *
+     * A month-day of February 29th will be adjusted to February 28th
+     * in the resulting date if the year is not a leap year.
+     *
+     * @param MonthDay $monthDay The month-day to use.
+     *
+     * @return LocalDate
+     */
+    public function atMonthDay(MonthDay $monthDay)
+    {
+        return $monthDay->atYear($this->year);
     }
 
     /**
@@ -124,6 +255,6 @@ class Year
      */
     public function __toString()
     {
-        return (string) $this->value;
+        return (string) $this->year;
     }
 }

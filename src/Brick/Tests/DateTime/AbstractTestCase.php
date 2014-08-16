@@ -2,7 +2,10 @@
 
 namespace Brick\Tests\DateTime;
 
+use Brick\DateTime\Clock\Clock;
+use Brick\DateTime\Clock\FixedClock;
 use Brick\DateTime\Duration;
+use Brick\DateTime\Instant;
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalDateTime;
 use Brick\DateTime\LocalTime;
@@ -10,6 +13,7 @@ use Brick\DateTime\MonthDay;
 use Brick\DateTime\Period;
 use Brick\DateTime\ReadableInstant;
 use Brick\DateTime\TimeZoneOffset;
+use Brick\DateTime\Year;
 use Brick\DateTime\YearMonth;
 
 /**
@@ -17,6 +21,15 @@ use Brick\DateTime\YearMonth;
  */
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @param integer $epochSecond    The epoch second.
+     * @param integer $nanoAdjustment The nanosecond adjustment to the epoch second.
+     */
+    protected function setClockTime($epochSecond, $nanoAdjustment = 0)
+    {
+        Clock::setDefault(new FixedClock(Instant::of($epochSecond, $nanoAdjustment)));
+    }
+
     /**
      * @param integer         $epochSecond The expected epoch second.
      * @param integer         $nano        The expected nanosecond adjustment.
@@ -82,6 +95,17 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             $dateTime->getMinute(),
             $dateTime->getSecond(),
             $dateTime->getNano()
+        ]);
+    }
+
+    /**
+     * @param integer $yearValue
+     * @param Year    $year
+     */
+    protected function assertYearEquals($yearValue, Year $year)
+    {
+        $this->compare([$yearValue], [
+            $year->getValue()
         ]);
     }
 
