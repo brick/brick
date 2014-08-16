@@ -4,6 +4,7 @@ namespace Brick\Tests\DateTime;
 
 use Brick\DateTime\DayOfWeek;
 use Brick\DateTime\LocalDate;
+use Brick\DateTime\TimeZone;
 
 /**
  * Unit tests for class DayOfWeek.
@@ -11,53 +12,115 @@ use Brick\DateTime\LocalDate;
 class DayOfWeekTest extends AbstractTestCase
 {
     /**
-     * @dataProvider providerOfInvalidDayThrowsException
-     * @expectedException \Brick\DateTime\DateTimeException
+     * @dataProvider providerConstants
      *
-     * @param integer $day
+     * @param integer $expectedValue     The expected value of the constant.
+     * @param integer $dayOfWeekConstant The day-of-week constant.
      */
-    public function testOfInvalidDayThrowsException($day)
+    public function testConstants($expectedValue, $dayOfWeekConstant)
     {
-        DayOfWeek::of($day);
+        $this->assertSame($expectedValue, $dayOfWeekConstant);
     }
 
     /**
      * @return array
      */
-    public function providerOfInvalidDayThrowsException()
+    public function providerConstants()
     {
         return [
+            [1, DayOfWeek::MONDAY],
+            [2, DayOfWeek::TUESDAY],
+            [3, DayOfWeek::WEDNESDAY],
+            [4, DayOfWeek::THURSDAY],
+            [5, DayOfWeek::FRIDAY],
+            [6, DayOfWeek::SATURDAY],
+            [7, DayOfWeek::SUNDAY]
+        ];
+    }
+
+    public function testOf()
+    {
+        $this->assertDayOfWeekEquals(5, DayOfWeek::of(5));
+    }
+
+    /**
+     * @dataProvider providerOfInvalidDayOfWeekThrowsException
+     * @expectedException \Brick\DateTime\DateTimeException
+     *
+     * @param integer $dayOfWeek
+     */
+    public function testOfInvalidDayOfWeekThrowsException($dayOfWeek)
+    {
+        DayOfWeek::of($dayOfWeek);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerOfInvalidDayOfWeekThrowsException()
+    {
+        return [
+            [-1],
             [0],
             [8]
         ];
     }
 
-    public function testConstants()
-    {
-        $this->assertSame(1, DayOfWeek::MONDAY);
-        $this->assertSame(2, DayOfWeek::TUESDAY);
-        $this->assertSame(3, DayOfWeek::WEDNESDAY);
-        $this->assertSame(4, DayOfWeek::THURSDAY);
-        $this->assertSame(5, DayOfWeek::FRIDAY);
-        $this->assertSame(6, DayOfWeek::SATURDAY);
-        $this->assertSame(7, DayOfWeek::SUNDAY);
-    }
-
     /**
-     * @dataProvider providerDayOfWeekFactoryMethods
+     * @dataProvider providerNow
      *
-     * @param DayOfWeek $dayOfWeek    The DayOfWeek to test.
-     * @param integer   $integerValue The ISO 8601 day of the week integer value expected.
+     * @param integer $epochSecond       The epoch second to set the clock time to.
+     * @param string  $timeZone          The time-zone to get the current day-of-week in.
+     * @param integer $expectedDayOfWeek The expected day-of-week, from 1 to 7.
      */
-    public function testDayOfWeekFactoryMethods(DayOfWeek $dayOfWeek, $integerValue)
+    public function testNow($epochSecond, $timeZone, $expectedDayOfWeek)
     {
-        $this->assertSame($integerValue, $dayOfWeek->getValue());
+        $this->setClockTime($epochSecond);
+        $this->assertDayOfWeekEquals($expectedDayOfWeek, DayOfWeek::now(TimeZone::parse($timeZone)));
     }
 
     /**
      * @return array
      */
-    public function providerDayOfWeekFactoryMethods()
+    public function providerNow()
+    {
+        return [
+            [1388534399, '-01:00', DayOfWeek::TUESDAY],
+            [1388534399, '+00:00', DayOfWeek::TUESDAY],
+            [1388534399, '+01:00', DayOfWeek::WEDNESDAY],
+            [1388534400, '-01:00', DayOfWeek::TUESDAY],
+            [1388534400, '+00:00', DayOfWeek::WEDNESDAY],
+            [1388534400, '+01:00', DayOfWeek::WEDNESDAY],
+        ];
+    }
+
+    public function testGetAll()
+    {
+        for ($day = DayOfWeek::MONDAY; $day <= DayOfWeek::SUNDAY; $day++) {
+            $dayOfWeek = DayOfWeek::of($day);
+
+            foreach (DayOfWeek::getAll($dayOfWeek) as $dow) {
+                $this->assertTrue($dow->isEqualTo($dayOfWeek));
+                $dayOfWeek = $dayOfWeek->plus(1);
+            }
+        }
+    }
+
+    /**
+     * @dataProvider providerFactoryMethods
+     *
+     * @param DayOfWeek $dayOfWeek    The DayOfWeek to test.
+     * @param integer   $integerValue The ISO 8601 day of the week integer value expected.
+     */
+    public function testFactoryMethods(DayOfWeek $dayOfWeek, $integerValue)
+    {
+        $this->assertDayOfWeekEquals($integerValue, $dayOfWeek);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerFactoryMethods()
     {
         return [
             [DayOfWeek::monday(), DayOfWeek::MONDAY],
@@ -70,21 +133,67 @@ class DayOfWeekTest extends AbstractTestCase
         ];
     }
 
-    public function testGetAll()
+    public function testIsEqualTo()
     {
-        for ($day = DayOfWeek::MONDAY; $day <= DayOfWeek::SUNDAY; $day++) {
-            $expected = [];
-            $actual = [];
-
-            for ($i = 0; $i < 7; $i++) {
-                $expected[] = (($day + $i - 1) % 7) + 1;
+        for ($i = DayOfWeek::MONDAY; $i <= DayOfWeek::SUNDAY; $i++) {
+            for ($j = DayOfWeek::MONDAY; $j <= DayOfWeek::SUNDAY; $j++) {
+                $this->assertSame($i === $j, DayOfWeek::of($i)->isEqualTo(DayOfWeek::of($j)));
             }
+        }
+    }
 
-            foreach (DayOfWeek::getAll(DayOfWeek::of($day)) as $dayOfWeek) {
-                $actual[] = $dayOfWeek->getValue();
+    /**
+     * @dataProvider providerPlus
+     *
+     * @param integer $dayOfWeek         The base day-of-week value.
+     * @param integer $plusDays          The number of days to add.
+     * @param integer $expectedDayOfWeek The expected day-of-week value, from 1 to 7.
+     */
+    public function testPlus($dayOfWeek, $plusDays, $expectedDayOfWeek)
+    {
+        $this->assertDayOfWeekEquals($expectedDayOfWeek, DayOfWeek::of($dayOfWeek)->plus($plusDays));
+    }
+
+    /**
+     * @dataProvider providerPlus
+     *
+     * @param integer $dayOfWeek         The base day-of-week value.
+     * @param integer $plusDays          The number of days to add.
+     * @param integer $expectedDayOfWeek The expected day-of-week value, from 1 to 7.
+     */
+    public function testMinus($dayOfWeek, $plusDays, $expectedDayOfWeek)
+    {
+        $this->assertDayOfWeekEquals($expectedDayOfWeek, DayOfWeek::of($dayOfWeek)->minus(-$plusDays));
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function providerPlus()
+    {
+        for ($dayOfWeek = DayOfWeek::MONDAY; $dayOfWeek <= DayOfWeek::SUNDAY; $dayOfWeek++) {
+            for ($plusDays = -15; $plusDays <= 15; $plusDays++) {
+                $expectedDayOfWeek = $dayOfWeek + $plusDays;
+
+                while ($expectedDayOfWeek < 1) {
+                    $expectedDayOfWeek += 7;
+                }
+                while ($expectedDayOfWeek > 7) {
+                    $expectedDayOfWeek -= 7;
+                }
+
+                yield [$dayOfWeek, $plusDays, $expectedDayOfWeek];
             }
+        }
+    }
 
-            $this->assertTrue($actual === $expected);
+    public function testPlusMinusEntireWeeks()
+    {
+        foreach (DayOfWeek::getAll() as $dayOfWeek) {
+            foreach ([-14, -7, 0, 7, 14] as $daysToAdd) {
+                $this->assertTrue($dayOfWeek->plus($daysToAdd)->isEqualTo($dayOfWeek));
+                $this->assertTrue($dayOfWeek->minus($daysToAdd)->isEqualTo($dayOfWeek));
+            }
         }
     }
 
@@ -129,120 +238,12 @@ class DayOfWeekTest extends AbstractTestCase
     /**
      * @dataProvider providerToString
      *
-     * @param DayOfWeek $dayOfWeek The day-of-week to test.
-     * @param string    $name      The expected name.
+     * @param integer $dayOfWeek    The day-of-week value, from 1 to 7.
+     * @param string  $expectedName The expected name.
      */
-    public function testToString(DayOfWeek $dayOfWeek, $name)
+    public function testToString($dayOfWeek, $expectedName)
     {
-        $this->assertSame($name, (string) $dayOfWeek);
-    }
-
-    public function testPlusMinusEntireWeeks()
-    {
-        foreach (DayOfWeek::getAll() as $dayOfWeek) {
-            foreach ([-14, -7, 0, 7, 14] as $daysToAdd) {
-                $this->assertTrue($dayOfWeek->plus($daysToAdd)->isEqualTo($dayOfWeek));
-                $this->assertTrue($dayOfWeek->minus($daysToAdd)->isEqualTo($dayOfWeek));
-            }
-        }
-    }
-
-    /**
-     * @dataProvider providerPlusDays
-     *
-     * @param integer $base     The base week day number.
-     * @param integer $amount   The amount of days to add.
-     * @param integer $expected The expected week day number.
-     */
-    public function testPlusDays($base, $amount, $expected)
-    {
-        $base = DayOfWeek::of($base);
-        $expected = DayOfWeek::of($expected);
-
-        $this->assertTrue($base->plus($amount)->isEqualTo($expected));
-    }
-
-    /**
-     * @return array
-     */
-    public function providerPlusDays()
-    {
-        return [
-            [1, -8, 7],
-            [1, -7, 1],
-            [1, -6, 2],
-            [1, -5, 3],
-            [1, -4, 4],
-            [1, -3, 5],
-            [1, -2, 6],
-            [1, -1, 7],
-            [1, 0, 1],
-            [1, 1, 2],
-            [1, 2, 3],
-            [1, 3, 4],
-            [1, 4, 5],
-            [1, 5, 6],
-            [1, 6, 7],
-            [1, 7, 1],
-            [1, 8, 2],
-
-            [1, 1, 2],
-            [2, 1, 3],
-            [3, 1, 4],
-            [4, 1, 5],
-            [5, 1, 6],
-            [6, 1, 7],
-            [7, 1, 1],
-
-            [1, -1, 7],
-            [2, -1, 1],
-            [3, -1, 2],
-            [4, -1, 3],
-            [5, -1, 4],
-            [6, -1, 5],
-            [7, -1, 6],
-        ];
-    }
-
-    /**
-     * @dataProvider providerMinusDays
-     *
-     * @param integer $base     The base week day number.
-     * @param integer $amount   The amount of days to subtract.
-     * @param integer $expected The expected week day number.
-     */
-    public function testMinusDays($base, $amount, $expected)
-    {
-        $base = DayOfWeek::of($base);
-        $expected = DayOfWeek::of($expected);
-
-        $this->assertTrue($base->minus($amount)->isEqualTo($expected));
-    }
-
-    /**
-     * @return array
-     */
-    public function providerMinusDays()
-    {
-        return [
-            [1, -8, 2],
-            [1, -7, 1],
-            [1, -6, 7],
-            [1, -5, 6],
-            [1, -4, 5],
-            [1, -3, 4],
-            [1, -2, 3],
-            [1, -1, 2],
-            [1, 0, 1],
-            [1, 1, 7],
-            [1, 2, 6],
-            [1, 3, 5],
-            [1, 4, 4],
-            [1, 5, 3],
-            [1, 6, 2],
-            [1, 7, 1],
-            [1, 8, 7],
-        ];
+        $this->assertSame($expectedName, (string) DayOfWeek::of($dayOfWeek));
     }
 
     /**
@@ -251,13 +252,13 @@ class DayOfWeekTest extends AbstractTestCase
     public function providerToString()
     {
         return [
-            [DayOfWeek::monday(), 'Monday'],
-            [DayOfWeek::tuesday(),'Tuesday'],
-            [DayOfWeek::wednesday(), 'Wednesday'],
-            [DayOfWeek::thursday(), 'Thursday'],
-            [DayOfWeek::friday(), 'Friday'],
-            [DayOfWeek::saturday(), 'Saturday'],
-            [DayOfWeek::sunday(), 'Sunday']
+            [DayOfWeek::MONDAY,    'Monday'],
+            [DayOfWeek::TUESDAY,   'Tuesday'],
+            [DayOfWeek::WEDNESDAY, 'Wednesday'],
+            [DayOfWeek::THURSDAY,  'Thursday'],
+            [DayOfWeek::FRIDAY,    'Friday'],
+            [DayOfWeek::SATURDAY,  'Saturday'],
+            [DayOfWeek::SUNDAY,    'Sunday']
         ];
     }
 }

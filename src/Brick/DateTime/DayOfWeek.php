@@ -24,16 +24,16 @@ class DayOfWeek
      *
      * @var integer
      */
-    private $value;
+    private $dayOfWeek;
 
     /**
      * Private constructor. Use a factory method to obtain an instance.
      *
-     * @param integer $value The day-of-week value, validated.
+     * @param integer $dayOfWeek The day-of-week value, validated.
      */
-    private function __construct($value)
+    private function __construct($dayOfWeek)
     {
-        $this->value = $value;
+        $this->dayOfWeek = $dayOfWeek;
     }
 
     /**
@@ -57,19 +57,19 @@ class DayOfWeek
     /**
      * Returns an instance of DayOfWeek for the given day-of-week value.
      *
-     * @param integer $value The day-of-week value, from 1 (Monday) to 7 (Sunday).
+     * @param integer $dayOfWeek The day-of-week value, from 1 (Monday) to 7 (Sunday).
      *
      * @return DayOfWeek The DayOfWeek instance.
      *
      * @throws \InvalidArgumentException
      */
-    public static function of($value)
+    public static function of($dayOfWeek)
     {
-        $value = Cast::toInteger($value);
+        $dayOfWeek = Cast::toInteger($dayOfWeek);
 
-        Field\DayOfWeek::check($value);
+        Field\DayOfWeek::check($dayOfWeek);
 
-        return DayOfWeek::get($value);
+        return DayOfWeek::get($dayOfWeek);
     }
 
     /**
@@ -181,7 +181,7 @@ class DayOfWeek
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->dayOfWeek;
     }
 
     /**
@@ -197,7 +197,7 @@ class DayOfWeek
      */
     public function isEqualTo(DayOfWeek $that)
     {
-        return $this->value === $that->value;
+        return $this->dayOfWeek === $that->dayOfWeek;
     }
 
     /**
@@ -211,7 +211,7 @@ class DayOfWeek
     {
         $days = Cast::toInteger($days);
 
-        return DayOfWeek::get((((($this->value - 1 + $days) % 7) + 7) % 7) + 1);
+        return DayOfWeek::get((((($this->dayOfWeek - 1 + $days) % 7) + 7) % 7) + 1);
     }
 
     /**
@@ -223,6 +223,8 @@ class DayOfWeek
      */
     public function minus($days)
     {
+        $days = Cast::toInteger($days);
+
         return $this->plus(- $days);
     }
 
@@ -241,6 +243,6 @@ class DayOfWeek
             5 => 'Friday',
             6 => 'Saturday',
             7 => 'Sunday'
-        ][$this->value];
+        ][$this->dayOfWeek];
     }
 }
