@@ -10,6 +10,7 @@ use Brick\DateTime\Instant;
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalDateTime;
 use Brick\DateTime\LocalTime;
+use Brick\DateTime\Month;
 use Brick\DateTime\MonthDay;
 use Brick\DateTime\Period;
 use Brick\DateTime\ReadableInstant;
@@ -133,6 +134,17 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         $this->compare([$month, $day], [
             $monthDay->getMonth(),
             $monthDay->getDay()
+        ]);
+    }
+
+    /**
+     * @param integer $monthValue The expected month-of-year value, from 1 to 12.
+     * @param Month   $month      The Month instance to test.
+     */
+    protected function assertMonthEquals($monthValue, Month $month)
+    {
+        $this->compare([$monthValue], [
+            $month->getValue()
         ]);
     }
 

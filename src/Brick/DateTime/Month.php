@@ -247,6 +247,8 @@ class Month
      */
     public function plus($months)
     {
+        $months = Cast::toInteger($months);
+
         return Month::get((((($this->month - 1 + $months) % 12) + 12) % 12) + 1);
     }
 
@@ -262,6 +264,8 @@ class Month
      */
     public function minus($months)
     {
+        $months = Cast::toInteger($months);
+
         return $this->plus(- $months);
     }
 
