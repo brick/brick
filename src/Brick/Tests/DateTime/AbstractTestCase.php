@@ -199,8 +199,8 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertLocalDateRangeEquals($y1, $m1, $d1, $y2, $m2, $d2, LocalDateRange $range)
     {
-        $this->assertLocalDateEquals($y1, $m1, $d1, $range->getFrom());
-        $this->assertLocalDateEquals($y2, $m2, $d2, $range->getTo());
+        $this->assertLocalDateEquals($y1, $m1, $d1, $range->getStartDate());
+        $this->assertLocalDateEquals($y2, $m2, $d2, $range->getEndDate());
     }
 
     /**

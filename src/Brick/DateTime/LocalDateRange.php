@@ -11,54 +11,54 @@ use Brick\DateTime\Parser\IsoParsers;
 /**
  * Represents an inclusive range of local dates.
  *
- * LocalDateRange is iteratable: keys are ISO string representation of dates, values are LocalDate objects.
- * LocalDateRange is countable: count() returns the number of dates the range contains.
+ * This object is iterable and countable: the iterator returns all the LocalDate objects contained
+ * in the range, while `count()` returns the total number of dates contained in the range.
  */
 class LocalDateRange implements \IteratorAggregate, \Countable
 {
     /**
-     * The from date.
+     * The start date, inclusive.
      *
      * @var \Brick\DateTime\LocalDate
      */
-    private $from;
+    private $startDate;
 
     /**
-     * The to date.
+     * The end date, inclusive.
      *
      * @var \Brick\DateTime\LocalDate
      */
-    private $to;
+    private $endDate;
 
     /**
      * Class constructor.
      *
-     * @param LocalDate $from The start date.
-     * @param LocalDate $to   The end date, validated as not before the start date.
+     * @param LocalDate $startDate The start date, inclusive.
+     * @param LocalDate $endDate   The end date, inclusive, validated as not before the start date.
      */
-    private function __construct(LocalDate $from, LocalDate $to)
+    private function __construct(LocalDate $startDate, LocalDate $endDate)
     {
-        $this->from = $from;
-        $this->to   = $to;
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
     }
 
     /**
-     * Creates an instance of LocalDateRange from two LocalDate instances.
+     * Creates an instance of LocalDateRange from a start date and an end date.
      *
-     * @param LocalDate $from The start date.
-     * @param LocalDate $to   The end date.
+     * @param LocalDate $startDate The start date, inclusive.
+     * @param LocalDate $endDate   The end date, inclusive.
      *
      * @return LocalDateRange
      *
      * @throws DateTimeException If the end date is before the start date.
      */
-    public static function of(LocalDate $from, LocalDate $to)
+    public static function of(LocalDate $startDate, LocalDate $endDate)
     {
-        if ($to->isBefore($from)) {
+        if ($endDate->isBefore($startDate)) {
             throw new DateTimeException('The end date must not be before the start date.');
         }
 
-        return new LocalDateRange($from, $to);
+        return new LocalDateRange($startDate, $endDate);
     }
 
     /**
@@ -100,71 +100,82 @@ class LocalDateRange implements \IteratorAggregate, \Countable
     }
 
     /**
+     * Returns the start date, inclusive.
+     *
      * @return LocalDate
      */
-    public function getFrom()
+    public function getStartDate()
     {
-        return $this->from;
+        return $this->startDate;
     }
 
     /**
+     * Returns the end date, inclusive.
+     *
      * @return LocalDate
      */
-    public function getTo()
+    public function getEndDate()
     {
-        return $this->to;
+        return $this->endDate;
     }
 
     /**
-     * Returns whether this DateRange is equal to the given one.
+     * Returns whether this LocalDateRange is equal to the given one.
      *
-     * @param LocalDateRange $that
+     * @param LocalDateRange $that The range to compare to.
      *
-     * @return boolean
+     * @return boolean True if this range equals the given one, false otherwise.
      */
     public function isEqualTo(LocalDateRange $that)
     {
-        return $this->from->isEqualTo($that->from) && $this->to->isEqualTo($that->to);
+        return $this->startDate->isEqualTo($that->startDate)
+            && $this->endDate->isEqualTo($that->endDate);
     }
 
     /**
-     * Returns whether this DateRange contains the given date.
+     * Returns whether this LocalDateRange contains the given date.
      *
-     * @param LocalDate $date
+     * @param LocalDate $date The date to check.
      *
-     * @return boolean
+     * @return boolean True if this range contains the given date, false otherwise.
      */
     public function contains(LocalDate $date)
     {
-        return ! ($date->isBefore($this->from) || $date->isAfter($this->to));
+        return ! ($date->isBefore($this->startDate) || $date->isAfter($this->endDate));
     }
 
     /**
-     * {@inheritdoc}
+     * Returns an iterator for all the dates contained in this range.
+     *
+     * @return LocalDate[]
      */
     public function getIterator()
     {
-        $date = $this->from;
+        $date = $this->startDate;
 
-        while (! $date->isAfter($this->to)) {
+        while (! $date->isAfter($this->endDate)) {
             yield $date;
             $date = $date->plusDays(1);
         }
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the number of days in this range.
+     *
+     * @return integer The number of days, >= 1.
      */
     public function count()
     {
-        return $this->to->toEpochDay() - $this->from->toEpochDay() + 1;
+        return $this->endDate->toEpochDay() - $this->startDate->toEpochDay() + 1;
     }
 
     /**
+     * Returns an ISO 8601 string representation of this date range.
+     *
      * @return string
      */
     public function __toString()
     {
-        return $this->from . '/' . $this->to;
+        return $this->startDate . '/' . $this->endDate;
     }
 }
