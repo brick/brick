@@ -169,16 +169,6 @@ class DayOfWeekTest extends AbstractTestCase
         }
     }
 
-    public function testPlusMinusEntireWeeks()
-    {
-        foreach (DayOfWeek::getAll() as $dayOfWeek) {
-            foreach ([-14, -7, 0, 7, 14] as $daysToAdd) {
-                $this->assertTrue($dayOfWeek->plus($daysToAdd)->isEqualTo($dayOfWeek));
-                $this->assertTrue($dayOfWeek->minus($daysToAdd)->isEqualTo($dayOfWeek));
-            }
-        }
-    }
-
     /**
      * @todo belongs to LocalDate tests
      *
