@@ -8,6 +8,7 @@ use Brick\DateTime\DayOfWeek;
 use Brick\DateTime\Duration;
 use Brick\DateTime\Instant;
 use Brick\DateTime\LocalDate;
+use Brick\DateTime\LocalDateRange;
 use Brick\DateTime\LocalDateTime;
 use Brick\DateTime\LocalTime;
 use Brick\DateTime\Month;
@@ -185,6 +186,21 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             $period->getMonths(),
             $period->getDays()
         ]);
+    }
+
+    /**
+     * @param integer        $y1    The expected year of the start date.
+     * @param integer        $m1    The expected month-of-year of the start date.
+     * @param integer        $d1    The expected day-of-month of the start date.
+     * @param integer        $y2    The expected year of the end date.
+     * @param integer        $m2    The expected month-of-year of the end date.
+     * @param integer        $d2    The expected day-of-month of the end date.
+     * @param LocalDateRange $range The LocalDateRange instance to test.
+     */
+    protected function assertLocalDateRangeEquals($y1, $m1, $d1, $y2, $m2, $d2, LocalDateRange $range)
+    {
+        $this->assertLocalDateEquals($y1, $m1, $d1, $range->getFrom());
+        $this->assertLocalDateEquals($y2, $m2, $d2, $range->getTo());
     }
 
     /**
