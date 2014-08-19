@@ -129,14 +129,13 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        Time::add(
-            $this->epochSecond,
-            $this->nano,
-            $duration->getSeconds(),
-            $duration->getNanos(),
-            $seconds,
-            $nanos
-        );
+        $seconds = $this->epochSecond + $duration->getSeconds();
+        $nanos = $this->nano + $duration->getNanos();
+
+        if ($nanos >= LocalTime::NANOS_PER_SECOND) {
+            $nanos -= LocalTime::NANOS_PER_SECOND;
+            $seconds++;
+        }
 
         return new Instant($seconds, $nanos);
     }
@@ -168,9 +167,7 @@ class Instant extends ReadableInstant
             return $this;
         }
 
-        Time::add($this->epochSecond, $this->nano, $seconds, 0, $seconds, $nanos);
-
-        return new Instant($seconds, $nanos);
+        return new Instant($this->epochSecond + $seconds, $this->nano);
     }
 
     /**

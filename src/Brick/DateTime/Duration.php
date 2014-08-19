@@ -291,14 +291,13 @@ class Duration
             return $this;
         }
 
-        Time::add(
-            $this->seconds,
-            $this->nanos,
-            $duration->seconds,
-            $duration->nanos,
-            $seconds,
-            $nanos
-        );
+        $seconds = $this->seconds + $duration->seconds;
+        $nanos = $this->nanos + $duration->nanos;
+
+        if ($nanos >= LocalTime::NANOS_PER_SECOND) {
+            $nanos -= LocalTime::NANOS_PER_SECOND;
+            $seconds++;
+        }
 
         return new Duration($seconds, $nanos);
     }
