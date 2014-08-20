@@ -2,7 +2,7 @@
 
 namespace Brick\FileSystem;
 
-use Brick\ErrorHandler;
+use Brick\Error\ErrorHandler;
 
 /**
  * Object-oriented wrapper around native file functions.
@@ -24,7 +24,7 @@ class File
     private $throw;
 
     /**
-     * @var \Brick\ErrorHandler
+     * @var \Brick\Error\ErrorHandler
      */
     private $errorHandler;
 

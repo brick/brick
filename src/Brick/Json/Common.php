@@ -2,7 +2,7 @@
 
 namespace Brick\Json;
 
-use Brick\ErrorHandler;
+use Brick\Error\ErrorHandler;
 
 /**
  * Common functionality for JsonEncoder and JsonDecoder.
@@ -10,7 +10,7 @@ use Brick\ErrorHandler;
 abstract class Common
 {
     /**
-     * @var \Brick\ErrorHandler
+     * @var \Brick\Error\ErrorHandler
      */
     protected $errorHandler;
 

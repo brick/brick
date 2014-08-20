@@ -2,7 +2,7 @@
 
 namespace Brick\FileSystem;
 
-use Brick\ErrorHandler;
+use Brick\Error\ErrorHandler;
 use FilesystemIterator as FSI;
 
 /**
@@ -16,7 +16,7 @@ class Path
     private $path;
 
     /**
-     * @var \Brick\ErrorHandler|null
+     * @var \Brick\Error\ErrorHandler|null
      */
     private static $errorHandler = null;
 

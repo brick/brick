@@ -1,9 +1,8 @@
 <?php
 
-namespace Brick;
+namespace Brick\Error;
 
 /**
- *
  * A transient error handler to catch PHP errors in a specific code block.
  * This allows to execute functions that natively trigger PHP errors, while catching these errors
  * and not having to use the @ error suppression character, which blindly ignores any error.
