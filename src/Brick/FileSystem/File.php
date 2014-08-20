@@ -2,7 +2,7 @@
 
 namespace Brick\FileSystem;
 
-use Brick\Error\ErrorHandler;
+use Brick\Error\ErrorCatcher;
 
 /**
  * Object-oriented wrapper around native file functions.
@@ -24,7 +24,7 @@ class File
     private $throw;
 
     /**
-     * @var \Brick\Error\ErrorHandler
+     * @var \Brick\Error\ErrorCatcher
      */
     private $errorHandler;
 
@@ -38,7 +38,7 @@ class File
      */
     public function __construct($path, $mode)
     {
-        $this->errorHandler = new ErrorHandler(function (\ErrorException $e) {
+        $this->errorHandler = new ErrorCatcher(function (\ErrorException $e) {
             if ($this->throw) {
                 throw FileSystemException::wrap($e);
             }

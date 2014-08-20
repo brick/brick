@@ -2,7 +2,7 @@
 
 namespace Brick\FileSystem;
 
-use Brick\Error\ErrorHandler;
+use Brick\Error\ErrorCatcher;
 use FilesystemIterator as FSI;
 
 /**
@@ -16,7 +16,7 @@ class Path
     private $path;
 
     /**
-     * @var \Brick\Error\ErrorHandler|null
+     * @var \Brick\Error\ErrorCatcher|null
      */
     private static $errorHandler = null;
 
@@ -387,7 +387,7 @@ class Path
     private function swallow($severity, $throw, callable $function)
     {
         if (Path::$errorHandler === null) {
-            Path::$errorHandler = new ErrorHandler(function (\ErrorException $e) {
+            Path::$errorHandler = new ErrorCatcher(function (\ErrorException $e) {
                 if (Path::$throw) {
                     throw FileSystemException::wrap($e);
                 }

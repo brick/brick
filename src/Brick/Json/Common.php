@@ -2,7 +2,7 @@
 
 namespace Brick\Json;
 
-use Brick\Error\ErrorHandler;
+use Brick\Error\ErrorCatcher;
 
 /**
  * Common functionality for JsonEncoder and JsonDecoder.
@@ -10,7 +10,7 @@ use Brick\Error\ErrorHandler;
 abstract class Common
 {
     /**
-     * @var \Brick\Error\ErrorHandler
+     * @var \Brick\Error\ErrorCatcher
      */
     protected $errorHandler;
 
@@ -33,7 +33,7 @@ abstract class Common
      */
     public function __construct()
     {
-        $this->errorHandler = new ErrorHandler(function(\ErrorException $e) {
+        $this->errorHandler = new ErrorCatcher(function(\ErrorException $e) {
             throw JsonException::wrap($e);
         });
     }

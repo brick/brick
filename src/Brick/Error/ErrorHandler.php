@@ -3,81 +3,63 @@
 namespace Brick\Error;
 
 /**
- * A transient error handler to catch PHP errors in a specific code block.
- * This allows to execute functions that natively trigger PHP errors, while catching these errors
- * and not having to use the @ error suppression character, which blindly ignores any error.
+ * Provides a global handler for unexpected errors and uncaught exceptions.
  */
 class ErrorHandler
 {
     /**
-     * The transient error handler that will be registered every time the swallow() method is called.
+     * Sets up a global error handler.
      *
-     * @var callable
-     */
-    private $transientErrorHandler;
-
-    /**
-     * The previous error handler to send errors to if an error caught does not match the given severity.
+     * This handler catches PHP errors and throws ErrorException accordingly.
      *
-     * @var callable|null
-     */
-    private $previousErrorHandler = null;
-
-    /**
-     * The severity of the errors to be swallowed.
+     * Uncaught exceptions and fatal errors change the response status code to 500 Internal Server Error
+     * (only if the headers have not yet been sent), and call an optional fatal error handler function that
+     * can be used to output a human-friendly error page.
      *
-     * @var integer
-     */
-    private $severity = 0;
-
-    /**
-     * Class constructor.
+     * The fatal error handler, if provided, will receive as sole argument the exception that has
+     * triggered the condition: the uncaught exception, or an ErrorException describing a fatal error.
      *
-     * @param callable|null $handler A function that will receive an ErrorException when an error occurs.
+     * @param callable|null $fatalErrorHandler The optional fatal error handler.
+     *
+     * @return void
      */
-    public function __construct(callable $handler = null)
+    public static function setup(callable $fatalErrorHandler = null)
     {
-        $this->transientErrorHandler = function($level, $message, $file, $line, $context) use ($handler) {
-            if ($this->severity & $level) {
-                if ($handler) {
-                    $exception = new \ErrorException($message, 0, $level, $file, $line);
-                    call_user_func($handler, $exception);
-                }
-            } elseif ($this->previousErrorHandler) {
-                call_user_func($this->previousErrorHandler, $level, $message, $file, $line, $context);
-            } else {
+        // Handle PHP errors and throw exceptions.
+        set_error_handler(function($level, $message, $file, $line) {
+            if (error_reporting() === 0) {
+                // @ operator, continue to the normal error handler.
                 return false;
             }
 
-            return true;
-        };
-    }
+            throw new \ErrorException($message, 0, $level, $file, $line);
+        });
 
-    /**
-     * Executes the given function with the given parameters, while swallowing errors of the given severity.
-     *
-     * Errors caught matching the given severity will be swallowed (the current/default error handler
-     * will not be triggered), and converted to an ErrorException which will then be passed to the
-     * handler set up in the constructor, if any.
-     *
-     * Errors caught not matching the given severity will trigger the current error handler,
-     * or the default error handler if none is set. This is what would happen if the code was
-     * executed outside of the swallow() methods.
-     *
-     * @param integer  $severity   The severity of the errors to catch.
-     * @param callable $function   The function to call.
-     * @param array    $parameters Any parameters to pass to the function.
-     *
-     * @return mixed
-     */
-    public function swallow($severity, callable $function, array $parameters = [])
-    {
-        $this->severity = $severity;
-        $this->previousErrorHandler = set_error_handler($this->transientErrorHandler);
+        // Handle uncaught exceptions.
+        set_exception_handler(function(\Exception $e) use ($fatalErrorHandler) {
+            if (! headers_sent()) {
+                http_response_code(500);
+            }
 
-        $result = call_user_func_array($function, $parameters);
-        restore_error_handler();
+            if ($fatalErrorHandler) {
+                $fatalErrorHandler($e);
+            }
+        });
 
-        return $result;
+        // Handle fatal errors.
+        register_shutdown_function(function() use ($fatalErrorHandler) {
+            $e = error_get_last();
+
+            if ($e && $e['type'] === E_ERROR) {
+                if (! headers_sent()) {
+                    http_response_code(500);
+                }
+
+                if ($fatalErrorHandler) {
+                    $exception = new \ErrorException($e['message'], 0, $e['type'], $e['file'], $e['line']);
+                    $fatalErrorHandler($exception);
+                }
+            }
+        });
     }
 }

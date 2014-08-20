@@ -2,7 +2,7 @@
 
 namespace Brick\FileSystem;
 
-use Brick\Error\ErrorHandler;
+use Brick\Error\ErrorCatcher;
 use FilesystemIterator as FSI;
 
 /**
@@ -14,7 +14,7 @@ use FilesystemIterator as FSI;
 class FileSystem
 {
     /**
-     * @var \Brick\Error\ErrorHandler
+     * @var \Brick\Error\ErrorCatcher
      */
     private $errorHandler;
 
@@ -28,7 +28,7 @@ class FileSystem
      */
     public function __construct()
     {
-        $this->errorHandler = new ErrorHandler(function (\ErrorException $e) {
+        $this->errorHandler = new ErrorCatcher(function (\ErrorException $e) {
             if ($this->throw) {
                 throw FileSystemException::wrap($e);
             }
