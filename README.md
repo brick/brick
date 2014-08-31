@@ -28,20 +28,6 @@ Brick\Controller
 
 Although a controller can be any class method or function, this component provides an `AbstractController` and several other building blocks useful in most web applications.
 
-Brick\DateTime
---------------
-
-A powerful set of immutable classes to work with dates and times.
-Although PHP has a native `DateTime` class, it lacks many simple concepts like `LocalDate`, `LocalTime`, etc.
-
-The classes follow the ISO 8601 standard for representing date and time objects.
-They offer up to a nanosecond precision, where the native API has a 1 second precision.
-
-The date-time API also offers a configurable `Clock` that you can set in your automated tests.
-
-This component follows an important part of the JSR 310 (Date and Time API) specification from Java.
-Don't expect an exact match of class and method names though, as a number of differences exist for technical or practical reasons.
-
 Brick\DependencyInjection
 -------------------------
 
