@@ -2,11 +2,11 @@
 
 namespace Brick\Tests\DependencyInjection;
 
-use Brick\DependencyInjection\Scope;
+use Brick\Di\Scope;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Brick\DependencyInjection\InjectionPolicy\AnnotationPolicy;
-use Brick\DependencyInjection\Annotation\Inject;
-use Brick\DependencyInjection\Container;
+use Brick\Di\InjectionPolicy\AnnotationPolicy;
+use Brick\Di\Annotation\Inject;
+use Brick\Di\Container;
 
 /**
  * Unit test for the dependency injection container.

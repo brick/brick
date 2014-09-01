@@ -28,10 +28,10 @@ Brick\Controller
 
 Although a controller can be any class method or function, this component provides an `AbstractController` and several other building blocks useful in most web applications.
 
-Brick\DependencyInjection
--------------------------
+Brick\Di
+--------
 
-A simple yet powerful Inversion Of Control framework.
+A Dependency Injection and Inversion Of Control framework.
 It can be coupled to an `Application` to automatically inject required dependencies in controllers.
 
 Brick\Event

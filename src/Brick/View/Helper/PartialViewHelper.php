@@ -17,7 +17,7 @@ trait PartialViewHelper
     private $viewRenderer;
 
     /**
-     * @Brick\DependencyInjection\Annotation\Inject
+     * @Brick\Di\Annotation\Inject
      *
      * @param \Brick\View\ViewRenderer $viewRenderer
      * @return void

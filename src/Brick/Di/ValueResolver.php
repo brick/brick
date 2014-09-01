@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
 /**
  * Resolves the values of function parameters & class properties.

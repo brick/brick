@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
 /**
  * Base class for definitions.

@@ -3,7 +3,7 @@
 namespace Brick\Application;
 
 use Brick\Http\Request;
-use Brick\DependencyInjection\ValueResolver;
+use Brick\Di\ValueResolver;
 use Brick\Reflection\ReflectionTools;
 
 /**
@@ -12,7 +12,7 @@ use Brick\Reflection\ReflectionTools;
 class ControllerValueResolver implements ValueResolver
 {
     /**
-     * @var \Brick\DependencyInjection\ValueResolver
+     * @var \Brick\Di\ValueResolver
      */
     private $fallbackResolver;
 
@@ -32,7 +32,7 @@ class ControllerValueResolver implements ValueResolver
     private $reflectionTools;
 
     /**
-     * @param \Brick\DependencyInjection\ValueResolver $fallbackResolver
+     * @param \Brick\Di\ValueResolver $fallbackResolver
      */
     public function __construct(ValueResolver $fallbackResolver)
     {

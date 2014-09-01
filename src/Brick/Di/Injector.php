@@ -1,8 +1,8 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
-use Brick\DependencyInjection\ValueResolver\ArrayValueResolver;
+use Brick\Di\ValueResolver\ArrayValueResolver;
 use Brick\Reflection\ReflectionTools;
 
 /**
@@ -11,12 +11,12 @@ use Brick\Reflection\ReflectionTools;
 class Injector
 {
     /**
-     * @var \Brick\DependencyInjection\InjectionPolicy
+     * @var \Brick\Di\InjectionPolicy
      */
     private $policy;
 
     /**
-     * @var \Brick\DependencyInjection\ValueResolver\ArrayValueResolver
+     * @var \Brick\Di\ValueResolver\ArrayValueResolver
      */
     private $resolver;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
 /**
  * Exception thrown when a parameter/property could not be resolved.

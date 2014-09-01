@@ -11,11 +11,11 @@ use Brick\Routing\Route;
 use Brick\Routing\Router;
 use Brick\Event\EventListener;
 use Brick\Event\EventDispatcher;
-use Brick\DependencyInjection\Injector;
-use Brick\DependencyInjection\InjectionPolicy;
-use Brick\DependencyInjection\ValueResolver;
-use Brick\DependencyInjection\Container;
-use Brick\DependencyInjection\ValueResolver\DefaultValueResolver;
+use Brick\Di\Injector;
+use Brick\Di\InjectionPolicy;
+use Brick\Di\ValueResolver;
+use Brick\Di\Container;
+use Brick\Di\ValueResolver\DefaultValueResolver;
 
 /**
  * The web application kernel.
@@ -23,7 +23,7 @@ use Brick\DependencyInjection\ValueResolver\DefaultValueResolver;
 class Application implements RequestHandler
 {
     /**
-     * @var \Brick\DependencyInjection\Injector
+     * @var \Brick\Di\Injector
      */
     private $injector;
 

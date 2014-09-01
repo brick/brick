@@ -15,7 +15,7 @@ trait UrlBuilderHelper
     private $builder;
 
     /**
-     * @Brick\DependencyInjection\Annotation\Inject
+     * @Brick\Di\Annotation\Inject
      *
      * @param \Brick\UrlBuilder\UrlBuilder $builder
      * @return void

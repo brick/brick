@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\DependencyInjection\ValueResolver;
+namespace Brick\Di\ValueResolver;
 
-use Brick\DependencyInjection\ValueResolver;
-use Brick\DependencyInjection\Container;
+use Brick\Di\ValueResolver;
+use Brick\Di\Container;
 use Brick\Reflection\ReflectionTools;
 
 /**
@@ -12,17 +12,17 @@ use Brick\Reflection\ReflectionTools;
 class ContainerValueResolver implements ValueResolver
 {
     /**
-     * @var \Brick\DependencyInjection\Container
+     * @var \Brick\Di\Container
      */
     private $container;
 
     /**
-     * @var \Brick\DependencyInjection\InjectionPolicy
+     * @var \Brick\Di\InjectionPolicy
      */
     private $injectionPolicy;
 
     /**
-     * @var \Brick\DependencyInjection\ValueResolver\DefaultValueResolver
+     * @var \Brick\Di\ValueResolver\DefaultValueResolver
      */
     private $defaultValueResolver;
 

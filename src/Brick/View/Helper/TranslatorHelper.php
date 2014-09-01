@@ -16,7 +16,7 @@ trait TranslatorHelper
     private $translator;
 
     /**
-     * @Brick\DependencyInjection\Annotation\Inject
+     * @Brick\Di\Annotation\Inject
      *
      * @param \Brick\Translation\Translator $translator
      *

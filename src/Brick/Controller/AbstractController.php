@@ -5,7 +5,7 @@ namespace Brick\Controller;
 use Brick\View\View;
 use Brick\View\ViewRenderer;
 use Brick\Http\Response;
-use Brick\DependencyInjection\Annotation\Inject;
+use Brick\Di\Annotation\Inject;
 
 /**
  * Base controller class with helper methods for common cases.

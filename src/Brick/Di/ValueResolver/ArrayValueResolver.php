@@ -1,8 +1,8 @@
 <?php
 
-namespace Brick\DependencyInjection\ValueResolver;
+namespace Brick\Di\ValueResolver;
 
-use Brick\DependencyInjection\ValueResolver;
+use Brick\Di\ValueResolver;
 
 /**
  * Resolves parameters/properties whose names match the ones in an associative array.

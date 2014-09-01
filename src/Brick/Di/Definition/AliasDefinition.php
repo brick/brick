@@ -1,10 +1,10 @@
 <?php
 
-namespace Brick\DependencyInjection\Definition;
+namespace Brick\Di\Definition;
 
-use Brick\DependencyInjection\Definition;
-use Brick\DependencyInjection\Scope;
-use Brick\DependencyInjection\Container;
+use Brick\Di\Definition;
+use Brick\Di\Scope;
+use Brick\Di\Container;
 
 /**
  * Resolves a key by pointing to another.

@@ -2,9 +2,9 @@
 
 namespace Brick\Tests\DependencyInjection;
 
-use Brick\DependencyInjection\InjectionPolicy\NullPolicy;
-use Brick\DependencyInjection\Injector;
-use Brick\DependencyInjection\ValueResolver\DefaultValueResolver;
+use Brick\Di\InjectionPolicy\NullPolicy;
+use Brick\Di\Injector;
+use Brick\Di\ValueResolver\DefaultValueResolver;
 
 class InjectorTest extends \PHPUnit_Framework_TestCase
 {

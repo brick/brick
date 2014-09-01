@@ -2,7 +2,7 @@
 
 namespace Brick\Sample;
 
-use Brick\DependencyInjection\Injector;
+use Brick\Di\Injector;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -23,7 +23,7 @@ class SampleDataDispatcher
     private $em;
 
     /**
-     * @var \Brick\DependencyInjection\Injector
+     * @var \Brick\Di\Injector
      */
     private $injector;
 
@@ -31,7 +31,7 @@ class SampleDataDispatcher
      * Class constructor.
      *
      * @param \Doctrine\ORM\EntityManager $em
-     * @param \Brick\DependencyInjection\Injector $injector
+     * @param \Brick\Di\Injector          $injector
      */
     public function __construct(EntityManager $em, Injector $injector)
     {

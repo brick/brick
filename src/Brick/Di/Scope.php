@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
 /**
  * Defines the re-usability of a resolved definition value.

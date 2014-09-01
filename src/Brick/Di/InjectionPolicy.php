@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
 /**
  * Decides which classes, methods & properties should be injected.

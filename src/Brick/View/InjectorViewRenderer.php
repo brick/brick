@@ -2,7 +2,7 @@
 
 namespace Brick\View;
 
-use Brick\DependencyInjection\Injector;
+use Brick\Di\Injector;
 
 /**
  * Injects dependencies in the View before rendering it.

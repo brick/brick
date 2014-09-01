@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\DependencyInjection\InjectionPolicy;
+namespace Brick\Di\InjectionPolicy;
 
-use Brick\DependencyInjection\Annotation\Inject;
-use Brick\DependencyInjection\InjectionPolicy;
+use Brick\Di\Annotation\Inject;
+use Brick\Di\InjectionPolicy;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -33,7 +33,7 @@ class AnnotationPolicy implements InjectionPolicy
      */
     public function __construct(Reader $reader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\DependencyInjection\Annotation', __DIR__ . '/../../..');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Di\Annotation', __DIR__ . '/../../..');
 
         $this->reader = $reader;
         $this->reflectionTools = new ReflectionTools();

@@ -1,8 +1,8 @@
 <?php
 
-namespace Brick\DependencyInjection\InjectionPolicy;
+namespace Brick\Di\InjectionPolicy;
 
-use Brick\DependencyInjection\InjectionPolicy;
+use Brick\Di\InjectionPolicy;
 
 /**
  * Prevents injection of any class, method or property.

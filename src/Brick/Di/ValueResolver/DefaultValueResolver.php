@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\DependencyInjection\ValueResolver;
+namespace Brick\Di\ValueResolver;
 
-use Brick\DependencyInjection\ValueResolver;
-use Brick\DependencyInjection\UnresolvedValueException;
+use Brick\Di\ValueResolver;
+use Brick\Di\UnresolvedValueException;
 
 /**
  * Returns the default value of the parameter/property, if available.

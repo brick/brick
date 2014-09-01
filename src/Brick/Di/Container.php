@@ -1,11 +1,11 @@
 <?php
 
-namespace Brick\DependencyInjection;
+namespace Brick\Di;
 
-use Brick\DependencyInjection\Definition\AliasDefinition;
-use Brick\DependencyInjection\Definition\BindingDefinition;
-use Brick\DependencyInjection\InjectionPolicy\NullPolicy;
-use Brick\DependencyInjection\ValueResolver\ContainerValueResolver;
+use Brick\Di\Definition\AliasDefinition;
+use Brick\Di\Definition\BindingDefinition;
+use Brick\Di\InjectionPolicy\NullPolicy;
+use Brick\Di\ValueResolver\ContainerValueResolver;
 use Brick\Reflection\ReflectionTools;
 
 /**
@@ -14,7 +14,7 @@ use Brick\Reflection\ReflectionTools;
 class Container
 {
     /**
-     * @var \Brick\DependencyInjection\InjectionPolicy
+     * @var \Brick\Di\InjectionPolicy
      */
     private $injectionPolicy;
 
@@ -24,12 +24,12 @@ class Container
     private $items = [];
 
     /**
-     * @var \Brick\DependencyInjection\Injector
+     * @var \Brick\Di\Injector
      */
     private $injector;
 
     /**
-     * @var \Brick\DependencyInjection\ValueResolver\ContainerValueResolver
+     * @var \Brick\Di\ValueResolver\ContainerValueResolver
      */
     private $valueResolver;
 
@@ -174,7 +174,7 @@ class Container
      * @param string $key
      * @param string $target
      *
-     * @return \Brick\DependencyInjection\Definition\AliasDefinition
+     * @return \Brick\Di\Definition\AliasDefinition
      */
     public function alias($key, $target)
     {

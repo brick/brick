@@ -1,10 +1,10 @@
 <?php
 
-namespace Brick\DependencyInjection\Scope;
+namespace Brick\Di\Scope;
 
-use Brick\DependencyInjection\Scope;
-use Brick\DependencyInjection\Definition;
-use Brick\DependencyInjection\Container;
+use Brick\Di\Scope;
+use Brick\Di\Definition;
+use Brick\Di\Container;
 
 /**
  * The definition will be resolved once, then the same result will be returned every time it is requested.

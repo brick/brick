@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\DependencyInjection\Annotation;
+namespace Brick\Di\Annotation;
 
 /**
  * @Annotation
