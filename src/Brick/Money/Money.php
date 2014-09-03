@@ -408,7 +408,7 @@ class Money
         $formatter = new \NumberFormatter($locale->toString(), \NumberFormatter::CURRENCY);
         $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $this->currency->getSymbol());
 
-        return $formatter->format((float) $this->amount->toString());
+        return $formatter->format((float) (string) $this->amount);
     }
 
     /**
@@ -427,7 +427,7 @@ class Money
      */
     public function toString()
     {
-        return $this->currency->getCode() . ' ' . $this->amount->toString();
+        return $this->currency->getCode() . ' ' . $this->amount;
     }
 
     /**
