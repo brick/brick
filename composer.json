@@ -11,6 +11,8 @@
         "php": ">=5.5"
     },
     "require-dev": {
+        "brick/math": "dev-master",
+        "brick/date-time": "dev-master",
         "phpunit/phpunit": "*",
         "doctrine/common": "*",
         "doctrine/dbal": "*",
