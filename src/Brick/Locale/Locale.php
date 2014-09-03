@@ -2,8 +2,6 @@
 
 namespace Brick\Locale;
 
-use Brick\Type\Cast;
-
 /**
  * Instantiable Locale class.
  */
