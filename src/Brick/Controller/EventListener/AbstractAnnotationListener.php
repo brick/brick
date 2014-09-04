@@ -2,7 +2,7 @@
 
 namespace Brick\Controller\EventListener;
 
-use Brick\Event\AbstractEventListener;
+use Brick\Event\EventListener;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -11,7 +11,7 @@ use Doctrine\Common\Annotations\Reader;
 /**
  * Base class for event listeners checking controller annotations.
  */
-abstract class AbstractAnnotationListener extends AbstractEventListener
+abstract class AbstractAnnotationListener implements EventListener
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader

@@ -3,7 +3,7 @@
 namespace Brick\Controller\EventListener;
 
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
+use Brick\Event\EventListener;
 use Brick\Application\Event\AbstractRouteMatchEvent;
 use Brick\Application\Event\ControllerInvocatedEvent;
 use Brick\Application\Event\RouteMatchedEvent;
@@ -16,7 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 /**
  * Configures the start of a database transaction with annotations.
  */
-class TransactionalListener extends AbstractEventListener
+class TransactionalListener implements EventListener
 {
     /**
      * @var \Doctrine\DBAL\Connection

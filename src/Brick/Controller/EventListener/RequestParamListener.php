@@ -5,7 +5,7 @@ namespace Brick\Controller\EventListener;
 use Brick\Controller\Annotation\RequestParam;
 use Brick\Application\Event\ControllerReadyEvent;
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
+use Brick\Event\EventListener;
 use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Request;
 use Brick\Http\Exception\HttpBadRequestException;
@@ -22,7 +22,7 @@ use Doctrine\Common\Annotations\Reader;
 /**
  * Configures injection of request parameters into the controller with annotations.
  */
-class RequestParamListener extends AbstractEventListener
+class RequestParamListener implements EventListener
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader

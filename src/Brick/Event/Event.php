@@ -15,7 +15,7 @@ abstract class Event
     /**
      * @return bool
      */
-    public function isPropagationStopped()
+    final public function isPropagationStopped()
     {
         return $this->propagationStopped;
     }
@@ -23,7 +23,7 @@ abstract class Event
     /**
      * @return void
      */
-    public function stopPropagation()
+    final public function stopPropagation()
     {
         $this->propagationStopped = true;
     }

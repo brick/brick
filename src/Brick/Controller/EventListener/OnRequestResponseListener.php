@@ -3,7 +3,7 @@
 namespace Brick\Controller\EventListener;
 
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
+use Brick\Event\EventListener;
 use Brick\Application\Event\ControllerReadyEvent;
 use Brick\Application\Event\ResponseReceivedEvent;
 use Brick\Controller\ControllerInterface\OnRequestInterface;
@@ -12,7 +12,7 @@ use Brick\Controller\ControllerInterface\OnResponseInterface;
 /**
  * Listens to the application events to call onRequest() and onResponse() on controllers implementing them.
  */
-class OnRequestResponseListener extends AbstractEventListener
+class OnRequestResponseListener implements EventListener
 {
     /**
      * {@inheritdoc}

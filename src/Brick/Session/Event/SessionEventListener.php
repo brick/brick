@@ -3,7 +3,7 @@
 namespace Brick\Session\Event;
 
 use Brick\Event\Event;
-use Brick\Event\AbstractEventListener;
+use Brick\Event\EventListener;
 use Brick\Application\Event\IncomingRequestEvent;
 use Brick\Application\Event\ResponseReceivedEvent;
 use Brick\Session\Session;
@@ -11,7 +11,7 @@ use Brick\Session\Session;
 /**
  * Event listener to integrate session management in the request/response process.
  */
-class SessionEventListener extends AbstractEventListener
+class SessionEventListener implements EventListener
 {
     /**
      * @var \Brick\Session\Session
