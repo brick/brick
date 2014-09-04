@@ -34,11 +34,6 @@ Brick\Di
 A Dependency Injection and Inversion Of Control framework.
 It can be coupled to an `Application` to automatically inject required dependencies in controllers.
 
-Brick\Event
------------
-
-A simple event dispatching/listening mechanism.
-
 Brick\FileSystem
 ----------------
 
