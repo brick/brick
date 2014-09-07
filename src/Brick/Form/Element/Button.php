@@ -57,6 +57,26 @@ abstract class Button extends Element
     }
 
     /**
+     * Returns the opening tag.
+     *
+     * @return string
+     */
+    public function open()
+    {
+        return $this->getTag()->renderOpeningTag();
+    }
+
+    /**
+     * Returns the closing tag.
+     *
+     * @return string
+     */
+    public function close()
+    {
+        return $this->getTag()->renderClosingTag();
+    }
+
+    /**
      * Returns the type of this button.
      *
      * @return string
