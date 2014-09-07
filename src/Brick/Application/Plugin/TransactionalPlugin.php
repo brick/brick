@@ -1,12 +1,12 @@
 <?php
 
-namespace Brick\Controller\Plugin;
+namespace Brick\Application\Controller\Plugin;
 
 use Brick\Application\Event\RouteMatchEvent;
 use Brick\Application\Event\ControllerEvent;
 use Brick\Application\Events;
 use Brick\Application\Plugin;
-use Brick\Controller\Annotation\Transactional;
+use Brick\Application\Controller\Annotation\Transactional;
 use Brick\Event\EventDispatcher;
 
 use Doctrine\DBAL\Connection;

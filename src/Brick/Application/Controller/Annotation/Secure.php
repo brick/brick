@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Controller\Annotation;
+namespace Brick\Application\Controller\Annotation;
 
 /**
  * Forces a controller to be accessed on an HTTPS connection.

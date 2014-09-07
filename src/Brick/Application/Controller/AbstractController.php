@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Controller;
+namespace Brick\Application\Controller;
 
 use Brick\View\View;
 use Brick\View\ViewRenderer;

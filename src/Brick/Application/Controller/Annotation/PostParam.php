@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Controller\Annotation;
+namespace Brick\Application\Controller\Annotation;
 
 use Brick\Http\Request;
 
@@ -10,14 +10,14 @@ use Brick\Http\Request;
  * @Annotation
  * @Target("METHOD")
  */
-class QueryParam extends RequestParam
+class PostParam extends RequestParam
 {
     /**
      * {@inheritdoc}
      */
     public function getParameterType()
     {
-        return 'query';
+        return 'post';
     }
 
     /**
@@ -25,6 +25,6 @@ class QueryParam extends RequestParam
      */
     public function getRequestParameters(Request $request)
     {
-        return $request->getQuery();
+        return $request->getPost();
     }
 }

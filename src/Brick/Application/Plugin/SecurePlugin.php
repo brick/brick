@@ -1,10 +1,10 @@
 <?php
 
-namespace Brick\Controller\Plugin;
+namespace Brick\Application\Controller\Plugin;
 
 use Brick\Application\Event\RouteMatchEvent;
 use Brick\Application\Events;
-use Brick\Controller\Annotation\Secure;
+use Brick\Application\Controller\Annotation\Secure;
 use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpRedirectException;
 

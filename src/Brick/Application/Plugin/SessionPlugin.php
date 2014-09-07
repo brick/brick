@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Session\Plugin;
+namespace Brick\Application\Plugin;
 
 use Brick\Application\Event\RequestEvent;
 use Brick\Application\Event\ResponseEvent;

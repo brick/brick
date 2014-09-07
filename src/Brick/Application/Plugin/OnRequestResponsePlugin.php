@@ -1,13 +1,13 @@
 <?php
 
-namespace Brick\Controller\Plugin;
+namespace Brick\Application\Controller\Plugin;
 
 use Brick\Application\Events;
 use Brick\Application\Event\ControllerParameterEvent;
 use Brick\Application\Event\ResponseEvent;
 use Brick\Application\Plugin;
-use Brick\Controller\ControllerInterface\OnRequestInterface;
-use Brick\Controller\ControllerInterface\OnResponseInterface;
+use Brick\Application\Controller\ControllerInterface\OnRequestInterface;
+use Brick\Application\Controller\ControllerInterface\OnResponseInterface;
 use Brick\Event\EventDispatcher;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Controller\Annotation;
+namespace Brick\Application\Controller\Annotation;
 
 /**
  * Base class for annotation classes.

@@ -1,11 +1,11 @@
 <?php
 
-namespace Brick\Controller\Plugin;
+namespace Brick\Application\Controller\Plugin;
 
 use Brick\Application\Event\ControllerParameterEvent;
 use Brick\Application\Events;
 use Brick\Application\Plugin;
-use Brick\Controller\Annotation\RequestParam;
+use Brick\Application\Controller\Annotation\RequestParam;
 use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Request;
@@ -225,7 +225,7 @@ class RequestParamPlugin implements Plugin
 
     /**
      * @param \ReflectionFunctionAbstract $controller
-     * @param \Brick\Controller\Annotation\RequestParam $annotation
+     * @param \Brick\Application\Controller\Annotation\RequestParam $annotation
      *
      * @return \Brick\Http\Exception\HttpInternalServerErrorException
      */
@@ -240,7 +240,7 @@ class RequestParamPlugin implements Plugin
 
     /**
      * @param \ReflectionFunctionAbstract               $controller
-     * @param \Brick\Controller\Annotation\RequestParam $annotation
+     * @param \Brick\Application\Controller\Annotation\RequestParam $annotation
      *
      * @return \Brick\Http\Exception\HttpBadRequestException
      */
@@ -256,7 +256,7 @@ class RequestParamPlugin implements Plugin
 
     /**
      * @param \ReflectionFunctionAbstract               $controller
-     * @param \Brick\Controller\Annotation\RequestParam $annotation
+     * @param \Brick\Application\Controller\Annotation\RequestParam $annotation
      *
      * @return \Brick\Http\Exception\HttpBadRequestException
      */
