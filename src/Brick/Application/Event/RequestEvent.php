@@ -2,13 +2,12 @@
 
 namespace Brick\Application\Event;
 
-use Brick\Event\Event;
 use Brick\Http\Request;
 
 /**
- * Base class for events having a Request (all events).
+ * Base class for events having a Request.
  */
-abstract class AbstractRequestEvent extends Event
+class RequestEvent
 {
     /**
      * @var \Brick\Http\Request

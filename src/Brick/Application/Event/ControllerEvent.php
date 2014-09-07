@@ -6,9 +6,9 @@ use Brick\Routing\RouteMatch;
 use Brick\Http\Request;
 
 /**
- * Base class for events having a Request, a RouteMatch, and an optional controller instance.
+ * Extends the RouteMatchEvent with an optional controller instance.
  */
-abstract class AbstractControllerEvent extends AbstractRouteMatchEvent
+class ControllerEvent extends RouteMatchEvent
 {
     /**
      * The controller instance, or null if the controller is not a class method.

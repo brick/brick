@@ -2,15 +2,14 @@
 
 namespace Brick\Application\Event;
 
-use Brick\Event\Event;
 use Brick\Http\Exception\HttpException;
 use Brick\Http\Request;
 use Brick\Http\Response;
 
 /**
- * Event thrown when an HttpException has been caught.
+ * Event for exceptions caught.
  */
-class ExceptionCaughtEvent extends Event
+class ExceptionEvent
 {
     /**
      * @var \Brick\Http\Exception\HttpException

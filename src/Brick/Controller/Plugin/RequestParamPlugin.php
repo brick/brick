@@ -1,11 +1,12 @@
 <?php
 
-namespace Brick\Controller\EventListener;
+namespace Brick\Controller\Plugin;
 
+use Brick\Application\Event\ControllerParameterEvent;
+use Brick\Application\Events;
+use Brick\Application\Plugin;
 use Brick\Controller\Annotation\RequestParam;
-use Brick\Application\Event\ControllerReadyEvent;
-use Brick\Event\Event;
-use Brick\Event\EventListener;
+use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Request;
 use Brick\Http\Exception\HttpBadRequestException;
@@ -20,9 +21,9 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 
 /**
- * Configures injection of request parameters into the controller with annotations.
+ * Injects request parameters into controllers with annotations.
  */
-class RequestParamListener implements EventListener
+class RequestParamPlugin implements Plugin
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader
@@ -65,14 +66,24 @@ class RequestParamListener implements EventListener
     /**
      * {@inheritdoc}
      */
-    public function handleEvent(Event $event)
+    public function register(EventDispatcher $dispatcher)
     {
-        if ($event instanceof ControllerReadyEvent) {
-            $event->setParameters($this->getParameters(
-                $event->getRequest(),
-                $event->getRouteMatch()->getControllerReflection()
-            ));
-        }
+        $dispatcher->addListener(Events::CONTROLLER_READY, [$this, 'setControllerParameters']);
+    }
+
+    /**
+     * @internal
+     *
+     * @param ControllerParameterEvent $event
+     *
+     * @return void
+     */
+    public function setControllerParameters(ControllerParameterEvent $event)
+    {
+        $event->setParameters($this->getParameters(
+            $event->getRequest(),
+            $event->getRouteMatch()->getControllerReflection()
+        ));
     }
 
     /**

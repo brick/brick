@@ -19,6 +19,7 @@ abstract class AbstractController
 
     /**
      * @Inject
+     *
      * @param \Brick\View\ViewRenderer $renderer
      */
     public function injectViewRenderer(ViewRenderer $renderer)
@@ -28,7 +29,9 @@ abstract class AbstractController
 
     /**
      * @param \Brick\View\View $view
+     *
      * @return string
+     *
      * @throws \RuntimeException
      */
     protected function renderAsString(View $view)
@@ -44,6 +47,7 @@ abstract class AbstractController
      * Renders a View in a Response object.
      *
      * @param \Brick\View\View $view
+     *
      * @return \Brick\Http\Response
      */
     protected function render(View $view)
@@ -53,6 +57,7 @@ abstract class AbstractController
 
     /**
      * @param string $text
+     *
      * @return \Brick\Http\Response
      */
     protected function renderText($text)
@@ -62,6 +67,7 @@ abstract class AbstractController
 
     /**
      * @param string $html
+     *
      * @return \Brick\Http\Response
      */
     protected function renderHtml($html)
@@ -71,6 +77,7 @@ abstract class AbstractController
 
     /**
      * @param mixed $data
+     *
      * @return \Brick\Http\Response
      */
     protected function renderJson($data)
@@ -108,6 +115,7 @@ abstract class AbstractController
      * @todo does not belong here
      *
      * @param string $name
+     *
      * @return string
      */
     public static function getNamespaceName($name)
@@ -119,6 +127,7 @@ abstract class AbstractController
      * @todo does not belong here
      *
      * @param string $name
+     *
      * @return string
      */
     public static function getClassName($name)
@@ -130,6 +139,7 @@ abstract class AbstractController
      * @todo does not belong here
      *
      * @param string $name
+     *
      * @return string
      */
     public static function getMethodName($name)
@@ -143,6 +153,7 @@ abstract class AbstractController
      * Capitalizes a dashed string, e.g. foo-bar => fooBar.
      *
      * @param string $name
+     *
      * @return string
      */
     private static function capitalize($name)

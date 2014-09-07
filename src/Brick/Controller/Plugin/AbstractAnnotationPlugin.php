@@ -1,17 +1,17 @@
 <?php
 
-namespace Brick\Controller\EventListener;
+namespace Brick\Controller\Plugin;
 
-use Brick\Event\EventListener;
+use Brick\Application\Plugin;
 use Brick\Reflection\ReflectionTools;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 
 /**
- * Base class for event listeners checking controller annotations.
+ * Base class for plugins checking controller annotations.
  */
-abstract class AbstractAnnotationListener implements EventListener
+abstract class AbstractAnnotationPlugin implements Plugin
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader

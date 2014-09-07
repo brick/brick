@@ -6,9 +6,9 @@ use Brick\Http\Request;
 use Brick\Routing\RouteMatch;
 
 /**
- * Base class for events having a Request and a RouteMatch.
+ * Extends the RequestEvent with a RouteMatch.
  */
-abstract class AbstractRouteMatchEvent extends AbstractRequestEvent
+class RouteMatchEvent extends RequestEvent
 {
     /**
      * @var \Brick\Routing\RouteMatch
@@ -16,7 +16,7 @@ abstract class AbstractRouteMatchEvent extends AbstractRequestEvent
     private $routeMatch;
 
     /**
-     * @param \Brick\Http\Request $request
+     * @param \Brick\Http\Request       $request
      * @param \Brick\Routing\RouteMatch $routeMatch
      */
     public function __construct(Request $request, RouteMatch $routeMatch)

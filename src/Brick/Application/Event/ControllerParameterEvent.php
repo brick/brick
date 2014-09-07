@@ -3,10 +3,9 @@
 namespace Brick\Application\Event;
 
 /**
- * Event dispatched when the controller is ready to be invoked.
- * If the controller is a class method, the controller is now instantiated, and available here.
+ * Extends the ControllerEvent with configurable parameters.
  */
-class ControllerReadyEvent extends AbstractControllerEvent
+class ControllerParameterEvent extends ControllerEvent
 {
     /**
      * An associative array of key-value pairs controller parameters will resolve to.

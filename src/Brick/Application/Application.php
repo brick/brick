@@ -2,6 +2,12 @@
 
 namespace Brick\Application;
 
+use Brick\Application\Event\ControllerEvent;
+use Brick\Application\Event\ControllerParameterEvent;
+use Brick\Application\Event\RequestEvent;
+use Brick\Application\Event\ResponseEvent;
+use Brick\Application\Event\RouteMatchEvent;
+
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
@@ -9,7 +15,6 @@ use Brick\Http\Exception\HttpException;
 use Brick\Http\Exception\HttpInternalServerErrorException;
 use Brick\Routing\Route;
 use Brick\Routing\Router;
-use Brick\Event\EventListener;
 use Brick\Event\EventDispatcher;
 use Brick\Di\Injector;
 use Brick\Di\InjectionPolicy;
@@ -97,13 +102,13 @@ class Application implements RequestHandler
     }
 
     /**
-     * @param EventListener $listener
+     * @param Plugin $plugin The plugin to add.
      *
-     * @return Application
+     * @return Application This instance, for chaining.
      */
-    public function addEventListener(EventListener $listener)
+    public function addPlugin(Plugin $plugin)
     {
-        $this->eventDispatcher->addListener($listener);
+        $plugin->register($this->eventDispatcher);
 
         return $this;
     }
@@ -152,8 +157,8 @@ class Application implements RequestHandler
         $response->setHeaders($exception->getHeaders());
         $response->setHeader('Content-Type', 'text/plain');
 
-        $event = new Event\ExceptionCaughtEvent($exception, $request, $response);
-        $this->eventDispatcher->dispatch($event);
+        $event = new Event\ExceptionEvent($exception, $request, $response);
+        $this->eventDispatcher->dispatch(Events::EXCEPTION_CAUGHT, $event);
 
         return $response;
     }
@@ -180,17 +185,16 @@ class Application implements RequestHandler
      *
      * @throws \Brick\Http\Exception\HttpNotFoundException If no route matches the request.
      * @throws \UnexpectedValueException                   If a route or controller returned an unexpected value.
-     * @throws \Exception                                  Catches and rethrows any exception.
      */
     private function handleRequest(Request $request)
     {
-        $event = new Event\IncomingRequestEvent($request);
-        $this->eventDispatcher->dispatch($event);
+        $event = new RequestEvent($request);
+        $this->eventDispatcher->dispatch(Events::INCOMING_REQUEST, $event);
 
         $match = $this->router->match($request);
 
-        $event = new Event\RouteMatchedEvent($request, $match);
-        $this->eventDispatcher->dispatch($event);
+        $event = new RouteMatchEvent($request, $match);
+        $this->eventDispatcher->dispatch(Events::ROUTE_MATCHED, $event);
 
         $controllerReflection = $match->getControllerReflection();
         $instance = null;
@@ -206,11 +210,11 @@ class Application implements RequestHandler
         } elseif ($controllerReflection instanceof \ReflectionFunction) {
             $callable = $controllerReflection->getClosure();
         } else {
-            throw new \UnexpectedValueException('Invalid controller reflection type.');
+            throw new \UnexpectedValueException('Unknown controller reflection type.');
         }
 
-        $event = new Event\ControllerReadyEvent($request, $match, $instance);
-        $this->eventDispatcher->dispatch($event);
+        $event = new ControllerParameterEvent($request, $match, $instance);
+        $this->eventDispatcher->dispatch(Events::CONTROLLER_READY, $event);
 
         $this->valueResolver->addParameters($event->getParameters());
 
@@ -220,12 +224,12 @@ class Application implements RequestHandler
         } catch (HttpException $e) {
             $response = $this->handleHttpException($e, $request);
         } finally {
-            $event = new Event\ControllerInvocatedEvent($request, $match, $instance);
-            $this->eventDispatcher->dispatch($event);
+            $event = new ControllerEvent($request, $match, $instance);
+            $this->eventDispatcher->dispatch(Events::CONTROLLER_INVOCATED, $event);
         }
 
-        $event = new Event\ResponseReceivedEvent($request, $response, $match, $instance);
-        $this->eventDispatcher->dispatch($event);
+        $event = new ResponseEvent($request, $response, $match, $instance);
+        $this->eventDispatcher->dispatch(Events::RESPONSE_RECEIVED, $event);
 
         return $response;
     }

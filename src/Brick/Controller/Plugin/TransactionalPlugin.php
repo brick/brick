@@ -1,13 +1,13 @@
 <?php
 
-namespace Brick\Controller\EventListener;
+namespace Brick\Controller\Plugin;
 
-use Brick\Event\Event;
-use Brick\Event\EventListener;
-use Brick\Application\Event\AbstractRouteMatchEvent;
-use Brick\Application\Event\ControllerInvocatedEvent;
-use Brick\Application\Event\RouteMatchedEvent;
+use Brick\Application\Event\RouteMatchEvent;
+use Brick\Application\Event\ControllerEvent;
+use Brick\Application\Events;
+use Brick\Application\Plugin;
 use Brick\Controller\Annotation\Transactional;
+use Brick\Event\EventDispatcher;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -16,7 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 /**
  * Configures the start of a database transaction with annotations.
  */
-class TransactionalListener implements EventListener
+class TransactionalPlugin implements Plugin
 {
     /**
      * @var \Doctrine\DBAL\Connection
@@ -40,24 +40,47 @@ class TransactionalListener implements EventListener
     /**
      * {@inheritdoc}
      */
-    public function handleEvent(Event $event)
+    public function register(EventDispatcher $dispatcher)
     {
-        /* Start a transaction before invocating the controller */
-        if ($event instanceof RouteMatchedEvent) {
-            $annotation = $this->getTransactionalAnnotation($event);
-            if ($annotation) {
-                $this->connection->setTransactionIsolation($annotation->getIsolationLevel());
-                $this->connection->beginTransaction();
-            }
-        }
+        $dispatcher->addListener(Events::ROUTE_MATCHED, [$this, 'beginTransaction']);
+        $dispatcher->addListener(Events::CONTROLLER_INVOCATED, [$this, 'rollbackTransaction']);
+    }
 
-        /* Rollback a transaction that has not explicitly been committed */
-        if ($event instanceof ControllerInvocatedEvent) {
-            $annotation = $this->getTransactionalAnnotation($event);
-            if ($annotation) {
-                if ($this->connection->isTransactionActive()) {
-                    $this->connection->rollback();
-                }
+    /**
+     * Starts a transaction before invocating the controller.
+     *
+     * @internal
+     *
+     * @param RouteMatchEvent $event
+     *
+     * @return void
+     */
+    public function beginTransaction(RouteMatchEvent $event)
+    {
+        $annotation = $this->getTransactionalAnnotation($event);
+
+        if ($annotation) {
+            $this->connection->setTransactionIsolation($annotation->getIsolationLevel());
+            $this->connection->beginTransaction();
+        }
+    }
+
+    /**
+     * Rolls back a transaction that has not been committed.
+     *
+     * @internal
+     *
+     * @param ControllerEvent $event
+     *
+     * @return void
+     */
+    public function rollbackTransaction(ControllerEvent $event)
+    {
+        $annotation = $this->getTransactionalAnnotation($event);
+
+        if ($annotation) {
+            if ($this->connection->isTransactionActive()) {
+                $this->connection->rollback();
             }
         }
     }
@@ -65,13 +88,13 @@ class TransactionalListener implements EventListener
     /**
      * Returns the Transactional annotation for the controller.
      *
-     * @param \Brick\Application\Event\AbstractRouteMatchEvent $event
+     * @param \Brick\Application\Event\RouteMatchEvent $event
      *
      * @return Transactional|null The annotation, or NULL if the controller is not transactional.
      *
      * @todo add support for annotations on functions when Doctrine will handle them
      */
-    private function getTransactionalAnnotation(AbstractRouteMatchEvent $event)
+    private function getTransactionalAnnotation(RouteMatchEvent $event)
     {
         $method = $event->getRouteMatch()->getControllerReflection();
 
