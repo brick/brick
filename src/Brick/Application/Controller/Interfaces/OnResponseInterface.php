@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Application\Controller\ControllerInterface;
+namespace Brick\Application\Controller\Interfaces;
 
 use Brick\Http\Response;
 

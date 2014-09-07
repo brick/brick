@@ -6,8 +6,8 @@ use Brick\Application\Events;
 use Brick\Application\Event\ControllerParameterEvent;
 use Brick\Application\Event\ResponseEvent;
 use Brick\Application\Plugin;
-use Brick\Application\Controller\ControllerInterface\OnRequestInterface;
-use Brick\Application\Controller\ControllerInterface\OnResponseInterface;
+use Brick\Application\Controller\Interfaces\OnRequestInterface;
+use Brick\Application\Controller\Interfaces\OnResponseInterface;
 use Brick\Event\EventDispatcher;
 
 /**
