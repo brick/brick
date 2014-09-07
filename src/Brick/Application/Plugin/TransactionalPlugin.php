@@ -10,13 +10,12 @@ use Brick\Application\Controller\Annotation\Transactional;
 use Brick\Event\EventDispatcher;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 
 /**
  * Configures the start of a database transaction with annotations.
  */
-class TransactionalPlugin implements Plugin
+class TransactionalPlugin extends AbstractAnnotationPlugin
 {
     /**
      * @var \Doctrine\DBAL\Connection
@@ -31,10 +30,9 @@ class TransactionalPlugin implements Plugin
      */
     public function __construct(Connection $connection, Reader $annotationReader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Application\Controller\Annotation', __DIR__ . '/../../..');
+        parent::__construct($annotationReader);
 
-        $this->connection       = $connection;
-        $this->annotationReader = $annotationReader;
+        $this->connection = $connection;
     }
 
     /**

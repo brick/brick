@@ -15,41 +15,16 @@ use Brick\ObjectConverter\Exception\ObjectNotConvertibleException;
 use Brick\ObjectConverter\Exception\ObjectNotFoundException;
 use Brick\ObjectConverter\ObjectConverter;
 use Brick\Reflection\ImportResolver;
-use Brick\Reflection\ReflectionTools;
-
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
 
 /**
  * Injects request parameters into controllers with annotations.
  */
-class RequestParamPlugin implements Plugin
+class RequestParamPlugin extends AbstractAnnotationPlugin
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    private $annotationReader;
-
     /**
      * @var \Brick\ObjectConverter\ObjectConverter[]
      */
     private $objectConverters = [];
-
-    /**
-     * @var \Brick\Reflection\ReflectionTools
-     */
-    private $reflectionTools;
-
-    /**
-     * @param Reader $annotationReader
-     */
-    public function __construct(Reader $annotationReader)
-    {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Application\Controller\Annotation', __DIR__ . '/../../..');
-
-        $this->annotationReader = $annotationReader;
-        $this->reflectionTools  = new ReflectionTools();
-    }
 
     /**
      * @param ObjectConverter $converter
@@ -68,22 +43,12 @@ class RequestParamPlugin implements Plugin
      */
     public function register(EventDispatcher $dispatcher)
     {
-        $dispatcher->addListener(Events::CONTROLLER_READY, [$this, 'setControllerParameters']);
-    }
-
-    /**
-     * @internal
-     *
-     * @param ControllerParameterEvent $event
-     *
-     * @return void
-     */
-    public function setControllerParameters(ControllerParameterEvent $event)
-    {
-        $event->setParameters($this->getParameters(
-            $event->getRequest(),
-            $event->getRouteMatch()->getControllerReflection()
-        ));
+        $dispatcher->addListener(Events::CONTROLLER_READY, function(ControllerParameterEvent $event) {
+            $event->setParameters($this->getParameters(
+                $event->getRequest(),
+                $event->getRouteMatch()->getControllerReflection()
+            ));
+        });
     }
 
     /**
@@ -98,7 +63,7 @@ class RequestParamPlugin implements Plugin
             $annotations = $this->annotationReader->getMethodAnnotations($controller);
         } else {
             // @todo annotation reading on generic functions is not available yet
-            $annotations = [];
+            return [];
         }
 
         $parameters = [];

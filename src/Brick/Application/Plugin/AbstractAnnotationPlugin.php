@@ -16,12 +16,12 @@ abstract class AbstractAnnotationPlugin implements Plugin
     /**
      * @var \Doctrine\Common\Annotations\Reader
      */
-    private $annotationReader;
+    protected $annotationReader;
 
     /**
      * @var \Brick\Reflection\ReflectionTools
      */
-    private $reflectionTools;
+    protected $reflectionTools;
 
     /**
      * @param Reader $annotationReader
@@ -35,14 +35,18 @@ abstract class AbstractAnnotationPlugin implements Plugin
     }
 
     /**
-     * Returns an annotation on the class or method, if any.
+     * Finds an annotation on the controller class or method.
      *
-     * @todo annotation reading on generic functions (non-methods) once available in Doctrine
+     * If the annotation is found on both the controller class and method, the method annotation is returned.
+     * If the annotation is found on several classes in the hierarchy of controller classes,
+     * the annotation of the child class is returned.
+     *
+     * This method does not support controller functions outside a class.
      *
      * @param \ReflectionFunctionAbstract $controller
      * @param string                      $annotationClass
      *
-     * @return object|null The annotation, or null if not present.
+     * @return object|null The annotation, or null if not found.
      */
     protected function getControllerAnnotation(\ReflectionFunctionAbstract $controller, $annotationClass)
     {

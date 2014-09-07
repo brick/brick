@@ -12,10 +12,10 @@ use Brick\Http\Exception\HttpRedirectException;
  * Enforces the protocol allowed on a controller with annotations.
  *
  * If the Secure annotation is present on a controller class or method, HTTPS is enforced.
- * If the annotation is not present, both protocols are allowed by default.
- * If forceUnsecured() has been called, HTTP is enforced instead when the annotation is absent.
+ * If the annotation is not present, both protocols are allowed, unless forceUnsecured() has been called,
+ * in which case HTTP is enforced instead.
  *
- * The protocol is enforced with a 301 redirect.
+ * The protocol is enforced with a 301 permanent redirect.
  */
 class SecurePlugin extends AbstractAnnotationPlugin
 {
