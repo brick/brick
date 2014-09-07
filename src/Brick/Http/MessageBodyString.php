@@ -19,7 +19,7 @@ class MessageBodyString implements MessageBody
      */
     public function __construct($body)
     {
-        $this->body = $body;
+        $this->body = (string) $body;
     }
 
     /**
