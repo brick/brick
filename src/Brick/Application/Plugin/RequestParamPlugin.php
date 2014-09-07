@@ -45,7 +45,7 @@ class RequestParamPlugin implements Plugin
      */
     public function __construct(Reader $annotationReader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Application\Controller\Annotation', __DIR__ . '/../../..');
 
         $this->annotationReader = $annotationReader;
         $this->reflectionTools  = new ReflectionTools();

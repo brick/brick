@@ -31,7 +31,7 @@ class TransactionalPlugin implements Plugin
      */
     public function __construct(Connection $connection, Reader $annotationReader)
     {
-        AnnotationRegistry::registerAutoloadNamespace('Brick\Controller\Annotation', __DIR__ . '/../../..');
+        AnnotationRegistry::registerAutoloadNamespace('Brick\Application\Controller\Annotation', __DIR__ . '/../../..');
 
         $this->connection       = $connection;
         $this->annotationReader = $annotationReader;
