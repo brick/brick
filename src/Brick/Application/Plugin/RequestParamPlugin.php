@@ -17,7 +17,7 @@ use Brick\ObjectConverter\ObjectConverter;
 use Brick\Reflection\ImportResolver;
 
 /**
- * Injects request parameters into controllers with annotations.
+ * Injects request parameters into controllers with the QueryParam and PostParam annotations.
  */
 class RequestParamPlugin extends AbstractAnnotationPlugin
 {

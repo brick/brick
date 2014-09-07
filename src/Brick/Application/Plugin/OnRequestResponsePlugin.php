@@ -11,7 +11,7 @@ use Brick\Application\Controller\Interfaces\OnResponseInterface;
 use Brick\Event\EventDispatcher;
 
 /**
- * Calls `onRequest()` and `onResponse()` on controllers implementing the relevant interfaces.
+ * Calls `onRequest()` and `onResponse()` on controllers implementing OnRequestInterface and OnResponseInterface.
  */
 class OnRequestResponsePlugin implements Plugin
 {

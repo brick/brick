@@ -9,7 +9,7 @@ use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpMethodNotAllowedException;
 
 /**
- * Enforces the methods allowed on a controller with annotations.
+ * Enforces the methods allowed on a controller with the Allow annotation.
  */
 class AllowPlugin extends AbstractAnnotationPlugin
 {

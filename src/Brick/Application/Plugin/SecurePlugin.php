@@ -9,7 +9,7 @@ use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpRedirectException;
 
 /**
- * Enforces the protocol allowed on a controller with annotations.
+ * Enforces the protocol allowed on a controller with the Secure annotation.
  *
  * If the Secure annotation is present on a controller class or method, HTTPS is enforced.
  * If the annotation is not present, both protocols are allowed, unless forceUnsecured() has been called,
