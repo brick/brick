@@ -7,7 +7,7 @@ use Brick\Http\Request;
 /**
  * Allows controller classes to have a method called before any controller method in the class.
  *
- * This interface requires the OnRequestResponseListener to be registered with the application.
+ * This interface requires the OnRequestResponsePlugin to be registered with the application.
  */
 interface OnRequestInterface
 {

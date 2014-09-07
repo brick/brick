@@ -5,7 +5,7 @@ namespace Brick\Application\Controller\Annotation;
 use Brick\Http\Request;
 
 /**
- * This annotation requires the RequestParamListener to be registered with the application.
+ * This annotation requires the `RequestParamPlugin`.
  *
  * @Annotation
  * @Target("METHOD")

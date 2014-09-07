@@ -7,7 +7,7 @@ namespace Brick\Application\Controller\Annotation;
  *
  * Can be used on a controller class (will apply to all controller methods), or on a single method.
  *
- * This annotation requires the SecureListener to be registered with the application.
+ * This annotation requires the `SecurePlugin`.
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})

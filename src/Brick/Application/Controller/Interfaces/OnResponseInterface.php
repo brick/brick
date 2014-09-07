@@ -12,7 +12,7 @@ use Brick\Http\Response;
  * This will only be called if the controller successfully returns a Response,
  * or if an HttpException has been thrown. If any other exception is thrown, onResponse() will *not* be called.
  *
- * The OnRequestResponseEventListener has to be registered in the application's EventDispatcher for this to work.
+ * This interface requires the `OnRequestResponsePlugin`.
  */
 interface OnResponseInterface
 {

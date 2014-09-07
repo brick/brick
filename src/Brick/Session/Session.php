@@ -335,7 +335,7 @@ class Session implements SessionInterface
         if ($this->id === null) {
             throw new \RuntimeException(
                 'Trying to access a Session object that has not yet been loaded. ' .
-                'This most likely means that you have not registered the SessionEventListener with your application.'
+                'This most likely means that you have not added the SessionPlugin to your application.'
             );
         }
 

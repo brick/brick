@@ -8,7 +8,7 @@ namespace Brick\Application\Controller\Annotation;
  * Can be used on a controller class (will apply to all controller methods), or on a single method.
  * When used on both, the method annotation will take precedence over the class annotation.
  *
- * This annotation requires the AllowListener to be registered with the application.
+ * This annotation requires the `AllowPlugin`.
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})

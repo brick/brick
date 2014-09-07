@@ -15,7 +15,7 @@ use Doctrine\DBAL\Connection;
  * If the controller does not explicitly commit the transaction,
  * it will be rolled back automatically when the controller returns.
  *
- * This annotation requires the TransactionalListener to be registered with the application.
+ * This annotation requires the `TransactionalPlugin`.
  *
  * @Annotation
  * @Target("METHOD")
