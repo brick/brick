@@ -20,7 +20,7 @@ class TextView extends AbstractView
      */
     private function __construct($string, $escape)
     {
-        $this->html = $escape ? $this->escape($string) : (string) $string;
+        $this->html = $escape ? $this->html($string) : (string) $string;
     }
 
     /**
@@ -31,16 +31,6 @@ class TextView extends AbstractView
     public static function text($text)
     {
         return new self($text, true);
-    }
-
-    /**
-     * @param string $html
-     *
-     * @return TextView
-     */
-    public static function html($html)
-    {
-        return new self($html, false);
     }
 
     /**
