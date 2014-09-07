@@ -23,11 +23,6 @@ Brick\Application
 
 The central component to build a MVC application. Handles a `Request` and returns a `Response` that can be sent back to the browser.
 
-Brick\Controller
-----------------
-
-Although a controller can be any class method or function, this component provides an `AbstractController` and several other building blocks useful in most web applications.
-
 Brick\Di
 --------
 
