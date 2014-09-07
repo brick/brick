@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Application\Controller\Plugin;
+namespace Brick\Application\Plugin;
 
 use Brick\Application\Plugin;
 use Brick\Reflection\ReflectionTools;
