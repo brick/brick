@@ -43,12 +43,13 @@ trait TranslatorHelper
 
     /**
      * @param string      $key
+     * @param array       $parameters
      * @param Locale|null $locale
      *
      * @return string
      */
-    final public function translate($key, Locale $locale = null)
+    final public function translate($key, array $parameters = [], Locale $locale = null)
     {
-        return $this->getTranslator()->translate($key, $locale);
+        return $this->getTranslator()->translate($key, $parameters, $locale);
     }
 }

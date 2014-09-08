@@ -38,6 +38,20 @@ class Translator
     private $texts = [];
 
     /**
+     * An optional string to prepend to parameter keys, such as `[`.
+     *
+     * @var string
+     */
+    private $parameterPrefix = '';
+
+    /**
+     * An optional string to append to parameter keys, such as `]`.
+     *
+     * @var string
+     */
+    private $parameterSuffix = '';
+
+    /**
      * @param \Brick\Translation\Loader $loader
      */
     public function __construct(Loader $loader)
@@ -77,19 +91,39 @@ class Translator
     }
 
     /**
-     * @param string      $key
-     * @param Locale|null $locale
+     * @param string $prefix The prefix, such as `[`.
+     * @param string $suffix The suffix, such as `]`.
+     *
+     * @return void
+     */
+    public function setParameterPrefixSuffix($prefix, $suffix)
+    {
+        $this->parameterPrefix = $prefix;
+        $this->parameterSuffix = $suffix;
+    }
+
+    /**
+     * @param string      $key        The translation key to look up.
+     * @param array       $parameters An associative array of parameters to replace in the translated string.
+     * @param Locale|null $locale     The locale to translate in, or null to use the default locale.
      *
      * @return string
      */
-    public function translate($key, Locale $locale = null)
+    public function translate($key, array $parameters = [], Locale $locale = null)
     {
         $locale = $locale ?: $this->locale;
 
         foreach ($this->computeLookupLocales($locale) as $locale) {
             $result = $this->translateIn($key, $locale);
             if ($result !== null) {
-                return $result;
+                $placeholders = [];
+
+                foreach ($parameters as $key => $value) {
+                    $key = $this->parameterPrefix . $key . $this->parameterSuffix;
+                    $placeholders[$key] = $value;
+                }
+
+                return strtr($result, $placeholders);
             }
         }
 
