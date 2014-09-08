@@ -56,6 +56,8 @@ abstract class AbstractController
     }
 
     /**
+     * Returns a plain text response.
+     *
      * @param string $text
      *
      * @return \Brick\Http\Response
@@ -66,7 +68,9 @@ abstract class AbstractController
     }
 
     /**
-     * @param string $html
+     * Returns an HTML response.
+     *
+     * @param string $html The HTML content.
      *
      * @return \Brick\Http\Response
      */
@@ -76,13 +80,20 @@ abstract class AbstractController
     }
 
     /**
-     * @param mixed $data
+     * Returns a JSON response.
+     *
+     * @param mixed   $data   The data to encode, or a valid JSON string if `$encode` == `false`.
+     * @param boolean $encode Whether to JSON-encode the data.
      *
      * @return \Brick\Http\Response
      */
-    protected function json($data)
+    protected function json($data, $encode = true)
     {
-        return $this->createResponse(json_encode($data, JSON_PRETTY_PRINT), 'application/json');
+        if ($encode) {
+            $data = json_encode($data);
+        }
+
+        return $this->createResponse($data, 'application/json');
     }
 
     /**
