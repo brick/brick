@@ -2,8 +2,8 @@
 
 namespace Brick\View\Helper;
 
+use Brick\Di\Injector;
 use Brick\View\View;
-use Brick\View\ViewRenderer;
 
 /**
  * This view helper allows to render a View from within another View (referred to as a partial view).
@@ -12,34 +12,35 @@ use Brick\View\ViewRenderer;
 trait PartialViewHelper
 {
     /**
-     * @var \Brick\View\ViewRenderer|null
+     * @var \Brick\Di\Injector|null
      */
-    private $viewRenderer;
+    private $injector;
 
     /**
      * @Brick\Di\Annotation\Inject
      *
-     * @param \Brick\View\ViewRenderer $viewRenderer
+     * @param \Brick\Di\Injector $injector
+     *
      * @return void
      */
-    final public function setViewRenderer(ViewRenderer $viewRenderer)
+    final public function setInjector(Injector $injector)
     {
-        $this->viewRenderer = $viewRenderer;
+        $this->injector = $injector;
     }
 
     /**
      * Renders a partial View.
      *
      * @param \Brick\View\View $view The View object to render.
+     *
      * @return string The rendered View.
-     * @throws \RuntimeException If the view renderer has not been injected.
      */
     final public function partial(View $view)
     {
-        if (! $this->viewRenderer) {
-            throw new \RuntimeException('No view renderer has been registered');
+        if ($this->injector) {
+            $this->injector->inject($view);
         }
 
-        return $this->viewRenderer->render($view);
+        return $view->render();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Brick\Application\Controller;
 
+use Brick\Di\Injector;
 use Brick\View\View;
-use Brick\View\ViewRenderer;
 use Brick\Http\Response;
 use Brick\Di\Annotation\Inject;
 
@@ -13,34 +13,32 @@ use Brick\Di\Annotation\Inject;
 abstract class AbstractController
 {
     /**
-     * @var \Brick\View\ViewRenderer
+     * @var \Brick\Di\Injector|null
      */
-    private $renderer;
+    private $injector = null;
 
     /**
      * @Inject
      *
-     * @param \Brick\View\ViewRenderer $renderer
+     * @param Injector $injector
      */
-    public function injectViewRenderer(ViewRenderer $renderer)
+    public function setInjector(Injector $injector)
     {
-        $this->renderer = $renderer;
+        $this->injector = $injector;
     }
 
     /**
      * @param \Brick\View\View $view
      *
      * @return string
-     *
-     * @throws \RuntimeException
      */
     protected function renderAsString(View $view)
     {
-        if ($this->renderer === null) {
-            throw new \RuntimeException('No view renderer has been injected');
+        if ($this->injector) {
+            $this->injector->inject($view);
         }
 
-        return $this->renderer->render($view);
+        return $view->render();
     }
 
     /**
