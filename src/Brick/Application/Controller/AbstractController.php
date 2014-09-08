@@ -52,7 +52,7 @@ abstract class AbstractController
      */
     protected function render(View $view)
     {
-        return $this->renderHtml($this->renderAsString($view));
+        return $this->html($this->renderAsString($view));
     }
 
     /**
@@ -60,7 +60,7 @@ abstract class AbstractController
      *
      * @return \Brick\Http\Response
      */
-    protected function renderText($text)
+    protected function text($text)
     {
         return $this->createResponse($text, 'text/plain');
     }
@@ -70,7 +70,7 @@ abstract class AbstractController
      *
      * @return \Brick\Http\Response
      */
-    protected function renderHtml($html)
+    protected function html($html)
     {
         return $this->createResponse($html, 'text/html');
     }
@@ -80,7 +80,7 @@ abstract class AbstractController
      *
      * @return \Brick\Http\Response
      */
-    protected function renderJson($data)
+    protected function json($data)
     {
         return $this->createResponse(json_encode($data, JSON_PRETTY_PRINT), 'application/json');
     }
