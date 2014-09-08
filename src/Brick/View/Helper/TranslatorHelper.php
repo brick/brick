@@ -42,8 +42,8 @@ trait TranslatorHelper
     }
 
     /**
-     * @param string $key
-     * @param \Brick\Locale\Locale|null $locale
+     * @param string      $key
+     * @param Locale|null $locale
      *
      * @return string
      */

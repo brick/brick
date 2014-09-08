@@ -18,6 +18,7 @@ trait UrlBuilderHelper
      * @Brick\Di\Annotation\Inject
      *
      * @param \Brick\UrlBuilder\UrlBuilder $builder
+     *
      * @return void
      */
     final public function setUrlBuilder(UrlBuilder $builder)
@@ -27,8 +28,10 @@ trait UrlBuilderHelper
 
     /**
      * @param string $url
-     * @param array $parameters
+     * @param array  $parameters
+     *
      * @return string
+     *
      * @throws \RuntimeException
      */
     final public function buildUrl($url, array $parameters = [])
