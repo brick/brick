@@ -116,18 +116,35 @@ class Translator
         foreach ($this->computeLookupLocales($locale) as $locale) {
             $result = $this->translateIn($key, $locale);
             if ($result !== null) {
-                $placeholders = [];
-
-                foreach ($parameters as $key => $value) {
-                    $key = $this->parameterPrefix . $key . $this->parameterSuffix;
-                    $placeholders[$key] = $value;
-                }
-
-                return strtr($result, $placeholders);
+                return empty($parameters) ? $result : $this->replaceParameters($result, $parameters);
             }
         }
 
         return $key;
+    }
+
+    /**
+     * Replaces parameters in a string.
+     *
+     * This is called internally by `translate()`, but is exposed as a public method to allow
+     * more advanced uses such as replacing parameters after executing a transformation on a
+     * translated string.
+     *
+     * @param string $string
+     * @param array  $parameters
+     *
+     * @return string
+     */
+    public function replaceParameters($string, array $parameters)
+    {
+        $placeholders = [];
+
+        foreach ($parameters as $key => $value) {
+            $key = $this->parameterPrefix . $key . $this->parameterSuffix;
+            $placeholders[$key] = $value;
+        }
+
+        return strtr($string, $placeholders);
     }
 
     /**
