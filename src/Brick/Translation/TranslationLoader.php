@@ -7,7 +7,7 @@ use Brick\Locale\Locale;
 /**
  * Interface that translation loaders must implement.
  */
-interface Loader
+interface TranslationLoader
 {
     /**
      * Loads the available translations in a given locale.

@@ -2,13 +2,13 @@
 
 namespace Brick\Translation\Loader;
 
-use Brick\Translation\Loader;
+use Brick\Translation\TranslationLoader;
 use Brick\Locale\Locale;
 
 /**
  * Translation loader for PDO database connections.
  */
-class PdoLoader implements Loader
+class PdoLoader implements TranslationLoader
 {
     /**
      * The prepared statement for loading translations.

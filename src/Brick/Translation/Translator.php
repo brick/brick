@@ -12,7 +12,7 @@ class Translator
     /**
      * The translation loader.
      *
-     * @var \Brick\Translation\Loader
+     * @var \Brick\Translation\TranslationLoader
      */
     private $loader;
 
@@ -52,9 +52,9 @@ class Translator
     private $parameterSuffix = '';
 
     /**
-     * @param \Brick\Translation\Loader $loader
+     * @param \Brick\Translation\TranslationLoader $loader
      */
-    public function __construct(Loader $loader)
+    public function __construct(TranslationLoader $loader)
     {
         $this->loader = $loader;
         $this->locale = Locale::getDefault();
