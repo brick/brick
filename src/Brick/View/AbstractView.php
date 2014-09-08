@@ -3,60 +3,10 @@
 namespace Brick\View;
 
 /**
- * Abstract base class to work with .phtml view scripts.
+ * Provides base functionality common to all views.
  */
 abstract class AbstractView implements View
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function render()
-    {
-        ob_start();
-
-        try {
-            require $this->getScriptPath();
-        } finally {
-            $content = ob_get_clean();
-        }
-
-        return $content;
-    }
-
-    /**
-     * Returns the view script path.
-     *
-     * Defaults to the class file path, with a .phtml extension, but can be overridden by child classes.
-     *
-     * @return string
-     *
-     * @throws \RuntimeException
-     */
-    protected function getScriptPath()
-    {
-        $class = new \ReflectionClass($this->getClassName());
-        $path = $class->getFileName();
-        $path = preg_replace('/\.php$/', '.phtml', $path, -1, $count);
-
-        if ($count != 1) {
-            throw new \RuntimeException('The class filename does not end with .php');
-        }
-
-        return $path;
-    }
-
-    /**
-     * Returns the view class to use to detect the script path.
-     *
-     * Defaults to the called class, but can be overridden by child classes.
-     *
-     * @return string
-     */
-    protected function getClassName()
-    {
-        return get_called_class();
-    }
-
     /**
      * HTML-escapes a text string.
      *
