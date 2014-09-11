@@ -2,8 +2,8 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Event\ControllerParameterEvent;
 use Brick\Application\Events;
+use Brick\Application\ParameterMap;
 use Brick\Application\Plugin;
 use Brick\Application\Controller\Annotation\RequestParam;
 use Brick\Event\EventDispatcher;
@@ -15,6 +15,7 @@ use Brick\ObjectConverter\Exception\ObjectNotConvertibleException;
 use Brick\ObjectConverter\Exception\ObjectNotFoundException;
 use Brick\ObjectConverter\ObjectConverter;
 use Brick\Reflection\ImportResolver;
+use Brick\Routing\RouteMatch;
 
 /**
  * Injects request parameters into controllers with the QueryParam and PostParam annotations.
@@ -43,12 +44,22 @@ class RequestParamPlugin extends AbstractAnnotationPlugin
      */
     public function register(EventDispatcher $dispatcher)
     {
-        $dispatcher->addListener(Events::CONTROLLER_READY, function(ControllerParameterEvent $event) {
-            $event->setParameters($this->getParameters(
-                $event->getRequest(),
-                $event->getRouteMatch()->getControllerReflection()
-            ));
-        });
+        $dispatcher->addListener(Events::CONTROLLER_READY, [$this, 'handleEvent']);
+    }
+
+    /**
+     * @internal
+     *
+     * @param object|null  $controller
+     * @param RouteMatch   $match
+     * @param Request      $request
+     * @param ParameterMap $map
+     *
+     * @return void
+     */
+    public function handleEvent($controller, RouteMatch $match, Request $request, ParameterMap $map)
+    {
+        $map->addParameters($this->getParameters($request, $match->getControllerReflection()));
     }
 
     /**

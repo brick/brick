@@ -2,11 +2,12 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Event\RouteMatchEvent;
 use Brick\Application\Events;
 use Brick\Application\Controller\Annotation\Secure;
 use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpRedirectException;
+use Brick\Http\Request;
+use Brick\Routing\RouteMatch;
 
 /**
  * Enforces the protocol allowed on a controller with the Secure annotation.
@@ -45,15 +46,14 @@ class SecurePlugin extends AbstractAnnotationPlugin
     /**
      * @internal
      *
-     * @param RouteMatchEvent $event
+     * @param RouteMatch $routeMatch
+     * @param Request    $request
      *
      * @return void
      */
-    public function checkSecure(RouteMatchEvent $event)
+    public function checkSecure(RouteMatch $routeMatch, Request $request)
     {
-        $controller = $event->getRouteMatch()->getControllerReflection();
-        $request = $event->getRequest();
-
+        $controller = $routeMatch->getControllerReflection();
         $secure = $this->hasControllerAnnotation($controller, Secure::class);
 
         if ($secure !== $request->isSecure()) {

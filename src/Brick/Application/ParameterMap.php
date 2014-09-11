@@ -1,11 +1,11 @@
 <?php
 
-namespace Brick\Application\Event;
+namespace Brick\Application;
 
 /**
- * Extends the ControllerEvent with configurable parameters.
+ * Storage for parameters to resolve a controller.
  */
-class ControllerParameterEvent extends ControllerEvent
+class ParameterMap
 {
     /**
      * An associative array of key-value pairs controller parameters will resolve to.
@@ -15,15 +15,15 @@ class ControllerParameterEvent extends ControllerEvent
     private $parameters = [];
 
     /**
-     * Sets values to resolve controller parameters.
+     * Adds key-value pairs to resolve controller parameters.
      *
      * @param array $parameters An associative array of key-value pairs.
      *
      * @return void
      */
-    public function setParameters(array $parameters)
+    public function addParameters(array $parameters)
     {
-        $this->parameters = $parameters;
+        $this->parameters = $parameters + $this->parameters;
     }
 
     /**

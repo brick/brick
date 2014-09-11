@@ -2,12 +2,6 @@
 
 namespace Brick\Application;
 
-use Brick\Application\Event\ControllerEvent;
-use Brick\Application\Event\ControllerParameterEvent;
-use Brick\Application\Event\RequestEvent;
-use Brick\Application\Event\ResponseEvent;
-use Brick\Application\Event\RouteMatchEvent;
-
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
@@ -157,8 +151,7 @@ class Application implements RequestHandler
         $response->setHeaders($exception->getHeaders());
         $response->setHeader('Content-Type', 'text/plain');
 
-        $event = new Event\ExceptionEvent($exception, $request, $response);
-        $this->eventDispatcher->dispatch(Events::EXCEPTION_CAUGHT, $event);
+        $this->eventDispatcher->dispatch(Events::EXCEPTION_CAUGHT, $exception, $request, $response);
 
         return $response;
     }
@@ -188,13 +181,11 @@ class Application implements RequestHandler
      */
     private function handleRequest(Request $request)
     {
-        $event = new RequestEvent($request);
-        $this->eventDispatcher->dispatch(Events::INCOMING_REQUEST, $event);
+        $this->eventDispatcher->dispatch(Events::INCOMING_REQUEST, $request);
 
         $match = $this->router->match($request);
 
-        $event = new RouteMatchEvent($request, $match);
-        $this->eventDispatcher->dispatch(Events::ROUTE_MATCHED, $event);
+        $this->eventDispatcher->dispatch(Events::ROUTE_MATCHED, $match, $request);
 
         $controllerReflection = $match->getControllerReflection();
         $instance = null;
@@ -213,10 +204,10 @@ class Application implements RequestHandler
             throw new \UnexpectedValueException('Unknown controller reflection type.');
         }
 
-        $event = new ControllerParameterEvent($request, $match, $instance);
-        $this->eventDispatcher->dispatch(Events::CONTROLLER_READY, $event);
+        $map = new ParameterMap();
+        $this->eventDispatcher->dispatch(Events::CONTROLLER_READY, $instance, $match, $request, $map);
 
-        $this->valueResolver->addParameters($event->getParameters());
+        $this->valueResolver->addParameters($map->getParameters());
 
         try {
             $response = $this->injector->invoke($callable);
@@ -224,12 +215,10 @@ class Application implements RequestHandler
         } catch (HttpException $e) {
             $response = $this->handleHttpException($e, $request);
         } finally {
-            $event = new ControllerEvent($request, $match, $instance);
-            $this->eventDispatcher->dispatch(Events::CONTROLLER_INVOCATED, $event);
+            $this->eventDispatcher->dispatch(Events::CONTROLLER_INVOCATED, $instance, $match, $request);
         }
 
-        $event = new ResponseEvent($request, $response, $match, $instance);
-        $this->eventDispatcher->dispatch(Events::RESPONSE_RECEIVED, $event);
+        $this->eventDispatcher->dispatch(Events::RESPONSE_RECEIVED, $response, $instance, $match, $request);
 
         return $response;
     }

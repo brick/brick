@@ -3,37 +3,50 @@
 namespace Brick\Application;
 
 /**
- * Event types dispatched by the application.
+ * List of events dispatched by the application.
  */
 final class Events
 {
     /**
      * Dispatched as soon as the application receives a Request.
      *
-     * This is a `RequestEvent`.
+     * This event provides the following parameters:
+     *
+     * - The incoming request: `Brick\Http\Request`.
      */
     const INCOMING_REQUEST = 'IncomingRequest';
 
     /**
      * Dispatched after the router has returned a match.
      *
-     * This is a `RouteMatchEvent`.
+     * This event provides the following parameters:
+     *
+     * - The route match: `Brick\Routing\RouteMatch`.
+     * - The incoming request: `Brick\Http\Request`.
      */
     const ROUTE_MATCHED = 'RouteMatched';
 
     /**
      * Dispatched when the controller is ready to be invoked.
      *
-     * This event allows to provide the controller with parameters.
+     * This event provides the following parameters:
      *
-     * This is a `ControllerParameterEvent`.
+     * - The controller instance if the controller is a method: `object|null`.
+     * - The route match: `Brick\Routing\RouteMatch`.
+     * - The incoming request: `Brick\Http\Request`.
+     * - A storage for controller parameters: `Brick\Application\ParameterMap`.
+     *   This storage can receive key-value pairs that will be used to resolve the controller parameters.
      */
     const CONTROLLER_READY = 'ControllerReady';
 
     /**
      * Dispatched after controller invocation, regardless of whether an exception was thrown.
      *
-     * This is a `ControllerEvent`.
+     * This event provides the following parameters:
+     *
+     * - The controller instance if the controller is a method: `object|null`.
+     * - The route match: `Brick\Routing\RouteMatch`.
+     * - The incoming request: `Brick\Http\Request`.
      */
     const CONTROLLER_INVOCATED = 'ControllerInvocated';
 
@@ -45,7 +58,12 @@ final class Events
      *
      * Other exceptions break the application flow and don't trigger this event.
      *
-     * This is a `ResponseEvent`.
+     * This event provides the following parameters:
+     *
+     * - The response object: `Brick\Http\Response`.
+     * - The controller instance if the controller is a method: `object|null`.
+     * - The route match: `Brick\Routing\RouteMatch`.
+     * - The incoming request: `Brick\Http\Request`.
      */
     const RESPONSE_RECEIVED = 'ResponseReceived';
 
@@ -56,9 +74,12 @@ final class Events
      * so that this event always receives an HttpException.
      *
      * A default response is created to display the details of the exception.
-     * This event allows to change the default response to display a customized error message to the user.
+     * This event provides an opportunity to modify the default response
+     * to present a customized error message to the client.
      *
-     * This is an `ExceptionEvent`.
+     * - The HTTP exception: `Brick`Http\Exception\HttpException`.
+     * - The incoming request: `Brick\Http\Request`.
+     * - The response object: `Brick\Http\Response`.
      */
     const EXCEPTION_CAUGHT = 'ExceptionCaught';
 }

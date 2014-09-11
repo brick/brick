@@ -2,13 +2,12 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Event\RouteMatchEvent;
-use Brick\Application\Event\ControllerEvent;
 use Brick\Application\Events;
 use Brick\Application\Plugin;
 use Brick\Application\Controller\Annotation\Transactional;
 use Brick\Event\EventDispatcher;
 
+use Brick\Routing\RouteMatch;
 use Doctrine\DBAL\Connection;
 use Doctrine\Common\Annotations\Reader;
 
@@ -49,13 +48,13 @@ class TransactionalPlugin extends AbstractAnnotationPlugin
      *
      * @internal
      *
-     * @param RouteMatchEvent $event
+     * @param RouteMatch $routeMatch
      *
      * @return void
      */
-    public function beginTransaction(RouteMatchEvent $event)
+    public function beginTransaction(RouteMatch $routeMatch)
     {
-        $annotation = $this->getTransactionalAnnotation($event);
+        $annotation = $this->getTransactionalAnnotation($routeMatch);
 
         if ($annotation) {
             $this->connection->setTransactionIsolation($annotation->getIsolationLevel());
@@ -68,13 +67,14 @@ class TransactionalPlugin extends AbstractAnnotationPlugin
      *
      * @internal
      *
-     * @param ControllerEvent $event
+     * @param object|null $controller
+     * @param RouteMatch  $match
      *
      * @return void
      */
-    public function rollbackTransaction(ControllerEvent $event)
+    public function rollbackTransaction($controller, RouteMatch $match)
     {
-        $annotation = $this->getTransactionalAnnotation($event);
+        $annotation = $this->getTransactionalAnnotation($match);
 
         if ($annotation) {
             if ($this->connection->isTransactionActive()) {
@@ -86,15 +86,15 @@ class TransactionalPlugin extends AbstractAnnotationPlugin
     /**
      * Returns the Transactional annotation for the controller.
      *
-     * @param \Brick\Application\Event\RouteMatchEvent $event
+     * @param \Brick\Routing\RouteMatch $routeMatch
      *
      * @return Transactional|null The annotation, or NULL if the controller is not transactional.
      *
      * @todo add support for annotations on functions when Doctrine will handle them
      */
-    private function getTransactionalAnnotation(RouteMatchEvent $event)
+    private function getTransactionalAnnotation(RouteMatch $routeMatch)
     {
-        $method = $event->getRouteMatch()->getControllerReflection();
+        $method = $routeMatch->getControllerReflection();
 
         if ($method instanceof \ReflectionMethod) {
             $annotations = $this->annotationReader->getMethodAnnotations($method);

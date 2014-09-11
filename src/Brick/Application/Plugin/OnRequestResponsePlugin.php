@@ -3,12 +3,13 @@
 namespace Brick\Application\Plugin;
 
 use Brick\Application\Events;
-use Brick\Application\Event\ControllerParameterEvent;
-use Brick\Application\Event\ResponseEvent;
 use Brick\Application\Plugin;
 use Brick\Application\Controller\Interfaces\OnRequestInterface;
 use Brick\Application\Controller\Interfaces\OnResponseInterface;
 use Brick\Event\EventDispatcher;
+use Brick\Http\Request;
+use Brick\Http\Response;
+use Brick\Routing\RouteMatch;
 
 /**
  * Calls `onRequest()` and `onResponse()` on controllers implementing OnRequestInterface and OnResponseInterface.
@@ -27,32 +28,31 @@ class OnRequestResponsePlugin implements Plugin
     /**
      * @internal
      *
-     * @param ControllerParameterEvent $event
+     * @param object|null $controller
+     * @param RouteMatch  $match
+     * @param Request     $request
      *
      * @return void
      */
-    public function invokeOnRequest(ControllerParameterEvent $event)
+    public function invokeOnRequest($controller, $match, Request $request)
     {
-        $controller = $event->getControllerInstance();
-
         if ($controller instanceof OnRequestInterface) {
-            $controller->onRequest($event->getRequest());
+            $controller->onRequest($request);
         }
     }
 
     /**
      * @internal
      *
-     * @param ResponseEvent $event
+     * @param Response    $response
+     * @param object|null $controller
      *
      * @return void
      */
-    public function invokeOnResponse(ResponseEvent $event)
+    public function invokeOnResponse(Response $response, $controller)
     {
-        $controller = $event->getControllerInstance();
-
         if ($controller instanceof OnResponseInterface) {
-            $controller->onResponse($event->getResponse());
+            $controller->onResponse($response);
         }
     }
 }

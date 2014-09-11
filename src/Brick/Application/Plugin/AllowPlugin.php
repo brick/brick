@@ -2,11 +2,12 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Event\RouteMatchEvent;
 use Brick\Application\Events;
 use Brick\Application\Controller\Annotation\Allow;
 use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpMethodNotAllowedException;
+use Brick\Http\Request;
+use Brick\Routing\RouteMatch;
 
 /**
  * Enforces the methods allowed on a controller with the Allow annotation.
@@ -22,17 +23,20 @@ class AllowPlugin extends AbstractAnnotationPlugin
     }
 
     /**
-     * @param RouteMatchEvent $event
+     * @internal
+     *
+     * @param RouteMatch $routeMatch
+     * @param Request    $request
      *
      * @return void
      */
-    public function checkRequestMethod(RouteMatchEvent $event)
+    public function checkRequestMethod(RouteMatch $routeMatch, Request $request)
     {
-        $controller = $event->getRouteMatch()->getControllerReflection();
+        $controller = $routeMatch->getControllerReflection();
         $annotation = $this->getControllerAnnotation($controller, Allow::class);
 
         if ($annotation instanceof Allow) {
-            $method = $event->getRequest()->getMethod();
+            $method = $request->getMethod();
             $allowedMethods = $annotation->getMethods();
 
             if (! in_array($method, $allowedMethods)) {
