@@ -51,7 +51,7 @@ Now if you open any path in your browser, you should get a similar exception pag
 
 A controller is a piece of code that returns a `Response` for an incoming `Request`. This is where you put all the glue logic to work with models, interact with the database, and generate HTML content.
 
-A controller can be any function such as an anonymous `function() {}`, but is generally a class with a number of methods that correspond to different pages or actions.
+A controller can be any `callable`, but is generally a class with a number of methods that correspond to different pages or actions.
 
 Let's create a simple controller class:
 
@@ -84,7 +84,7 @@ Let's add an off-the-box route that automatically maps the request path to the c
 
 Open your browser as `/index/hello`, you should get the "Hello, world" message.
 
-What happened here is that our route mapped the request path `index/hello` to the class/method path `MyApp\Controller\Index::hello()`
+What happened here is that our route mapped the request path `index/hello` to the class/method path `MyApp\Controller\Index::hello()`.
 
 ### Getting request data
 
@@ -138,7 +138,7 @@ If you open your browser at `/index/hello?name=Bob`, you should get "Hello, Bob"
 
 ### Writing your own plugins
 
-You can extend the application indefinitely with the use of plugins. It's easy to write your own, as we will see through this example. Let's imagine that we want to create a plugin that begins a PDO transaction before the controller is invoked, and commit it automatically after the controller returns.
+You can extend the application indefinitely with the use of plugins. It's easy to write your own, as we will see through this example. Let's imagine that we want to create a plugin that begins a PDO transaction before the controller is invoked, and commits it automatically after the controller returns.
 
 First let's have a look at the `Plugin` interface:
 
@@ -147,7 +147,7 @@ First let's have a look at the `Plugin` interface:
 	    public function register(EventDispatcher $dispatcher);
 	}
 
-Just one method to implement. This method allows you to tell what events triggered by the application your plugin wants to intercept. The different events are listed and explained in the `Brick\Application\Events` class.
+Just one method to implement. This method allows you to register your plugin inside the application's event listener, that is, tell the application which events it wants to receive. The different events are listed and explained in the `Brick\Application\Events` class.
 
 We can see that the two events that are called immediately before and after the controller is invoked are:
 
@@ -184,7 +184,7 @@ What we just need to do is to map each of these events to a function that does t
 Easy as pie! Let's add our plugin to our application:
 
     $pdo = new PDO(/* insert parameters to connect to your database */);
-    $plugin = new TransactionPlugin();
+    $plugin = new TransactionPlugin($pdo);
     $application->addPlugin($plugin);
 
 We just implemented a plugin, available to all controllers in our application, in no time. This implementation is of course still naive, but does what it says on the tin, and is a good starting point for more advanced functionality.
