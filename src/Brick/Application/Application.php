@@ -220,10 +220,19 @@ class Application implements RequestHandler
         $this->valueResolver->addParameters($event->getParameters());
 
         try {
-            $response = $this->injector->invoke($callable);
+            $result = $this->injector->invoke($callable);
 
-            if (! $response instanceof Response) {
-                throw $this->invalidResponse($response);
+            if ($result instanceof Response) {
+                $response = $result;
+            } else {
+                $event = new NonResponseResultEvent($request, $match, $instance, $result);
+                $this->eventDispatcher->dispatch(NonResponseResultEvent::class, $event);
+
+                $response = $event->getResponse();
+
+                if ($response === null) {
+                    throw $this->invalidResponse($result);
+                }
             }
         } catch (HttpException $e) {
             $response = $this->handleHttpException($e, $request);
