@@ -2,6 +2,13 @@
 
 namespace Brick\Application;
 
+use Brick\Application\Event\ControllerInvocatedEvent;
+use Brick\Application\Event\ControllerReadyEvent;
+use Brick\Application\Event\ExceptionCaughtEvent;
+use Brick\Application\Event\IncomingRequestEvent;
+use Brick\Application\Event\NonResponseResultEvent;
+use Brick\Application\Event\ResponseReceivedEvent;
+use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
@@ -151,7 +158,8 @@ class Application implements RequestHandler
         $response->setHeaders($exception->getHeaders());
         $response->setHeader('Content-Type', 'text/plain');
 
-        $this->eventDispatcher->dispatch(Events::EXCEPTION_CAUGHT, $exception, $request, $response);
+        $event = new ExceptionCaughtEvent($exception, $request, $response);
+        $this->eventDispatcher->dispatch(ExceptionCaughtEvent::class, $event);
 
         return $response;
     }
@@ -181,11 +189,13 @@ class Application implements RequestHandler
      */
     private function handleRequest(Request $request)
     {
-        $this->eventDispatcher->dispatch(Events::INCOMING_REQUEST, $request);
+        $event = new IncomingRequestEvent($request);
+        $this->eventDispatcher->dispatch(IncomingRequestEvent::class, $event);
 
         $match = $this->router->match($request);
 
-        $this->eventDispatcher->dispatch(Events::ROUTE_MATCHED, $match, $request);
+        $event = new RouteMatchedEvent($request, $match);
+        $this->eventDispatcher->dispatch(RouteMatchedEvent::class, $event);
 
         $controllerReflection = $match->getControllerReflection();
         $instance = null;
@@ -204,42 +214,40 @@ class Application implements RequestHandler
             throw new \UnexpectedValueException('Unknown controller reflection type.');
         }
 
-        $map = new ParameterMap();
-        $this->eventDispatcher->dispatch(Events::CONTROLLER_READY, $instance, $match, $request, $map);
+        $event = new ControllerReadyEvent($request, $match, $instance);
+        $this->eventDispatcher->dispatch(ControllerReadyEvent::class, $event);
 
-        $this->valueResolver->addParameters($map->getParameters());
+        $this->valueResolver->addParameters($event->getParameters());
 
         try {
             $response = $this->injector->invoke($callable);
-            $this->checkResponse($response);
+
+            if (! $response instanceof Response) {
+                throw $this->invalidResponse($response);
+            }
         } catch (HttpException $e) {
             $response = $this->handleHttpException($e, $request);
         } finally {
-            $this->eventDispatcher->dispatch(Events::CONTROLLER_INVOCATED, $instance, $match, $request);
+            $event = new ControllerInvocatedEvent($request, $match, $instance);
+            $this->eventDispatcher->dispatch(ControllerInvocatedEvent::class, $event);
         }
 
-        $this->eventDispatcher->dispatch(Events::RESPONSE_RECEIVED, $response, $instance, $match, $request);
+        $event = new ResponseReceivedEvent($request, $response, $match, $instance);
+        $this->eventDispatcher->dispatch(ResponseReceivedEvent::class, $event);
 
         return $response;
     }
 
     /**
-     * Ensures that the return value of a controller is a Response object.
+     * @param mixed $result
      *
-     * @param mixed $response
-     *
-     * @return void
-     *
-     * @throws \UnexpectedValueException
+     * @return \UnexpectedValueException
      */
-    private function checkResponse($response)
+    private function invalidResponse($result)
     {
-        if (! $response instanceof Response) {
-            throw new \UnexpectedValueException(sprintf(
-                'Invalid response from controller: expected %s, got %s.',
-                Response::class,
-                is_object($response) ? get_class($response) : gettype($response)
-            ));
-        }
+        $message = 'Invalid response from controller: expected %s, got %s.';
+        $type    = is_object($result) ? get_class($result) : gettype($result);
+
+        return new \UnexpectedValueException(sprintf($message, Response::class, $type));
     }
 }

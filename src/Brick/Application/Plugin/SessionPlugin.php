@@ -2,11 +2,10 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Events;
+use Brick\Application\Event\IncomingRequestEvent;
+use Brick\Application\Event\ResponseReceivedEvent;
 use Brick\Application\Plugin;
 use Brick\Event\EventDispatcher;
-use Brick\Http\Request;
-use Brick\Http\Response;
 use Brick\Session\Session;
 
 /**
@@ -32,12 +31,12 @@ class SessionPlugin implements Plugin
      */
     public function register(EventDispatcher $dispatcher)
     {
-        $dispatcher->addListener(Events::INCOMING_REQUEST, function(Request $request) {
-            $this->session->handleRequest($request);
+        $dispatcher->addListener(IncomingRequestEvent::class, function(IncomingRequestEvent $event) {
+            $this->session->handleRequest($event->getRequest());
         });
 
-        $dispatcher->addListener(Events::RESPONSE_RECEIVED, function(Response $response) {
-            $this->session->handleResponse($response);
+        $dispatcher->addListener(ResponseReceivedEvent::class, function(ResponseReceivedEvent $event) {
+            $this->session->handleResponse($event->getResponse());
         });
     }
 }

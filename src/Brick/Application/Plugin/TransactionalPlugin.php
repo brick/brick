@@ -2,12 +2,13 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Events;
+use Brick\Application\Event\ControllerInvocatedEvent;
+use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Application\Plugin;
 use Brick\Application\Controller\Annotation\Transactional;
 use Brick\Event\EventDispatcher;
-
 use Brick\Routing\RouteMatch;
+
 use Doctrine\DBAL\Connection;
 use Doctrine\Common\Annotations\Reader;
 
@@ -39,48 +40,24 @@ class TransactionalPlugin extends AbstractAnnotationPlugin
      */
     public function register(EventDispatcher $dispatcher)
     {
-        $dispatcher->addListener(Events::ROUTE_MATCHED, [$this, 'beginTransaction']);
-        $dispatcher->addListener(Events::CONTROLLER_INVOCATED, [$this, 'rollbackTransaction']);
-    }
+        $dispatcher->addListener(RouteMatchedEvent::class, function (RouteMatchedEvent $event) {
+            $annotation = $this->getTransactionalAnnotation($event->getRouteMatch());
 
-    /**
-     * Starts a transaction before invocating the controller.
-     *
-     * @internal
-     *
-     * @param RouteMatch $routeMatch
-     *
-     * @return void
-     */
-    public function beginTransaction(RouteMatch $routeMatch)
-    {
-        $annotation = $this->getTransactionalAnnotation($routeMatch);
-
-        if ($annotation) {
-            $this->connection->setTransactionIsolation($annotation->getIsolationLevel());
-            $this->connection->beginTransaction();
-        }
-    }
-
-    /**
-     * Rolls back a transaction that has not been committed.
-     *
-     * @internal
-     *
-     * @param object|null $controller
-     * @param RouteMatch  $match
-     *
-     * @return void
-     */
-    public function rollbackTransaction($controller, RouteMatch $match)
-    {
-        $annotation = $this->getTransactionalAnnotation($match);
-
-        if ($annotation) {
-            if ($this->connection->isTransactionActive()) {
-                $this->connection->rollback();
+            if ($annotation) {
+                $this->connection->setTransactionIsolation($annotation->getIsolationLevel());
+                $this->connection->beginTransaction();
             }
-        }
+        });
+
+        $dispatcher->addListener(ControllerInvocatedEvent::class, function (ControllerInvocatedEvent $event) {
+            $annotation = $this->getTransactionalAnnotation($event->getRouteMatch());
+
+            if ($annotation) {
+                if ($this->connection->isTransactionActive()) {
+                    $this->connection->rollback();
+                }
+            }
+        });
     }
 
     /**

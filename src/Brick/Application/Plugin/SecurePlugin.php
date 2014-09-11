@@ -2,12 +2,10 @@
 
 namespace Brick\Application\Plugin;
 
-use Brick\Application\Events;
+use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Application\Controller\Annotation\Secure;
 use Brick\Event\EventDispatcher;
 use Brick\Http\Exception\HttpRedirectException;
-use Brick\Http\Request;
-use Brick\Routing\RouteMatch;
 
 /**
  * Enforces the protocol allowed on a controller with the Secure annotation.
@@ -40,30 +38,22 @@ class SecurePlugin extends AbstractAnnotationPlugin
      */
     public function register(EventDispatcher $dispatcher)
     {
-        $dispatcher->addListener(Events::ROUTE_MATCHED, [$this, 'checkSecure']);
-    }
+        $dispatcher->addListener(RouteMatchedEvent::class, function(RouteMatchedEvent $event)
+        {
+            $controller = $event->getRouteMatch()->getControllerReflection();
+            $request    = $event->getRequest();
 
-    /**
-     * @internal
-     *
-     * @param RouteMatch $routeMatch
-     * @param Request    $request
-     *
-     * @return void
-     */
-    public function checkSecure(RouteMatch $routeMatch, Request $request)
-    {
-        $controller = $routeMatch->getControllerReflection();
-        $secure = $this->hasControllerAnnotation($controller, Secure::class);
+            $secure = $this->hasControllerAnnotation($controller, Secure::class);
 
-        if ($secure !== $request->isSecure()) {
-            if ($secure || $this->forceUnsecured) {
-                $url = preg_replace_callback('/^https?/', function (array $matches) {
-                    return $matches[0] == 'http' ? 'https' : 'http';
-                }, $request->getUrl());
+            if ($secure !== $request->isSecure()) {
+                if ($secure || $this->forceUnsecured) {
+                    $url = preg_replace_callback('/^https?/', function (array $matches) {
+                        return $matches[0] == 'http' ? 'https' : 'http';
+                    }, $request->getUrl());
 
-                throw new HttpRedirectException($url, 301);
+                    throw new HttpRedirectException($url, 301);
+                }
             }
-        }
+        });
     }
 }
