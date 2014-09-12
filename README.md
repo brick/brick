@@ -190,12 +190,6 @@ Easy as pie! Let's add our plugin to our application:
 
 We just implemented a plugin, available to all controllers in our application, in no time. This implementation is of course still naive, but does what it says on the tin, and is a good starting point for more advanced functionality.
 
-Brick\Di
---------
-
-A Dependency Injection and Inversion Of Control framework.
-It can be coupled to an `Application` to automatically inject required dependencies in controllers.
-
 Brick\FileSystem
 ----------------
 
