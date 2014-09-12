@@ -10,7 +10,8 @@
     "require": {
         "php": ">=5.5",
         "brick/di": "dev-master",
-        "brick/event": "dev-master"
+        "brick/event": "dev-master",
+        "brick/reflection": "dev-master"
     },
     "require-dev": {
         "brick/math": "dev-master",

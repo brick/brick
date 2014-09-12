@@ -230,11 +230,6 @@ Brick\PhoneNumber
 
 Handles and validates international phone numbers.
 
-Brick\Reflection
-----------------
-
-A collection of low-level tools to extend the PHP reflection capabilities.
-
 Brick\Routing
 -------------
 
