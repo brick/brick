@@ -67,7 +67,7 @@ Let's create a simple controller class:
 	    }
 	}
 
-As you can see, the controller class does not need to extend any particular class, and the only requirement on the controller method is that it must return a `Response` object.
+The controller class does not need to extend any particular class, and the only requirement on the controller method is that it must return a `Response` object. This requirement can even be alleviated by using a plugin that creates a Response from the controller return value.
 
 ### Adding routes
 
@@ -147,16 +147,17 @@ First let's have a look at the `Plugin` interface:
 	    public function register(EventDispatcher $dispatcher);
 	}
 
-Just one method to implement. This method allows you to register your plugin inside the application's event listener, that is, tell the application which events it wants to receive. The different events are listed and explained in the `Brick\Application\Events` class.
+Just one method to implement. This method allows you to register your plugin inside the application's event dispatcher, that is, tell the application which events it wants to receive. Each event is represented by a class in the `Brick\Application\Event` namespace.
 
 We can see that the two events that are called immediately before and after the controller is invoked are:
 
-- `Events::CONTROLLER_READY`
-- `Events::CONTROLLER_INVOCATED`
+- `ControllerReadyEvent`
+- `ControllerInvocatedEvent`
 
 What we just need to do is to map each of these events to a function that does the job. Let's do it:
 
-    use Brick\Application\Events;
+    use Brick\Application\Event\ControllerReadyEvent;
+    use Brick\Application\Event\ControllerInvocatedEvent;
 	use Brick\Application\Plugin;
     use Brick\Event\EventDispatcher;
 	
@@ -171,11 +172,11 @@ What we just need to do is to map each of these events to a function that does t
 
 	    public function register(EventDispatcher $dispatcher)
 		{
-            $dispatcher->addListener(Events::CONTROLLER_READY, function() {
+            $dispatcher->addListener(ControllerReadyEvent::class, function() {
                 $this->pdo->beginTransaction();
             });
 
-            $dispatcher->addListener(Events::CONTROLLER_INVOCATED, function() {
+            $dispatcher->addListener(ControllerInvocatedEvent::class, function() {
                 $this->pdo->commit();
             });
 		}
