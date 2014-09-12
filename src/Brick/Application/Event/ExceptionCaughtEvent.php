@@ -40,14 +40,46 @@ final class ExceptionCaughtEvent
     private $response;
 
     /**
-     * @param HttpException $exception
-     * @param Request       $request
-     * @param Response      $response
+     * @param HttpException $exception The HTTP exception.
+     * @param Request       $request   The request.
+     * @param Response      $response  The response.
      */
     public function __construct(HttpException $exception, Request $request, Response $response)
     {
         $this->exception = $exception;
         $this->request   = $request;
         $this->response  = $response;
+    }
+
+    /**
+     * Returns the HTTP exception.
+     *
+     * @return HttpException
+     */
+    public function getException()
+    {
+        return $this->exception;
+    }
+
+    /**
+     * Returns the request.
+     *
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Returns the response.
+     *
+     * This response can be modified by listeners.
+     *
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }
