@@ -205,11 +205,6 @@ Brick\Geo
 
 A collection of classes to work with GIS geometries.
 
-Brick\Http
-----------
-
-A collection of classes to represent HTTP requests and responses.
-
 Brick\Locale
 ------------
 
