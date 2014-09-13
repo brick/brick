@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 use Brick\Form\Base;
 use Brick\Form\Form;

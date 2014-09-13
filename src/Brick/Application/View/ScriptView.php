@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 /**
  * Base class for views based on an external view script.

@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\View\Helper;
+namespace Brick\Application\View\Helper;
 
 use Brick\Di\Injector;
-use Brick\View\View;
+use Brick\Application\View\View;
 
 /**
  * This view helper allows to render a View from within another View (referred to as a partial view).
@@ -31,7 +31,7 @@ trait PartialViewHelper
     /**
      * Renders a partial View.
      *
-     * @param \Brick\View\View $view The View object to render.
+     * @param \Brick\Application\View\View $view The View object to render.
      *
      * @return string The rendered View.
      */

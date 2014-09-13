@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 /**
  * Uses the magic getters and setters to send parameters to the view.

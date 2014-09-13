@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 /**
  * Allows to use a specific class associated to each view script.

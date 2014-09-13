@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 /**
  * Interface that all views must implement.

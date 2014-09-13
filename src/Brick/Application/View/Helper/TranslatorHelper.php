@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View\Helper;
+namespace Brick\Application\View\Helper;
 
 use Brick\Translation\Translator;
 use Brick\Locale\Locale;

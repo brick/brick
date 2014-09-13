@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\View;
+namespace Brick\Application\View;
 
 /**
  * Concatenates two views.
@@ -10,18 +10,18 @@ class ConcatView implements View
     use Helper\PartialViewHelper;
 
     /**
-     * @var \Brick\View\View
+     * @var \Brick\Application\View\View
      */
     private $a;
 
     /**
-     * @var \Brick\View\View
+     * @var \Brick\Application\View\View
      */
     private $b;
 
     /**
-     * @param \Brick\View\View $a
-     * @param \Brick\View\View $b
+     * @param \Brick\Application\View\View $a
+     * @param \Brick\Application\View\View $b
      */
     public function __construct(View $a, View $b)
     {

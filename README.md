@@ -208,7 +208,7 @@ A collection of classes to work with GIS geometries.
 Brick\Http
 ----------
 
-A collection of classes to represent HTTP requests and responses. This is a building block for `Application`.
+A collection of classes to represent HTTP requests and responses.
 
 Brick\Locale
 ------------
@@ -230,11 +230,6 @@ Brick\PhoneNumber
 
 Handles and validates international phone numbers.
 
-Brick\Application\Routing
--------------
-
-A building block of the application, this component handles the routing of a request to a controller.
-
 Brick\Session
 -------------
 
@@ -249,8 +244,3 @@ Brick\Validation
 ----------------
 
 Provides a `Validator` interface for validating strings, and a collection of validators. This is mostly used by the `Form` component, but can be used independently as well.
-
-Brick\View
-----------
-
-Handles HTML views for a web application.

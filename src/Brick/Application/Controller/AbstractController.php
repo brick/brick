@@ -2,10 +2,10 @@
 
 namespace Brick\Application\Controller;
 
-use Brick\Di\Injector;
-use Brick\View\View;
-use Brick\Http\Response;
+use Brick\Application\View\View;
 use Brick\Di\Annotation\Inject;
+use Brick\Di\Injector;
+use Brick\Http\Response;
 
 /**
  * Base controller class with helper methods for common cases.
@@ -28,7 +28,7 @@ abstract class AbstractController
     }
 
     /**
-     * @param \Brick\View\View $view
+     * @param \Brick\Application\View\View $view
      *
      * @return string
      */
@@ -44,7 +44,7 @@ abstract class AbstractController
     /**
      * Renders a View in a Response object.
      *
-     * @param \Brick\View\View $view
+     * @param \Brick\Application\View\View $view
      *
      * @return \Brick\Http\Response
      */
