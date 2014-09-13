@@ -3,7 +3,7 @@
 namespace Brick\Application\Event;
 
 use Brick\Http\Request;
-use Brick\Routing\RouteMatch;
+use Brick\Application\RouteMatch;
 
 /**
  * Event dispatched when the controller is ready to be invoked.
@@ -23,7 +23,7 @@ final class ControllerReadyEvent
     /**
      * The route match.
      *
-     * @var RouteMatch
+     * @var \Brick\Application\RouteMatch
      */
     private $routeMatch;
 
@@ -43,7 +43,7 @@ final class ControllerReadyEvent
 
     /**
      * @param Request     $request    The request.
-     * @param RouteMatch  $routeMatch The route match.
+     * @param \Brick\Application\RouteMatch  $routeMatch The route match.
      * @param object|null $instance   The controller instance.
      */
     public function __construct(Request $request, RouteMatch $routeMatch, $instance)
@@ -66,7 +66,7 @@ final class ControllerReadyEvent
     /**
      * Returns the route match.
      *
-     * @return RouteMatch
+     * @return \Brick\Application\RouteMatch
      */
     public function getRouteMatch()
     {

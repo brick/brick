@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Routing;
+namespace Brick\Application;
 
 use Brick\Http\Request;
 
@@ -14,7 +14,7 @@ interface Route
      *
      * @param \Brick\Http\Request $request The request to match.
      *
-     * @return \Brick\Routing\RouteMatch|null A match, or null if no match is found.
+     * @return \Brick\Application\RouteMatch|null A match, or null if no match is found.
      *
      * @throws \Brick\Http\Exception\HttpException A route is allowed to throw HTTP exceptions.
      */

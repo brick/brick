@@ -3,7 +3,7 @@
 namespace Brick\Application\Event;
 
 use Brick\Http\Request;
-use Brick\Routing\RouteMatch;
+use Brick\Application\RouteMatch;
 
 /**
  * Event dispatched after the router has returned a match.

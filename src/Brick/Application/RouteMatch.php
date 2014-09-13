@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Routing;
+namespace Brick\Application;
 
 /**
  * Represents a match between a route and a request as returned by Route::match().

@@ -7,7 +7,7 @@ use Brick\Application\Event\RouteMatchedEvent;
 use Brick\Application\Plugin;
 use Brick\Application\Controller\Annotation\Transactional;
 use Brick\Event\EventDispatcher;
-use Brick\Routing\RouteMatch;
+use Brick\Application\RouteMatch;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\Common\Annotations\Reader;
@@ -63,7 +63,7 @@ class TransactionalPlugin extends AbstractAnnotationPlugin
     /**
      * Returns the Transactional annotation for the controller.
      *
-     * @param \Brick\Routing\RouteMatch $routeMatch
+     * @param \Brick\Application\RouteMatch $routeMatch
      *
      * @return Transactional|null The annotation, or NULL if the controller is not transactional.
      *

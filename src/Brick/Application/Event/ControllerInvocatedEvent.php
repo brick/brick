@@ -3,7 +3,7 @@
 namespace Brick\Application\Event;
 
 use Brick\Http\Request;
-use Brick\Routing\RouteMatch;
+use Brick\Application\RouteMatch;
 
 /**
  * Event dispatched after controller invocation, regardless of whether an exception was thrown.
@@ -20,7 +20,7 @@ final class ControllerInvocatedEvent
     /**
      * The route match.
      *
-     * @var RouteMatch
+     * @var \Brick\Application\RouteMatch
      */
     private $routeMatch;
 
@@ -33,7 +33,7 @@ final class ControllerInvocatedEvent
 
     /**
      * @param Request     $request    The request.
-     * @param RouteMatch  $routeMatch The route match.
+     * @param \Brick\Application\RouteMatch  $routeMatch The route match.
      * @param object|null $instance   The controller instance.
      */
     public function __construct(Request $request, RouteMatch $routeMatch, $instance)

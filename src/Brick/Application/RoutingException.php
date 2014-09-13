@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Routing;
+namespace Brick\Application;
 
 /**
  * Exception thrown when an invalid controller has been returned by a router.

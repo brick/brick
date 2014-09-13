@@ -77,7 +77,7 @@ The application ships with a few routes that cover the most common use cases. If
 
 Let's add an off-the-box route that automatically maps the request path to the class path:
 
-    use Brick\Routing\Route\StandardRoute;
+    use Brick\Application\Route\StandardRoute;
 
     $route = new StandardRoute('MyApp\Controller');
     $application->addRoute($route);
@@ -230,7 +230,7 @@ Brick\PhoneNumber
 
 Handles and validates international phone numbers.
 
-Brick\Routing
+Brick\Application\Routing
 -------------
 
 A building block of the application, this component handles the routing of a request to a controller.

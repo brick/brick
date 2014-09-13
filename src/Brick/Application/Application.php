@@ -9,21 +9,18 @@ use Brick\Application\Event\IncomingRequestEvent;
 use Brick\Application\Event\NonResponseResultEvent;
 use Brick\Application\Event\ResponseReceivedEvent;
 use Brick\Application\Event\RouteMatchedEvent;
-use Brick\Http\Exception\HttpNotFoundException;
-use Brick\Http\Request;
-use Brick\Http\Response;
-use Brick\Http\Server\RequestHandler;
-use Brick\Http\Exception\HttpException;
-use Brick\Http\Exception\HttpInternalServerErrorException;
-use Brick\Routing\Route;
-use Brick\Routing\RouteMatch;
 use Brick\Event\EventDispatcher;
 use Brick\Di\Injector;
 use Brick\Di\InjectionPolicy;
 use Brick\Di\ValueResolver;
 use Brick\Di\Container;
 use Brick\Di\ValueResolver\DefaultValueResolver;
-use Brick\Routing\RoutingException;
+use Brick\Http\Exception\HttpException;
+use Brick\Http\Exception\HttpInternalServerErrorException;
+use Brick\Http\Exception\HttpNotFoundException;
+use Brick\Http\Request;
+use Brick\Http\Response;
+use Brick\Http\Server\RequestHandler;
 
 /**
  * The web application kernel.
@@ -46,7 +43,7 @@ class Application implements RequestHandler
     private $eventDispatcher;
 
     /**
-     * @var \Brick\Routing\Route[]
+     * @var \Brick\Application\Route[]
      */
     private $routes = [];
 

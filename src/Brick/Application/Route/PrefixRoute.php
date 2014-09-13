@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\Routing\Route;
+namespace Brick\Application\Route;
 
 use Brick\Http\Request;
-use Brick\Routing\Route;
+use Brick\Application\Route;
 
 /**
  * Conditionally forwards the routing to a given Route if the request matches a given prefix.

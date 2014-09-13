@@ -1,9 +1,9 @@
 <?php
 
-namespace Brick\Routing\Route;
+namespace Brick\Application\Route;
 
-use Brick\Routing\Route;
-use Brick\Routing\RouteMatch;
+use Brick\Application\Route;
+use Brick\Application\RouteMatch;
 use Brick\Http\Request;
 use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Exception\HttpRedirectException;

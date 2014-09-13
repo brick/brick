@@ -4,7 +4,7 @@ namespace Brick\Application\Event;
 
 use Brick\Http\Request;
 use Brick\Http\Response;
-use Brick\Routing\RouteMatch;
+use Brick\Application\RouteMatch;
 
 /**
  * Event dispatched if the controller does not return a Response object.

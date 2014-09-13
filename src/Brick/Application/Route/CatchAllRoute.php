@@ -1,15 +1,15 @@
 <?php
 
-namespace Brick\Routing\Route;
+namespace Brick\Application\Route;
 
 use Brick\Http\Request;
-use Brick\Routing\Route;
-use Brick\Routing\RouteMatch;
+use Brick\Application\Route;
+use Brick\Application\RouteMatch;
 
 class CatchAllRoute implements Route
 {
     /**
-     * @var \Brick\Routing\RouteMatch
+     * @var \Brick\Application\RouteMatch
      */
     private $routeMatch;
 
