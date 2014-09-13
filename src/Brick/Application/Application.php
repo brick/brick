@@ -9,19 +9,21 @@ use Brick\Application\Event\IncomingRequestEvent;
 use Brick\Application\Event\NonResponseResultEvent;
 use Brick\Application\Event\ResponseReceivedEvent;
 use Brick\Application\Event\RouteMatchedEvent;
+use Brick\Http\Exception\HttpNotFoundException;
 use Brick\Http\Request;
 use Brick\Http\Response;
 use Brick\Http\Server\RequestHandler;
 use Brick\Http\Exception\HttpException;
 use Brick\Http\Exception\HttpInternalServerErrorException;
 use Brick\Routing\Route;
-use Brick\Routing\Router;
+use Brick\Routing\RouteMatch;
 use Brick\Event\EventDispatcher;
 use Brick\Di\Injector;
 use Brick\Di\InjectionPolicy;
 use Brick\Di\ValueResolver;
 use Brick\Di\Container;
 use Brick\Di\ValueResolver\DefaultValueResolver;
+use Brick\Routing\RoutingException;
 
 /**
  * The web application kernel.
@@ -44,9 +46,9 @@ class Application implements RequestHandler
     private $eventDispatcher;
 
     /**
-     * @var \Brick\Routing\Router
+     * @var \Brick\Routing\Route[]
      */
-    private $router;
+    private $routes = [];
 
     /**
      * Class constructor.
@@ -59,7 +61,6 @@ class Application implements RequestHandler
         $this->valueResolver   = new ControllerValueResolver($resolver);
         $this->injector        = new Injector($this->valueResolver, $policy);
         $this->eventDispatcher = new EventDispatcher();
-        $this->router          = new Router();
     }
 
     /**
@@ -97,7 +98,7 @@ class Application implements RequestHandler
      */
     public function addRoute(Route $route)
     {
-        $this->router->addRoute($route);
+        $this->routes[] = $route;
 
         return $this;
     }
@@ -184,15 +185,15 @@ class Application implements RequestHandler
      *
      * @return \Brick\Http\Response The generated response.
      *
-     * @throws \Brick\Http\Exception\HttpNotFoundException If no route matches the request.
-     * @throws \UnexpectedValueException                   If a route or controller returned an unexpected value.
+     * @throws \Brick\Http\Exception\HttpException If a route throws such an exception, or no route matches the request.
+     * @throws \UnexpectedValueException           If a route or controller returned an invalid value.
      */
     private function handleRequest(Request $request)
     {
         $event = new IncomingRequestEvent($request);
         $this->eventDispatcher->dispatch(IncomingRequestEvent::class, $event);
 
-        $match = $this->router->match($request);
+        $match = $this->route($request);
 
         $event = new RouteMatchedEvent($request, $match);
         $this->eventDispatcher->dispatch(RouteMatchedEvent::class, $event);
@@ -231,7 +232,7 @@ class Application implements RequestHandler
                 $response = $event->getResponse();
 
                 if ($response === null) {
-                    throw $this->invalidResponse($result);
+                    throw $this->invalidReturnValue('controller', Response::class, $result);
                 }
             }
         } catch (HttpException $e) {
@@ -248,15 +249,49 @@ class Application implements RequestHandler
     }
 
     /**
-     * @param mixed $result
+     * Routes the given Request.
+     *
+     * @param Request $request The request.
+     *
+     * @return RouteMatch The route match.
+     *
+     * @throws HttpNotFoundException     If no route matches the request.
+     * @throws \UnexpectedValueException If a route returns an invalid value.
+     */
+    private function route(Request $request)
+    {
+        foreach ($this->routes as $route) {
+            try {
+                $match = $route->match($request);
+            }
+            catch (RoutingException $e) {
+                throw new HttpNotFoundException($e->getMessage(), $e);
+            }
+
+            if ($match !== null) {
+                if ($match instanceof RouteMatch) {
+                    return $match;
+                }
+
+                throw $this->invalidReturnValue('route', Route::class . ' or NULL', $match);
+            }
+        }
+
+        throw new HttpNotFoundException('No route matches the request.');
+    }
+
+    /**
+     * @param string $what     The name of the expected resource.
+     * @param string $expected The expected return value type.
+     * @param mixed  $actual   The actual return value.
      *
      * @return \UnexpectedValueException
      */
-    private function invalidResponse($result)
+    private function invalidReturnValue($what, $expected, $actual)
     {
-        $message = 'Invalid response from controller: expected %s, got %s.';
-        $type    = is_object($result) ? get_class($result) : gettype($result);
+        $message = 'Invalid return value from %s: expected %s, got %s.';
+        $actual  = is_object($actual) ? get_class($actual) : gettype($actual);
 
-        return new \UnexpectedValueException(sprintf($message, Response::class, $type));
+        return new \UnexpectedValueException(sprintf($message, $what, $expected, $actual));
     }
 }
