@@ -18,8 +18,8 @@ Feel free to use the incubator for your own use/research, but please note that t
 
 ---
 
-Brick\Application
------------------
+Brick\App
+---------
 
 The central component to build a web application.
 
@@ -29,7 +29,7 @@ We assume that you have already installed the library with Composer.
 
 Let's create an `index.php` file that contains the simplest possible application:
 
-    use Brick\Application\Application;
+    use Brick\App\Application;
 
     require 'vendor/autoload.php';
 
@@ -77,7 +77,7 @@ The application ships with a few routes that cover the most common use cases. If
 
 Let's add an off-the-box route that automatically maps the request path to the class path:
 
-    use Brick\Application\Route\StandardRoute;
+    use Brick\App\Route\StandardRoute;
 
     $route = new StandardRoute('MyApp\Controller');
     $application->addRoute($route);
@@ -108,7 +108,7 @@ This plugin allows you to automatically map request parameters to your controlle
 Once this is done, let's add the plugin to our application:
 
     use Doctrine\Common\Annotations\AnnotationReader;
-    use Brick\Application\Plugin\RequestParamPlugin;
+    use Brick\App\Plugin\RequestParamPlugin;
 
     $reader = new AnnotationReader();
     $plugin = new RequestParamPlugin($reader);
@@ -118,7 +118,7 @@ That's it. Let's update our `hello()` controller once again to use this new func
 
     namespace MyApp\Controller;
 
-    use Brick\Application\Controller\Annotation\QueryParam;
+    use Brick\App\Controller\Annotation\QueryParam;
     use Brick\Http\Response;
 
 	class Index
@@ -147,7 +147,7 @@ First let's have a look at the `Plugin` interface:
 	    public function register(EventDispatcher $dispatcher);
 	}
 
-Just one method to implement. This method allows you to register your plugin inside the application's event dispatcher, that is, tell the application which events it wants to receive. Each event is represented by a class in the `Brick\Application\Event` namespace.
+Just one method to implement. This method allows you to register your plugin inside the application's event dispatcher, that is, tell the application which events it wants to receive. Each event is represented by a class in the `Brick\App\Event` namespace.
 
 We can see that the two events that are called immediately before and after the controller is invoked are:
 
@@ -156,9 +156,9 @@ We can see that the two events that are called immediately before and after the 
 
 What we just need to do is to map each of these events to a function that does the job. Let's do it:
 
-    use Brick\Application\Event\ControllerReadyEvent;
-    use Brick\Application\Event\ControllerInvocatedEvent;
-	use Brick\Application\Plugin;
+    use Brick\App\Event\ControllerReadyEvent;
+    use Brick\App\Event\ControllerInvocatedEvent;
+	use Brick\App\Plugin;
     use Brick\Event\EventDispatcher;
 	
 	class TransactionPlugin implements Plugin
