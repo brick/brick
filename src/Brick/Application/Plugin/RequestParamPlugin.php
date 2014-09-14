@@ -159,7 +159,7 @@ class RequestParamPlugin extends AbstractAnnotationPlugin
 
     /**
      * @param string       $className The class name.
-     * @param string|array $value     The parameter value,
+     * @param string|array $value     The parameter value.
      * @param array        $options   The options passed to the annotation.
      *
      * @return object
@@ -188,7 +188,7 @@ class RequestParamPlugin extends AbstractAnnotationPlugin
     }
 
     /**
-     * @param \ReflectionFunctionAbstract $controller
+     * @param \ReflectionFunctionAbstract                           $controller
      * @param \Brick\Application\Controller\Annotation\RequestParam $annotation
      *
      * @return \Brick\Http\Exception\HttpInternalServerErrorException
@@ -219,7 +219,7 @@ class RequestParamPlugin extends AbstractAnnotationPlugin
     }
 
     /**
-     * @param \ReflectionFunctionAbstract               $controller
+     * @param \ReflectionFunctionAbstract                           $controller
      * @param \Brick\Application\Controller\Annotation\RequestParam $annotation
      *
      * @return \Brick\Http\Exception\HttpBadRequestException
