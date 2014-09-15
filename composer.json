@@ -15,6 +15,7 @@
         "brick/reflection": "dev-master"
     },
     "require-dev": {
+        "brick/geo": "dev-master",
         "brick/math": "dev-master",
         "brick/date-time": "dev-master",
         "phpunit/phpunit": "*",

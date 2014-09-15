@@ -28,11 +28,6 @@ Brick\Form
 
 A component to create, filter and validate web forms.
 
-Brick\Geo
----------
-
-A collection of classes to work with GIS geometries.
-
 Brick\Locale
 ------------
 
