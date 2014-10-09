@@ -57,7 +57,7 @@ abstract class Button extends Element
     }
 
     /**
-     * Returns the opening tag.
+     * Renders the opening tag.
      *
      * @return string
      */
@@ -67,7 +67,7 @@ abstract class Button extends Element
     }
 
     /**
-     * Returns the closing tag.
+     * Renders the closing tag.
      *
      * @return string
      */

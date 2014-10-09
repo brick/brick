@@ -557,17 +557,21 @@ class Form extends Base
     }
 
     /**
+     * Renders the opening tag.
+     *
      * @return string
      */
-    public function openTag()
+    public function open()
     {
         return $this->getTag()->renderOpeningTag();
     }
 
     /**
+     * Renders the closing tag.
+     *
      * @return string
      */
-    public function closeTag()
+    public function close()
     {
         return $this->getTag()->renderClosingTag();
     }
