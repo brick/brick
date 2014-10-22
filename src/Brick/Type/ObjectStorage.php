@@ -41,7 +41,9 @@ class ObjectStorage implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Returns the data associated to the given object, or null if the object is not in the storage.
+     * Returns the data associated to the given object.
+     *
+     * If the given object is not in the storage, or has no associated data, NULL is returned.
      *
      * @param object $object The object.
      *
@@ -66,7 +68,7 @@ class ObjectStorage implements \Countable, \IteratorAggregate
      *
      * @return static This ObjectStorage instance.
      */
-    public function set($object, $data)
+    public function set($object, $data = null)
     {
         $hash = spl_object_hash($object);
 
