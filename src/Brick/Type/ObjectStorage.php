@@ -15,7 +15,7 @@ class ObjectStorage implements \Countable, \IteratorAggregate
     /**
      * The objects contained in the storage, indexed by object hash.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $objects = [];
 
@@ -51,11 +51,11 @@ class ObjectStorage implements \Countable, \IteratorAggregate
     {
         $hash = spl_object_hash($object);
 
-        if (! isset($this->objects[$hash])) {
-            return null;
+        if (isset($this->data[$hash])) {
+            return $this->data[$hash];
         }
 
-        return $this->data[$hash];
+        return null;
     }
 
     /**
@@ -105,6 +105,16 @@ class ObjectStorage implements \Countable, \IteratorAggregate
     public function count()
     {
         return count($this->objects);
+    }
+
+    /**
+     * Returns the objects contained in this storage.
+     *
+     * @return array<integer, object>
+     */
+    public function getObjects()
+    {
+        return array_values($this->objects);
     }
 
     /**
