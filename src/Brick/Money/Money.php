@@ -5,6 +5,7 @@ namespace Brick\Money;
 use Brick\Locale\Currency;
 use Brick\Locale\Locale;
 use Brick\Math\BigDecimal;
+use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Brick\Math\ArithmeticException;
 
@@ -95,15 +96,15 @@ class Money
     }
 
     /**
-     * @param Currency|string $currency The currency.
-     * @param integer         $cents    The amount in cents.
+     * @param Currency|string           $currency The currency.
+     * @param BigInteger|integer|string $cents    The amount in cents.
      *
      * @return Money
      */
     public static function ofCents($currency, $cents)
     {
         $currency = Currency::of($currency);
-        $amount   = BigDecimal::of((int) $cents)->withPointMovedLeft($currency->getDefaultFractionDigits());
+        $amount   = BigDecimal::ofUnscaledValue($cents, $currency->getDefaultFractionDigits());
 
         return new Money($currency, $amount);
     }
