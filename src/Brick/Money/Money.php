@@ -14,11 +14,15 @@ use Brick\Math\ArithmeticException;
 class Money
 {
     /**
+     * The currency.
+     *
      * @var \Brick\Locale\Currency
      */
     private $currency;
 
     /**
+     * The amount, with a scale matching the currency's fraction digits.
+     *
      * @var \Brick\Math\BigDecimal
      */
     private $amount;
@@ -86,6 +90,20 @@ class Money
 
         $scale  = $currency->getDefaultFractionDigits();
         $amount = BigDecimal::of($amount)->withScale($scale, $roundingMode);
+
+        return new Money($currency, $amount);
+    }
+
+    /**
+     * @param Currency|string $currency The currency.
+     * @param integer         $cents    The amount in cents.
+     *
+     * @return Money
+     */
+    public static function ofCents($currency, $cents)
+    {
+        $currency = Currency::of($currency);
+        $amount   = BigDecimal::of((int) $cents)->withPointMovedLeft($currency->getDefaultFractionDigits());
 
         return new Money($currency, $amount);
     }
