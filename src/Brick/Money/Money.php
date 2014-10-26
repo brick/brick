@@ -432,13 +432,13 @@ class Money
      * This should not be an issue for formatting though, as the output has been
      * verified to be the correct one on the range [-1000000.00,1000000.00]
      *
-     * @param Locale $locale
+     * @param string $locale
      *
      * @return string
      */
-    public function format(Locale $locale)
+    public function format($locale)
     {
-        $formatter = new \NumberFormatter($locale->toString(), \NumberFormatter::CURRENCY);
+        $formatter = new \NumberFormatter((string) $locale, \NumberFormatter::CURRENCY);
         $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $this->currency->getSymbol());
 
         return $formatter->format((float) (string) $this->amount);
