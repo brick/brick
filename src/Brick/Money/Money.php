@@ -82,11 +82,9 @@ class Money
         $currency = Currency::of($currency);
 
         if ($amount instanceof Money) {
-            if ($amount->getCurrency()->isEqualTo($currency)) {
-                return $amount;
-            }
+            $amount->checkCurrency($currency);
 
-            throw CurrencyMismatchException::currencyMismatch($currency, $amount->getCurrency());
+            return $amount;
         }
 
         $scale  = $currency->getDefaultFractionDigits();
@@ -156,6 +154,22 @@ class Money
     public static function zero(Currency $currency)
     {
         return Money::of($currency, 0);
+    }
+
+    /**
+     * @param Currency|string $currency
+     *
+     * @return void
+     *
+     * @throws CurrencyMismatchException
+     */
+    public function checkCurrency($currency)
+    {
+        $currency = Currency::of($currency);
+
+        if (! $this->currency->isEqualTo($currency)) {
+            throw CurrencyMismatchException::currencyMismatch($this->currency, $currency);
+        }
     }
 
     /**
