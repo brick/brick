@@ -67,9 +67,9 @@ class Money
     }
 
     /**
-     * @param Currency|string             $currency     A Currency instance or currency code.
+     * @param Currency|string                $currency     A Currency instance or currency code.
      * @param Money|BigDecimal|number|string $amount       A Money instance or decimal amount.
-     * @param integer                     $roundingMode The rounding mode to use.
+     * @param integer                        $roundingMode The rounding mode to use.
      *
      * @return Money
      *
@@ -147,11 +147,11 @@ class Money
     /**
      * Returns a Money with zero value, in the given Currency.
      *
-     * @param \Brick\Locale\Currency $currency
+     * @param Currency|string $currency
      *
      * @return \Brick\Money\Money
      */
-    public static function zero(Currency $currency)
+    public static function zero($currency)
     {
         return Money::of($currency, 0);
     }
