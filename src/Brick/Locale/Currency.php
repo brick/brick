@@ -95,6 +95,8 @@ class Currency
             return $currency;
         }
 
+        $currency = (string) $currency;
+
         if (! isset(self::$instances[$currency])) {
             self::loadCurrencyData();
 
