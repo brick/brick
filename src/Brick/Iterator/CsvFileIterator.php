@@ -4,7 +4,6 @@ namespace Brick\Iterator;
 
 /**
  * Iterator to read CSV files.
- * Every line is returned as a 0-indexed array.
  */
 class CsvFileIterator implements \Iterator
 {
@@ -13,101 +12,144 @@ class CsvFileIterator implements \Iterator
      *
      * @var resource
      */
-    protected $handle;
+    private $handle;
 
     /**
      * The field delimiter (one character only).
      *
      * @var string
      */
-    protected $delimiter;
+    private $delimiter;
 
     /**
      * The field enclosure character (one character only).
      *
      * @var string
      */
-    protected $enclosure;
+    private $enclosure;
 
     /**
      * The escape character (one character only).
      *
      * @var string
      */
-    protected $escape;
+    private $escape;
 
     /**
      * The key of the current element (0-based).
      *
      * @var int
      */
-    protected $key = 0;
+    private $key;
 
     /**
      * The current element as a 0-indexed array, or null if end of file / error.
      *
      * @var array|null
      */
-    protected $current;
+    private $current;
+
+    /**
+     * @var boolean
+     */
+    private $headerRow;
+
+    /**
+     * The column names, or null if returning numeric arrays.
+     *
+     * @var array|null
+     */
+    private $columns;
 
     /**
      * Class constructor.
      *
-     * @param string $file      The CSV file path.
-     * @param string $delimiter The field delimiter (one character only).
-     * @param string $enclosure The field enclosure character (one character only).
-     * @param string $escape    The escape character (one character only).
-     * @throws \InvalidArgumentException
+     * @param string|resource $file      The CSV file path, or an open file pointer.
+     * @param boolean         $headerRow Whether the first row contains the column names.
+     * @param string          $delimiter The field delimiter character.
+     * @param string          $enclosure The field enclosure character.
+     * @param string          $escape    The escape character.
+     *
+     * @throws \InvalidArgumentException If the file cannot be opened.
      */
-    public function __construct($file, $delimiter = ',', $enclosure = '"', $escape = '\\')
+    public function __construct($file, $headerRow = false, $delimiter = ',', $enclosure = '"', $escape = '\\')
     {
-        $this->delimiter = $this->checkCharacter($delimiter);
-        $this->enclosure = $this->checkCharacter($enclosure);
-        $this->escape    = $this->checkCharacter($escape);
+        if (is_resource($file)) {
+            $this->handle = $file;
+        } else {
+            $this->handle = @ fopen($file, 'r');
 
-        $this->handle = @fopen($file, 'r');
+            if ($this->handle === false) {
+                throw new \InvalidArgumentException('Cannot open file for reading: ' . $file);
+            }
+        }
 
-        if (! is_resource($this->handle)) {
-            throw new \InvalidArgumentException('Cannot open file for reading: ' . $file);
+        $this->headerRow = $headerRow;
+        $this->delimiter = $delimiter;
+        $this->enclosure = $enclosure;
+        $this->escape    = $escape;
+
+        $this->init();
+    }
+
+    /**
+     * @return void
+     */
+    private function init()
+    {
+        if ($this->headerRow) {
+            $this->columns = $this->readRow();
+
+            if ($this->columns === null) {
+                $this->columns = [];
+            }
         }
 
         $this->readCurrent();
+        $this->key = 0;
     }
 
     /**
-     * Checks that the delimiter, enclosure & escape strings are only one character.
+     * Reads the current row.
      *
-     * @param string $char
-     * @return string
-     * @throws \InvalidArgumentException
+     * If EOF is reached or an error occurs, NULL is returned.
+     * If the line is empty, an empty array is returned.
+     *
+     * @return array|null
      */
-    protected function checkCharacter($char)
+    private function readRow()
     {
-        $char = (string) $char;
-        if (strlen($char) != 1) {
-            throw new \InvalidArgumentException('Delimiter, enclosure and escape strings can only be one character');
+        $row = @ fgetcsv($this->handle, 0, $this->delimiter, $this->enclosure, $this->escape);
+
+        if ($row === false || $row === null) {
+            return null;
         }
 
-        return $char;
+        if ($row[0] === null) {
+            return [];
+        }
+
+        return $row;
     }
 
     /**
-     * Reads the current CSV line.
+     * Reads the current CSV row.
      *
      * @return void
      */
-    protected function readCurrent()
+    private function readCurrent()
     {
-        $current = @fgetcsv($this->handle, 0, $this->delimiter, $this->enclosure, $this->escape);
-        $this->current = is_array($current) ? $current : null;
-    }
+        $row = $this->readRow();
 
-    /**
-     * Class destructor.
-     */
-    public function __destruct()
-    {
-        @fclose($this->handle);
+        if ($this->columns === null || $row === null) {
+            $this->current = $row;
+        } else {
+            $this->current = [];
+
+            foreach ($this->columns as $key => $name) {
+                $this->current[$name] = isset($row[$key]) ? $row[$key] : null;
+            }
+        }
     }
 
     /**
@@ -119,25 +161,24 @@ class CsvFileIterator implements \Iterator
      */
     public function rewind()
     {
-        @fseek($this->handle, 0);
-        $this->readCurrent();
-        $this->key = 0;
+        @ fseek($this->handle, 0);
+        $this->init();
     }
 
     /**
      * Returns whether the current position is valid.
      *
-     * @return bool
+     * @return boolean
      */
     public function valid()
     {
-        return is_array($this->current);
+        return $this->current !== null;
     }
 
     /**
      * Returns the key of the current element (0-based).
      *
-     * @return int
+     * @return integer
      */
     public function key()
     {
