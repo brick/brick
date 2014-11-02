@@ -155,14 +155,15 @@ class CsvFileIterator implements \Iterator
     /**
      * Rewinds the Iterator to the first element.
      *
-     * If the stream does not support seeking, the iterator will appear empty after rewind().
+     * If the stream does not support seeking, the iterator will be left in the current position.
      *
      * @return void
      */
     public function rewind()
     {
-        @ fseek($this->handle, 0);
-        $this->init();
+        if ($this->key !== 0 && fseek($this->handle, 0) === 0) {
+            $this->init();
+        }
     }
 
     /**
