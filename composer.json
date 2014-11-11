@@ -16,9 +16,10 @@
         "brick/reflection": "dev-master"
     },
     "require-dev": {
+        "phpunit/phpunit": "*",
+        "satooshi/php-coveralls": "dev-master",
         "brick/geo": "dev-master",
         "brick/date-time": "dev-master",
-        "phpunit/phpunit": "*",
         "doctrine/common": "*",
         "doctrine/dbal": "*",
         "doctrine/orm": "*",
