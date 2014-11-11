@@ -17,6 +17,9 @@
             <directory>src/Tests/Packing</directory>
         </testsuite>
         <testsuite>
+            <directory>src/Tests/Type</directory>
+        </testsuite>
+        <testsuite>
             <directory>src/Tests/Validation</directory>
         </testsuite>
     </testsuites>

@@ -22,7 +22,7 @@ class FixedArray extends \SplFixedArray
      *
      * @throws \InvalidArgumentException If the array contains non-numeric or negative indexes.
      */
-    public static function fromArray(array $array, $saveIndexes = true)
+    public static function fromArray($array, $saveIndexes = true)
     {
         $splFixedArray = \SplFixedArray::fromArray($array, $saveIndexes);
 
