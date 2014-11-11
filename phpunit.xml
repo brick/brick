@@ -2,13 +2,16 @@
 <phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite>
-            <directory>src/Tests/Db</directory>
-        </testsuite>
-        <testsuite>
             <directory>src/Tests/Checksum</directory>
         </testsuite>
         <testsuite>
+            <directory>src/Tests/Db</directory>
+        </testsuite>
+        <testsuite>
             <directory>src/Tests/Form</directory>
+        </testsuite>
+        <testsuite>
+            <directory>src/Tests/Iterator</directory>
         </testsuite>
         <testsuite>
             <directory>src/Tests/Locale</directory>
@@ -18,6 +21,9 @@
         </testsuite>
         <testsuite>
             <directory>src/Tests/Packing</directory>
+        </testsuite>
+        <testsuite>
+            <directory>src/Tests/PhoneNumber</directory>
         </testsuite>
         <testsuite>
             <directory>src/Tests/Type</directory>

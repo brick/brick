@@ -313,24 +313,24 @@ class PhoneNumberTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @dataProvider formatNumberProvider
-     *
-     * @param string $expected
-     * @param string $phoneNumber
-     * @param string $numberFormat
-     */
-    public function testFormatNumber($expected, $phoneNumber, $numberFormat)
-    {
-        $this->assertEquals($expected, PhoneNumber::parse($phoneNumber)->format($numberFormat));
-    }
+//    /**
+//     * @dataProvider formatNumberProvider
+//     *
+//     * @param string $expected
+//     * @param string $phoneNumber
+//     * @param string $numberFormat
+//     */
+//    public function testFormatNumber($expected, $phoneNumber, $numberFormat)
+//    {
+//        $this->assertEquals($expected, PhoneNumber::parse($phoneNumber)->format($numberFormat));
+//    }
 
     /**
      * @return array
      */
     public function formatNumberProvider()
     {
-        return []; // @todo;
+        return []; // @todo
 
         return [
             // US
