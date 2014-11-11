@@ -18,6 +18,11 @@ Feel free to use the incubator for your own use/research, but please note that t
 
 ---
 
+Brick\Db
+--------
+
+Tools for database interaction.
+
 Brick\FileSystem
 ----------------
 
