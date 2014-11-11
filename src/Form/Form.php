@@ -15,7 +15,7 @@ class Form extends Base
     const ENCTYPE_PLAIN      = 'text/plain';
 
     /**
-     * @var \Brick\Html\ContainerTag
+     * @var \Brick\Html\ContainerTag|null
      */
     private $tag;
 
@@ -51,11 +51,13 @@ class Form extends Base
      */
     public function getId()
     {
-        if (! $this->tag->hasAttribute('id')) {
-            $this->tag->setAttribute('id', $this->generateUid());
+        $tag = $this->getTag();
+
+        if (! $tag->hasAttribute('id')) {
+            $tag->setAttribute('id', $this->generateUid());
         }
 
-        return $this->tag->getAttribute('id');
+        return $tag->getAttribute('id');
     }
 
     /**

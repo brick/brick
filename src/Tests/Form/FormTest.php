@@ -100,8 +100,10 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('US', $country->getValue());
 
+        $id = $country->getId();
+
         $html =
-            '<select name="country">' .
+            '<select name="country" id="' . $id . '">' .
             '<optgroup label="Europe">' .
             '<option value="GB">United Kingdom</option>' .
             '<option value="IE">Ireland</option>' .

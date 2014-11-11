@@ -8,6 +8,9 @@
             <directory>src/Tests/Checksum</directory>
         </testsuite>
         <testsuite>
+            <directory>src/Tests/Form</directory>
+        </testsuite>
+        <testsuite>
             <directory>src/Tests/Locale</directory>
         </testsuite>
         <testsuite>
