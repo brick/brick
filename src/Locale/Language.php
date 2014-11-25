@@ -8,6 +8,21 @@ namespace Brick\Locale;
 class Language
 {
     /**
+     * @var array|null
+     */
+    private static $languages;
+
+    /**
+     * @var array|null
+     */
+    private static $iso2to3;
+
+    /**
+     * @var array
+     */
+    private static $instances = [];
+
+    /**
      * @var string
      */
     private $alpha3B;
@@ -51,6 +66,17 @@ class Language
     }
 
     /**
+     * @return void
+     */
+    private static function loadLanguageData()
+    {
+        if (self::$languages === null) {
+            self::$languages = require __DIR__ . '/languages.php';
+            self::$iso2to3   = require __DIR__ . '/languages-alpha-2-to-3.php';
+        }
+    }
+
+    /**
      * Returns a Language for the given language code.
      *
      * The language code can be either:
@@ -66,16 +92,62 @@ class Language
      */
     public static function get($code)
     {
+        self::loadLanguageData();
 
+        if (isset(self::$iso2to3[$code])) {
+            $code = self::$iso2to3[$code];
+        }
+
+        if (! isset(self::$instances[$code])) {
+            if (! isset(self::$languages[$code])) {
+                throw new \RuntimeException('Invalid language code: ' . $code);
+            }
+
+            list ($alpha3T, $alpha2, $englishName, $frenchName) = self::$languages[$code];
+
+            self::$instances[$code] = new self($code, $alpha3T, $alpha2, $englishName, $frenchName);
+        }
+
+        return self::$instances[$code];
     }
 
+    /**
+     * @return string
+     */
+    public function getAlpha3BCode()
+    {
+        return $this->alpha3B;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAlpha3TCode()
+    {
+        return $this->alpha3T;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getAlpha2Code()
     {
-
+        return $this->alpha2;
     }
 
-    public function getAlpha3Code()
+    /**
+     * @return string
+     */
+    public function getEnglishName()
     {
-        
+        return $this->englishName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFrenchName()
+    {
+        return $this->frenchName;
     }
 }
