@@ -180,4 +180,64 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame('12345', Money::parse('USD 123.45')->getAmountCents());
     }
+
+    public function testMin()
+    {
+        $min = Money::min([
+            Money::parse('EUR 5.00'),
+            Money::parse('EUR 3.50'),
+            Money::parse('EUR 4.00')
+        ]);
+
+        $this->assertMoneyEquals('EUR', '3.50', $min);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMinOfZeroMoniesThrowsException()
+    {
+        Money::min([]);
+    }
+
+    /**
+     * @expectedException \Brick\Money\CurrencyMismatchException
+     */
+    public function testMinOfDifferentCurrenciesThrowsException()
+    {
+        Money::min([
+            Money::parse('EUR 1.00'),
+            Money::parse('USD 1.00')
+        ]);
+    }
+
+    public function testMax()
+    {
+        $max = Money::max([
+            Money::parse('USD 5.50'),
+            Money::parse('USD 3.50'),
+            Money::parse('USD 4.90')
+        ]);
+
+        $this->assertMoneyEquals('USD', '5.50', $max);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testMaxOfZeroMoniesThrowsException()
+    {
+        Money::max([]);
+    }
+
+    /**
+     * @expectedException \Brick\Money\CurrencyMismatchException
+     */
+    public function testMaxOfDifferentCurrenciesThrowsException()
+    {
+        Money::max([
+            Money::parse('EUR 1.00'),
+            Money::parse('USD 1.00')
+        ]);
+    }
 }

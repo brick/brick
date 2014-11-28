@@ -43,27 +43,53 @@ class Money
     /**
      * Returns the minimum of the given values.
      *
-     * @param Money $a
-     * @param Money $b
+     * @param Money[] $monies
      *
      * @return \Brick\Money\Money
+     *
+     * @throws CurrencyMismatchException If all the monies are not in the same currency.
      */
-    public static function min(Money $a, Money $b)
+    public static function min(array $monies)
     {
-        return $a->isLessThan($b) ? $a : $b;
+        $min = null;
+
+        foreach ($monies as $money) {
+            if ($min === null || $money->isLessThan($min)) {
+                $min = $money;
+            }
+        }
+
+        if ($min === null) {
+            throw new \InvalidArgumentException('min() expects at least one Money.');
+        }
+
+        return $min;
     }
 
     /**
      * Returns the maximum of the given values.
      *
-     * @param Money $a
-     * @param Money $b
+     * @param Money[] $monies
      *
      * @return \Brick\Money\Money
+     *
+     * @throws CurrencyMismatchException If all the monies are not in the same currency.
      */
-    public static function max(Money $a, Money $b)
+    public static function max(array $monies)
     {
-        return $a->isGreaterThan($b) ? $a : $b;
+        $max = null;
+
+        foreach ($monies as $money) {
+            if ($max === null || $money->isGreaterThan($max)) {
+                $max = $money;
+            }
+        }
+
+        if ($max === null) {
+            throw new \InvalidArgumentException('max() expects at least one Money.');
+        }
+
+        return $max;
     }
 
     /**
