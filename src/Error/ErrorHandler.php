@@ -35,15 +35,26 @@ class ErrorHandler
             throw new \ErrorException($message, 0, $level, $file, $line);
         });
 
+        if (! $fatalErrorHandler) {
+            $fatalErrorHandler = function(\Exception $e) {
+                if (ini_get('display_errors')) {
+                    if (! headers_sent()) {
+                        header('Content-Type: text/plain');
+                    }
+
+                    echo $e;
+                    exit;
+                }
+            };
+        }
+
         // Handle uncaught exceptions.
         set_exception_handler(function(\Exception $e) use ($fatalErrorHandler) {
             if (! headers_sent()) {
                 http_response_code(500);
             }
 
-            if ($fatalErrorHandler) {
-                $fatalErrorHandler($e);
-            }
+            $fatalErrorHandler($e);
         });
 
         // Handle fatal errors.
@@ -55,10 +66,8 @@ class ErrorHandler
                     http_response_code(500);
                 }
 
-                if ($fatalErrorHandler) {
-                    $exception = new \ErrorException($e['message'], 0, $e['type'], $e['file'], $e['line']);
-                    $fatalErrorHandler($exception);
-                }
+                $exception = new \ErrorException($e['message'], 0, $e['type'], $e['file'], $e['line']);
+                $fatalErrorHandler($exception);
             }
         });
     }
