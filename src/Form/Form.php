@@ -93,7 +93,7 @@ class Form extends Base
     private function addComponent($name, Component $component)
     {
         if (isset($this->components[$name])) {
-            throw new \RuntimeException(sprintf('Duplicate component name "%"', $name));
+            throw new \RuntimeException(sprintf('Duplicate component name "%s"', $name));
         }
 
         $this->components[$name] = $component;
