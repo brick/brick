@@ -56,4 +56,12 @@ class BigIntegerType extends Type
 
         throw new UnexpectedValueException(BigInteger::class, $value);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint()
+    {
+        return true;
+    }
 }

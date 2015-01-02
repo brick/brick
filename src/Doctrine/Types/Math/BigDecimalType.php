@@ -56,4 +56,12 @@ class BigDecimalType extends Type
 
         throw new UnexpectedValueException(BigDecimal::class, $value);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint()
+    {
+        return true;
+    }
 }

@@ -56,4 +56,12 @@ class LocalDateType extends Type
 
         return LocalDate::parse($value);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
+    }
 }

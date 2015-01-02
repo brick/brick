@@ -56,4 +56,12 @@ class LocalTimeType extends Type
 
         return LocalTime::parse($value);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
+    }
 }

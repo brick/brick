@@ -56,4 +56,12 @@ class LocalDateTimeType extends Type
 
         return LocalDateTime::parse(str_replace(' ', 'T', $value));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
+    }
 }

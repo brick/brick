@@ -64,4 +64,12 @@ class DayOfWeekType extends Type
     {
         return \PDO::PARAM_INT;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
+    }
 }
