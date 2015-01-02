@@ -26,6 +26,11 @@ Brick\Db
 
 Tools for database interaction.
 
+Brick\Doctrine
+--------------
+
+Doctrine type mappings and functions for Brick objects.
+
 Brick\FileSystem
 ----------------
 
