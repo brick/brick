@@ -121,7 +121,7 @@ class File
     /**
      * Acquires a lock on the file.
      *
-     * @param boolean $exclusive True to acquire an exclusive lock (default), or false to acquire a shared lock.
+     * @param boolean $exclusive True to acquire an exclusive lock (writer), false to acquire a shared lock (reader).
      *
      * @return void
      *
@@ -132,7 +132,7 @@ class File
         $this->throw = true;
 
         $this->errorHandler->swallow(E_WARNING, function() use ($exclusive) {
-            flock($this->handle, $exclusive ? LOCK_SH : LOCK_EX);
+            flock($this->handle, $exclusive ? LOCK_EX : LOCK_SH);
         });
     }
 
