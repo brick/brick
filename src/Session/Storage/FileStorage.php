@@ -95,7 +95,7 @@ class FileStorage implements SessionStorage
      */
     public function remove($id, $key)
     {
-        $this->fs->delete($this->getPath($id, $key), true);
+        $this->fs->tryDelete($this->getPath($id, $key), true);
     }
 
     /**
@@ -103,7 +103,7 @@ class FileStorage implements SessionStorage
      */
     public function clear($id)
     {
-        $this->fs->delete($this->getPath($id), true);
+        $this->fs->tryDelete($this->getPath($id), true);
     }
 
     /**
