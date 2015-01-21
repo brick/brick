@@ -4,7 +4,7 @@ Brick
 PHP 5.5+ framework under development.
 
 [![Build Status](https://travis-ci.org/brick/brick.svg?branch=master)](https://travis-ci.org/brick/brick)
-[![Coverage Status](https://coveralls.io/repos/brick/brick/badge.png)](https://coveralls.io/r/brick/brick)
+[![Coverage Status](https://coveralls.io/repos/brick/brick/badge.svg?branch=master)](https://coveralls.io/r/brick/brick)
 
 This is the main incubator for components under development.
 Once a component reaches sufficient maturity, it will be moved to its own repository and composer package, and enter a beta phase.
