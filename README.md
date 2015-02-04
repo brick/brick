@@ -36,11 +36,6 @@ Brick\FileSystem
 
 A collection of OO tools to interact with the file system.
 
-Brick\Form
-----------
-
-A component to create, filter and validate web forms.
-
 Brick\Locale
 ------------
 
