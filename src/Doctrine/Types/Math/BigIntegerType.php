@@ -60,7 +60,7 @@ class BigIntegerType extends Type
     /**
      * {@inheritdoc}
      */
-    public function requiresSQLCommentHint()
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;
     }
