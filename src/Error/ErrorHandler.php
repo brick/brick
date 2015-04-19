@@ -43,7 +43,6 @@ class ErrorHandler
                     }
 
                     echo $e;
-                    exit;
                 }
             };
         }
@@ -55,6 +54,8 @@ class ErrorHandler
             }
 
             $fatalErrorHandler($e);
+
+            exit(1);
         });
 
         // Handle fatal errors.
@@ -68,6 +69,8 @@ class ErrorHandler
 
                 $exception = new \ErrorException($e['message'], 0, $e['type'], $e['file'], $e['line']);
                 $fatalErrorHandler($exception);
+
+                exit(1);
             }
         });
     }
