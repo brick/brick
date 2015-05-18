@@ -3,25 +3,45 @@
 namespace Brick\Money;
 
 use Brick\Locale\Currency;
+use Brick\Math\RoundingMode;
 
 /**
- * Interface for currency converters.
+ * Converts monies into different currencies, using an exchange rate provider.
  */
-interface CurrencyConverter
+class CurrencyConverter
 {
     /**
-     * @param \Brick\Locale\Currency $from
-     * @param \Brick\Locale\Currency $to
-     *
-     * @return \Brick\Math\BigDecimal
+     * @var ExchangeRateProvider
      */
-    public function getExchangeRate(Currency $from, Currency $to);
+    private $exchangeRateProvider;
 
     /**
-     * @param \Brick\Money\Money     $money
-     * @param \Brick\Locale\Currency $currency
-     *
-     * @return \Brick\Money\Money
+     * @var integer
      */
-    public function convert(Money $money, Currency $currency);
+    private $roundingMode = RoundingMode::FLOOR;
+
+    /**
+     * @param ExchangeRateProvider $exchangeRateProvider The exchange rate provider.
+     * @param integer              $roundingMode         The rounding mode to use for conversions.
+     */
+    public function __construct(ExchangeRateProvider $exchangeRateProvider, $roundingMode = RoundingMode::FLOOR)
+    {
+        $this->exchangeRateProvider = $exchangeRateProvider;
+        $this->roundingMode         = $roundingMode;
+    }
+
+    /**
+     * @param Money    $money
+     * @param Currency $currency
+     *
+     * @return Money
+     */
+    public function convert(Money $money, Currency $currency)
+    {
+        $exchangeRate = $this->exchangeRateProvider->getExchangeRate($money->getCurrency(), $currency);
+
+        $amount = $money->getAmount()->multipliedBy($exchangeRate);
+
+        return Money::of($currency, $amount, $this->roundingMode);
+    }
 }
