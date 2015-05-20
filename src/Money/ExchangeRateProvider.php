@@ -2,6 +2,7 @@
 
 namespace Brick\Money;
 
+use Brick\Math\BigDecimal;
 use Brick\Locale\Currency;
 
 /**
@@ -13,7 +14,9 @@ interface ExchangeRateProvider
      * @param Currency $source The source currency.
      * @param Currency $target The target currency.
      *
-     * @return float The exchange rate.
+     * @return BigDecimal|number|string The exchange rate.
+     *
+     * @throws CurrencyConversionException If the exchange rate is not available.
      */
     public function getExchangeRate(Currency $source, Currency $target);
 }
