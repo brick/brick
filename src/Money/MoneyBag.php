@@ -35,6 +35,26 @@ class MoneyBag
     }
 
     /**
+     * Returns the total money contained in the bag, in the given currency.
+     *
+     * @param Currency          $currency  The currency to get the total in.
+     * @param CurrencyConverter $converter The currency converter to use.
+     *
+     * @return Money The total in the given currency.
+     */
+    public function getTotal(Currency $currency, CurrencyConverter $converter)
+    {
+        $total = Money::zero($currency);
+
+        foreach ($this->monies as $money) {
+            $money = $converter->convert($money, $currency);
+            $total = $total->plus($money);
+        }
+
+        return $total;
+    }
+
+    /**
      * Returns all the monies inside this bag.
      *
      * @return Money[]
