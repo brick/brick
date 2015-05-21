@@ -335,6 +335,22 @@ class Money
     }
 
     /**
+     * Compares this Money to the given Money.
+     *
+     * @param Money|BigDecimal|number|string $that
+     *
+     * @return integer -1, 0 or 1.
+     *
+     * @throws CurrencyMismatchException
+     */
+    public function compareTo($that)
+    {
+        $that = Money::of($this->currency, $that);
+
+        return $this->amount->compareTo($that->amount);
+    }
+
+    /**
      * Returns whether this Money is equal to the given Money.
      *
      * @param Money|BigDecimal|number|string $that
