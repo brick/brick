@@ -38,6 +38,10 @@ class CurrencyConverter
      */
     public function convert(Money $money, Currency $currency)
     {
+        if ($money->getCurrency()->getCode() == $currency->getCode()) {
+            return $money;
+        }
+
         $exchangeRate = $this->exchangeRateProvider->getExchangeRate($money->getCurrency(), $currency);
 
         $amount = $money->getAmount()->multipliedBy($exchangeRate);
