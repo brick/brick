@@ -183,11 +183,11 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
     public function testMin()
     {
-        $min = Money::min([
+        $min = Money::min(
             Money::parse('EUR 5.00'),
             Money::parse('EUR 3.50'),
             Money::parse('EUR 4.00')
-        ]);
+        );
 
         $this->assertMoneyEquals('EUR', '3.50', $min);
     }
@@ -197,7 +197,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinOfZeroMoniesThrowsException()
     {
-        Money::min([]);
+        Money::min();
     }
 
     /**
@@ -205,19 +205,19 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinOfDifferentCurrenciesThrowsException()
     {
-        Money::min([
+        Money::min(
             Money::parse('EUR 1.00'),
             Money::parse('USD 1.00')
-        ]);
+        );
     }
 
     public function testMax()
     {
-        $max = Money::max([
+        $max = Money::max(
             Money::parse('USD 5.50'),
             Money::parse('USD 3.50'),
             Money::parse('USD 4.90')
-        ]);
+        );
 
         $this->assertMoneyEquals('USD', '5.50', $max);
     }
@@ -227,7 +227,7 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testMaxOfZeroMoniesThrowsException()
     {
-        Money::max([]);
+        Money::max();
     }
 
     /**
@@ -235,9 +235,9 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
      */
     public function testMaxOfDifferentCurrenciesThrowsException()
     {
-        Money::max([
+        Money::max(
             Money::parse('EUR 1.00'),
             Money::parse('USD 1.00')
-        ]);
+        );
     }
 }

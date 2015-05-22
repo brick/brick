@@ -43,13 +43,14 @@ class Money
     /**
      * Returns the minimum of the given values.
      *
-     * @param Money[] $monies
+     * @param Money ...$monies
      *
      * @return \Brick\Money\Money
      *
      * @throws CurrencyMismatchException If all the monies are not in the same currency.
+     * @throws \InvalidArgumentException If the money list is empty.
      */
-    public static function min(array $monies)
+    public static function min(Money ...$monies)
     {
         $min = null;
 
@@ -69,13 +70,14 @@ class Money
     /**
      * Returns the maximum of the given values.
      *
-     * @param Money[] $monies
+     * @param Money ...$monies
      *
      * @return \Brick\Money\Money
      *
      * @throws CurrencyMismatchException If all the monies are not in the same currency.
+     * @throws \InvalidArgumentException If the money list is empty.
      */
-    public static function max(array $monies)
+    public static function max(Money ...$monies)
     {
         $max = null;
 
