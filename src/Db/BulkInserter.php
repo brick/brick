@@ -161,7 +161,7 @@ class BulkInserter
     }
 
     /**
-     * Writes the pending data to the database and commits the current transaction.
+     * Flushes the pending data to the database and commits the current transaction.
      *
      * This is to be called once after the last insert() has been processed,
      * to force flushing the remaining queued inserts to the database table,
@@ -172,7 +172,7 @@ class BulkInserter
      *
      * @return void
      */
-    public function write()
+    public function flush()
     {
         if ($this->bufferSize !== 0) {
             if ($this->queriesPerTransaction !== 0) {

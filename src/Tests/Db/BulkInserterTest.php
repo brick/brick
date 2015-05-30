@@ -19,7 +19,7 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $bulk->insert([3, 'GBP', '3.45']);
         $bulk->insert([4, 'CAD', '4.56']);
 
-        $bulk->write();
+        $bulk->flush();
 
         $expectedLog = [
             "PREPARE INSERT INTO transactions (user, currency, amount) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)",
@@ -43,7 +43,7 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $bulk->insert([5, 'Rod']);
         $bulk->insert([6, 'Tom']);
 
-        $bulk->write();
+        $bulk->flush();
 
         $expectedLog = [
             "PREPARE INSERT INTO users (id, name) VALUES (?, ?), (?, ?)",
@@ -74,7 +74,7 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $bulk->insert([6, 'Tom']);
         $bulk->insert([7, 'Zoe']);
 
-        $bulk->write();
+        $bulk->flush();
 
         $expectedLog = [
             "PREPARE INSERT INTO users (id, name) VALUES (?, ?), (?, ?), (?, ?)",
