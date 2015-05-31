@@ -501,14 +501,6 @@ class Money
     }
 
     /**
-     * @return BigMoney
-     */
-    public function toBigMoney()
-    {
-        // @todo
-    }
-
-    /**
      * Returns a non-localized string representation of this Money
      * e.g. "EUR 25.00"
      *
