@@ -468,7 +468,7 @@ class Money
     }
 
     /**
-     * Formats this Money using the given NumberFormatter.
+     * Formats this Money with the given NumberFormatter.
      *
      * Note that NumberFormatter internally represents values using floating point arithmetic,
      * so discrepancies can appear when formatting very large monetary values.
@@ -477,12 +477,27 @@ class Money
      *
      * @return string
      */
-    public function format(\NumberFormatter $formatter)
+    public function formatWith(\NumberFormatter $formatter)
     {
         return $formatter->formatCurrency(
             (string) $this->amount,
             (string) $this->currency
         );
+    }
+
+    /**
+     * Formats this Money to the given locale.
+     *
+     * Note that this method uses NumberFormatter, which internally represents values using floating point arithmetic,
+     * so discrepancies can appear when formatting very large monetary values.
+     *
+     * @param string $locale
+     *
+     * @return string
+     */
+    public function formatTo($locale)
+    {
+        return $this->formatWith(new \NumberFormatter($locale, \NumberFormatter::CURRENCY));
     }
 
     /**
