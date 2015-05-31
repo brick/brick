@@ -3,7 +3,6 @@
 namespace Brick\Money;
 
 use Brick\Locale\Currency;
-use Brick\Locale\Locale;
 use Brick\Math\BigDecimal;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
@@ -469,23 +468,21 @@ class Money
     }
 
     /**
-     * Returns a formatted string, according to the given Locale.
+     * Formats this Money using the given NumberFormatter.
      *
-     * Note: even though all calculations are done with exact arithmetic,
-     * the NumberFormatter here accepts a floating-point value only.
-     * This should not be an issue for formatting though, as the output has been
-     * verified to be the correct one on the range [-1000000.00,1000000.00]
+     * Note that NumberFormatter internally represents values using floating point arithmetic,
+     * so discrepancies can appear when formatting very large monetary values.
      *
-     * @param string $locale
+     * @param \NumberFormatter $formatter
      *
      * @return string
      */
-    public function format($locale)
+    public function format(\NumberFormatter $formatter)
     {
-        $formatter = new \NumberFormatter((string) $locale, \NumberFormatter::CURRENCY);
-        $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $this->currency->getSymbol());
-
-        return $formatter->format((float) (string) $this->amount);
+        return $formatter->formatCurrency(
+            (string) $this->amount,
+            (string) $this->currency
+        );
     }
 
     /**
