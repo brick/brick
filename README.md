@@ -55,16 +55,6 @@ Brick\Locale
 
 A collection of classes to handle countries, languages and currencies.
 
-Brick\Money
------------
-
-Handles exact monetary calculations.
-
-Working with financial data is a serious matter, and small rounding mistakes in an application may lead to disastrous
-consequences in real life. That's why floating-point arithmetic is not suited for monetary calculations.
-
-This component is based on the `Math` component and handles exact calculations on arbitrary-precision monies.
-
 Brick\PhoneNumber
 -----------------
 
