@@ -125,45 +125,10 @@ class Country
     }
 
     /**
-     * Returns whether this Country has a Currency.
-     *
-     * @return boolean
-     */
-    public function hasCurrency()
-    {
-        return $this->currencyCode !== null;
-    }
-
-    /**
-     * Returns the Currency instance for this country.
-     *
-     * Some countries may have several currencies in use, in this case only the main currency is returned.
-     * In countries such as Cuba or Panama, this might not be the one you expect.
-     *
-     * @return \Brick\Locale\Currency
-     *
-     * @throws \LogicException
-     */
-    public function getCurrency()
-    {
-        if ($this->currencyCode === null) {
-            throw new \LogicException('This country has no currency.');
-        }
-
-        return Currency::of($this->currencyCode);
-    }
-
-    /**
-     * @return string
-     *
-     * @throws \LogicException
+     * @return string|null
      */
     public function getCurrencyCode()
     {
-        if ($this->currencyCode === null) {
-            throw new \LogicException('This country has no currency.');
-        }
-
         return $this->currencyCode;
     }
 

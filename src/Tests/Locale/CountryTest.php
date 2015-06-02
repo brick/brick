@@ -18,7 +18,7 @@ class CountryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($code, $country->getCode());
         $this->assertEquals($name, $country->getName());
-        $this->assertEquals($currency, $country->getCurrency()->getCode());
+        $this->assertEquals($currency, $country->getCurrencyCode());
     }
 
     /**
