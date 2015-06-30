@@ -55,11 +55,6 @@ Brick\Locale
 
 A collection of classes to handle countries, languages and currencies.
 
-Brick\PhoneNumber
------------------
-
-Handles and validates international phone numbers.
-
 Brick\Session
 -------------
 

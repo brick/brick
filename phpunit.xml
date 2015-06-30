@@ -23,9 +23,6 @@
             <directory>src/Tests/Packing</directory>
         </testsuite>
         <testsuite>
-            <directory>src/Tests/PhoneNumber</directory>
-        </testsuite>
-        <testsuite>
             <directory>src/Tests/Type</directory>
         </testsuite>
         <testsuite>
