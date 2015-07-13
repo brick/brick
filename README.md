@@ -1,5 +1,6 @@
-Brick
-=====
+## Brick
+
+<img src="https://raw.githubusercontent.com/brick/brick/master/logo.png" alt="" align="left" height="64">
 
 Incubator for PHP components under development.
 
@@ -35,37 +36,30 @@ Update individual components instead when required, and only update `brick/brick
 
 ---
 
-Brick\Db
---------
+### Brick\Db
 
 Tools for database interaction.
 
-Brick\Doctrine
---------------
+### Brick\Doctrine
 
 Doctrine type mappings and functions for Brick objects.
 
-Brick\FileSystem
-----------------
+### Brick\FileSystem
 
 A collection of OO tools to interact with the file system.
 
-Brick\Locale
-------------
+### Brick\Locale
 
 A collection of classes to handle countries, languages and currencies.
 
-Brick\Session
--------------
+### Brick\Session
 
 A powerful alternative to PHP native sessions, allowing synchronized and non-blocking read/write to individual session entries.
 
-Brick\Translation
------------------
+### Brick\Translation
 
 Handles translation of texts for a multilingual web application.
 
-Brick\Validation
-----------------
+### Brick\Validation
 
 Provides a `Validator` interface for validating strings, and a collection of validators. This is mostly used by the `Form` component, but can be used independently as well.
