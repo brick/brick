@@ -6,6 +6,8 @@ use Brick\Validation\AbstractValidator;
 
 /**
  * Validates the length of a string.
+ *
+ * @deprecated Use StringValidator
  */
 class LengthValidator extends AbstractValidator
 {
