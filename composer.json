@@ -12,7 +12,7 @@
         "brick/di": "dev-master",
         "brick/event": "dev-master",
         "brick/http": "dev-master",
-        "brick/math": "*",
+        "brick/math": "~0.5.2",
         "brick/reflection": "dev-master"
     },
     "require-dev": {

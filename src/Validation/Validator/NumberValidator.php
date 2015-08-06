@@ -3,7 +3,7 @@
 namespace Brick\Validation\Validator;
 
 use Brick\Validation\AbstractValidator;
-use Brick\Math\ArithmeticException;
+use Brick\Math\Exception\ArithmeticException;
 use Brick\Math\BigDecimal;
 
 /**
@@ -47,7 +47,7 @@ class NumberValidator extends AbstractValidator
         try {
             $value = BigDecimal::of($value);
         }
-        catch (\InvalidArgumentException $e) {
+        catch (ArithmeticException $e) {
             $this->addFailureMessage('validator.number.invalid');
         }
 
