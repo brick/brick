@@ -35,9 +35,9 @@ class StringValidator extends AbstractValidator
     public function getPossibleMessages()
     {
         return [
-            'validator.encoding'         => 'The string is not valid UTF-8.',
-            'validator.length.too-short' => 'The string is too short.',
-            'validator.length.too-long'  => 'The string is too long.',
+            'validator.string.encoding'  => 'The string is not valid UTF-8.',
+            'validator.string.too-short' => 'The string is too short.',
+            'validator.string.too-long'  => 'The string is too long.',
         ];
     }
 
@@ -47,16 +47,16 @@ class StringValidator extends AbstractValidator
     protected function validate($value)
     {
         if (! mb_check_encoding($value, 'UTF-8')) {
-            $this->addFailureMessage('validator.encoding');
+            $this->addFailureMessage('validator.string.encoding');
             return;
         }
 
         $length = mb_strlen($value, 'UTF-8');
 
         if ($this->minLength && $length < $this->minLength) {
-            $this->addFailureMessage('validator.length.too-short');
+            $this->addFailureMessage('validator.string.too-short');
         } elseif ($this->maxLength && $length > $this->maxLength) {
-            $this->addFailureMessage('validator.length.too-long');
+            $this->addFailureMessage('validator.string.too-long');
         }
     }
 }
