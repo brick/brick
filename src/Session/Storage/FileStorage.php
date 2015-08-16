@@ -4,6 +4,7 @@ namespace Brick\Session\Storage;
 
 use Brick\FileSystem\File;
 use Brick\FileSystem\FileSystem;
+use Brick\FileSystem\Path;
 use Brick\FileSystem\RecursiveFileIterator;
 
 /**
@@ -46,6 +47,12 @@ class FileStorage implements SessionStorage
      */
     public function read($id, $key, & $lockContext)
     {
+        $path = new Path($this->getPath($id, $key));
+
+        if (! $path->exists()) {
+            return null;
+        }
+
         $file = $this->openFile($id, $key);
 
         $file->lock($lockContext);
