@@ -78,6 +78,7 @@ class FileStorage implements SessionStorage
             /** @var File $file */
             $file = $lockContext;
         } else {
+            $this->fs->tryCreateDirectory($this->getPath($id));
             $file = $this->openFile($id, $key);
             $file->lock();
         }
@@ -210,8 +211,6 @@ class FileStorage implements SessionStorage
     private function getPath($id, $key = null)
     {
         $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $this->sanitize($id);
-
-        $this->fs->tryCreateDirectory($directoryPath);
 
         if ($key === null) {
             return $directoryPath;
