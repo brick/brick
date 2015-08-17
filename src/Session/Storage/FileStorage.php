@@ -156,34 +156,13 @@ class FileStorage implements SessionStorage
     }
 
     /**
-     * @param string $char
-     *
-     * @return bool
-     */
-    private function isSafeAsciiChar($char)
-    {
-        $charBlacklist = ' \/:*?"<>|';
-
-        $ord = ord($char);
-
-        if ($ord <= 32 || $ord >= 127) {
-            return false;
-        }
-
-        if (strpos($charBlacklist, $char) !== false) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @param string $fileName
      *
      * @return string
      */
     private function sanitize($fileName)
     {
+        $charBlacklist = '\/:*?"<>|';
         $escapeChar = '%';
 
         $result = '';
@@ -191,8 +170,9 @@ class FileStorage implements SessionStorage
 
         for ($i = 0; $i < $length; $i++) {
             $char = $fileName[$i];
+            $ord = ord($char);
 
-            if ($char === $escapeChar || ! $this->isSafeAsciiChar($char)) {
+            if ($ord <= 32 || $ord >= 127 || strpos($charBlacklist, $char) !== false) {
                 $result .= $escapeChar . bin2hex($char);
             } else {
                 $result .= $char;
