@@ -155,6 +155,53 @@ class FileStorage implements SessionStorage
     }
 
     /**
+     * @param string $char
+     *
+     * @return bool
+     */
+    private function isSafeAsciiChar($char)
+    {
+        $charBlacklist = ' \/:*?"<>|';
+
+        $ord = ord($char);
+
+        if ($ord <= 32 || $ord >= 127) {
+            return false;
+        }
+
+        if (strpos($charBlacklist, $char) !== false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $fileName
+     *
+     * @return string
+     */
+    private function sanitize($fileName)
+    {
+        $escapeChar = '%';
+
+        $result = '';
+        $length = strlen($fileName);
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $fileName[$i];
+
+            if ($char === $escapeChar || ! $this->isSafeAsciiChar($char)) {
+                $result .= $escapeChar . bin2hex($char);
+            } else {
+                $result .= $char;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @param string $id
      * @param string $key
      *
@@ -162,7 +209,7 @@ class FileStorage implements SessionStorage
      */
     private function getPath($id, $key = null)
     {
-        $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $id;
+        $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $this->sanitize($id);
 
         $this->fs->tryCreateDirectory($directoryPath);
 
@@ -170,6 +217,6 @@ class FileStorage implements SessionStorage
             return $directoryPath;
         }
 
-        return $directoryPath . DIRECTORY_SEPARATOR . sha1($key);
+        return $directoryPath . DIRECTORY_SEPARATOR . $this->sanitize($key);
     }
 }
