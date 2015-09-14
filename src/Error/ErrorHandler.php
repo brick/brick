@@ -36,7 +36,7 @@ class ErrorHandler
         });
 
         if (! $fatalErrorHandler) {
-            $fatalErrorHandler = function(\Exception $e) {
+            $fatalErrorHandler = function($e) {
                 if (ini_get('display_errors')) {
                     if (! headers_sent()) {
                         header('Content-Type: text/plain');
@@ -48,7 +48,7 @@ class ErrorHandler
         }
 
         // Handle uncaught exceptions.
-        set_exception_handler(function(\Exception $e) use ($fatalErrorHandler) {
+        set_exception_handler(function($e) use ($fatalErrorHandler) {
             if (! headers_sent()) {
                 http_response_code(500);
             }
