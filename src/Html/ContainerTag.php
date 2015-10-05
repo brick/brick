@@ -37,6 +37,14 @@ class ContainerTag extends Tag
     }
 
     /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->content == '';
+    }
+
+    /**
      * @return string
      */
     public function renderOpeningTag()
