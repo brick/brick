@@ -3,7 +3,6 @@
 namespace Brick\Translation\Loader;
 
 use Brick\Translation\TranslationLoader;
-use Brick\Locale\Locale;
 
 /**
  * Translation loader for PDO database connections.
@@ -64,9 +63,8 @@ class PdoLoader implements TranslationLoader
     /**
      * {@inheritdoc}
      */
-    public function load(Locale $locale)
+    public function load($locale)
     {
-        $locale = (string) $locale;
         $parameters = array_merge([$locale], $this->parameters);
 
         $this->statement->execute($parameters);
