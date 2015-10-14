@@ -10,7 +10,7 @@ namespace Brick\Type;
  * In this respect, this class is different from the SplObjectStorage class,
  * which exhibits a different behaviour due to backwards compatibility reasons.
  */
-class ObjectStorage implements \Countable, \IteratorAggregate
+class ObjectStorage implements \Countable, \IteratorAggregate, \ArrayAccess
 {
     /**
      * The objects contained in the storage, indexed by object hash.
@@ -131,5 +131,62 @@ class ObjectStorage implements \Countable, \IteratorAggregate
         foreach ($this->objects as $hash => $object) {
             yield $object => $this->data[$hash];
         }
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return mixed
+     *
+     * @throws \UnexpectedValueException If the object cannot be found.
+     */
+    public function offsetGet($object)
+    {
+        $hash = spl_object_hash($object);
+
+        if (isset($this->objects[$hash])) {
+            return $this->data[$hash];
+        }
+
+        throw new \UnexpectedValueException('Object not found.');
+    }
+
+    /**
+     * @param object $object
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public function offsetSet($object, $value)
+    {
+        $hash = spl_object_hash($object);
+
+        $this->objects[$hash] = $object;
+        $this->data[$hash] = $value;
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return void
+     */
+    public function offsetUnset($object)
+    {
+        $hash = spl_object_hash($object);
+
+        unset($this->objects[$hash]);
+        unset($this->data[$hash]);
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    public function offsetExists($object)
+    {
+        $hash = spl_object_hash($object);
+
+        return isset($this->objects[$hash]);
     }
 }

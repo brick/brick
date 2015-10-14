@@ -40,6 +40,16 @@ class ObjectStorageTest extends \PHPUnit_Framework_TestCase
         foreach ($tests as list($object, $isContained, $expectedValue)) {
             $this->assertSame($isContained, $storage->has($object));
             $this->assertSame($expectedValue, $storage->get($object));
+
+            $this->assertSame($isContained, isset($storage[$object]));
+
+            try {
+                $this->assertSame($expectedValue, $storage[$object]);
+            } catch (\UnexpectedValueException $e) {
+                if ($expectedValue !== null) {
+                    throw $e;
+                }
+            }
         }
     }
 
@@ -86,7 +96,7 @@ class ObjectStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetSecondObject(ObjectStorage $storage)
     {
-        $this->assertSame($storage, $storage->set(self::$b, 'y'));
+        $storage[self::$b] = 'y';
 
         $this->assertStorage($storage, 2, [
             [self::$a, true, 'x'],
@@ -143,7 +153,7 @@ class ObjectStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveSecondObject (ObjectStorage $storage)
     {
-        $this->assertSame($storage, $storage->remove(self::$b));
+        unset($storage[self::$b]);
 
         $this->assertStorage($storage, 1, [
             [self::$a, true, null],
