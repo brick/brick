@@ -72,6 +72,14 @@ class S3Storage implements Storage
     /**
      * {@inheritdoc}
      */
+    public function has($path)
+    {
+        return $this->s3->doesObjectExist($this->bucket, $path);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function delete($path)
     {
         try {

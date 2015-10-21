@@ -96,6 +96,16 @@ class LocalStorage implements Storage
     /**
      * {@inheritdoc}
      */
+    public function has($path)
+    {
+        $path = $this->getAbsolutePath($path);
+
+        return $this->filesystem->exists($path);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function delete($path)
     {
         try {

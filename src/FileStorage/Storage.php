@@ -28,6 +28,14 @@ interface Storage
     public function get($path);
 
     /**
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function has($path);
+
+    /**
      * @param string $path
      *
      * @return void
