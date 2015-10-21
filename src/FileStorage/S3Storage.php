@@ -2,8 +2,7 @@
 
 namespace Brick\FileStorage;
 
-use Aws\Common\Exception\AwsExceptionInterface;
-use Aws\S3\Exception\NoSuchKeyException;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
 /**
@@ -44,7 +43,7 @@ class S3Storage implements Storage
                 'Key'    => $path,
                 'Body'   => $data
             ]);
-        } catch (AwsExceptionInterface $e) {
+        } catch (S3Exception $e) {
             throw Exception\StorageException::putError($path, $e);
         }
     }
@@ -61,9 +60,11 @@ class S3Storage implements Storage
             ]);
 
             return (string) $model->get('Body');
-        } catch (NoSuchKeyException $e) {
-            throw Exception\NotFoundException::pathNotFound($path, $e);
-        } catch (AwsExceptionInterface $e) {
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() == 'NoSuchKey') {
+                throw Exception\NotFoundException::pathNotFound($path, $e);
+            }
+
             throw Exception\StorageException::getError($path, $e);
         }
     }
@@ -78,7 +79,7 @@ class S3Storage implements Storage
                 'Bucket' => $this->bucket,
                 'Key'    => $path
             ]);
-        } catch (AwsExceptionInterface $e) {
+        } catch (S3Exception $e) {
             throw Exception\StorageException::deleteError($path, $e);
         }
     }
