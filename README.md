@@ -44,6 +44,10 @@ Tools for database interaction.
 
 Doctrine type mappings and functions for Brick objects.
 
+### Brick\FileStorage
+
+A generic interface for file storage, with file system and Amazon S3 implementations.
+
 ### Brick\FileSystem
 
 A collection of OO tools to interact with the file system.
