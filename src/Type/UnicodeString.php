@@ -6,7 +6,7 @@ namespace Brick\Type;
  * Represents an immutable, UTF-8 string.
  * Requires the mbstring extension.
  */
-class String
+class UnicodeString
 {
     /**
      * Internal encoding of the string. This class is meant to support UTF-8 only.
@@ -132,64 +132,64 @@ class String
 
     /**
      * @param int $index
-     * @return \Brick\Type\String
+     * @return \Brick\Type\UnicodeString
      */
     public function charAt($index)
     {
         $char = mb_substr($this->string, $index, 1, self::ENCODING);
-        return new String($char);
+        return new UnicodeString($char);
     }
 
     /**
-     * @param \Brick\Type\String $string
-     * @return \Brick\Type\String
+     * @param \Brick\Type\UnicodeString $string
+     * @return \Brick\Type\UnicodeString
      */
-    public function concat(String $string)
+    public function concat(UnicodeString $string)
     {
-        return new String($this->string . $string->string);
+        return new UnicodeString($this->string . $string->string);
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return int
      */
-    public function compareTo(String $string)
+    public function compareTo(UnicodeString $string)
     {
         // @todo
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return int
      */
-    public function compareToIgnoreCase(String $string)
+    public function compareToIgnoreCase(UnicodeString $string)
     {
         // @todo
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function contains(String $string)
+    public function contains(UnicodeString $string)
     {
         return is_int(strpos($this->string, $string->string));
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function containsIgnoreCase(String $string)
+    public function containsIgnoreCase(UnicodeString $string)
     {
         return $this->toLowerCase()->contains($string->toLowerCase());
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function endsWith(String $string)
+    public function endsWith(UnicodeString $string)
     {
         if ($string->length > $this->length) {
             return false;
@@ -199,29 +199,29 @@ class String
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function equals(String $string)
+    public function equals(UnicodeString $string)
     {
         return $this->string === $string->string;
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function equalsIgnoreCase(String $string)
+    public function equalsIgnoreCase(UnicodeString $string)
     {
         return $this->toLowerCase()->equals($string->toLowerCase());
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @param int $fromIndex
      * @return int
      */
-    public function indexOf(String $string, $fromIndex = 0)
+    public function indexOf(UnicodeString $string, $fromIndex = 0)
     {
         $index = mb_strpos($this->string, $string->string, $fromIndex, self::ENCODING);
 
@@ -229,11 +229,11 @@ class String
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @param int $fromIndex
      * @return int
      */
-    public function lastIndexOf(String $string, $fromIndex = 0)
+    public function lastIndexOf(UnicodeString $string, $fromIndex = 0)
     {
         $index = mb_strrpos($this->string, $string->string, $fromIndex, self::ENCODING);
 
@@ -241,43 +241,43 @@ class String
     }
 
     /**
-     * @param \Brick\Type\String $regex
+     * @param \Brick\Type\UnicodeString $regex
      * @return bool
      */
-    public function matches(String $regex)
+    public function matches(UnicodeString $regex)
     {
         return (bool) preg_match($regex->string, $this->string);
     }
 
     /**
-     * @param \Brick\Type\String $target
-     * @param \Brick\Type\String $replacement
-     * @return \Brick\Type\String
+     * @param \Brick\Type\UnicodeString $target
+     * @param \Brick\Type\UnicodeString $replacement
+     * @return \Brick\Type\UnicodeString
      */
-    public function replace(String $target, String $replacement)
+    public function replace(UnicodeString $target, UnicodeString $replacement)
     {
-        return new String(str_replace($target, $replacement, $this->string));
+        return new UnicodeString(str_replace($target, $replacement, $this->string));
     }
 
     /**
-     * @param \Brick\Type\String $regex
-     * @return \Brick\Type\String[]
+     * @param \Brick\Type\UnicodeString $regex
+     * @return \Brick\Type\UnicodeString[]
      */
-    public function split(String $regex)
+    public function split(UnicodeString $regex)
     {
         $strings = preg_split($regex->string, $this->string);
         $function = function ($string) {
-            return new String($string);
+            return new UnicodeString($string);
         };
 
         return array_map($function, $strings);
     }
 
     /**
-     * @param \Brick\Type\String $string
+     * @param \Brick\Type\UnicodeString $string
      * @return bool
      */
-    public function startsWith(String $string)
+    public function startsWith(UnicodeString $string)
     {
         if ($string->length > $this->length) {
             return false;
@@ -289,36 +289,36 @@ class String
     /**
      * @param int $start
      * @param int|null $length
-     * @return \Brick\Type\String
+     * @return \Brick\Type\UnicodeString
      */
     public function substring($start, $length = null)
     {
         $string = mb_substr($this->string, $start, $length, self::ENCODING);
-        return new String($string);
+        return new UnicodeString($string);
     }
 
     /**
-     * @return \Brick\Type\String
+     * @return \Brick\Type\UnicodeString
      */
     public function toLowerCase()
     {
-        return new String(mb_convert_case($this->string, MB_CASE_LOWER, self::ENCODING));
+        return new UnicodeString(mb_convert_case($this->string, MB_CASE_LOWER, self::ENCODING));
     }
 
     /**
-     * @return \Brick\Type\String
+     * @return \Brick\Type\UnicodeString
      */
     public function toUpperCase()
     {
-        return new String(mb_convert_case($this->string, MB_CASE_UPPER, self::ENCODING));
+        return new UnicodeString(mb_convert_case($this->string, MB_CASE_UPPER, self::ENCODING));
     }
 
     /**
-     * @return \Brick\Type\String
+     * @return \Brick\Type\UnicodeString
      */
     public function trim()
     {
-        return new String(trim($this->string));
+        return new UnicodeString(trim($this->string));
     }
 
     /**
