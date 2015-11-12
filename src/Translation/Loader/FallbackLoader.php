@@ -15,6 +15,11 @@ class FallbackLoader implements TranslationLoader
     private $loader;
 
     /**
+     * @var string|null
+     */
+    private $fallbackLocale;
+
+    /**
      * @var array
      */
     private $extends = [];
@@ -25,6 +30,18 @@ class FallbackLoader implements TranslationLoader
     public function __construct(TranslationLoader $loader)
     {
         $this->loader = $loader;
+    }
+
+    /**
+     * Sets the locale all locales fall back to when a string is untranslated.
+     *
+     * @param string $locale
+     *
+     * @return void
+     */
+    public function setFallbackLocale($locale)
+    {
+        $this->fallbackLocale = $locale;
     }
 
     /**
@@ -46,6 +63,10 @@ class FallbackLoader implements TranslationLoader
 
         if (isset($this->extends[$locale])) {
             $dictionary += $this->load($this->extends[$locale]);
+        }
+
+        if ($this->fallbackLocale !== null && $locale !== $this->fallbackLocale) {
+            $dictionary += $this->load($this->fallbackLocale);
         }
 
         return $dictionary;
