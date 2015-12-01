@@ -9,7 +9,7 @@ use Brick\Validation\Validator\SimValidator;
  */
 class SimValidatorTest extends AbstractTestCase
 {
-    public function testSimValidator()
+    public function testSimValidatorWithCheckDigit()
     {
         $validator = new SimValidator();
 
@@ -69,16 +69,49 @@ class SimValidatorTest extends AbstractTestCase
             '00000000000000000091' => [],
 
             '00000000000000000001' => ['validator.sim.invalid'],
-            '00000000000000000002' => ['validator.sim.invalid'],
-            '00000000000000000003' => ['validator.sim.invalid'],
-            '00000000000000000004' => ['validator.sim.invalid'],
-            '00000000000000000005' => ['validator.sim.invalid'],
-            '00000000000000000006' => ['validator.sim.invalid'],
-            '00000000000000000007' => ['validator.sim.invalid'],
-            '00000000000000000008' => ['validator.sim.invalid'],
-            '00000000000000000009' => ['validator.sim.invalid'],
+            '00000000000000000019' => ['validator.sim.invalid'],
+            '00000000000000000027' => ['validator.sim.invalid'],
+            '00000000000000000035' => ['validator.sim.invalid'],
+            '00000000000000000043' => ['validator.sim.invalid'],
+            '00000000000000000058' => ['validator.sim.invalid'],
+            '00000000000000000068' => ['validator.sim.invalid'],
+            '00000000000000000076' => ['validator.sim.invalid'],
+            '00000000000000000084' => ['validator.sim.invalid'],
+            '00000000000000000092' => ['validator.sim.invalid'],
 
             '000000000000000000000' => ['validator.sim.invalid']
+        ]);
+    }
+
+    public function testSimValidatorWithoutCheckDigit()
+    {
+        $validator = new SimValidator(false);
+
+        $this->doTestValidator($validator, [
+            ''                      => ['validator.sim.invalid'],
+            '0'                     => ['validator.sim.invalid'],
+            '00'                    => ['validator.sim.invalid'],
+            '000'                   => ['validator.sim.invalid'],
+            '0000'                  => ['validator.sim.invalid'],
+            '000000'                => ['validator.sim.invalid'],
+            '0000000'               => ['validator.sim.invalid'],
+            '00000000'              => ['validator.sim.invalid'],
+            '000000000'             => ['validator.sim.invalid'],
+            '0000000000'            => ['validator.sim.invalid'],
+            '00000000000'           => ['validator.sim.invalid'],
+            '000000000000'          => ['validator.sim.invalid'],
+            '0000000000000'         => ['validator.sim.invalid'],
+            '00000000000000'        => ['validator.sim.invalid'],
+            '000000000000000'       => ['validator.sim.invalid'],
+            '0000000000000000'      => ['validator.sim.invalid'],
+            '00000000000000000'     => ['validator.sim.invalid'],
+            '000000000000000000'    => [],
+            '0000000000000000000'   => [],
+            '00000000000000000000'  => ['validator.sim.invalid'],
+            '000000000000000000000' => ['validator.sim.invalid'],
+
+            ' 000000000000000000' => ['validator.sim.invalid'],
+            '000000000000000000 ' => ['validator.sim.invalid'],
         ]);
     }
 }
