@@ -64,7 +64,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
             return count($this->elements);
         }
 
-        return $this->cloneQuery($this->query)
+        return (int) $this->cloneQuery($this->query)
             ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class])
             ->getSingleScalarResult();
     }
