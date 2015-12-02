@@ -9,9 +9,57 @@ use Brick\Validation\Validator\SimValidator;
  */
 class SimValidatorTest extends AbstractTestCase
 {
-    public function testSimValidatorWithCheckDigit()
+    public function testSimValidator()
     {
         $validator = new SimValidator();
+
+        $this->doTestValidator($validator, [
+            // not enough digits
+            ''                   => ['validator.sim.invalid'],
+            '0'                  => ['validator.sim.invalid'],
+            '00'                 => ['validator.sim.invalid'],
+            '000'                => ['validator.sim.invalid'],
+            '0000'               => ['validator.sim.invalid'],
+            '000000'             => ['validator.sim.invalid'],
+            '0000000'            => ['validator.sim.invalid'],
+            '00000000'           => ['validator.sim.invalid'],
+            '000000000'          => ['validator.sim.invalid'],
+            '0000000000'         => ['validator.sim.invalid'],
+            '00000000000'        => ['validator.sim.invalid'],
+            '000000000000'       => ['validator.sim.invalid'],
+            '0000000000000'      => ['validator.sim.invalid'],
+            '00000000000000'     => ['validator.sim.invalid'],
+            '000000000000000'    => ['validator.sim.invalid'],
+            '0000000000000000'   => ['validator.sim.invalid'],
+            '00000000000000000'  => ['validator.sim.invalid'],
+
+            // valid length, but non-digit chars
+            '000000000000000000 ' => ['validator.sim.invalid'],
+            ' 000000000000000000' => ['validator.sim.invalid'],
+
+            // 18 digits: no check digit
+            '000000000000000000' => [],
+            '000000000000000001' => [],
+
+            // 19 digits: in doubt on the presence of a check digit, it is not verified
+            '0000000000000000000' => [],
+            '0000000000000000001' => [],
+
+            // 20 digits: check digit verified
+            '00000000000000000000' => [],
+            '00000000000000000001' => ['validator.sim.invalid'],
+            '00000000000000000018' => [],
+            '00000000000000000019' => ['validator.sim.invalid'],
+
+            // too many digits
+            '000000000000000000000' => ['validator.sim.invalid'],
+            '0000000000000000000000' => ['validator.sim.invalid'],
+        ]);
+    }
+
+    public function testSimValidatorWithCheckDigit()
+    {
+        $validator = new SimValidator(true);
 
         $this->doTestValidator($validator, [
             ''                   => ['validator.sim.invalid'],

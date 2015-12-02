@@ -17,9 +17,20 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     final protected function doTestValidator(Validator $validator, array $tests)
     {
+        $testNumber = 1;
+
         foreach ($tests as $value => $expectedFailureMessageKeys) {
-            $this->assertSame($expectedFailureMessageKeys === [], $validator->isValid($value));
-            $this->assertSame($expectedFailureMessageKeys, array_keys($validator->getFailureMessages()));
+            $message = sprintf(
+                'Test number %d: expected %s, got %s',
+                $testNumber,
+                json_encode($expectedFailureMessageKeys),
+                json_encode(array_keys($validator->getFailureMessages()))
+            );
+
+            $this->assertSame($expectedFailureMessageKeys === [], $validator->isValid($value), $message);
+            $this->assertSame($expectedFailureMessageKeys, array_keys($validator->getFailureMessages()), $message);
+
+            $testNumber++;
         }
     }
 }
