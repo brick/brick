@@ -8,6 +8,9 @@
             <directory>src/Tests/Db</directory>
         </testsuite>
         <testsuite>
+            <directory>src/Tests/Filter</directory>
+        </testsuite>
+        <testsuite>
             <directory>src/Tests/Form</directory>
         </testsuite>
         <testsuite>
