@@ -3,7 +3,7 @@
 namespace Brick\Doctrine;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Tools\Pagination\CountWalker;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * This helper collection wraps a non-executed Doctrine Query.
@@ -16,41 +16,18 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * The Doctrine Query object.
      *
-     * @var \Doctrine\ORM\Query
+     * @var \Doctrine\ORM\Tools\Pagination\Paginator
      */
-    private $query;
-
-    /**
-     * The elements in this collection, if it has been entirely loaded.
-     *
-     * @var array
-     */
-    private $elements = [];
-
-    /**
-     * Whether this collection has been entirely loaded or not.
-     *
-     * @var boolean
-     */
-    private $isLoaded = false;
+    private $paginator;
 
     /**
      * Class constructor.
      *
      * @param \Doctrine\ORM\Query
-     *
-     * @throws \RuntimeException
      */
     public function __construct(Query $query)
     {
-        if ($query->getFirstResult() !== null || $query->getMaxResults() !== null) {
-            throw new \RuntimeException(
-                'Cannot build a QueryCollection from a Query ' .
-                'with firstResult or maxResults set.'
-            );
-        }
-
-        $this->query = $this->cloneQuery($query);
+        $this->paginator = new Paginator($query);
     }
 
     /**
@@ -60,13 +37,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
      */
     public function count()
     {
-        if ($this->isLoaded) {
-            return count($this->elements);
-        }
-
-        return (int) $this->cloneQuery($this->query)
-            ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class])
-            ->getSingleScalarResult();
+        return $this->paginator->count();
     }
 
     /**
@@ -80,21 +51,19 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * Returns a subset of the collection as an array.
      *
-     * @param integer      $offset The start offset, 0-based.
-     * @param integer|null $length The maximum number of results, or null for no maximum.
+     * @param integer $offset The start offset, 0-based.
+     * @param integer $length The maximum number of results.
      *
      * @return array<object>
      */
-    public function slice($offset, $length = null)
+    public function slice($offset, $length)
     {
-        if ($this->isLoaded) {
-            return array_slice($this->elements, $offset, $length);
-        }
+        $query = $this->paginator->getQuery();
 
-        return $this->cloneQuery($this->query)
-            ->setFirstResult($offset)
-            ->setMaxResults($length)
-            ->getResult();
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+
+        return iterator_to_array($this->paginator);
     }
 
     /**
@@ -116,9 +85,12 @@ class QueryCollection implements \Countable, \IteratorAggregate
      */
     public function getIterator()
     {
-        $this->load();
+        $query = $this->paginator->getQuery();
 
-        return new \ArrayIterator($this->elements);
+        $query->setFirstResult(null);
+        $query->setMaxResults(null);
+
+        return $this->paginator;
     }
 
     /**
@@ -128,40 +100,6 @@ class QueryCollection implements \Countable, \IteratorAggregate
      */
     public function toArray()
     {
-        $this->load();
-
-        return $this->elements;
-    }
-
-    /**
-     * Loads the collection into memory.
-     *
-     * @return void
-     */
-    private function load()
-    {
-        if (! $this->isLoaded) {
-            $this->elements = $this->query->getResult();
-            $this->isLoaded = true;
-        }
-    }
-
-    /**
-     * Clones a Query object.
-     *
-     * @param \Doctrine\ORM\Query $query The query to clone.
-     *
-     * @return \Doctrine\ORM\Query The cloned query.
-     */
-    private function cloneQuery(Query $query)
-    {
-        $queryClone = clone $query;
-        $queryClone->setParameters($query->getParameters());
-
-        foreach ($query->getHints() as $key => $value) {
-            $queryClone->setHint($key, $value);
-        }
-
-        return $queryClone;
+        return iterator_to_array($this);
     }
 }
