@@ -1,6 +1,7 @@
 <?php
 
 namespace Brick\Tests\Filter;
+
 use Brick\Filter\NonAlnumFilter;
 
 /**
