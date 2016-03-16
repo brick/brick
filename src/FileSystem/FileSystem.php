@@ -16,7 +16,7 @@ class FileSystem
     /**
      * @var \Brick\Error\ErrorCatcher
      */
-    private $errorHandler;
+    private $errorCatcher;
 
     /**
      * @var boolean
@@ -28,7 +28,7 @@ class FileSystem
      */
     public function __construct()
     {
-        $this->errorHandler = new ErrorCatcher(function (\ErrorException $e) {
+        $this->errorCatcher = new ErrorCatcher(function (\ErrorException $e) {
             if ($this->throw) {
                 throw FileSystemException::wrap($e);
             }
@@ -48,7 +48,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return file_exists($path);
         });
     }
@@ -86,7 +86,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return is_dir($path);
         });
     }
@@ -104,7 +104,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return is_file($path);
         });
     }
@@ -122,7 +122,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return is_link($path);
         });
     }
@@ -141,7 +141,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($target, $link) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($target, $link) {
             symlink($target, $link);
         });
     }
@@ -160,7 +160,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($target, $link) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($target, $link) {
             link($target, $link);
         });
     }
@@ -178,7 +178,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return readlink($path);
         });
     }
@@ -198,7 +198,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
             mkdir($path, $mode, $recursive);
         });
     }
@@ -219,7 +219,7 @@ class FileSystem
     {
         $this->throw = false;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path, $mode, $recursive) {
             return mkdir($path, $mode, $recursive);
         });
     }
@@ -245,7 +245,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path, $data, $flags) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path, $data, $flags) {
             return file_put_contents($path, $data, $flags);
         });
     }
@@ -261,7 +261,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return file_get_contents($path);
         });
     }
@@ -291,7 +291,7 @@ class FileSystem
 
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             is_dir($path) ? rmdir($path) : unlink($path);
         });
     }
@@ -309,7 +309,7 @@ class FileSystem
     {
         $this->throw = false;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             return is_dir($path) ? rmdir($path) : unlink($path);
         });
     }
@@ -330,7 +330,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($source, $target) {
             rename($source, $target);
         });
     }
@@ -349,7 +349,7 @@ class FileSystem
     {
         $this->throw = false;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($source, $target) {
             return rename($source, $target);
         });
     }
@@ -371,7 +371,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($source, $target) {
             copy($source, $target);
         });
     }
@@ -391,7 +391,7 @@ class FileSystem
     {
         $this->throw = false;
 
-        return $this->errorHandler->swallow(E_WARNING, function() use ($source, $target) {
+        return $this->errorCatcher->swallow(E_WARNING, function() use ($source, $target) {
             return copy($source, $target);
         });
     }
@@ -411,7 +411,7 @@ class FileSystem
     {
         $this->throw = true;
 
-        $this->errorHandler->swallow(E_WARNING, function() use ($path) {
+        $this->errorCatcher->swallow(E_WARNING, function() use ($path) {
             chdir($path);
         });
     }
