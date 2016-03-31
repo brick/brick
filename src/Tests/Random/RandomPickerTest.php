@@ -22,15 +22,15 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
 
         $elementCount = rand(1, 99);
 
-        for ($i = 0; $i < $elementCount; $i++) {
+        for ($i = 1; $i <= $elementCount; $i++) {
             $elements["test $i"] = rand(1, 99);
         }
 
         $totalWeight = array_sum($elements);
         $randValues = range(1, $totalWeight);
 
-        shuffle($elements);
-        shuffle($randValues);
+        $this->shufflePreserveKeys($elements);
+        shuffle($randValues); // we *do* want keys to be reassigned here
 
         $picker = new RandomPicker();
         $picker->addElements($elements);
@@ -87,5 +87,24 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
     {
         $picker = new RandomPicker();
         $picker->getRandomElement();
+    }
+
+    /**
+     * Shuffles an associative array, preserving keys.
+     *
+     * @param $array
+     */
+    private function shufflePreserveKeys(array & $array) {
+        $keys = array_keys($array);
+
+        shuffle($keys);
+
+        $result = [];
+
+        foreach ($keys as $key) {
+            $result[$key] = $array[$key];
+        }
+
+        $array = $result;
     }
 }
