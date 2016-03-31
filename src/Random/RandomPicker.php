@@ -99,7 +99,8 @@ class RandomPicker
     public function getRandomElement()
     {
         if ($this->totalWeight !== 0) {
-            $value = ($this->randomNumberGenerator)(1, $this->totalWeight);
+            $randomNumberGenerator = $this->randomNumberGenerator;
+            $value = $randomNumberGenerator(1, $this->totalWeight);
 
             foreach ($this->weights as $key => $weight) {
                 $value -= $weight;
