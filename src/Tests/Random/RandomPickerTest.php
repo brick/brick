@@ -9,27 +9,27 @@ use Brick\Random\RandomPicker;
  */
 class RandomPickerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testUniformDistribution()
+    /**
+     * @dataProvider providerSeed
+     *
+     * @param int $seed
+     */
+    public function testUniformDistribution($seed)
     {
-        $elements = [
-            'a' => 22,
-            'b' => 75,
-            'c' => 91,
-            'd' => 12,
-            'e' => 3,
-            'f' => 62,
-            'g' => 55,
-            'h' => 89
-        ];
+        srand($seed);
+
+        $elements = [];
+
+        $elementCount = rand(1, 99);
+
+        for ($i = 0; $i < $elementCount; $i++) {
+            $elements["test $i"] = rand(1, 99);
+        }
 
         $totalWeight = array_sum($elements);
-
-        srand(0);
-        shuffle($elements);
-
         $randValues = range(1, $totalWeight);
 
-        srand(123);
+        shuffle($elements);
         shuffle($randValues);
 
         $picker = new RandomPicker();
@@ -50,6 +50,16 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertSame($elements, $results);
+    }
+
+    /**
+     * @return array
+     */
+    public function providerSeed()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            yield [$i];
+        }
     }
 
     public function testDefaultGeneratorSingleElement()
