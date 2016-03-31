@@ -10,6 +10,11 @@ namespace Brick\Random;
 class RandomPicker
 {
     /**
+     * @var callable
+     */
+    private $randomNumberGenerator;
+
+    /**
      * The elements to be randomized.
      *
      * @var array
@@ -29,6 +34,21 @@ class RandomPicker
      * @var int
      */
     private $totalWeight = 0;
+
+    /**
+     * RandomPicker constructor.
+     *
+     * The random number generator is a function accepting two integers, and returning
+     * a (pseudo) random integer that is contained between these two numbers.
+     *
+     * This defaults to PHP's mt_rand() function.
+     *
+     * @param callable|null $randomNumberGenerator The random number generator.
+     */
+    public function __construct(callable $randomNumberGenerator = null)
+    {
+        $this->randomNumberGenerator = $randomNumberGenerator ?: 'mt_rand';
+    }
 
     /**
      * Adds a single element.
@@ -72,20 +92,14 @@ class RandomPicker
     }
 
     /**
-     * @param callable|null $rand The random number generator. Optional.
-     *
      * @return mixed
      *
      * @throws \RuntimeException If no elements have been added.
      */
-    public function getRandomElement(callable $rand = null)
+    public function getRandomElement()
     {
-        if ($rand === null) {
-            $rand = 'mt_rand';
-        }
-
         if ($this->totalWeight !== 0) {
-            $value = $rand(1, $this->totalWeight);
+            $value = ($this->randomNumberGenerator)(1, $this->totalWeight);
 
             foreach ($this->weights as $key => $weight) {
                 $value -= $weight;

@@ -32,7 +32,11 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
         $this->shufflePreserveKeys($elements);
         shuffle($randValues); // we *do* want keys to be reassigned here
 
-        $picker = new RandomPicker();
+        $randomNumberGenerator = function() use ($randValues, & $index) {
+            return $randValues[$index];
+        };
+
+        $picker = new RandomPicker($randomNumberGenerator);
         $picker->addElements($elements);
 
         $results = [];
@@ -41,11 +45,8 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
             $results[$element] = 0;
         }
 
-        for ($i = 0; $i < $totalWeight; $i++) {
-            $element = $picker->getRandomElement(function() use ($randValues, $i) {
-                return $randValues[$i];
-            });
-
+        for ($index = 0; $index < $totalWeight; $index++) {
+            $element = $picker->getRandomElement();
             $results[$element]++;
         }
 
