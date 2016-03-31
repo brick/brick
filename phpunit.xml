@@ -26,6 +26,9 @@
             <directory>src/Tests/Packing</directory>
         </testsuite>
         <testsuite>
+            <directory>src/Tests/Random</directory>
+        </testsuite>
+        <testsuite>
             <directory>src/Tests/Type</directory>
         </testsuite>
         <testsuite>
