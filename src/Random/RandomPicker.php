@@ -36,6 +36,17 @@ class RandomPicker
     private $totalWeight = 0;
 
     /**
+     * Whether the weights array is sorted by descending weight.
+     *
+     * Sorting is not necessary for the algorithm to return correct results,
+     * but it greatly improves performance for large arrays. Sorting is performed
+     * just-in-time when calling getRandomElement().
+     *
+     * @var bool
+     */
+    private $isSorted = true;
+
+    /**
      * RandomPicker constructor.
      *
      * The random number generator is a function accepting two integers, and returning
@@ -71,6 +82,7 @@ class RandomPicker
         $this->elements[] = $value;
         $this->weights[] = $weight;
         $this->totalWeight += $weight;
+        $this->isSorted = false;
     }
 
     /**
@@ -98,6 +110,11 @@ class RandomPicker
      */
     public function getRandomElement()
     {
+        if (! $this->isSorted) {
+            arsort($this->weights);
+            $this->isSorted = true;
+        }
+
         if ($this->totalWeight !== 0) {
             $randomNumberGenerator = $this->randomNumberGenerator;
             $value = $randomNumberGenerator(1, $this->totalWeight);

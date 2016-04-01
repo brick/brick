@@ -20,7 +20,7 @@ class RandomPickerTest extends \PHPUnit_Framework_TestCase
 
         $elements = [];
 
-        $elementCount = rand(1, 99);
+        $elementCount = rand(9, 99);
 
         for ($i = 1; $i <= $elementCount; $i++) {
             $elements["test $i"] = rand(1, 99);
