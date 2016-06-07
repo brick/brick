@@ -3,7 +3,7 @@
 namespace Brick\Queue;
 
 /**
- * Allows using a SQL table as a job queue, safe to use in a concurrent environment.
+ * Allows using a SQL table as a message queue, safe to use in a concurrent environment.
  */
 class Queue
 {
@@ -23,40 +23,40 @@ class Queue
     const DEADLOCK_RETRY_DELAY_MS = 5;
 
     /**
-     * The alias for the job id column in the select query.
+     * The alias for the message id column in the select query.
      */
     const ID_COLUMN_ALIAS = '__id';
 
     /**
-     * The prepared statement to assign a job to the current process.
+     * The prepared statement to assign a message to the current process.
      *
      * @var \PDOStatement
      */
-    private $assignJobStatement;
+    private $assignMessageStatement;
 
     /**
-     * The prepared statement to load a job freshly assigned.
+     * The prepared statement to load a message freshly assigned.
      *
      * @var \PDOStatement
      */
-    private $loadJobStatement;
+    private $loadMessageStatement;
 
     /**
-     * The prepared statement to remove a completed job.
+     * The prepared statement to remove a completed message.
      *
      * @var \PDOStatement
      */
-    private $removeJobStatement;
+    private $removeMessageStatement;
 
     /**
-     * The prepared statement to un-assign all jobs.
+     * The prepared statement to un-assign all messages.
      *
      * @var \PDOStatement
      */
     private $unassignAllStatement;
 
     /**
-     * The prepared statement to un-assign all jobs currently assigned to a given process.
+     * The prepared statement to un-assign all messages currently assigned to a given process.
      *
      * @var \PDOStatement
      */
@@ -65,8 +65,8 @@ class Queue
     /**
      * @param \PDO    $pdo       The PDO connection.
      * @param string  $table     The table name, optionally escaped.
-     * @param string  $idColumn  The column name of the job id, optionally escaped.
-     * @param string  $pidColumn The column name of the process id assigned to the job, optionally escaped.
+     * @param string  $idColumn  The column name of the message id, optionally escaped.
+     * @param string  $pidColumn The column name of the process id assigned to the message, optionally escaped.
      * @param array   $columns   The column names to return, optionally escaped. Defaults to all.
      *                           The array can be either a simple list of columns: ['a', 'b'],
      *                           or an associative array of alias to column name: ['aAlias' => 'a', 'bAlias' => 'b'].
@@ -82,7 +82,7 @@ class Queue
 
         $select = implode(', ', $select);
 
-        $this->assignJobStatement = $pdo->prepare(sprintf(
+        $this->assignMessageStatement = $pdo->prepare(sprintf(
             'UPDATE %s SET %s = ? WHERE %s IS NULL ORDER BY %s ASC LIMIT 1',
             $table,
             $pidColumn,
@@ -90,7 +90,7 @@ class Queue
             $idColumn
         ));
 
-        $this->loadJobStatement = $pdo->prepare(sprintf(
+        $this->loadMessageStatement = $pdo->prepare(sprintf(
             'SELECT %s FROM %s WHERE %s = ? ORDER BY %s DESC LIMIT 1',
             $select,
             $table,
@@ -98,7 +98,7 @@ class Queue
             $idColumn
         ));
 
-        $this->removeJobStatement = $pdo->prepare(sprintf(
+        $this->removeMessageStatement = $pdo->prepare(sprintf(
             'DELETE FROM %s WHERE %s = ?',
             $table,
             $idColumn
@@ -119,57 +119,57 @@ class Queue
     }
 
     /**
-     * Polls the queue for a job. The job gets assigned the current pid.
+     * Polls the queue for a message. The message gets assigned the current pid.
      *
      * @param integer $pid The current process id.
      *
-     * @return Job|null The assigned job, or null if the queue is empty.
+     * @return Message|null The assigned message, or null if the queue is empty.
      *
      * @throws \RuntimeException If an unexpected error occurs.
      */
     public function poll($pid)
     {
-        $this->executeStatement($this->assignJobStatement, [$pid]);
+        $this->executeStatement($this->assignMessageStatement, [$pid]);
 
-        if ($this->assignJobStatement->rowCount() == 0) {
+        if ($this->assignMessageStatement->rowCount() == 0) {
             return null;
         }
 
-        $this->executeStatement($this->loadJobStatement, [$pid]);
-        $data = $this->loadJobStatement->fetch(\PDO::FETCH_ASSOC);
-        $this->loadJobStatement->closeCursor();
+        $this->executeStatement($this->loadMessageStatement, [$pid]);
+        $data = $this->loadMessageStatement->fetch(\PDO::FETCH_ASSOC);
+        $this->loadMessageStatement->closeCursor();
 
         if ($data === false) {
-            throw new \RuntimeException('Could not find the job just assigned.');
+            throw new \RuntimeException('Could not find the message just assigned.');
         }
 
         $id = $data[self::ID_COLUMN_ALIAS];
         unset($data[self::ID_COLUMN_ALIAS]);
 
-        return new Job($id, $pid, $data);
+        return new Message($id, $pid, $data);
     }
 
     /**
-     * Removes a finished job from the queue.
+     * Removes a finished message from the queue.
      *
-     * @param Job $job The job to remove.
+     * @param Message $message The message to remove.
      *
-     * @return boolean Whether the job has been sucessfully removed.
+     * @return boolean Whether the message has been sucessfully removed.
      */
-    public function remove(Job $job)
+    public function remove(Message $message)
     {
-        $this->executeStatement($this->removeJobStatement, [$job->getId()]);
+        $this->executeStatement($this->removeMessageStatement, [$message->getId()]);
 
-        return $this->removeJobStatement->rowCount() != 0;
+        return $this->removeMessageStatement->rowCount() != 0;
     }
 
     /**
-     * Un-assigns all currently assigned jobs.
+     * Un-assigns all currently assigned messages.
      *
      * This method should only be called when a scheduler starts,
      * assuming that a previous scheduler and all its workers have died.
      *
-     * @return integer The number of jobs cleaned up.
+     * @return integer The number of messages cleaned up.
      */
     public function unassignAll()
     {
@@ -179,14 +179,14 @@ class Queue
     }
 
     /**
-     * Un-assigns all jobs currently assigned to the given process id.
+     * Un-assigns all messages currently assigned to the given process id.
      *
      * This method should only be called by a scheduler,
      * when a worker dies unexpectedly.
      *
      * @param integer $pid The process id.
      *
-     * @return integer The number of jobs cleaned up.
+     * @return integer The number of messages cleaned up.
      */
     public function unassignProcess($pid)
     {

@@ -3,9 +3,9 @@
 namespace Brick\Queue;
 
 /**
- * A Job assigned by the Queue.
+ * A queued Message.
  */
-class Job
+class Message
 {
     /**
      * @var integer
@@ -23,9 +23,9 @@ class Job
     private $data;
 
     /**
-     * @param integer $id   The job id.
+     * @param integer $id   The message id.
      * @param integer $pid  The process id.
-     * @param array   $data An associative array containing the job data.
+     * @param array   $data An associative array containing the message data.
      */
     public function __construct($id, $pid, array $data)
     {
