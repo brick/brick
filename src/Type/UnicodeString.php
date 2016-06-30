@@ -9,18 +9,6 @@ namespace Brick\Type;
 class UnicodeString
 {
     /**
-     * Internal encoding of the string. This class is meant to support UTF-8 only.
-     *
-     * @const string
-     */
-    const ENCODING = 'UTF-8';
-
-    /**
-     * @var string[]
-     */
-    protected static $encodings = [];
-
-    /**
      * The string data.
      *
      * @var string
@@ -38,88 +26,19 @@ class UnicodeString
      * Class constructor.
      *
      * @param mixed $string
-     * @param string $encoding
+     *
      * @throws \InvalidArgumentException
      */
-    public function __construct($string, $encoding = self::ENCODING)
+    public function __construct(string $string)
     {
-        if (is_null($string)) {
-            $string = 'null';
-        } elseif (is_bool($string)) {
-            $string = $string ? 'true' : 'false';
-        } elseif (is_int($string) || is_float($string)) {
-            $string = (string) $string;
-        } elseif (is_object($string)) {
-            if (! method_exists($string, '__toString')) {
-                throw new \InvalidArgumentException(
-                    sprintf('Object of class %s cannot be converted to String', get_class($string))
-                );
-            }
-            $string = (string) $string;
-        } elseif (! is_string($string)) {
-            throw new \InvalidArgumentException('Cannot convert a variable of type ' . gettype($string) . ' to String');
-        }
-
-        if (! self::checkEncoding($encoding)) {
-            throw new \InvalidArgumentException('Unsupported encoding: ' . $encoding);
-        }
-
-        if (! mb_check_encoding($string, $encoding)) {
-            throw new \InvalidArgumentException('String is not encoded in ' . $encoding);
-        }
-
-        if ($encoding != self::ENCODING) {
-            $string = mb_convert_encoding($string, self::ENCODING, $encoding);
+        if (! mb_check_encoding($string, 'UTF-8')) {
+            throw new \InvalidArgumentException('String is not valid UTF-8');
         }
 
         $string = \Normalizer::normalize($string);
 
         $this->string = $string;
-        $this->length = mb_strlen($string, self::ENCODING);
-    }
-
-    /**
-     * @param string $encoding
-     * @return bool
-     */
-    protected static function checkEncoding($encoding)
-    {
-        if (count(self::$encodings) == 0) {
-            self::buildEncodings();
-        }
-
-        return array_key_exists(strtolower($encoding), self::$encodings);
-    }
-
-    /**
-     * @return void
-     */
-    protected static function buildEncodings()
-    {
-        $encodings = mb_list_encodings();
-
-        foreach ($encodings as $encoding) {
-            self::addEncoding($encoding);
-
-            foreach (mb_encoding_aliases($encoding) as $encoding) {
-                self::addEncoding($encoding);
-            }
-        }
-    }
-
-    /**
-     * @param string $encoding
-     * @return void
-     */
-    protected static function addEncoding($encoding)
-    {
-        if ($encoding == 'pass' || $encoding == 'none') {
-            // These encodings are actually not accepted by mbstring.
-            return;
-        }
-
-        $encoding = strtolower($encoding);
-        self::$encodings[$encoding] = null;
+        $this->length = mb_strlen($string, 'UTF-8');
     }
 
     /**
@@ -132,17 +51,20 @@ class UnicodeString
 
     /**
      * @param int $index
-     * @return \Brick\Type\UnicodeString
+     *
+     * @return UnicodeString
      */
-    public function charAt($index)
+    public function charAt(int $index)
     {
-        $char = mb_substr($this->string, $index, 1, self::ENCODING);
+        $char = mb_substr($this->string, $index, 1, 'UTF-8');
+
         return new UnicodeString($char);
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
-     * @return \Brick\Type\UnicodeString
+     * @param UnicodeString $string
+     *
+     * @return UnicodeString
      */
     public function concat(UnicodeString $string)
     {
@@ -168,7 +90,8 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function contains(UnicodeString $string)
@@ -177,7 +100,8 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function containsIgnoreCase(UnicodeString $string)
@@ -186,7 +110,8 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function endsWith(UnicodeString $string)
@@ -199,7 +124,8 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function equals(UnicodeString $string)
@@ -208,7 +134,8 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function equalsIgnoreCase(UnicodeString $string)
@@ -217,31 +144,34 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
-     * @param int $fromIndex
+     * @param UnicodeString $string
+     * @param int           $fromIndex
+     *
      * @return int
      */
     public function indexOf(UnicodeString $string, $fromIndex = 0)
     {
-        $index = mb_strpos($this->string, $string->string, $fromIndex, self::ENCODING);
+        $index = mb_strpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
         return ($index === false) ? -1 : $index;
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
-     * @param int $fromIndex
+     * @param UnicodeString $string
+     * @param int           $fromIndex
+     *
      * @return int
      */
     public function lastIndexOf(UnicodeString $string, $fromIndex = 0)
     {
-        $index = mb_strrpos($this->string, $string->string, $fromIndex, self::ENCODING);
+        $index = mb_strrpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
         return ($index === false) ? -1 : $index;
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $regex
+     * @param UnicodeString $regex
+     *
      * @return bool
      */
     public function matches(UnicodeString $regex)
@@ -250,9 +180,10 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $target
-     * @param \Brick\Type\UnicodeString $replacement
-     * @return \Brick\Type\UnicodeString
+     * @param UnicodeString $target
+     * @param UnicodeString $replacement
+     *
+     * @return UnicodeString
      */
     public function replace(UnicodeString $target, UnicodeString $replacement)
     {
@@ -260,21 +191,23 @@ class UnicodeString
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $regex
-     * @return \Brick\Type\UnicodeString[]
+     * @param UnicodeString $regex
+     *
+     * @return UnicodeString[]
      */
     public function split(UnicodeString $regex)
     {
-        $strings = preg_split($regex->string, $this->string);
-        $function = function ($string) {
-            return new UnicodeString($string);
-        };
-
-        return array_map($function, $strings);
+        return array_map(
+            function ($string) {
+                return new UnicodeString($string);
+            },
+            preg_split($regex->string, $this->string)
+        );
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return bool
      */
     public function startsWith(UnicodeString $string)
@@ -287,34 +220,35 @@ class UnicodeString
     }
 
     /**
-     * @param int $start
+     * @param int      $start
      * @param int|null $length
-     * @return \Brick\Type\UnicodeString
+     *
+     * @return UnicodeString
      */
     public function substring($start, $length = null)
     {
-        $string = mb_substr($this->string, $start, $length, self::ENCODING);
+        $string = mb_substr($this->string, $start, $length, 'UTF-8');
         return new UnicodeString($string);
     }
 
     /**
-     * @return \Brick\Type\UnicodeString
+     * @return UnicodeString
      */
     public function toLowerCase()
     {
-        return new UnicodeString(mb_convert_case($this->string, MB_CASE_LOWER, self::ENCODING));
+        return new UnicodeString(mb_convert_case($this->string, MB_CASE_LOWER, 'UTF-8'));
     }
 
     /**
-     * @return \Brick\Type\UnicodeString
+     * @return UnicodeString
      */
     public function toUpperCase()
     {
-        return new UnicodeString(mb_convert_case($this->string, MB_CASE_UPPER, self::ENCODING));
+        return new UnicodeString(mb_convert_case($this->string, MB_CASE_UPPER, 'UTF-8'));
     }
 
     /**
-     * @return \Brick\Type\UnicodeString
+     * @return UnicodeString
      */
     public function trim()
     {
