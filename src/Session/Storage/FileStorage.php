@@ -30,6 +30,26 @@ class FileStorage implements SessionStorage
     private $mode;
 
     /**
+     * The imprecision allowed for the last access timestamp, in seconds.
+     *
+     * On filesystems mounted with the noatime option, the access time of the session file is not updated when the file
+     * is read. Filesystems mounted with the relatime option exhibit the same problem, as the access time is not updated
+     * in real time, but on a regular interval (typically once a day).
+     *
+     * If we wanted to know the last access time of the session file, we would have to touch() it on every read,
+     * which can be a performance bottleneck.
+     *
+     * Instead, this configures a grace time after the last update during which a read will not update the access time,
+     * thus reducing the number of writes.
+     *
+     * This can affect the lifetime of a session: for a 30 minutes session, a grace time of 5 minutes would make
+     * the session actually last for between 25 and 30 minutes after the last read.
+     *
+     * @var integer
+     */
+    private $accessGraceTime = 300;
+
+    /**
      * @var \Brick\FileSystem\FileSystem
      */
     private $fs;
@@ -58,6 +78,10 @@ class FileStorage implements SessionStorage
 
         if (! $path->exists()) {
             return null;
+        }
+
+        if ($path->getFileInfo()->getATime() < time() - $this->accessGraceTime) {
+            $path->touch();
         }
 
         $file = $this->openFile($id, $key);
