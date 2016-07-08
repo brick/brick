@@ -48,6 +48,14 @@ class Path
     }
 
     /**
+     * @return \SplFileInfo
+     */
+    public function getFileInfo()
+    {
+        return new \SplFileInfo($this->path);
+    }
+
+    /**
      * Returns whether this path exists.
      *
      * @return boolean True if the path exists, false otherwise.
@@ -364,6 +372,27 @@ class Path
     {
         return $this->swallow(E_WARNING, false, function() use ($path) {
             return copy($this->path, $path);
+        });
+    }
+
+    /**
+     * Sets access and modification time of file.
+     *
+     * @param int|null $time  The touch time, or null to use the system time.
+     * @param int|null $atime The access time, or null to use the touch time. Cannot be used without a touch time.
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function touch($time = null, $atime = null)
+    {
+        return $this->swallow(E_WARNING, false, function() use ($time, $atime) {
+            if ($time === null) {
+                return touch($this->path);
+            } elseif ($atime === null) {
+                return touch($this->path, $time);
+            } else {
+                return touch($this->path, $time, $atime);
+            }
         });
     }
 
