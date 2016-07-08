@@ -33,6 +33,11 @@ class PdoStorage implements SessionStorage
     /**
      * @var array
      */
+    private $options;
+
+    /**
+     * @var array
+     */
     private static $defaultOptions = [
         'table-name'         => 'session',       // The table name.
         'id-column'          => 's_id',          // The column containing the session id.
