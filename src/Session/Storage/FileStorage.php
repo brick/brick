@@ -18,6 +18,11 @@ class FileStorage implements SessionStorage
     private $directory;
 
     /**
+     * @var string
+     */
+    private $prefix;
+
+    /**
      * @todo Currently unused
      *
      * @var integer
@@ -33,11 +38,13 @@ class FileStorage implements SessionStorage
      * Class constructor.
      *
      * @param string  $directory
+     * @param string  $prefix
      * @param integer $mode
      */
-    public function __construct($directory, $mode = 0700)
+    public function __construct($directory, $prefix = '', $mode = 0700)
     {
         $this->directory = $directory;
+        $this->prefix    = $prefix;
         $this->mode      = $mode;
         $this->fs        = new FileSystem();
     }
@@ -190,7 +197,7 @@ class FileStorage implements SessionStorage
      */
     private function getPath($id, $key = null)
     {
-        $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $this->sanitize($id);
+        $directoryPath = $this->directory . DIRECTORY_SEPARATOR . $this->prefix . $this->sanitize($id);
 
         if ($key === null) {
             return $directoryPath;
