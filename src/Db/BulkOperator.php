@@ -117,7 +117,8 @@ abstract class BulkOperator
      *
      * @param mixed ...$values The values to process.
      *
-     * @return void
+     * @return bool Whether a batch has been synchronized with the database.
+     *              This can be used to display progress feedback.
      *
      * @throws \InvalidArgumentException
      */
@@ -158,7 +159,11 @@ abstract class BulkOperator
                     $this->queriesInTransaction = 0;
                 }
             }
+
+            return true;
         }
+
+        return false;
     }
 
     /**
