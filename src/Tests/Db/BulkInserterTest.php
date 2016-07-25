@@ -14,10 +14,10 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDOMock();
         $bulk = new BulkInserter($pdo, 'transactions', ['user', 'currency', 'amount'], 3, 0);
 
-        $bulk->insert([1, 'EUR', '1.23']);
-        $bulk->insert([2, 'USD', '2.34']);
-        $bulk->insert([3, 'GBP', '3.45']);
-        $bulk->insert([4, 'CAD', '4.56']);
+        $bulk->queue(1, 'EUR', '1.23');
+        $bulk->queue(2, 'USD', '2.34');
+        $bulk->queue(3, 'GBP', '3.45');
+        $bulk->queue(4, 'CAD', '4.56');
 
         $bulk->flush();
 
@@ -36,12 +36,12 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDOMock();
         $bulk = new BulkInserter($pdo, 'users', ['id', 'name'], 2, 1);
 
-        $bulk->insert([1, 'Bob']);
-        $bulk->insert([2, 'Ben']);
-        $bulk->insert([3, 'Dan']);
-        $bulk->insert([4, 'Luc']);
-        $bulk->insert([5, 'Rod']);
-        $bulk->insert([6, 'Tom']);
+        $bulk->queue(1, 'Bob');
+        $bulk->queue(2, 'Ben');
+        $bulk->queue(3, 'Dan');
+        $bulk->queue(4, 'Luc');
+        $bulk->queue(5, 'Rod');
+        $bulk->queue(6, 'Tom');
 
         $bulk->flush();
 
@@ -66,13 +66,13 @@ class BulkInserterTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDOMock();
         $bulk = new BulkInserter($pdo, 'users', ['id', 'name'], 3, 2);
 
-        $bulk->insert([1, 'Bob']);
-        $bulk->insert([2, 'Ben']);
-        $bulk->insert([3, 'Dan']);
-        $bulk->insert([4, 'Luc']);
-        $bulk->insert([5, 'Rod']);
-        $bulk->insert([6, 'Tom']);
-        $bulk->insert([7, 'Zoe']);
+        $bulk->queue(1, 'Bob');
+        $bulk->queue(2, 'Ben');
+        $bulk->queue(3, 'Dan');
+        $bulk->queue(4, 'Luc');
+        $bulk->queue(5, 'Rod');
+        $bulk->queue(6, 'Tom');
+        $bulk->queue(7, 'Zoe');
 
         $bulk->flush();
 

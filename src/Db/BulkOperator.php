@@ -108,7 +108,7 @@ abstract class BulkOperator
             throw new \InvalidArgumentException('The number of queries per transaction must be 0 or more.');
         }
 
-        $query = $this->getQuery($this->bufferSize);
+        $query = $this->getQuery($operationsPerQuery);
         $this->preparedStatement = $this->pdo->prepare($query);
     }
 
