@@ -52,8 +52,6 @@ class SessionNamespace implements SessionInterface
     public function set($key, $value)
     {
         $this->session->set($this->getKey($key), $value);
-
-        return $this;
     }
 
     /**
@@ -62,8 +60,6 @@ class SessionNamespace implements SessionInterface
     public function remove($key)
     {
         $this->session->remove($this->getKey($key));
-
-        return $this;
     }
 
     /**

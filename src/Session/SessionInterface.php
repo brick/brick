@@ -33,7 +33,7 @@ interface SessionInterface
      * @param string $key   The key to write to.
      * @param mixed  $value The value to write.
      *
-     * @return static This object, for chaining.
+     * @return void
      */
     public function set($key, $value);
 
@@ -42,7 +42,7 @@ interface SessionInterface
      *
      * @param string $key The key to remove.
      *
-     * @return static This object, for chaining.
+     * @return void
      */
     public function remove($key);
 

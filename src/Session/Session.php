@@ -232,7 +232,9 @@ class Session implements SessionInterface
     public function set($key, $value)
     {
         if ($value === null) {
-            return $this->remove($key);
+            $this->remove($key);
+
+            return;
         }
 
         $id = $this->getId();
@@ -240,8 +242,6 @@ class Session implements SessionInterface
         $this->storage->write($id, $key, $serialized, false);
 
         $this->data[$key] = $value;
-
-        return $this;
     }
 
     /**
@@ -253,8 +253,6 @@ class Session implements SessionInterface
         $this->storage->remove($id, $key);
 
         unset($this->data[$key]);
-
-        return $this;
     }
 
     /**
