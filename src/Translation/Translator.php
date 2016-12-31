@@ -53,7 +53,7 @@ class Translator
     }
 
     /**
-     * @param string $defaultLocale
+     * @param string|null $defaultLocale The new default locale, or null to remove it.
      *
      * @return void
      */
