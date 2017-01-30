@@ -33,7 +33,7 @@ class UrlBuilder
      * having precedence over the original query parameters.
      *
      * If any of the method parameters is an object, it will be replaced by its identity, as provided
-     * by the ObjectIdentityResolver implementation.
+     * by the ObjectConverter implementation.
      *
      * @param string $url
      * @param array  $parameters
