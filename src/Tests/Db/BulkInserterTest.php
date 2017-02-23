@@ -4,10 +4,12 @@ namespace Brick\Tests\Db;
 
 use Brick\Db\BulkInserter;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class BulkInserter.
  */
-class BulkInserterTest extends \PHPUnit_Framework_TestCase
+class BulkInserterTest extends TestCase
 {
     public function testNoTransaction()
     {

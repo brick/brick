@@ -4,10 +4,12 @@ namespace Brick\Tests\Type;
 
 use Brick\Type\ObjectStorage;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class ObjectStorage.
  */
-class ObjectStorageTest extends \PHPUnit_Framework_TestCase
+class ObjectStorageTest extends TestCase
 {
     /**
      * @var object

@@ -4,10 +4,12 @@ namespace Brick\Tests\Type;
 
 use Brick\Type\FixedArray;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class FixedArray.
  */
-class FixedArrayTest extends \PHPUnit_Framework_TestCase
+class FixedArrayTest extends TestCase
 {
     /**
      * @dataProvider providerFromArray

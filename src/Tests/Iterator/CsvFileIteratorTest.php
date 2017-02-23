@@ -4,10 +4,12 @@ namespace Brick\Tests\Iterator;
 
 use Brick\Iterator\CsvFileIterator;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class CsvFileIterator.
  */
-class CsvFileIteratorTest extends \PHPUnit_Framework_TestCase
+class CsvFileIteratorTest extends TestCase
 {
     /**
      * @dataProvider providerIterator

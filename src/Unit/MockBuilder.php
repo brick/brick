@@ -2,6 +2,8 @@
 
 namespace Brick\Unit;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Helper class to create simple stubs with PHPUnit.
  */
@@ -20,10 +22,10 @@ class MockBuilder
     /**
      * Class constructor
      *
-     * @param \PHPUnit_Framework_TestCase $testCase
+     * @param TestCase $testCase
      * @param string   $className
      */
-    public function __construct(\PHPUnit_Framework_TestCase $testCase, $className)
+    public function __construct(TestCase $testCase, $className)
     {
         $this->testCase = $testCase;
         $this->mock = $testCase->getMockBuilder($className)

@@ -4,10 +4,12 @@ namespace Brick\Tests\Checksum;
 
 use Brick\Checksum\Luhn;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class ReflectionTools.
  */
-class LuhnTest extends \PHPUnit_Framework_TestCase
+class LuhnTest extends TestCase
 {
     /**
      * @dataProvider luhnProvider

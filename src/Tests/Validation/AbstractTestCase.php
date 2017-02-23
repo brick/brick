@@ -4,10 +4,12 @@ namespace Brick\Tests\Validation;
 
 use Brick\Validation\Validator;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Base class for validation tests.
  */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
      * @param Validator $validator The validator under test.

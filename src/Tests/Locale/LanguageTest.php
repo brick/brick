@@ -4,10 +4,12 @@ namespace Brick\Tests\Currency;
 
 use Brick\Locale\Language;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Unit tests for class Language.
  */
-class LanguageTest extends \PHPUnit_Framework_TestCase
+class LanguageTest extends TestCase
 {
     /**
      * @dataProvider accessorsProvider

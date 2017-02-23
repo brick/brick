@@ -5,10 +5,12 @@ namespace Brick\Tests\Packing;
 use Brick\Packing\Packer;
 use Brick\Packing\NullObjectPacker;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Tests for class Packer.
  */
-class PackerTest extends \PHPUnit_Framework_TestCase
+class PackerTest extends TestCase
 {
     public function testRecursion()
     {

@@ -4,10 +4,12 @@ namespace Brick\Tests\Random;
 
 use Brick\Random\RandomPicker;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Tests for class RandomPicker.
  */
-class RandomPickerTest extends \PHPUnit_Framework_TestCase
+class RandomPickerTest extends TestCase
 {
     /**
      * @dataProvider providerSeed
