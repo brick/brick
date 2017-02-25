@@ -3,7 +3,6 @@
 namespace Brick\Doctrine\Types\DateTime;
 
 use Brick\DateTime\Instant;
-use Brick\DateTime\ReadableInstant;
 use Brick\Doctrine\Types\UnexpectedValueException;
 
 use Doctrine\DBAL\Types\Type;
@@ -42,11 +41,11 @@ class InstantType extends Type
             return null;
         }
 
-        if ($value instanceof ReadableInstant) {
+        if ($value instanceof Instant) {
             return $value->getEpochSecond();
         }
 
-        throw new UnexpectedValueException(ReadableInstant::class, $value);
+        throw new UnexpectedValueException(Instant::class, $value);
     }
 
     /**
