@@ -80,6 +80,13 @@ abstract class BulkOperator
     private $queriesInTransaction = 0;
 
     /**
+     * The total number of affected rows.
+     *
+     * @var int
+     */
+    private $rowCount = 0;
+
+    /**
      * @param \PDO   $pdo                   The PDO connection.
      * @param string $table                 The name of the table.
      * @param array  $fields                The name of the relevant fields.
@@ -147,6 +154,7 @@ abstract class BulkOperator
             }
 
             $this->preparedStatement->execute($this->buffer);
+            $this->rowCount += $this->preparedStatement->rowCount();
 
             $this->buffer = [];
             $this->bufferSize = 0;
@@ -190,6 +198,7 @@ abstract class BulkOperator
             $query = $this->getQuery($this->bufferSize);
             $statement = $this->pdo->prepare($query);
             $statement->execute($this->buffer);
+            $this->rowCount += $statement->rowCount();
 
             $this->buffer = [];
             $this->bufferSize = 0;
@@ -205,6 +214,16 @@ abstract class BulkOperator
                 $this->queriesInTransaction = 0;
             }
         }
+    }
+
+    /**
+     * Returns the total number of affected rows.
+     *
+     * @return int
+     */
+    public function getRowCount() : int
+    {
+        return $this->rowCount;
     }
 
     /**
