@@ -56,10 +56,6 @@ A collection of OO tools to interact with the file system.
 
 A collection of classes to handle countries, languages and currencies.
 
-### Brick\Session
-
-A powerful alternative to PHP native sessions, allowing synchronized and non-blocking read/write to individual session entries.
-
 ### Brick\Translation
 
 Handles translation of texts for a multilingual web application.
