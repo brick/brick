@@ -25,26 +25,6 @@ class PDOMock extends \PDO
     }
 
     /**
-     * @return boolean
-     */
-    public function beginTransaction()
-    {
-        $this->log('START TRANSACTION');
-
-        return true;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function commit()
-    {
-        $this->log('COMMIT');
-
-        return true;
-    }
-
-    /**
      * @param string     $statement
      * @param array|null $options
      *
