@@ -43,13 +43,6 @@ abstract class BulkOperator
     private $operationsPerQuery;
 
     /**
-     * The number of queries to run per transaction, or zero to not use transactions.
-     *
-     * @var int
-     */
-    private $queriesPerTransaction;
-
-    /**
      * The prepared statement to process a full batch of records.
      *
      * @var \PDOStatement
@@ -71,15 +64,6 @@ abstract class BulkOperator
     private $bufferSize = 0;
 
     /**
-     * The number of queries executed in the current transaction.
-     *
-     * No transaction is running when this number is zero.
-     *
-     * @var int
-     */
-    private $queriesInTransaction = 0;
-
-    /**
      * The total number of affected rows.
      *
      * @var int
@@ -91,28 +75,20 @@ abstract class BulkOperator
      * @param string $table                 The name of the table.
      * @param array  $fields                The name of the relevant fields.
      * @param int    $operationsPerQuery    The number of operations to process in a single query.
-     * @param int    $queriesPerTransaction The number of insert queries to run in a single transaction,
-     *                                      or zero to not use transactions. The default is to group all queries
-     *                                      in a single transaction.
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(\PDO $pdo, string $table, array $fields, int $operationsPerQuery = 1000, int $queriesPerTransaction = PHP_INT_MAX)
+    public function __construct(\PDO $pdo, string $table, array $fields, int $operationsPerQuery = 1000)
     {
         $this->pdo       = $pdo;
         $this->table     = $table;
         $this->fields    = $fields;
         $this->numFields = count($fields);
 
-        $this->operationsPerQuery    = $operationsPerQuery;
-        $this->queriesPerTransaction = $queriesPerTransaction;
+        $this->operationsPerQuery = $operationsPerQuery;
 
-        if ($this->operationsPerQuery < 1) {
+        if ($operationsPerQuery < 1) {
             throw new \InvalidArgumentException('The number of operations per query must be 1 or more.');
-        }
-
-        if ($this->queriesPerTransaction < 0) {
-            throw new \InvalidArgumentException('The number of queries per transaction must be 0 or more.');
         }
 
         $query = $this->getQuery($operationsPerQuery);
@@ -147,26 +123,11 @@ abstract class BulkOperator
         $this->bufferSize++;
 
         if ($this->bufferSize === $this->operationsPerQuery) {
-            if ($this->queriesPerTransaction !== 0) {
-                if ($this->queriesInTransaction === 0) {
-                    $this->pdo->beginTransaction();
-                }
-            }
-
             $this->preparedStatement->execute($this->buffer);
             $this->rowCount += $this->preparedStatement->rowCount();
 
             $this->buffer = [];
             $this->bufferSize = 0;
-
-            if ($this->queriesPerTransaction !== 0) {
-                $this->queriesInTransaction++;
-
-                if ($this->queriesInTransaction === $this->queriesPerTransaction) {
-                    $this->pdo->commit();
-                    $this->queriesInTransaction = 0;
-                }
-            }
 
             return true;
         }
@@ -189,12 +150,6 @@ abstract class BulkOperator
     public function flush()
     {
         if ($this->bufferSize !== 0) {
-            if ($this->queriesPerTransaction !== 0) {
-                if ($this->queriesInTransaction === 0) {
-                    $this->pdo->beginTransaction();
-                }
-            }
-
             $query = $this->getQuery($this->bufferSize);
             $statement = $this->pdo->prepare($query);
             $statement->execute($this->buffer);
@@ -202,17 +157,6 @@ abstract class BulkOperator
 
             $this->buffer = [];
             $this->bufferSize = 0;
-
-            if ($this->queriesPerTransaction !== 0) {
-                $this->queriesInTransaction++;
-            }
-        }
-
-        if ($this->queriesPerTransaction !== 0) {
-            if ($this->queriesInTransaction !== 0) {
-                $this->pdo->commit();
-                $this->queriesInTransaction = 0;
-            }
         }
     }
 
