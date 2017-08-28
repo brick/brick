@@ -36,10 +36,6 @@ Update individual components instead when required, and only update `brick/brick
 
 ---
 
-### Brick\Db
-
-Tools for database interaction.
-
 ### Brick\Doctrine
 
 Doctrine type mappings and functions for Brick objects.
