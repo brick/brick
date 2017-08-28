@@ -103,21 +103,22 @@ abstract class BulkOperator
      * @return bool Whether a batch has been synchronized with the database.
      *              This can be used to display progress feedback.
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException If the number of values does not match the field count.
      */
     public function queue(...$values)
     {
-        $count = 0;
+        $count = count($values);
+
+        if ($count !== $this->numFields) {
+            throw new \InvalidArgumentException(sprintf(
+                'The number of values (%u) does not match the field count (%u).',
+                $count,
+                $this->numFields
+            ));
+        }
 
         foreach ($values as $value) {
             $this->buffer[] = $value;
-            $count++;
-        }
-
-        if ($count !== $this->numFields) {
-            $this->buffer = array_slice($this->buffer, 0, - $count);
-
-            throw new \InvalidArgumentException('The number of values does not match the field count.');
         }
 
         $this->bufferSize++;
