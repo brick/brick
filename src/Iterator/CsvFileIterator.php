@@ -77,7 +77,7 @@ class CsvFileIterator implements \Iterator
         if (is_resource($file)) {
             $this->handle = $file;
         } else {
-            $this->handle = @ fopen($file, 'r');
+            $this->handle = @ fopen($file, 'rb');
 
             if ($this->handle === false) {
                 throw new \InvalidArgumentException('Cannot open file for reading: ' . $file);
