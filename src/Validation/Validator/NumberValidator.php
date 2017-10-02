@@ -3,7 +3,8 @@
 namespace Brick\Validation\Validator;
 
 use Brick\Validation\AbstractValidator;
-use Brick\Math\Exception\ArithmeticException;
+
+use Brick\Math\Exception\MathException;
 use Brick\Math\BigDecimal;
 
 /**
@@ -47,7 +48,7 @@ class NumberValidator extends AbstractValidator
         try {
             $value = BigDecimal::of($value);
         }
-        catch (ArithmeticException $e) {
+        catch (MathException $e) {
             $this->addFailureMessage('validator.number.invalid');
         }
 
@@ -58,7 +59,7 @@ class NumberValidator extends AbstractValidator
         } elseif ($this->step) {
             try {
                 $value->dividedBy($this->step);
-            } catch (ArithmeticException $e) {
+            } catch (MathException $e) {
                 $this->addFailureMessage('validator.number.step');
             }
         }
