@@ -53,10 +53,6 @@ A collection of OO tools to interact with the file system.
 
 A collection of classes to handle countries, languages and currencies.
 
-### Brick\Translation
-
-Handles translation of texts for a multilingual web application.
-
 ### Brick\Validation
 
 Provides a `Validator` interface for validating strings, and a collection of validators. This is mostly used by the `Form` component, but can be used independently as well.
