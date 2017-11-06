@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7",
+        "php": ">=7.1",
         "brick/std": "dev-master"
     },
     "require-dev": {
