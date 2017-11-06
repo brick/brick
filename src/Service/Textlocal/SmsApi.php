@@ -2,7 +2,7 @@
 
 namespace Brick\Service\TextLocal;
 
-use Brick\Json\JsonDecoder;
+use Brick\Std\Json\JsonDecoder;
 use Brick\Service\Exception;
 use Brick\Curl\Curl;
 
@@ -24,7 +24,7 @@ class SmsApi
     protected $password;
 
     /**
-     * @var \Brick\Json\JsonDecoder
+     * @var \Brick\Std\Json\JsonDecoder
      */
     protected $jsonDecoder;
 
