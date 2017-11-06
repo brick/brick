@@ -2,8 +2,8 @@
 
 namespace Brick\FileStorage;
 
-use Brick\FileSystem\FileSystem;
-use Brick\FileSystem\FileSystemException;
+use Brick\Std\Io\FileSystem;
+use Brick\Std\Io\IoException;
 
 /**
  * Filesystem implementation of the Storage interface.
@@ -14,11 +14,6 @@ class LocalStorage implements Storage
      * @var string
      */
     private $directory;
-
-    /**
-     * @var \Brick\FileSystem\FileSystem
-     */
-    private $filesystem;
 
     /**
      * Class constructor.
@@ -33,7 +28,6 @@ class LocalStorage implements Storage
         }
 
         $this->directory = realpath($directory);
-        $this->filesystem = new FileSystem();
     }
 
     /**
@@ -66,11 +60,11 @@ class LocalStorage implements Storage
     public function put($path, $data)
     {
         $path = $this->getAbsolutePath($path);
-        $this->filesystem->tryCreateDirectory(dirname($path), 0777, true);
+        FileSystem::createDirectories(dirname($path));
 
         try {
-            $this->filesystem->write($path, $data);
-        } catch (FileSystemException $e) {
+            FileSystem::write($path, $data);
+        } catch (IoException $e) {
             throw Exception\StorageException::putError($path, $e);
         }
     }
@@ -83,12 +77,12 @@ class LocalStorage implements Storage
         try {
             $path = $this->getAbsolutePath($path);
 
-            if (! $this->filesystem->exists($path)) {
+            if (! FileSystem::exists($path)) {
                 throw Exception\NotFoundException::pathNotFound($path);
             }
 
-            return $this->filesystem->read($path);
-        } catch (FileSystemException $e) {
+            return FileSystem::read($path);
+        } catch (IoException $e) {
             throw Exception\StorageException::getError($path, $e);
         }
     }
@@ -100,7 +94,7 @@ class LocalStorage implements Storage
     {
         $path = $this->getAbsolutePath($path);
 
-        return $this->filesystem->exists($path);
+        return FileSystem::exists($path);
     }
 
     /**
@@ -111,12 +105,12 @@ class LocalStorage implements Storage
         try {
             $path = $this->getAbsolutePath($path);
 
-            if (! $this->filesystem->exists($path)) {
+            if (! FileSystem::exists($path)) {
                 throw Exception\NotFoundException::pathNotFound($path);
             }
 
-            $this->filesystem->delete($path, true);
-        } catch (FileSystemException $e) {
+            FileSystem::delete($path);
+        } catch (IoException $e) {
             throw Exception\StorageException::deleteError($path, $e);
         }
     }
