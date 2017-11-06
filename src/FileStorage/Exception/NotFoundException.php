@@ -11,9 +11,9 @@ class NotFoundException extends StorageException
      * @param string          $path
      * @param \Exception|null $previous
      *
-     * @return \Brick\FileStorage\Exception\NotFoundException
+     * @return NotFoundException
      */
-    public static function pathNotFound($path, \Exception $previous = null)
+    public static function pathNotFound(string $path, \Exception $previous = null) : NotFoundException
      {
          return new self(sprintf('The path "%s" does not exist', $path), 0, $previous);
      }

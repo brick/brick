@@ -15,7 +15,7 @@ interface Storage
      *
      * @throws Exception\StorageException If an unknown error occurs.
      */
-    public function put($path, $data);
+    public function put(string $path, string $data) : void;
 
     /**
      * @param string $path
@@ -25,7 +25,7 @@ interface Storage
      * @throws Exception\NotFoundException If the path is not found.
      * @throws Exception\StorageException  If an unknown error occurs.
      */
-    public function get($path);
+    public function get(string $path) : string;
 
     /**
      *
@@ -33,7 +33,7 @@ interface Storage
      *
      * @return bool
      */
-    public function has($path);
+    public function has(string $path) : bool;
 
     /**
      * @param string $path
@@ -42,5 +42,5 @@ interface Storage
      *
      * @throws Exception\StorageException If an unknown error occurs.
      */
-    public function delete($path);
+    public function delete(string $path) : void;
 }

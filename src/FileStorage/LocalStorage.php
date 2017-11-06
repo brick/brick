@@ -19,9 +19,10 @@ class LocalStorage implements Storage
      * Class constructor.
      *
      * @param string $directory
+     *
      * @throws \InvalidArgumentException
      */
-    public function __construct($directory)
+    public function __construct(string $directory)
     {
         if (! file_exists($directory) || ! is_dir($directory)) {
             throw new \InvalidArgumentException('Invalid directory: ' . $directory);
@@ -32,10 +33,12 @@ class LocalStorage implements Storage
 
     /**
      * @param string $path
+     *
      * @return string
+     *
      * @throws \InvalidArgumentException
      */
-    protected function getAbsolutePath($path)
+    protected function getAbsolutePath(string $path) : string
     {
         // Explode the path into an array
         $path = str_replace('\\', '/', $path);
@@ -57,7 +60,7 @@ class LocalStorage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function put($path, $data)
+    public function put(string $path, string $data) : void
     {
         $path = $this->getAbsolutePath($path);
         FileSystem::createDirectories(dirname($path));
@@ -72,7 +75,7 @@ class LocalStorage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function get($path)
+    public function get(string $path) : string
     {
         try {
             $path = $this->getAbsolutePath($path);
@@ -90,7 +93,7 @@ class LocalStorage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function has($path)
+    public function has(string $path) : bool
     {
         $path = $this->getAbsolutePath($path);
 
@@ -100,7 +103,7 @@ class LocalStorage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function delete($path)
+    public function delete(string $path) : void
     {
         try {
             $path = $this->getAbsolutePath($path);

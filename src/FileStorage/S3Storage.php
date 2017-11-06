@@ -26,7 +26,7 @@ class S3Storage implements Storage
      * @param \Aws\S3\S3Client $s3     The S3 client.
      * @param string           $bucket The bucket name.
      */
-    public function __construct(S3Client $s3, $bucket)
+    public function __construct(S3Client $s3, string $bucket)
     {
         $this->s3 = $s3;
         $this->bucket = $bucket;
@@ -35,7 +35,7 @@ class S3Storage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function put($path, $data)
+    public function put(string $path, string $data) : void
     {
         try {
             $this->s3->putObject([
@@ -51,7 +51,7 @@ class S3Storage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function get($path)
+    public function get(string $path) : string
     {
         try {
             $model = $this->s3->getObject([
@@ -72,7 +72,7 @@ class S3Storage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function has($path)
+    public function has(string $path) : bool
     {
         return $this->s3->doesObjectExist($this->bucket, $path);
     }
@@ -80,7 +80,7 @@ class S3Storage implements Storage
     /**
      * {@inheritdoc}
      */
-    public function delete($path)
+    public function delete(string $path) : void
     {
         try {
             $this->s3->deleteObject([
