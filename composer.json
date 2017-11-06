@@ -8,8 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.1",
-        "brick/std": "dev-master"
+        "php": ">=7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "6.*",
