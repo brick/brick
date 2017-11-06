@@ -34,25 +34,3 @@ just be sure to lock Composer to the specific version your code is written for:
 
 Or just avoid blind `composer update` runs once your `composer.lock` file has been written.
 Update individual components instead when required, and only update `brick/brick` if needed.
-
----
-
-### Brick\Doctrine
-
-Doctrine type mappings and functions for Brick objects.
-
-### Brick\FileStorage
-
-A generic interface for file storage, with file system and Amazon S3 implementations.
-
-### Brick\FileSystem
-
-A collection of OO tools to interact with the file system.
-
-### Brick\Locale
-
-A collection of classes to handle countries, languages and currencies.
-
-### Brick\Validation
-
-Provides a `Validator` interface for validating strings, and a collection of validators. This is mostly used by the `Form` component, but can be used independently as well.
