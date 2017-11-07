@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Brick\Unit;
 
 use PHPUnit\Framework\TestCase;

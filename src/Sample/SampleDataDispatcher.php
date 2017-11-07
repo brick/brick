@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Brick\Sample;
 
 use Brick\Di\Injector;
