@@ -13,32 +13,51 @@ class UnicodeString
      *
      * @var string
      */
-    protected $string;
+    private $string;
 
     /**
      * The string length.
      *
      * @var int
      */
-    protected $length;
+    private $length;
 
     /**
-     * Class constructor.
+     * Private constructor.
      *
-     * @param mixed $string
+     * @param string   $string The normalized UTF-8 string.
+     * @param int|null $length The length, or null if not known.
+     */
+    private function __construct(string $string, int $length = null)
+    {
+        $this->string = $string;
+
+        if ($length === null) {
+            $this->length = mb_strlen($string, 'UTF-8');
+        } else {
+            $this->length = $length;
+        }
+    }
+
+    /**
+     * Public factory method.
+     *
+     * @param string $string
+     *
+     * @return UnicodeString
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(string $string)
+    public static function of(string $string)
     {
         if (! mb_check_encoding($string, 'UTF-8')) {
             throw new \InvalidArgumentException('String is not valid UTF-8');
         }
 
         $string = \Normalizer::normalize($string);
+        $length = mb_strlen($string, 'UTF-8');
 
-        $this->string = $string;
-        $this->length = mb_strlen($string, 'UTF-8');
+        return new UnicodeString($string, $length);
     }
 
     /**
@@ -58,7 +77,7 @@ class UnicodeString
     {
         $char = mb_substr($this->string, $index, 1, 'UTF-8');
 
-        return new UnicodeString($char);
+        return new UnicodeString($char, $char === '' ? 0 : 1);
     }
 
     /**
@@ -96,7 +115,7 @@ class UnicodeString
      */
     public function contains(UnicodeString $string)
     {
-        return is_int(strpos($this->string, $string->string));
+        return strpos($this->string, $string->string) !== false;
     }
 
     /**
@@ -149,7 +168,7 @@ class UnicodeString
      *
      * @return int
      */
-    public function indexOf(UnicodeString $string, $fromIndex = 0)
+    public function indexOf(UnicodeString $string, int $fromIndex = 0)
     {
         $index = mb_strpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
@@ -162,7 +181,7 @@ class UnicodeString
      *
      * @return int
      */
-    public function lastIndexOf(UnicodeString $string, $fromIndex = 0)
+    public function lastIndexOf(UnicodeString $string, int $fromIndex = 0)
     {
         $index = mb_strrpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
@@ -225,7 +244,7 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function substring($start, $length = null)
+    public function substring(int $start, int $length = null)
     {
         $string = mb_substr($this->string, $start, $length, 'UTF-8');
         return new UnicodeString($string);
