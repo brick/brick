@@ -12,7 +12,7 @@ class Country
     /**
      * @var array|null
      */
-    private static $countries = null;
+    private static $countries;
 
     /**
      * @var array

@@ -34,7 +34,7 @@ class Url
     /**
      * @var int|null
      */
-    private $port = null;
+    private $port;
 
     /**
      * @var string
@@ -44,12 +44,12 @@ class Url
     /**
      * @var string|null
      */
-    private $query = null;
+    private $query;
 
     /**
      * @var string|null
      */
-    private $fragment = null;
+    private $fragment;
 
     /**
      * @param string $url

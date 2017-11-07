@@ -28,7 +28,7 @@ class Process
      *
      * @var int|null
      */
-    private $status = null;
+    private $status;
 
     /**
      * @var array
