@@ -16,5 +16,5 @@ interface Logger
      *
      * @return void
      */
-    public function log($message);
+    public function log(string $message) : void;
 }

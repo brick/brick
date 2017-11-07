@@ -35,15 +35,15 @@ class QueryCollection implements \Countable, \IteratorAggregate
      *
      * {@inheritdoc}
      */
-    public function count()
+    public function count() : int
     {
         return $this->paginator->count();
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         return $this->count() === 0;
     }
@@ -51,12 +51,12 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * Returns a subset of the collection as an array.
      *
-     * @param integer $offset The start offset, 0-based.
-     * @param integer $length The maximum number of results.
+     * @param int $offset The start offset, 0-based.
+     * @param int $length The maximum number of results.
      *
-     * @return array<object>
+     * @return object[]
      */
-    public function slice($offset, $length)
+    public function slice(int $offset, int $length) : array
     {
         $query = $this->paginator->getQuery();
 
@@ -83,7 +83,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
      *
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator() : \Traversable
     {
         $query = $this->paginator->getQuery();
 
@@ -96,9 +96,9 @@ class QueryCollection implements \Countable, \IteratorAggregate
     /**
      * Loads the whole collection and returns it as an array.
      *
-     * @return array<object> The entities.
+     * @return object[] The entities.
      */
-    public function toArray()
+    public function toArray() : array
     {
         return iterator_to_array($this);
     }

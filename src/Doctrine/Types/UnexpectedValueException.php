@@ -13,7 +13,7 @@ class UnexpectedValueException extends \UnexpectedValueException
      * @param string $expectedType The expected type.
      * @param mixed  $actualValue  The actual value.
      */
-    public function __construct($expectedType, $actualValue)
+    public function __construct(string $expectedType, $actualValue)
     {
         $type = is_object($actualValue) ? get_class($actualValue) : gettype($actualValue);
         $message = sprintf('Expected %s, got %s.', $expectedType, $type);

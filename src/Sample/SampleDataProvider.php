@@ -12,12 +12,12 @@ interface SampleDataProvider
      *
      * @return string
      */
-    public function getName();
+    public function getName() : string;
 
     /**
      * Executes the data provider.
      *
      * @return void
      */
-    public function run();
+    public function run() : void;
 }

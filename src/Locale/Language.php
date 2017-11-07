@@ -56,7 +56,7 @@ class Language
      * @param string      $englishName
      * @param string      $frenchName
      */
-    private function __construct($alpha3B, $alpha3T, $alpha2, $englishName, $frenchName)
+    private function __construct(string $alpha3B, ?string $alpha3T, ?string $alpha2, string $englishName, string $frenchName)
     {
         $this->alpha3B     = $alpha3B;
         $this->alpha3T     = $alpha3T;
@@ -68,7 +68,7 @@ class Language
     /**
      * @return void
      */
-    private static function loadLanguageData()
+    private static function loadLanguageData() : void
     {
         if (self::$languages === null) {
             self::$languages = require __DIR__ . '/languages.php';
@@ -90,7 +90,7 @@ class Language
      *
      * @throws \LogicException
      */
-    public static function get($code)
+    public static function get(string $code) : Language
     {
         self::loadLanguageData();
 
@@ -114,7 +114,7 @@ class Language
     /**
      * @return string
      */
-    public function getAlpha3BCode()
+    public function getAlpha3BCode() : string
     {
         return $this->alpha3B;
     }
@@ -122,7 +122,7 @@ class Language
     /**
      * @return string|null
      */
-    public function getAlpha3TCode()
+    public function getAlpha3TCode() : ?string
     {
         return $this->alpha3T;
     }
@@ -130,7 +130,7 @@ class Language
     /**
      * @return string|null
      */
-    public function getAlpha2Code()
+    public function getAlpha2Code() : ?string
     {
         return $this->alpha2;
     }
@@ -138,7 +138,7 @@ class Language
     /**
      * @return string
      */
-    public function getEnglishName()
+    public function getEnglishName() : string
     {
         return $this->englishName;
     }
@@ -146,7 +146,7 @@ class Language
     /**
      * @return string
      */
-    public function getFrenchName()
+    public function getFrenchName() : string
     {
         return $this->frenchName;
     }

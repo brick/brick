@@ -17,7 +17,7 @@ class FileLogger implements Logger
     /**
      * @param string $filename
      */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }
@@ -25,7 +25,7 @@ class FileLogger implements Logger
     /**
      * {@inheritdoc}
      */
-    public function log($message)
+    public function log(string $message) : void
     {
         file_put_contents($this->filename, $message, FILE_APPEND | LOCK_EX);
     }

@@ -51,13 +51,13 @@ class Paypal
      * @param string $endpoint
      * @param string $version
      */
-    public function __construct($user, $password, $signature, $endpoint, $version)
+    public function __construct(string $user, string $password, string $signature, string $endpoint, string $version)
     {
-        $this->user      = (string) $user;
-        $this->password  = (string) $password;
-        $this->signature = (string) $signature;
-        $this->endpoint  = (string) $endpoint;
-        $this->version   = (string) $version;
+        $this->user      = $user;
+        $this->password  = $password;
+        $this->signature = $signature;
+        $this->endpoint  = $endpoint;
+        $this->version   = $version;
     }
 
     /**
@@ -70,7 +70,7 @@ class Paypal
      *
      * @throws PaypalException
      */
-    public function call($method, array $params)
+    public function call(string $method, array $params) : array
     {
         $params['METHOD']    = $method;
         $params['VERSION']   = $this->version;

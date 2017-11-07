@@ -72,7 +72,7 @@ class JobScheduler
      *
      * @return JobScheduler
      */
-    public function addJobClass($className)
+    public function addJobClass(string $className) : JobScheduler
     {
         $this->jobClasses[] = $className;
 
@@ -82,7 +82,7 @@ class JobScheduler
     /**
      * @return void
      */
-    public function run()
+    public function run() : void
     {
         foreach ($this->jobClasses as $jobClass) {
             if ($this->interrupted) {
@@ -119,7 +119,7 @@ class JobScheduler
      *
      * @return void
      */
-    private function launchProcess($className)
+    private function launchProcess(string $className) : void
     {
         $this->logJob($className, 'Starting process.');
 
@@ -152,7 +152,7 @@ class JobScheduler
      *
      * @return void
      */
-    private function log($message)
+    private function log(string $message) : void
     {
         preg_match('/(\.[0-9]{6})[0-9]* ([0-9]+)/', microtime(), $matches);
 
@@ -165,7 +165,7 @@ class JobScheduler
      *
      * @return void
      */
-    private function logJob($jobClassName, $message)
+    private function logJob(string $jobClassName, string $message) : void
     {
         $this->log(sprintf('%s: %s', $jobClassName, $message));
     }
@@ -177,7 +177,7 @@ class JobScheduler
      *
      * @return void
      */
-    private function sleepMs($ms)
+    private function sleepMs(int $ms) : void
     {
         usleep(1000 * $ms);
     }

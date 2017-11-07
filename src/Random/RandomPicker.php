@@ -51,10 +51,8 @@ class RandomPicker
      *
      * @throws \InvalidArgumentException If the weight is not a positive integer.
      */
-    public function addElement($value, $weight)
+    public function addElement($value, int $weight) : void
     {
-        $weight = (int) $weight;
-
         if ($weight < 1) {
             throw new \InvalidArgumentException('Weight must be a positive integer.');
         }
@@ -76,7 +74,7 @@ class RandomPicker
      *
      * @throws \InvalidArgumentException If a weight is not a positive integer.
      */
-    public function addElements(array $elements)
+    public function addElements(array $elements) : void
     {
         foreach ($elements as $value => $weight) {
             $this->addElement($value, $weight);

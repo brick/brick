@@ -25,7 +25,7 @@ class MockBuilder
      * @param TestCase $testCase
      * @param string   $className
      */
-    public function __construct(TestCase $testCase, $className)
+    public function __construct(TestCase $testCase, string $className)
     {
         $this->testCase = $testCase;
         $this->mock = $testCase->getMockBuilder($className)
@@ -38,8 +38,10 @@ class MockBuilder
      *
      * @param string $methodName
      * @param mixed  $returnValue
+     *
+     * @return void
      */
-    public function addMethod($methodName, $returnValue)
+    public function addMethod(string $methodName, $returnValue) : void
     {
         $this->mock->expects($this->testCase->any())
                    ->method($methodName)
@@ -49,8 +51,10 @@ class MockBuilder
     /**
      * @param string $methodName
      * @param bool $moreThanOnce
+     *
+     * @return void
      */
-    public function addRequiredMethod($methodName, $moreThanOnce = false)
+    public function addRequiredMethod(string $methodName, bool $moreThanOnce = false) : void
     {
         if ($moreThanOnce) {
             $this->mock->expects($this->testCase->atLeastOnce())
@@ -69,7 +73,7 @@ class MockBuilder
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMock()
+    public function getMock() : \PHPUnit_Framework_MockObject_MockObject
     {
         return $this->mock;
     }

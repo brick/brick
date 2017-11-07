@@ -19,7 +19,7 @@ class ChainLogger implements Logger
      *
      * @return ChainLogger
      */
-    public function addLogger(Logger $logger)
+    public function addLogger(Logger $logger) : ChainLogger
     {
         $this->loggers[] = $logger;
 
@@ -29,7 +29,7 @@ class ChainLogger implements Logger
     /**
      * {@inheritdoc}
      */
-    public function log($message)
+    public function log(string $message) : void
     {
         foreach ($this->loggers as $logger) {
             $logger->log($message);

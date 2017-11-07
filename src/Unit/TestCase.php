@@ -10,10 +10,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns a StubBuilder for the given class.
      *
-     * @param  string      $className
+     * @param string $className
+     *
      * @return MockBuilder
      */
-    protected function getMockObjectBuilder($className)
+    protected function getMockObjectBuilder(string $className) : MockBuilder
     {
         return new MockBuilder($this, $className);
     }

@@ -10,9 +10,9 @@ interface Job
     /**
      * Returns how long the scheduler should wait between two runs of this job.
      *
-     * @return integer The time in seconds.
+     * @return int The time in seconds.
      */
-    public function getTimeBetweenRunsInSeconds();
+    public function getTimeBetweenRunsInSeconds() : int;
 
     /**
      * Runs the job.
@@ -26,7 +26,7 @@ interface Job
      *
      * @param \Brick\Cron\JobRunner $runner The runner that manages this job.
      *
-     * @return integer The number of actions performed.
+     * @return int The number of actions performed.
      */
-    public function run(JobRunner $runner);
+    public function run(JobRunner $runner) : int;
 }

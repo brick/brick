@@ -12,5 +12,5 @@ interface JobBootstrapper
      *
      * @return Job
      */
-    public function bootstrap($className);
+    public function bootstrap(string $className) : Job;
 }

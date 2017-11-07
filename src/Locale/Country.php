@@ -43,7 +43,7 @@ class Country
      * @param string      $name         The ISO 3166-1 country name.
      * @param string|null $currencyCode The currency code, or null if the country has no currency.
      */
-    private function __construct($code, $name, $currencyCode)
+    private function __construct(string $code, string $name, ?string $currencyCode)
     {
         $this->code         = $code;
         $this->name         = $name;
@@ -53,7 +53,7 @@ class Country
     /**
      * @return void
      */
-    private static function loadCountryData()
+    private static function loadCountryData() : void
     {
         if (self::$countries === null) {
             self::$countries = require __DIR__ . '/countries.php';
@@ -69,7 +69,7 @@ class Country
      *
      * @throws \RuntimeException If no country exists for this country code.
      */
-    public static function of($code)
+    public static function of(string $code) : Country
     {
         if (! isset(self::$instances[$code])) {
             self::loadCountryData();
@@ -91,7 +91,7 @@ class Country
      *
      * @return Country[]
      */
-    public static function getAvailableCountries()
+    public static function getAvailableCountries() : array
     {
         self::loadCountryData();
 
@@ -109,7 +109,7 @@ class Country
      *
      * @return string
      */
-    public function getCode()
+    public function getCode() : string
     {
         return $this->code;
     }
@@ -119,7 +119,7 @@ class Country
      *
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -127,7 +127,7 @@ class Country
     /**
      * @return string|null
      */
-    public function getCurrencyCode()
+    public function getCurrencyCode() : ?string
     {
         return $this->currencyCode;
     }
@@ -135,9 +135,9 @@ class Country
     /**
      * @param Country $country
      *
-     * @return boolean
+     * @return bool
      */
-    public function isEqualTo(Country $country)
+    public function isEqualTo(Country $country) : bool
     {
         return $this->code === $country->code;
     }

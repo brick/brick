@@ -27,7 +27,7 @@ class Locale
      * @param string $locale
      * @param array  $subtags
      */
-    private function __construct($locale, array $subtags)
+    private function __construct(string $locale, array $subtags)
     {
         $this->locale = $locale;
         $this->subtags = $subtags;
@@ -40,7 +40,7 @@ class Locale
      *
      * @throws \InvalidArgumentException
      */
-    private static function build(array $subtags)
+    private static function build(array $subtags) : Locale
     {
         if (! isset($subtags['language'])) {
             throw new \InvalidArgumentException('Invalid locale.');
@@ -87,10 +87,10 @@ class Locale
      *
      * @throws \InvalidArgumentException
      */
-    public static function create($language, $region = null)
+    public static function create(string $language, string $region = null) : Locale
     {
         $subtags = [
-            'language' => (string) $language
+            'language' => $language
         ];
 
         if ($region !== null) {
@@ -109,10 +109,8 @@ class Locale
      *
      * @throws \InvalidArgumentException
      */
-    public static function parse($locale)
+    public static function parse(string $locale) : Locale
     {
-        $locale = (string) $locale;
-
         if ($locale === '') {
             throw new \InvalidArgumentException('Locale string cannot be empty.');
         }
@@ -127,7 +125,7 @@ class Locale
      *
      * @return Locale
      */
-    public static function getDefault()
+    public static function getDefault() : Locale
     {
         return Locale::parse(\Locale::getDefault());
     }
@@ -139,7 +137,7 @@ class Locale
      *
      * @return void
      */
-    public static function setDefault(Locale $locale)
+    public static function setDefault(Locale $locale) : void
     {
         \Locale::setDefault($locale->locale);
     }
@@ -149,7 +147,7 @@ class Locale
      *
      * @return string
      */
-    public function getLanguage()
+    public function getLanguage() : string
     {
         return $this->subtags['language'];
     }
@@ -159,7 +157,7 @@ class Locale
      *
      * @return string|null
      */
-    public function getScript()
+    public function getScript() : ?string
     {
         return isset($this->subtags['script']) ? $this->subtags['script'] : null;
     }
@@ -169,7 +167,7 @@ class Locale
      *
      * @return string|null
      */
-    public function getRegion()
+    public function getRegion() : ?string
     {
         return isset($this->subtags['region']) ? $this->subtags['region'] : null;
     }
@@ -179,7 +177,7 @@ class Locale
      *
      * @return array
      */
-    public function getVariants()
+    public function getVariants() : array
     {
         $variants = [];
 
@@ -197,7 +195,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayName(Locale $inLocale = null)
+    public function getDisplayName(Locale $inLocale = null) : string
     {
         return \Locale::getDisplayName($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -209,7 +207,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayLanguage(Locale $inLocale = null)
+    public function getDisplayLanguage(Locale $inLocale = null) : string
     {
         return \Locale::getDisplayLanguage($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -221,7 +219,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayScript(Locale $inLocale = null)
+    public function getDisplayScript(Locale $inLocale = null) : string
     {
         return \Locale::getDisplayScript($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -233,7 +231,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayRegion(Locale $inLocale = null)
+    public function getDisplayRegion(Locale $inLocale = null) : string
     {
         return \Locale::getDisplayRegion($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -245,7 +243,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayVariant(Locale $inLocale = null)
+    public function getDisplayVariant(Locale $inLocale = null) : string
     {
         return \Locale::getDisplayVariant($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -255,9 +253,9 @@ class Locale
      *
      * @param Locale $locale
      *
-     * @return boolean
+     * @return bool
      */
-    public function isEqualTo(Locale $locale)
+    public function isEqualTo(Locale $locale) : bool
     {
         return $this->locale == $locale->locale;
     }
@@ -265,7 +263,7 @@ class Locale
     /**
      * @return string
      */
-    public function toString()
+    public function toString() : string
     {
         return $this->locale;
     }
@@ -275,7 +273,7 @@ class Locale
      *
      * @return string
      */
-    public function toLanguageTag()
+    public function toLanguageTag() : string
     {
         return str_replace('_', '-', $this->locale);
     }
@@ -283,7 +281,7 @@ class Locale
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString() : string
     {
         return $this->locale;
     }

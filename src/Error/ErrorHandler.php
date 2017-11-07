@@ -23,7 +23,7 @@ class ErrorHandler
      *
      * @return void
      */
-    public static function setup(callable $fatalErrorHandler = null)
+    public static function setup(callable $fatalErrorHandler = null) : void
     {
         // Handle PHP errors and throw exceptions.
         set_error_handler(function($level, $message, $file, $line) {

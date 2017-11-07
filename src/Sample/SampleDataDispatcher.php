@@ -44,9 +44,10 @@ class SampleDataDispatcher
      * The data providers will be run in the order in which they have been added.
      *
      * @param string $className The sample data provider class name.
+     *
      * @return void
      */
-    public function addProvider($className)
+    public function addProvider(string $className) : void
     {
         $this->providers[] = $className;
     }
@@ -55,9 +56,10 @@ class SampleDataDispatcher
      * Runs all sample data providers.
      *
      * @param callable|null $callback A function that will be called with the name of each provider as a parameter.
+     *
      * @return void
      */
-    public function run(callable $callback = null)
+    public function run(callable $callback = null) : void
     {
         $this->em->beginTransaction();
 

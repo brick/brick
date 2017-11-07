@@ -17,14 +17,14 @@ class Process
     /**
      * The process id.
      *
-     * @var integer
+     * @var int
      */
     private $pid;
 
     /**
      * The status information if the process has exited, or null if it is still running.
      *
-     * @var integer|null
+     * @var int|null
      */
     private $status = null;
 
@@ -34,7 +34,7 @@ class Process
     private static $requiredExtensions = ['pcntl', 'posix'];
 
     /**
-     * @var boolean
+     * @var bool
      */
     private static $extensionsChecked = false;
 
@@ -74,7 +74,7 @@ class Process
      *
      * @throws \Brick\Process\ProcessException
      */
-    private static function checkExtensions()
+    private static function checkExtensions() : void
     {
         if (! self::$extensionsChecked) {
             foreach (self::$requiredExtensions as $extension) {
@@ -90,9 +90,9 @@ class Process
     /**
      * Returns the PID of the process.
      *
-     * @return integer
+     * @return int
      */
-    public function getPid()
+    public function getPid() : int
     {
         return $this->pid;
     }
@@ -104,7 +104,7 @@ class Process
      *
      * @throws ProcessException If an error occurs.
      */
-    public function wait()
+    public function wait() : void
     {
         if ($this->status === null) {
             $pid = pcntl_waitpid($this->pid, $status);
@@ -120,11 +120,11 @@ class Process
     /**
      * Returns whether the process is alive.
      *
-     * @return boolean
+     * @return bool
      *
      * @throws ProcessException If an error occurs while waiting for the process.
      */
-    public function isAlive()
+    public function isAlive() : bool
     {
         if ($this->status === null) {
             $pid = pcntl_waitpid($this->pid, $status, WNOHANG);
@@ -148,11 +148,11 @@ class Process
      *
      * This usually happens when the process has been killed.
      *
-     * @return boolean
+     * @return bool
      *
      * @throws ProcessException If the process is still running.
      */
-    public function isNormalExit()
+    public function isNormalExit() : bool
     {
         if ($this->isAlive()) {
             throw ProcessException::processStillRunning();
@@ -169,11 +169,11 @@ class Process
      *
      * You should check isAlive() and isNormalExit() before calling this method.
      *
-     * @return integer
+     * @return int
      *
      * @throws ProcessException If the process is still running, or has exited abnormally.
      */
-    public function getExitStatus()
+    public function getExitStatus() : int
     {
         if (! $this->isNormalExit()) {
             throw ProcessException::processExitedAbnormally();
@@ -185,21 +185,21 @@ class Process
     /**
      * Sends a signal to the running process.
      *
-     * @param integer $signal One of the PCNTL signals constants.
+     * @param int $signal One of the PCNTL signals constants.
      *
-     * @return boolean
+     * @return bool
      */
-    public function signal($signal)
+    public function signal(int $signal) : bool
     {
         return posix_kill($this->pid, $signal);
     }
 
     /**
-     * @return integer
+     * @return int
      *
      * @throws ProcessException If an error occurs.
      */
-    public function getPriority()
+    public function getPriority() : int
     {
         if (false === $priority = pcntl_getpriority($this->pid)) {
             throw ProcessException::getPriorityError();
@@ -215,7 +215,7 @@ class Process
      *
      * @throws ProcessException If an error occurs.
      */
-    public function setPriority($priority)
+    public function setPriority(int $priority) : void
     {
         if (! pcntl_setpriority($priority, $this->pid)) {
             throw ProcessException::setPriorityError();

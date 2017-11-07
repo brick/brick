@@ -12,7 +12,7 @@ class EchoLogger implements Logger
     /**
      * {@inheritdoc}
      */
-    public function log($message)
+    public function log(string $message) : void
     {
         echo $message;
     }

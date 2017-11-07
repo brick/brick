@@ -48,7 +48,7 @@ class UnicodeString
      *
      * @throws \InvalidArgumentException
      */
-    public static function of(string $string)
+    public static function of(string $string) : UnicodeString
     {
         if (! mb_check_encoding($string, 'UTF-8')) {
             throw new \InvalidArgumentException('String is not valid UTF-8');
@@ -63,7 +63,7 @@ class UnicodeString
     /**
      * @return int
      */
-    public function length()
+    public function length() : int
     {
         return $this->length;
     }
@@ -73,7 +73,7 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function charAt(int $index)
+    public function charAt(int $index) : UnicodeString
     {
         $char = mb_substr($this->string, $index, 1, 'UTF-8');
 
@@ -85,25 +85,27 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function concat(UnicodeString $string)
+    public function concat(UnicodeString $string) : UnicodeString
     {
         return new UnicodeString($this->string . $string->string);
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return int
      */
-    public function compareTo(UnicodeString $string)
+    public function compareTo(UnicodeString $string) : int
     {
         // @todo
     }
 
     /**
-     * @param \Brick\Type\UnicodeString $string
+     * @param UnicodeString $string
+     *
      * @return int
      */
-    public function compareToIgnoreCase(UnicodeString $string)
+    public function compareToIgnoreCase(UnicodeString $string) : int
     {
         // @todo
     }
@@ -113,7 +115,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function contains(UnicodeString $string)
+    public function contains(UnicodeString $string) : bool
     {
         return strpos($this->string, $string->string) !== false;
     }
@@ -123,7 +125,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function containsIgnoreCase(UnicodeString $string)
+    public function containsIgnoreCase(UnicodeString $string) : bool
     {
         return $this->toLowerCase()->contains($string->toLowerCase());
     }
@@ -133,7 +135,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function endsWith(UnicodeString $string)
+    public function endsWith(UnicodeString $string) : bool
     {
         if ($string->length > $this->length) {
             return false;
@@ -147,7 +149,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function equals(UnicodeString $string)
+    public function equals(UnicodeString $string) : bool
     {
         return $this->string === $string->string;
     }
@@ -157,7 +159,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function equalsIgnoreCase(UnicodeString $string)
+    public function equalsIgnoreCase(UnicodeString $string) : bool
     {
         return $this->toLowerCase()->equals($string->toLowerCase());
     }
@@ -168,7 +170,7 @@ class UnicodeString
      *
      * @return int
      */
-    public function indexOf(UnicodeString $string, int $fromIndex = 0)
+    public function indexOf(UnicodeString $string, int $fromIndex = 0) : int
     {
         $index = mb_strpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
@@ -181,7 +183,7 @@ class UnicodeString
      *
      * @return int
      */
-    public function lastIndexOf(UnicodeString $string, int $fromIndex = 0)
+    public function lastIndexOf(UnicodeString $string, int $fromIndex = 0) : int
     {
         $index = mb_strrpos($this->string, $string->string, $fromIndex, 'UTF-8');
 
@@ -193,7 +195,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function matches(UnicodeString $regex)
+    public function matches(UnicodeString $regex) : bool
     {
         return (bool) preg_match($regex->string, $this->string);
     }
@@ -204,7 +206,7 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function replace(UnicodeString $target, UnicodeString $replacement)
+    public function replace(UnicodeString $target, UnicodeString $replacement) : UnicodeString
     {
         return new UnicodeString(str_replace($target, $replacement, $this->string));
     }
@@ -214,7 +216,7 @@ class UnicodeString
      *
      * @return UnicodeString[]
      */
-    public function split(UnicodeString $regex)
+    public function split(UnicodeString $regex) : array
     {
         return array_map(
             function ($string) {
@@ -229,7 +231,7 @@ class UnicodeString
      *
      * @return bool
      */
-    public function startsWith(UnicodeString $string)
+    public function startsWith(UnicodeString $string) : bool
     {
         if ($string->length > $this->length) {
             return false;
@@ -244,7 +246,7 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function substring(int $start, int $length = null)
+    public function substring(int $start, int $length = null) : UnicodeString
     {
         $string = mb_substr($this->string, $start, $length, 'UTF-8');
         return new UnicodeString($string);
@@ -253,7 +255,7 @@ class UnicodeString
     /**
      * @return UnicodeString
      */
-    public function toLowerCase()
+    public function toLowerCase() : UnicodeString
     {
         return new UnicodeString(mb_convert_case($this->string, MB_CASE_LOWER, 'UTF-8'));
     }
@@ -261,7 +263,7 @@ class UnicodeString
     /**
      * @return UnicodeString
      */
-    public function toUpperCase()
+    public function toUpperCase() : UnicodeString
     {
         return new UnicodeString(mb_convert_case($this->string, MB_CASE_UPPER, 'UTF-8'));
     }
@@ -269,7 +271,7 @@ class UnicodeString
     /**
      * @return UnicodeString
      */
-    public function trim()
+    public function trim() : UnicodeString
     {
         return new UnicodeString(trim($this->string));
     }
@@ -277,7 +279,7 @@ class UnicodeString
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString() : string
     {
         return $this->string;
     }

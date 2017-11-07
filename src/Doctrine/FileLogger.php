@@ -36,10 +36,10 @@ class FileLogger implements SQLLogger
     /**
      * Class constructor.
      *
-     * @param string  $filename
-     * @param integer $writeMode
+     * @param string $filename
+     * @param int    $writeMode
      */
-    public function __construct($filename, $writeMode)
+    public function __construct(string $filename, int $writeMode)
     {
         $mode = ($writeMode === self::OVERWRITE) ? 'wt' : 'at';
         $this->fp = fopen($filename, $mode);
@@ -57,17 +57,20 @@ class FileLogger implements SQLLogger
 
     /**
      * @param string $data
+     *
+     * @return void
      */
-    protected function write($data)
+    protected function write(string $data) : void
     {
         fwrite($this->fp, $data);
     }
 
     /**
-     * @param  array|null $array
+     * @param array|null $array
+     *
      * @return string
      */
-    protected function format(array $array = null)
+    protected function format(array $array = null) : string
     {
         if ($array === null) {
             return 'none';

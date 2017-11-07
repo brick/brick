@@ -8,12 +8,12 @@ namespace Brick\Queue;
 class Message
 {
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
     /**
-     * @var integer
+     * @var int
      */
     private $pid;
 
@@ -23,11 +23,11 @@ class Message
     private $data;
 
     /**
-     * @param integer $id   The message id.
-     * @param integer $pid  The process id.
-     * @param array   $data An associative array containing the message data.
+     * @param int   $id   The message id.
+     * @param int   $pid  The process id.
+     * @param array $data An associative array containing the message data.
      */
-    public function __construct($id, $pid, array $data)
+    public function __construct(int $id, int $pid, array $data)
     {
         $this->id   = $id;
         $this->pid  = $pid;
@@ -35,17 +35,17 @@ class Message
     }
 
     /**
-     * @return integer
+     * @return int
      */
-    public function getId()
+    public function getId() : int
     {
         return $this->id;
     }
 
     /**
-     * @return integer
+     * @return int
      */
-    public function getPid()
+    public function getPid() : int
     {
         return $this->pid;
     }
@@ -53,7 +53,7 @@ class Message
     /**
      * @return array
      */
-    public function getData()
+    public function getData() : array
     {
         return $this->data;
     }
@@ -65,7 +65,7 @@ class Message
      *
      * @throws \RuntimeException If the requested key does not exist.
      */
-    public function get($key)
+    public function get(string $key) : string
     {
         if (isset($this->data[$key])) {
             return $this->data[$key];

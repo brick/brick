@@ -71,7 +71,7 @@ class Queue
      *                           The array can be either a simple list of columns: ['a', 'b'],
      *                           or an associative array of alias to column name: ['aAlias' => 'a', 'bAlias' => 'b'].
      */
-    public function __construct(\PDO $pdo, $table, $idColumn = 'id', $pidColumn = 'pid', array $columns = ['*'])
+    public function __construct(\PDO $pdo, string $table, string $idColumn = 'id', string $pidColumn = 'pid', array $columns = ['*'])
     {
         $select = [];
         $columns[self::ID_COLUMN_ALIAS] = $idColumn;
@@ -121,13 +121,13 @@ class Queue
     /**
      * Polls the queue for a message. The message gets assigned the current pid.
      *
-     * @param integer $pid The current process id.
+     * @param int $pid The current process id.
      *
      * @return Message|null The assigned message, or null if the queue is empty.
      *
      * @throws \RuntimeException If an unexpected error occurs.
      */
-    public function poll($pid)
+    public function poll(int $pid) : ?Message
     {
         $this->executeStatement($this->assignMessageStatement, [$pid]);
 
@@ -154,9 +154,9 @@ class Queue
      *
      * @param Message $message The message to remove.
      *
-     * @return boolean Whether the message has been sucessfully removed.
+     * @return bool Whether the message has been successfully removed.
      */
-    public function remove(Message $message)
+    public function remove(Message $message) : bool
     {
         $this->executeStatement($this->removeMessageStatement, [$message->getId()]);
 
@@ -169,9 +169,9 @@ class Queue
      * This method should only be called when a scheduler starts,
      * assuming that a previous scheduler and all its workers have died.
      *
-     * @return integer The number of messages cleaned up.
+     * @return int The number of messages cleaned up.
      */
-    public function unassignAll()
+    public function unassignAll() : int
     {
         $this->executeStatement($this->unassignAllStatement, []);
 
@@ -184,11 +184,11 @@ class Queue
      * This method should only be called by a scheduler,
      * when a worker dies unexpectedly.
      *
-     * @param integer $pid The process id.
+     * @param int $pid The process id.
      *
-     * @return integer The number of messages cleaned up.
+     * @return int The number of messages cleaned up.
      */
-    public function unassignProcess($pid)
+    public function unassignProcess(int $pid) : int
     {
         $this->executeStatement($this->unassignProcessStatement, [$pid]);
 
@@ -205,7 +205,7 @@ class Queue
      *
      * @throws \RuntimeException If the number of deadlock retries is exceeeded, or an error occurs.
      */
-    private function executeStatement(\PDOStatement $statement, array $parameters)
+    private function executeStatement(\PDOStatement $statement, array $parameters) : void
     {
         for ($i = 0; $i < self::DEADLOCK_RETRIES; $i++) {
             if ($this->doExecuteStatement($statement, $parameters)) {
@@ -229,11 +229,11 @@ class Queue
      * @param \PDOStatement $statement  The PDO statement.
      * @param array         $parameters The bound parameters.
      *
-     * @return boolean Whether the statement executed successfully. False if deadlock.
+     * @return bool Whether the statement executed successfully. False if deadlock.
      *
      * @throws \RuntimeException If any error other than a deadlock occurs.
      */
-    private function doExecuteStatement(\PDOStatement $statement, array $parameters)
+    private function doExecuteStatement(\PDOStatement $statement, array $parameters) : bool
     {
         try {
             if ($statement->execute($parameters)) {

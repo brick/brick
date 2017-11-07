@@ -13,32 +13,32 @@ class JobRunner
     private $job;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $interrupted = false;
 
     /**
-     * @var integer
+     * @var int
      */
     private $numberOfRuns = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $lastStartTime = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $lastFinishTime = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $lastExecutionTimeInMs = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $totalExecutionTimeInMs = 0;
 
@@ -53,7 +53,7 @@ class JobRunner
     /**
      * @return void
      */
-    public function setupSignalHandler()
+    public function setupSignalHandler() : void
     {
         // Ignore SIG_INT, that will be caught by the scheduler.
         pcntl_signal(SIGINT, SIG_IGN);
@@ -66,9 +66,9 @@ class JobRunner
     /**
      * Returns whether a job interruption has been requested.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isInterrupted()
+    public function isInterrupted() : bool
     {
         return $this->interrupted;
     }
@@ -76,9 +76,9 @@ class JobRunner
     /**
      * Returns the number of times the job has been run.
      *
-     * @return integer
+     * @return int
      */
-    public function getNumberOfRuns()
+    public function getNumberOfRuns() : int
     {
         return $this->numberOfRuns;
     }
@@ -88,9 +88,9 @@ class JobRunner
      *
      * Returns zero if the cron has not run yet.
      *
-     * @return integer
+     * @return int
      */
-    public function getLastStartTime()
+    public function getLastStartTime() : int
     {
         return $this->lastStartTime;
     }
@@ -100,9 +100,9 @@ class JobRunner
      *
      * Returns zero if the cron has not run yet.
      *
-     * @return integer
+     * @return int
      */
-    public function getLastFinishTime()
+    public function getLastFinishTime() : int
     {
         return $this->lastFinishTime;
     }
@@ -112,9 +112,9 @@ class JobRunner
      *
      * Returns zero if the cron has not run yet.
      *
-     * @return integer
+     * @return int
      */
-    public function getLastExecutionTimeInMs()
+    public function getLastExecutionTimeInMs() : int
     {
         return $this->lastExecutionTimeInMs;
     }
@@ -122,9 +122,9 @@ class JobRunner
     /**
      * Returns the total execution time across all runs, in milliseconds.
      *
-     * @return integer
+     * @return int
      */
-    public function getTotalExecutionTimeInMs()
+    public function getTotalExecutionTimeInMs() : int
     {
         return $this->totalExecutionTimeInMs;
     }
@@ -134,9 +134,9 @@ class JobRunner
      *
      * Returns zero if the cron has not run yet.
      *
-     * @return integer
+     * @return int
      */
-    public function getAverageExecutionTimeInMs()
+    public function getAverageExecutionTimeInMs() : int
     {
         if ($this->numberOfRuns == 0) {
             return 0;
@@ -148,9 +148,9 @@ class JobRunner
     /**
      * Runs the job and records the execution time.
      *
-     * @return integer The number of actions performed.
+     * @return int The number of actions performed.
      */
-    public function run()
+    public function run() : int
     {
         $this->lastStartTime = time();
         $startTime = microtime(true);

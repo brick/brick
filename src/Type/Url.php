@@ -30,7 +30,7 @@ class Url
     private $host;
 
     /**
-     * @var integer|null
+     * @var int|null
      */
     private $port = null;
 
@@ -51,9 +51,10 @@ class Url
 
     /**
      * @param string $url
+     *
      * @throws \InvalidArgumentException
      */
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $url = parse_url($url);
 
@@ -87,7 +88,7 @@ class Url
     /**
      * @return string
      */
-    public function getScheme()
+    public function getScheme() : string
     {
         return $this->scheme;
     }
@@ -95,23 +96,23 @@ class Url
     /**
      * @return string
      */
-    public function getHost()
+    public function getHost() : string
     {
         return $this->host;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function hasPort()
+    public function hasPort() : bool
     {
         return $this->port !== null;
     }
 
     /**
-     * @return integer|null
+     * @return int|null
      */
-    public function getPort()
+    public function getPort() : ?int
     {
         return $this->port;
     }
@@ -119,15 +120,15 @@ class Url
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath() : string
     {
         return $this->path;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function hasQuery()
+    public function hasQuery() : bool
     {
         return $this->query !== null;
     }
@@ -135,15 +136,15 @@ class Url
     /**
      * @return string|null
      */
-    public function getQuery()
+    public function getQuery() : ?string
     {
         return $this->query;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function hasFragment()
+    public function hasFragment() : bool
     {
         return $this->fragment !== null;
     }
@@ -151,7 +152,7 @@ class Url
     /**
      * @return string|null
      */
-    public function getFragment()
+    public function getFragment() : ?string
     {
         return $this->fragment;
     }
@@ -161,9 +162,9 @@ class Url
      *
      * This is currently only supported for HTTP and HTTPS.
      *
-     * @return integer|null
+     * @return int|null
      */
-    public function getDefaultPort()
+    public function getDefaultPort() : ?int
     {
         $scheme = strtolower($this->scheme);
 
@@ -173,9 +174,9 @@ class Url
     /**
      * @param Url $url
      *
-     * @return boolean
+     * @return bool
      */
-    public function equals(Url $url)
+    public function equals(Url $url) : bool
     {
         return $this->toString(true) == $url->toString(true);
     }
@@ -183,11 +184,11 @@ class Url
     /**
      * Returns this URL as a string, optionally normalized.
      *
-     * @param boolean $normalize
+     * @param bool $normalize
      *
      * @return string
      */
-    public function toString($normalize = false)
+    public function toString(bool $normalize = false) : string
     {
         $url = $this->scheme . '://' . $this->host;
 
@@ -216,9 +217,10 @@ class Url
 
     /**
      * @param string $string
+     *
      * @return string
      */
-    private function normalize($string)
+    private function normalize(string $string) : string
     {
         $callback = function (array $matches) {
             // Decode percent-encoded octets of unreserved characters.
@@ -238,7 +240,7 @@ class Url
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString() : string
     {
         return $this->toString();
     }

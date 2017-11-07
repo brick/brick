@@ -12,18 +12,18 @@ class ProcessException extends \RuntimeException
      *
      * @return \Brick\Process\ProcessException
      */
-    public static function missingExtension($extension)
+    public static function missingExtension(string $extension) : ProcessException
     {
         return new self(sprintf('Missing required extension %s.', $extension));
     }
 
     /**
-     * @param integer $errorCode
-     * @param string  $errorMessage
+     * @param int    $errorCode
+     * @param string $errorMessage
      *
      * @return \Brick\Process\ProcessException
      */
-    public static function forkingError($errorCode, $errorMessage)
+    public static function forkingError(int $errorCode, string $errorMessage) : ProcessException
     {
         return new self(sprintf(
             'Could not fork the current process: error code %d (%s).',
@@ -33,12 +33,12 @@ class ProcessException extends \RuntimeException
     }
 
     /**
-     * @param integer $expectedCode
-     * @param integer $actualCode
+     * @param int $expectedCode
+     * @param int $actualCode
      *
      * @return \Brick\Process\ProcessException
      */
-    public static function waitingError($expectedCode, $actualCode)
+    public static function waitingError(int $expectedCode, int $actualCode) : ProcessException
     {
         return new self(sprintf(
             'Invalid return code received while waiting for process: expected %d, got %d.',
@@ -50,7 +50,7 @@ class ProcessException extends \RuntimeException
     /**
      * @return \Brick\Process\ProcessException
      */
-    public static function getPriorityError()
+    public static function getPriorityError() : ProcessException
     {
         return new self('Could not get the process priority.');
     }
@@ -58,7 +58,7 @@ class ProcessException extends \RuntimeException
     /**
      * @return \Brick\Process\ProcessException
      */
-    public static function setPriorityError()
+    public static function setPriorityError() : ProcessException
     {
         return new self('Could not set the process priority.');
     }
@@ -66,7 +66,7 @@ class ProcessException extends \RuntimeException
     /**
      * @return \Brick\Process\ProcessException
      */
-    public static function processStillRunning()
+    public static function processStillRunning() : ProcessException
     {
         return new self('Cannot get exit information for a process that is still running.');
     }
@@ -74,7 +74,7 @@ class ProcessException extends \RuntimeException
     /**
      * @return \Brick\Process\ProcessException
      */
-    public static function processExitedAbnormally()
+    public static function processExitedAbnormally() : ProcessException
     {
         return new self('Cannot get exit status code: the process exited abnormally.');
     }
