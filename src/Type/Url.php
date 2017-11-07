@@ -180,7 +180,7 @@ class Url
      */
     public function equals(Url $url) : bool
     {
-        return $this->toString(true) == $url->toString(true);
+        return $this->toString(true) === $url->toString(true);
     }
 
     /**
@@ -228,7 +228,7 @@ class Url
             // Decode percent-encoded octets of unreserved characters.
             $char = chr(hexdec($matches[1]));
 
-            if (preg_match('/[A–Za-z0-9\-\._~]/', $char) == 1) {
+            if (preg_match('/[A–Za-z0-9\-\._~]/', $char) === 1) {
                 return $char;
             }
 

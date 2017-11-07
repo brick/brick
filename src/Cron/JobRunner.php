@@ -140,7 +140,7 @@ class JobRunner
      */
     public function getAverageExecutionTimeInMs() : int
     {
-        if ($this->numberOfRuns == 0) {
+        if ($this->numberOfRuns === 0) {
             return 0;
         }
 

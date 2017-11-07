@@ -95,7 +95,7 @@ class Paypal
 
         curl_close($ch);
 
-        if ($errno != CURLE_OK) {
+        if ($errno !== CURLE_OK) {
             throw new PaypalException('Could not communicate with Paypal: ' . $error);
         }
 

@@ -133,7 +133,7 @@ class Queue
     {
         $this->executeStatement($this->assignMessageStatement, [$pid]);
 
-        if ($this->assignMessageStatement->rowCount() == 0) {
+        if ($this->assignMessageStatement->rowCount() === 0) {
             return null;
         }
 
@@ -162,7 +162,7 @@ class Queue
     {
         $this->executeStatement($this->removeMessageStatement, [$message->getId()]);
 
-        return $this->removeMessageStatement->rowCount() != 0;
+        return $this->removeMessageStatement->rowCount() !== 0;
     }
 
     /**
@@ -250,7 +250,7 @@ class Queue
 
         list ($sqlstate, $driverErrorCode, $driverMessage) = $errorInfo;
 
-        if ($sqlstate == self::SQLSTATE_DEADLOCK) {
+        if ($sqlstate === self::SQLSTATE_DEADLOCK) {
             return false;
         }
 

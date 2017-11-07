@@ -48,24 +48,24 @@ class Locale
             throw new \InvalidArgumentException('Invalid locale.');
         }
 
-        if (preg_match('/^[a-zA-Z]{2,8}$/', $subtags['language']) == 0) {
+        if (preg_match('/^[a-zA-Z]{2,8}$/', $subtags['language']) !== 1) {
             throw new \InvalidArgumentException('Invalid language subtag.');
         }
 
         if (isset($subtags['script'])) {
-            if (preg_match('/^[a-zA-Z]{4}$/', $subtags['script']) == 0) {
+            if (preg_match('/^[a-zA-Z]{4}$/', $subtags['script']) !== 1) {
                 throw new \InvalidArgumentException('Invalid script subtag.');
             }
         }
 
         if (isset($subtags['region'])) {
-            if (preg_match('/^[a-zA-Z]{2}|[0-9]{3}$/', $subtags['region']) == 0) {
+            if (preg_match('/^[a-zA-Z]{2}|[0-9]{3}$/', $subtags['region']) !== 1) {
                 throw new \InvalidArgumentException('Invalid region subtag.');
             }
         }
 
         for ($i = 0; isset($subtags[$key = 'variant' . $i]); $i++) {
-            if (preg_match('/^[0-9][0-9a-zA-Z]{3}|[0-9a-zA-Z]{5,8}$/', $subtags[$key]) == 0) {
+            if (preg_match('/^[0-9][0-9a-zA-Z]{3}|[0-9a-zA-Z]{5,8}$/', $subtags[$key]) !== 1) {
                 throw new \InvalidArgumentException('Invalid variant subtag.');
             }
         }
@@ -259,7 +259,7 @@ class Locale
      */
     public function isEqualTo(Locale $locale) : bool
     {
-        return $this->locale == $locale->locale;
+        return $this->locale === $locale->locale;
     }
 
     /**

@@ -137,7 +137,7 @@ class JobScheduler
 
                 $this->logJob($className, sprintf('Finished in %d ms, %d actions performed.', $jobRunner->getLastExecutionTimeInMs(), $actions));
 
-                if ($actions == 0) {
+                if ($actions === 0) {
                     $this->logJob($className, sprintf('Next run in %d s.', $job->getTimeBetweenRunsInSeconds()));
                     sleep($job->getTimeBetweenRunsInSeconds());
                 }
