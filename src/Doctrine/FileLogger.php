@@ -84,19 +84,26 @@ class FileLogger implements SQLLogger
 
     /**
      * @param mixed $var
+     * @param bool  $outer
      *
      * @return string
      */
-    private function export($var) : string
+    private function export($var, bool $outer = true) : string
     {
         if (is_array($var)) {
             $values = [];
 
             foreach ($var as $value) {
-                $values[] = $this->export($value);
+                $values[] = $this->export($value, false);
             }
 
-            return '[' . implode(', ', $values) . ']';
+            $result = implode(', ', $values);
+
+            if ($outer) {
+                return $result;
+            }
+
+            return '[' . $result . ']';
         }
 
         if (is_object($var)) {
