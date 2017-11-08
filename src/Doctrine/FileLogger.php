@@ -11,40 +11,47 @@ use Doctrine\DBAL\Logging\SQLLogger;
  */
 class FileLogger implements SQLLogger
 {
-    const APPEND = 0;
-    const OVERWRITE = 1;
-
     /**
      * Log file pointer.
      *
      * @var resource
      */
-    protected $fp;
+    private $fp;
 
     /**
      * Query start time.
      *
      * @var float
      */
-    protected $startTime;
+    private $startTime;
 
     /**
      * Total time spent on all queries.
      *
      * @var float
      */
-    protected $totalTime = 0.0;
+    private $totalTime = 0.0;
+
+    /**
+     * @var int
+     */
+    private $queryNumber = 0;
+
+    /**
+     * @var bool
+     */
+    private $lock;
 
     /**
      * Class constructor.
      *
-     * @param string $filename
-     * @param int    $writeMode
+     * @param string $filename The log file name.
+     * @param bool   $lock     Whether to use locks when writing to the file.
      */
-    public function __construct(string $filename, int $writeMode)
+    public function __construct(string $filename, bool $lock = false)
     {
-        $mode = ($writeMode === self::OVERWRITE) ? 'wt' : 'at';
-        $this->fp = fopen($filename, $mode);
+        $this->fp = fopen($filename, 'ab');
+        $this->lock = $lock;
 
         $this->write('SQL logger starting on ' . gmdate('r') . PHP_EOL . PHP_EOL);
     }
@@ -62,35 +69,49 @@ class FileLogger implements SQLLogger
      *
      * @return void
      */
-    protected function write(string $data) : void
+    private function write(string $data) : void
     {
+        if ($this->lock) {
+            flock($this->fp, LOCK_EX);
+        }
+
         fwrite($this->fp, $data);
+
+        if ($this->lock) {
+            flock($this->fp, LOCK_UN);
+        }
     }
 
     /**
-     * @param array|null $array
+     * @param mixed $var
      *
      * @return string
      */
-    protected function format(array $array = null) : string
+    private function export($var) : string
     {
-        if ($array === null) {
-            return 'none';
-        }
+        if (is_array($var)) {
+            $values = [];
 
-        foreach ($array as & $item) {
-            if (is_object($item)) {
-                if ($item instanceof \DateTime) {
-                    $item = $item->format(\DateTime::W3C);
-                } elseif (method_exists($item, '__toString')) {
-                    $item = get_class($item) . '(' . $item . ')';
-                } else {
-                    $item = get_class($item) . '@' . spl_object_hash($item);
-                }
+            foreach ($var as $value) {
+                $values[] = $this->export($value);
             }
+
+            return '[' . implode(', ', $values) . ']';
         }
 
-        return var_export($array, true);
+        if (is_object($var)) {
+            if ($var instanceof \DateTime) {
+                return $var->format(\DateTime::W3C);
+            }
+
+            if (method_exists($var, '__toString')) {
+                return get_class($var) . '(' . $var . ')';
+            }
+
+            return get_class($var) . '@' . spl_object_hash($var);
+        }
+
+        return var_export($var, true);
     }
 
     /**
@@ -98,11 +119,20 @@ class FileLogger implements SQLLogger
      */
     public function startQuery($sql, array $params = null, array $types = null)
     {
+        $this->queryNumber++;
         $this->startTime = microtime(true);
 
-        $this->write($sql . PHP_EOL);
-        $this->write('Parameters: ' . $this->format($params) . PHP_EOL);
-        $this->write('Types: ' . $this->format($types) . PHP_EOL);
+        $message = 'Query ' . $this->queryNumber . ': ' . $sql . PHP_EOL;
+
+        if ($params !== null) {
+            $message .= 'Parameters: ' . $this->export($params) . PHP_EOL;
+        }
+
+        if ($types !== null) {
+            $message .= 'Types: ' . $this->export($types) . PHP_EOL;
+        }
+
+        $this->write($message);
     }
 
     /**
