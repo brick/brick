@@ -56,7 +56,9 @@ class LocalDateTimeType extends Type
             return null;
         }
 
-        return LocalDateTime::parse(str_replace(' ', 'T', $value));
+        $value = str_replace(' ', 'T', (string) $value);
+
+        return LocalDateTime::parse($value);
     }
 
     /**

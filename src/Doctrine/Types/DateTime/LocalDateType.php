@@ -56,7 +56,7 @@ class LocalDateType extends Type
             return null;
         }
 
-        return LocalDate::parse($value);
+        return LocalDate::parse((string) $value);
     }
 
     /**

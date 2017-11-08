@@ -56,7 +56,7 @@ class DayOfWeekType extends Type
             return null;
         }
 
-        return DayOfWeek::of($value);
+        return DayOfWeek::of((int) $value);
     }
 
     /**

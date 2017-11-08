@@ -56,7 +56,7 @@ class LocalTimeType extends Type
             return null;
         }
 
-        return LocalTime::parse($value);
+        return LocalTime::parse((string) $value);
     }
 
     /**

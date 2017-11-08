@@ -59,7 +59,7 @@ class InstantType extends Type
             return null;
         }
 
-        return Instant::of($value);
+        return Instant::of((int) $value);
     }
 
     /**
