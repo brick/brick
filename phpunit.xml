@@ -11,6 +11,14 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
+            <exclude>
+                <file>src/Locale/countries.php</file>
+                <file>src/Locale/countries-parser.php</file>
+                <file>src/Locale/currencies-parser.php</file>
+                <file>src/Locale/languages.php</file>
+                <file>src/Locale/languages-alpha-2-to-3.php</file>
+                <file>src/Locale/languages-parser.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
