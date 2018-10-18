@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite>
+        <testsuite name="Locale tests">
             <directory>src/Tests/Locale</directory>
         </testsuite>
-        <testsuite>
+        <testsuite name="Random tests">
             <directory>src/Tests/Random</directory>
         </testsuite>
     </testsuites>
