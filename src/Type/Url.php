@@ -224,7 +224,7 @@ class Url
      */
     private function normalize(string $string) : string
     {
-        $callback = function (array $matches) {
+        $callback = static function (array $matches) {
             // Decode percent-encoded octets of unreserved characters.
             $char = chr(hexdec($matches[1]));
 

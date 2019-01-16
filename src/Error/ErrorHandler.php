@@ -28,7 +28,7 @@ class ErrorHandler
     public static function setup(callable $fatalErrorHandler = null) : void
     {
         // Handle PHP errors and throw exceptions.
-        set_error_handler(function($level, $message, $file, $line) {
+        set_error_handler(static function($level, $message, $file, $line) {
             if (error_reporting() === 0) {
                 // @ operator, continue to the normal error handler.
                 return false;
@@ -38,7 +38,7 @@ class ErrorHandler
         });
 
         if (! $fatalErrorHandler) {
-            $fatalErrorHandler = function($e) {
+            $fatalErrorHandler = static function($e) {
                 if (ini_get('display_errors')) {
                     if (! headers_sent()) {
                         header('Content-Type: text/plain');
@@ -50,7 +50,7 @@ class ErrorHandler
         }
 
         // Handle uncaught exceptions.
-        set_exception_handler(function($e) use ($fatalErrorHandler) {
+        set_exception_handler(static function($e) use ($fatalErrorHandler) {
             if (! headers_sent()) {
                 http_response_code(500);
             }
@@ -61,7 +61,7 @@ class ErrorHandler
         });
 
         // Handle fatal errors.
-        register_shutdown_function(function() use ($fatalErrorHandler) {
+        register_shutdown_function(static function() use ($fatalErrorHandler) {
             $e = error_get_last();
 
             if ($e && $e['type'] === E_ERROR) {

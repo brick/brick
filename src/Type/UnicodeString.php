@@ -221,7 +221,7 @@ class UnicodeString
     public function split(UnicodeString $regex) : array
     {
         return array_map(
-            function ($string) {
+            static function ($string) {
                 return new UnicodeString($string);
             },
             preg_split($regex->string, $this->string)
