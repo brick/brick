@@ -73,7 +73,7 @@ class QueryCollection implements \Countable, \IteratorAggregate
      *
      * @return object|null The entity, or null if the collection is empty.
      */
-    public function getFirstOrNull()
+    public function getFirstOrNull() : ?object
     {
         $objects = $this->slice(0, 1);
 
