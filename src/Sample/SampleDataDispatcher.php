@@ -61,7 +61,7 @@ class SampleDataDispatcher
      *
      * @return void
      */
-    public function run(callable $callback = null) : void
+    public function run(?callable $callback = null) : void
     {
         $this->em->beginTransaction();
 

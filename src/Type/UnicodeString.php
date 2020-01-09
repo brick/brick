@@ -30,7 +30,7 @@ class UnicodeString
      * @param string   $string The normalized UTF-8 string.
      * @param int|null $length The length, or null if not known.
      */
-    private function __construct(string $string, int $length = null)
+    private function __construct(string $string, ?int $length = null)
     {
         $this->string = $string;
 
@@ -248,7 +248,7 @@ class UnicodeString
      *
      * @return UnicodeString
      */
-    public function substring(int $start, int $length = null) : UnicodeString
+    public function substring(int $start, ?int $length = null) : UnicodeString
     {
         $string = mb_substr($this->string, $start, $length, 'UTF-8');
         return new UnicodeString($string);

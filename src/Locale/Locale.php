@@ -89,7 +89,7 @@ class Locale
      *
      * @throws \InvalidArgumentException
      */
-    public static function create(string $language, string $region = null) : Locale
+    public static function create(string $language, ?string $region = null) : Locale
     {
         $subtags = [
             'language' => $language
@@ -197,7 +197,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayName(Locale $inLocale = null) : string
+    public function getDisplayName(?Locale $inLocale = null) : string
     {
         return \Locale::getDisplayName($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -209,7 +209,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayLanguage(Locale $inLocale = null) : string
+    public function getDisplayLanguage(?Locale $inLocale = null) : string
     {
         return \Locale::getDisplayLanguage($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -221,7 +221,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayScript(Locale $inLocale = null) : string
+    public function getDisplayScript(?Locale $inLocale = null) : string
     {
         return \Locale::getDisplayScript($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -233,7 +233,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayRegion(Locale $inLocale = null) : string
+    public function getDisplayRegion(?Locale $inLocale = null) : string
     {
         return \Locale::getDisplayRegion($this->locale, $inLocale ? $inLocale->locale : null);
     }
@@ -245,7 +245,7 @@ class Locale
      *
      * @return string
      */
-    public function getDisplayVariant(Locale $inLocale = null) : string
+    public function getDisplayVariant(?Locale $inLocale = null) : string
     {
         return \Locale::getDisplayVariant($this->locale, $inLocale ? $inLocale->locale : null);
     }
