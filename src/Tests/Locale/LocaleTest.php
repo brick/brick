@@ -13,12 +13,12 @@ class LocaleTest extends TestCase
 {
     /**
      * @dataProvider parseExceptionProvider
-     * @expectedException \InvalidArgumentException
      *
      * @param string $locale
      */
     public function testParseException($locale)
     {
+        $this->expectException(\InvalidArgumentException::class);
         Locale::parse($locale);
     }
 

@@ -48,7 +48,7 @@ namespace Brick\Tests\Random
      */
     class RandomPickerTest extends TestCase
     {
-        protected function setUp()
+        protected function setUp() : void
         {
             TestData::$useTestData = false;
         }
@@ -117,21 +117,19 @@ namespace Brick\Tests\Random
             $this->assertSame('test', $picker->getRandomElement());
         }
 
-        /**
-         * @expectedException \InvalidArgumentException
-         */
         public function testInvalidWeight()
         {
             $picker = new RandomPicker();
+
+            $this->expectException(\InvalidArgumentException::class);
             $picker->addElement('test', 0);
         }
 
-        /**
-         * @expectedException \RuntimeException
-         */
         public function testEmptyPicker()
         {
             $picker = new RandomPicker();
+
+            $this->expectException(\RuntimeException::class);
             $picker->getRandomElement();
         }
 
