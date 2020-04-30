@@ -105,7 +105,7 @@ class Language
                 throw new \RuntimeException('Invalid language code: ' . $code);
             }
 
-            list ($alpha3T, $alpha2, $englishName, $frenchName) = self::$languages[$code];
+            [$alpha3T, $alpha2, $englishName, $frenchName] = self::$languages[$code];
 
             self::$instances[$code] = new self($code, $alpha3T, $alpha2, $englishName, $frenchName);
         }

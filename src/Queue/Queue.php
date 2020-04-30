@@ -248,7 +248,7 @@ class Queue
             $errorInfo = $e->errorInfo;
         }
 
-        list ($sqlstate, $driverErrorCode, $driverMessage) = $errorInfo;
+        [$sqlstate, $driverErrorCode, $driverMessage] = $errorInfo;
 
         if ($sqlstate === self::SQLSTATE_DEADLOCK) {
             return false;

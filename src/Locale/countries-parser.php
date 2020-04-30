@@ -27,7 +27,7 @@ foreach ($lines as $index => $line) {
         die(sprintf('Expected 2 parts, got %d on line %d', count($parts), $index + 1));
     }
 
-    list ($name, $code) = $parts;
+    [$name, $code] = $parts;
 
     if ($index == 0) {
         if ($name != 'Country Name') {
@@ -122,7 +122,7 @@ foreach ($countryToCurrency as $country => $currencies) {
         $currency = null;
     }
     elseif (count($currencies) == 1) {
-        list ($currency) = $currencies;
+        [$currency] = $currencies;
     } else {
         if (! isset($countryToUniqueCurrency[$countryCode])) {
             die("Expected 1 currency for $countryCode, got " . count($currencies));

@@ -24,7 +24,7 @@ foreach ($lines as $line) {
         die("Unexpected line format: $line\n");
     }
 
-    list ($alpha3B, $alpha3T, $alpha2, $englishName, $frenchName) = $parts;
+    [$alpha3B, $alpha3T, $alpha2, $englishName, $frenchName] = $parts;
 
     if (preg_match('/^[a-z]{3}\-[a-z]{3}$/', $alpha3B) != 0) {
         continue; // Skip ranges

@@ -80,7 +80,7 @@ class Country
                 throw new \RuntimeException('Invalid country code: ' . $code);
             }
 
-            list ($code, $name, $currency) = self::$countries[$code];
+            [$code, $name, $currency] = self::$countries[$code];
 
             self::$instances[$code] = new self($code, $name, $currency);
         }
