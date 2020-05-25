@@ -1,6 +1,6 @@
 {
     "name": "brick/brick",
-    "description": "Brick PHP framework",
+    "description": "Incubator for PHP components under development",
     "type": "library",
     "keywords": [
         "brick",
