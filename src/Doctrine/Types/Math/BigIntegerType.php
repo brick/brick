@@ -28,7 +28,7 @@ class BigIntegerType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getDecimalTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getBigIntTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
