@@ -5,7 +5,7 @@
 Incubator for PHP components under development.
 
 [![Build Status](https://travis-ci.org/brick/brick.svg?branch=master)](https://travis-ci.org/brick/brick)
-[![Coverage Status](https://coveralls.io/repos/brick/brick/badge.svg?branch=master)](https://coveralls.io/r/brick/brick)
+[![Coverage Status](https://coveralls.io/repos/github/brick/brick/badge.svg?branch=master)](https://coveralls.io/github/brick/brick?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 Once a component reaches sufficient maturity, it will be moved to its [own repository](https://github.com/brick)
