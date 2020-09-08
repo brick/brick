@@ -161,7 +161,7 @@ class Locale
      */
     public function getScript() : ?string
     {
-        return isset($this->subtags['script']) ? $this->subtags['script'] : null;
+        return $this->subtags['script'] ?? null;
     }
 
     /**
@@ -171,7 +171,7 @@ class Locale
      */
     public function getRegion() : ?string
     {
-        return isset($this->subtags['region']) ? $this->subtags['region'] : null;
+        return $this->subtags['region'] ?? null;
     }
 
     /**

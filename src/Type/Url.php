@@ -76,7 +76,7 @@ class Url
             $this->port = $url['port'];
         }
 
-        $this->path = isset($url['path']) ? $url['path'] : '/';
+        $this->path = $url['path'] ?? '/';
 
         if (isset($url['query'])) {
             $this->query = $url['query'];
@@ -170,7 +170,7 @@ class Url
     {
         $scheme = strtolower($this->scheme);
 
-        return isset(self::$defaultPorts[$scheme]) ? self::$defaultPorts[$scheme] : null;
+        return self::$defaultPorts[$scheme] ?? null;
     }
 
     /**
