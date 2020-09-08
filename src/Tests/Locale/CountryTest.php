@@ -1,6 +1,6 @@
 <?php
 
-namespace Brick\Tests\Currency;
+namespace Brick\Tests\Locale;
 
 use Brick\Locale\Country;
 
