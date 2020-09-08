@@ -28,7 +28,7 @@ file_put_contents('country-to-currency.php', sprintf("<?php return %s;\n", var_e
  *
  * @return string|null
  */
-function getDomElementString(DOMElement $element, $name)
+function getDomElementString(DOMElement $element, $name) : ?string
 {
     foreach ($element->getElementsByTagName($name) as $child) {
         /** @var $child DOMElement */

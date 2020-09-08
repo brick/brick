@@ -79,7 +79,7 @@ printf('Successfully exported %d languages and %d alpha-2 mappings' . PHP_EOL, c
  *
  * @return void
  */
-function exportToFile($file, $data)
+function exportToFile($file, $data) : void
 {
     file_put_contents($file, sprintf("<?php return %s;\n", var_export($data, true)));
 }
