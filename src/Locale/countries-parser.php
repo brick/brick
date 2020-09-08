@@ -17,20 +17,20 @@ $countries = [];
 $countryNameToCode = [];
 
 foreach ($lines as $index => $line) {
-    if ($line == '') {
+    if ($line === '') {
         continue;
     }
 
     $parts = explode(';', $line);
 
-    if (count($parts) != 2) {
+    if (count($parts) !== 2) {
         die(sprintf('Expected 2 parts, got %d on line %d', count($parts), $index + 1));
     }
 
     [$name, $code] = $parts;
 
-    if ($index == 0) {
-        if ($name != 'Country Name') {
+    if ($index === 0) {
+        if ($name !== 'Country Name') {
             die(sprintf('Unexpected first line: %s', $line));
         }
 
@@ -100,7 +100,7 @@ foreach ($countryToCurrency as $country => $currencies) {
     /**
      * Ignore all entries starting with ZZ.
      */
-    if (substr($country, 0, 2) == 'ZZ') {
+    if (substr($country, 0, 2) === 'ZZ') {
         continue;
     }
 
@@ -118,10 +118,10 @@ foreach ($countryToCurrency as $country => $currencies) {
 
     $countryCode = $countryNameToCode[$country];
 
-    if (count($currencies) == 0) {
+    if (count($currencies) === 0) {
         $currency = null;
     }
-    elseif (count($currencies) == 1) {
+    elseif (count($currencies) === 1) {
         [$currency] = $currencies;
     } else {
         if (! isset($countryToUniqueCurrency[$countryCode])) {
@@ -145,7 +145,7 @@ foreach ($countryToCurrency as $country => $currencies) {
 }
 
 foreach ($countries as $code => $country) {
-    if (count($country) != 3) {
+    if (count($country) !== 3) {
         die("Expected 3 entries (code, name, currency) for country $code, got " . count($country));
     }
 }

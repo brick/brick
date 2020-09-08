@@ -13,7 +13,7 @@ foreach ($countries as $country) {
     $countryName = getDomElementString($country, 'CtryNm');
     $currencyCode = getDomElementString($country, 'Ccy');
 
-    if ($currencyCode !== null && preg_match('/^[A-Z]{3}$/', $currencyCode) == 0) {
+    if ($currencyCode !== null && preg_match('/^[A-Z]{3}$/', $currencyCode) === 0) {
         throw new \RuntimeException('Invalid currency code: ' . $currencyCode);
     }
 

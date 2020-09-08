@@ -14,59 +14,55 @@ $alpha2to3 = [];
 $alphaTtoB = [];
 
 foreach ($lines as $line) {
-    if ($line == '') {
+    if ($line === '') {
         continue;
     }
 
     $parts = explode('|', $line);
 
-    if (count($parts) != 5) {
+    if (count($parts) !== 5) {
         die("Unexpected line format: $line\n");
     }
 
     [$alpha3B, $alpha3T, $alpha2, $englishName, $frenchName] = $parts;
 
-    if (preg_match('/^[a-z]{3}\-[a-z]{3}$/', $alpha3B) != 0) {
+    if (preg_match('/^[a-z]{3}\-[a-z]{3}$/', $alpha3B) !== 0) {
         continue; // Skip ranges
     }
 
-    if (preg_match('/^[a-z]{3}$/', $alpha3B) == 0) {
+    if (preg_match('/^[a-z]{3}$/', $alpha3B) === 0) {
         die("Invalid alpha3B code: $alpha3B\n");
     }
 
-    if ($englishName == '') {
+    if ($englishName === '') {
         die("Empty English name for code $alpha3B\n");
     }
 
-    if ($frenchName == '') {
+    if ($frenchName === '') {
         die("Empty French name for code $alpha3B\n");
     }
 
-    if ($alpha2 == '') {
+    if ($alpha2 === '') {
         $alpha2 = null;
     } else {
-        if (preg_match('/[a-z]{2}$/', $alpha2) == 0) {
+        if (preg_match('/[a-z]{2}$/', $alpha2) === 0) {
             die("Invalid alpha2 code: $alpha2\n");
         }
 
         $alpha2to3[$alpha2] = $alpha3B;
     }
 
-    if ($alpha3T == '') {
+    if ($alpha3T === '') {
         $alpha3T = null;
     } else {
-        if (preg_match('/^[a-z]{3}$/', $alpha3T) == 0) {
+        if (preg_match('/^[a-z]{3}$/', $alpha3T) === 0) {
             die("Invalid alpha3T code: $alpha3T\n");
         }
-
-
     }
 
     if (isset($languages[$alpha3B])) {
         die("Duplicate alpha3B code: $alpha3B\n");
     }
-
-
 
     $languages[$alpha3B] = [$alpha3B, $alpha3T, $alpha2, $englishName, $frenchName];
 }
