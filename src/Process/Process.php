@@ -65,7 +65,7 @@ class Process
         }
         else {
             // Child
-            call_user_func_array($callable, $arguments);
+            $callable(...$arguments);
 
             exit(0);
         }
