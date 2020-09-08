@@ -8,9 +8,11 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "ext-pcntl": "*"
     },
     "require-dev": {
+        "ext-dom": "*",
         "phpunit/phpunit": "8.*",
         "php-coveralls/php-coveralls": "2.*",
         "doctrine/orm": "2.*",
