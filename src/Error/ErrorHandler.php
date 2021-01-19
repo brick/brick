@@ -29,8 +29,8 @@ class ErrorHandler
     {
         // Handle PHP errors and throw exceptions.
         set_error_handler(static function($level, $message, $file, $line) {
-            if (error_reporting() === 0) {
-                // @ operator, continue to the normal error handler.
+            if (error_reporting() & $level === 0)  {
+                // silenced via error_reporting or @ operator, continue to the normal error handler.
                 return false;
             }
 
