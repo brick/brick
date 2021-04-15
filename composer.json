@@ -17,8 +17,7 @@
         "php-coveralls/php-coveralls": "^2.0",
         "doctrine/orm": "^2.0",
         "brick/di": "~0.2.0",
-        "brick/math": "~0.7.0",
-        "brick/date-time": "~0.1.0"
+        "brick/math": "~0.7.0"
     },
     "autoload": {
         "psr-4": {
