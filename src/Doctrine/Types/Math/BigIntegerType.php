@@ -18,7 +18,7 @@ class BigIntegerType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'BigInteger';
     }
@@ -26,13 +26,15 @@ class BigIntegerType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getDecimalTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -45,6 +47,8 @@ class BigIntegerType extends Type
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -62,7 +66,7 @@ class BigIntegerType extends Type
     /**
      * {@inheritdoc}
      */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }
